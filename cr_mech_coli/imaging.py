@@ -100,7 +100,8 @@ def __create_cell_surfaces(cells: dict) -> list:
         cell_surfaces.append((ident, mesh))
     return cell_surfaces
 
-def __render_pv_image(
+
+def render_pv_image(
         config: Configuration,
         cells,
         render_settings: RenderSettings,
@@ -147,7 +148,7 @@ def render_mask(
     if render_settings is None:
         render_settings = RenderSettings()
     rs = render_settings.prepare_for_masks()
-    img = __render_pv_image(config, cells, rs, colors)
+    img = render_pv_image(config, cells, rs, colors)
     if filename is not None:
         cv.imwrite(filename, img)
     return img
@@ -160,7 +161,7 @@ def render_image(
     ) -> np.ndarray:
     if render_settings is None:
         render_settings = RenderSettings()
-    img = __render_pv_image(config, cells, render_settings)
+    img = render_pv_image(config, cells, render_settings)
 
     # Smoothen it out
     kernel = np.ones([render_settings.kernel_size]*2, np.float32) / render_settings.kernel_size**2
