@@ -135,9 +135,16 @@ def render_pv_image(
 
     plotter.enable_ssao(radius=render_settings.ssao_radius)
     plotter.enable_anti_aliasing()
-    img = plotter.screenshot()
+    img = np.array(plotter.screenshot())
     plotter.close()
-    return np.array(img)
+
+    if filename is not None:
+        # Check that folder exist and if not create them
+        odir = Path(filename).parents[0]
+        odir.mkdir(parents=True, exist_ok=True)
+        cv.imwrite(str(filename), img)
+
+    return img
 
 def render_mask(
         config: Configuration,
@@ -151,8 +158,12 @@ def render_mask(
     rs = render_settings.prepare_for_masks()
     img = render_pv_image(config, cells, rs, colors)
     if filename is not None:
-        cv.imwrite(filename, img)
+        # Check that folder exist and if not create them
+        odir = Path(filename).parents[0]
+        odir.mkdir(parents=True, exist_ok=True)
+        cv.imwrite(str(filename), img)
     return img
+
 
 def render_image(
         config: Configuration,
@@ -175,6 +186,9 @@ def render_image(
         img[:,:,j] = cv.add(img[:,:,j], noise)
 
     if filename is not None:
-        cv.imwrite(filename, img)
+        # Check that folder exist and if not create them
+        odir = Path(filename).parents[0]
+        odir.mkdir(parents=True, exist_ok=True)
+        cv.imwrite(str(filename), img)
 
     return img
