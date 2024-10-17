@@ -1,3 +1,3 @@
-from .cr_mech_coli import Configuration, run_simulation
+from .cr_mech_coli_rs import *
 from .simulation import *
 from .imaging import *

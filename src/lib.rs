@@ -14,7 +14,7 @@ use pyo3::prelude::*;
 
 /// A Python module implemented in Rust.
 #[pymodule]
-fn cr_mech_coli(m: &Bound<'_, PyModule>) -> PyResult<()> {
+fn cr_mech_coli_rs(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(run_simulation, m)?)?;
     m.add_class::<Configuration>()?;
     m.add_class::<RodMechanicsSettings>()?;
