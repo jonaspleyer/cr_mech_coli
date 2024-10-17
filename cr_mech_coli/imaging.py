@@ -111,9 +111,11 @@ def render_mask(
         config: Configuration,
         cells: dict,
         colors: dict,
-        render_settings: RenderSettings = RenderSettings(),
+        render_settings: RenderSettings | None = None,
         filename: str | None = None,
     ) -> np.ndarray:
+    if render_settings is None:
+        render_settings = RenderSettings()
     rs = render_settings.prepare_for_masks()
     img = __render_pv_image(config, cells, rs, colors)
     if filename is not None:
@@ -123,9 +125,11 @@ def render_mask(
 def render_image(
         config: Configuration,
         cells: dict,
-        render_settings: RenderSettings = RenderSettings(),
+        render_settings: RenderSettings | None = None,
         filename: str | None = None
     ) -> np.ndarray:
+    if render_settings is None:
+        render_settings = RenderSettings()
     img = __render_pv_image(config, cells, render_settings)
 
     # Smoothen it out
