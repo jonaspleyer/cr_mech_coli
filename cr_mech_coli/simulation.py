@@ -1,23 +1,18 @@
-import matplotlib.pyplot as plt
+from .cr_mech_coli_rs import sort_cellular_identifiers
+
+"""
+This module contains functionality to configure and run simulations.
+"""
 
 def extract_all_identifiers(cells_at_iterations: dict) -> set:
+    """Extracts all identifiers of the given simulation data and returns them as a set.
+
+    Args:
+        cells_at_iterations (dict):
+            A dictionary of which given an iteration returns the cells at this simulation step as
+            produced by the `run_simulation` function.
+
+    Returns:
+        set: All identifiers which were present during the simulation.
+    """
     return set(cells_at_iterations.keys())
-
-def assign_colors_to_cells(cells_at_iterations: dict) -> dict:
-    iterations = sorted(cells_at_iterations.keys())
-    color_index = 0
-    colors = {}
-    for i in iterations:
-        for ident in cells_at_iterations[i]:
-            if ident not in colors:
-                color_current = [0, 0, 0]
-                q, mod = divmod(color_index, 255**2)
-                color_current[0] = q
-                q, mod = divmod(mod, 255)
-                color_current[1] = q
-                color_current[2] = mod
-                color_index += 1
-                colors[ident] = color_current
-    return colors
-
-

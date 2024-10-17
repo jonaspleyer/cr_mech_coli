@@ -3,6 +3,9 @@ import pyvista as pv
 import numpy as np
 import cv2 as cv
 import dataclasses
+from pathlib import Path
+from tqdm import tqdm
+
 
 @dataclasses.dataclass
 class RenderSettings:
@@ -42,8 +45,35 @@ class RenderSettings:
         rs.pbr = False
         return rs
 
-def create_mask(cells) -> np.ndarray:
-    return np.zeros(0)
+
+def counter_to_color(counter: int, artistic: bool = False) -> list[int]:
+    if artistic:
+        counter = (counter * 157 * 163 * 173) % 255**3
+    color = [0, 0, 0]
+    q, mod = divmod(counter, 255**2)
+    color[0] = q
+    q, mod = divmod(mod, 255)
+    color[1] = q
+    color[2] = mod
+    return color
+
+
+def assign_colors_to_cells(sim_result: dict, artistic: bool = False) -> dict:
+    """This functions assigns unique colors to given cellular identifiers. Note that this
+    """
+    iterations = sorted(sim_result.keys())
+    color_index = 1
+    colors = {}
+    for i in iterations:
+        for ident in sort_cellular_identifiers(list(sim_result[i].keys())):
+            if ident not in colors:
+                if color_index > 255**3:
+                    raise ValueError("The maximum supported number of cells is 255^3")
+                color = counter_to_color(color_index, artistic)
+                color_index += 1
+                colors[ident] = color
+    return colors
+
 
 def __create_cell_surfaces(cells: dict) -> list:
     cell_surfaces = []
