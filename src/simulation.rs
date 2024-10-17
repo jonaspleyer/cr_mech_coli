@@ -1,7 +1,8 @@
-use std::num::NonZeroUsize;
+use std::{hash::Hasher, num::NonZeroUsize};
 
+use backend::chili::SimulationError;
 use cellular_raza::prelude::*;
-use pyo3::prelude::*;
+use pyo3::{prelude::*, types::PyString};
 use serde::{Deserialize, Serialize};
 use time::FixedStepsize;
 
@@ -149,11 +150,51 @@ impl Configuration {
             save_interval: 50.0, // MIN
             show_progressbar: false,
             domain_size: 100.0, // MICROMETRE
+            domain_height: 2.5, // MICROMETRE
             randomize_position: 0.01,
             n_voxels: 1,
             rng_seed: 0,
             storage_priority: vec![StorageOption::Memory],
         })
+    }
+
+    /// Serializes this struct to the json format
+    pub fn to_json(&self) -> PyResult<String> {
+        let res = serde_json::to_string_pretty(&self);
+        Ok(res.or_else(|e| Err(pyo3::exceptions::PyIOError::new_err(format!("{e}"))))?)
+    }
+
+    /// Deserializes this struct from a json string
+    #[staticmethod]
+    pub fn from_json(json_string: Bound<PyString>) -> PyResult<Self> {
+        let json_str = json_string.to_str()?;
+        let res = serde_json::from_str(&json_str);
+        Ok(res.or_else(|e| Err(pyo3::exceptions::PyIOError::new_err(format!("{e}"))))?)
+    }
+
+    /// Attempts to create a hash from the contents of this [Configuration].
+    /// Warning: This feature is experimental.
+    pub fn to_hash(&self) -> PyResult<u64> {
+        let json_string = self.to_json()?;
+        let mut hasher = std::hash::DefaultHasher::new();
+        hasher.write(&json_string.as_bytes());
+        Ok(hasher.finish())
+    }
+}
+
+mod test_config {
+    #[test]
+    fn test_hashing() {
+        use super::*;
+        pyo3::prepare_freethreaded_python();
+        Python::with_gil(|py| {
+            let c1 = Configuration::new(py).unwrap();
+            let c2 = Configuration::new(py).unwrap();
+            c2.agent_settings.setattr(py, "growth_rate", 200.0).unwrap();
+            let h1 = c1.to_hash().unwrap();
+            let h2 = c2.to_hash().unwrap();
+            assert!(h1 != h2);
+        });
     }
 }
 
