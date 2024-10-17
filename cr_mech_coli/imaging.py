@@ -106,6 +106,7 @@ def render_pv_image(
         cells,
         render_settings: RenderSettings,
         colors: dict | None = None,
+        filename: str | Path | None = None,
     ) -> np.ndarray:
     plotter = pv.Plotter(off_screen=True, window_size=[render_settings.resolution]*2)
     plotter.enable_parallel_projection()
@@ -143,7 +144,7 @@ def render_mask(
         cells: dict,
         colors: dict,
         render_settings: RenderSettings | None = None,
-        filename: str | None = None,
+        filename: str | Path | None = None,
     ) -> np.ndarray:
     if render_settings is None:
         render_settings = RenderSettings()
@@ -157,7 +158,7 @@ def render_image(
         config: Configuration,
         cells: dict,
         render_settings: RenderSettings | None = None,
-        filename: str | None = None
+        filename: str | Path | None = None
     ) -> np.ndarray:
     if render_settings is None:
         render_settings = RenderSettings()
