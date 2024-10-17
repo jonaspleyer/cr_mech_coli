@@ -1,0 +1,72 @@
+name: Create Docs
+
+on: [push]
+
+jobs:
+  build-sphinx:
+    runs-on: ubuntu-latest
+    steps:
+      # TODO maybe in the future use reusable workflows or composite workflows
+      # for this part here
+      - name: Checkout sources
+        uses: actions/checkout@v2
+
+      - name: Install stable toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+          override: true
+
+      - uses: actions/checkout@v4
+      - name: Set up Python 3.x
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.x
+
+      - name: create virtual environment
+        run: |
+          python3 -m venv .venv
+          python3 -m pip install --upgrade pip
+          source .venv/bin/activate
+          python3 -m pip install -r requirements.txt
+
+      - name: Build wheels
+        uses: PyO3/maturin-action@v1
+        with:
+          command: develop
+          args: --release
+      # Up until here!
+
+      - name: build cargo documentation in docs dir
+        run: |
+          cargo doc --no-deps --target-dir docs/build/html/rust_doc
+
+      - name: Install Doc Requirements
+        run: |
+          source .venv/bin/activate
+          python3 -m pip install -r docs/requirements.txt
+
+      - name: Sphinx build
+        run: |
+          source .venv/bin/activate
+          sphinx-build docs/source docs/build/html
+
+      - name: Upload Artifacts
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs/build/html
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build-sphinx
+    permissions:
+      id-token: write
+      pages: write
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
