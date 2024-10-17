@@ -116,6 +116,7 @@ pub struct Configuration {
     save_interval: f32,
     show_progressbar: bool,
     domain_size: f32,
+    domain_height: f32,
     randomize_position: f32,
     n_voxels: usize,
     rng_seed: u64,
@@ -308,7 +309,7 @@ pub fn run_simulation(config: Configuration) -> Result<SimResult, PyErr> {
             let p1 = [
                 rng.gen_range(dx..config.domain_size - dx),
                 rng.gen_range(dx..config.domain_size - dx),
-                rng.gen_range(2.4..2.6),
+                rng.gen_range(0.4 * config.domain_height..0.6 * config.domain_height),
             ];
             let angle: f32 = rng.gen_range(0.0..2.0 * std::f32::consts::PI);
             RodAgent {
@@ -357,7 +358,7 @@ pub fn run_simulation(config: Configuration) -> Result<SimResult, PyErr> {
 
         let mut domain = CartesianCuboid::from_boundaries_and_n_voxels(
             [0.0; 3],
-            [config.domain_size, config.domain_size, 5.0],
+            [config.domain_size, config.domain_size, config.domain_height],
             [config.n_voxels, config.n_voxels, 1],
         )
         .or_else(|x| Err(SimulationError::from(x)))?;
