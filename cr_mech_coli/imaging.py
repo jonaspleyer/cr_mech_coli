@@ -192,3 +192,59 @@ def render_image(
         cv.imwrite(str(filename), img)
 
     return img
+
+
+def store_all_images(
+        config: Configuration,
+        sim_result: dict,
+        render_settings: RenderSettings | None = None,
+        save_dir: str | Path = "out",
+        use_hash: bool = True,
+        render_raw_pv: bool = False,
+        render_mask_artistic: bool = False,
+    ):
+    if render_settings is None:
+        render_settings = RenderSettings()
+    colors = assign_colors_to_cells(sim_result)
+
+    colors_artistic = {}
+    if render_mask_artistic:
+        colors_artistic = assign_colors_to_cells(sim_result, artistic=True)
+    iterations = sorted(sim_result.keys())
+
+    if use_hash:
+        sim_hash = config.to_hash()
+        print(sim_hash)
+        save_dir = Path(save_dir) / "{}/".format(sim_hash)
+
+    for iteration in tqdm(iterations, total=len(iterations)):
+        cells = sim_result[iteration]
+        render_image(
+            config,
+            cells,
+            render_settings,
+            Path(save_dir) / "images/{:09}.png".format(iteration),
+        )
+        render_mask(
+            config,
+            cells,
+            colors,
+            render_settings,
+            Path(save_dir) / "masks/{:09}.png".format(iteration),
+        )
+        if render_raw_pv:
+            render_pv_image(
+                config,
+                cells,
+                render_settings,
+                colors = None,
+                filename=Path(save_dir) / "raw_pv/{:09}.png".format(iteration),
+            )
+        if render_mask_artistic:
+            render_mask(
+                config,
+                cells,
+                colors_artistic,
+                render_settings,
+                Path(save_dir) / "masks_artistic/{:09}.png".format(iteration),
+            )
