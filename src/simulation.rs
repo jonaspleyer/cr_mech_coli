@@ -81,10 +81,10 @@ impl Default for RodMechanicsSettings {
             pos: nalgebra::SMatrix::zeros(),
             vel: nalgebra::SMatrix::zeros(),
             diffusion_constant: 0.0, // MICROMETRE^2 / MIN^2
-            spring_tension: 0.1,     // 1 / MIN
-            angle_stiffness: 0.05,
-            spring_length: 5.0, // MICROMETRE
-            damping: 0.1,       // 1/MIN
+            spring_tension: 1.0,     // 1 / MIN
+            angle_stiffness: 0.5,
+            spring_length: 3.0, // MICROMETRE
+            damping: 1.0,       // 1/MIN
         }
     }
 }
@@ -129,19 +129,19 @@ impl Configuration {
     pub fn new(py: Python) -> pyo3::PyResult<Self> {
         Ok(Self {
             agent_settings: AgentSettings {
-                mechanics: Py::new(py, RodMechanicsSettings::default())?,
-                interaction: Py::new(
-                    py,
-                    MorsePotentialF32 {
-                        radius: 5.0,                    // MICROMETRE
-                        potential_stiffness: 1.0 / 5.0, // 1/MICROMETRE
-                        cutoff: 8.0,                    // MICROMETRE
-                        strength: 2.0,                  // MICROMETRE^2/MINUTE^2
-                    },
-                )?,
-                growth_rate: 0.1,
-                spring_length_threshold: 6.0,
-            },
+                    mechanics: Py::new(py, RodMechanicsSettings::default())?,
+                    interaction: Py::new(
+                        py,
+                        MorsePotentialF32 {
+                            radius: 3.0,              // MICROMETRE
+                            potential_stiffness: 0.5, // 1/MICROMETRE
+                            cutoff: 10.0,             // MICROMETRE
+                            strength: 0.1,            // MICROMETRE^2/MINUTE^2
+                        },
+                    )?,
+                    growth_rate: 0.1,
+                    spring_length_threshold: 6.0,
+                },
             n_agents: 2,
             n_threads: 1.try_into().unwrap(),
             t0: 0.0,             // MIN
