@@ -12,4 +12,4 @@
 [![Docs](https://img.shields.io/github/actions/workflow/status/jonaspleyer/cr_mech_coli/sphinx_doc.yml?label=Docs&style=flat-square)](https://github.com/jonaspleyer/cr_mech_coli/actions)
 
 Find the documentation of `cellular_raza` under
-[jonaspleyer.github.io/cellular_raza-template/](https://jonaspleyer.github.io/cellular_raza-template/).
+[jonaspleyer.github.io/cr_mech_coli/](https://jonaspleyer.github.io/cr_mech_coli/).
