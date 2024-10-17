@@ -265,10 +265,10 @@ impl RodAgent {
 
 impl Cycle<RodAgent, f32> for RodAgent {
     fn update_cycle(
-            _rng: &mut rand_chacha::ChaCha8Rng,
-            dt: &f32,
-            cell: &mut Self,
-        ) -> Option<CycleEvent> {
+        _rng: &mut rand_chacha::ChaCha8Rng,
+        dt: &f32,
+        cell: &mut Self,
+    ) -> Option<CycleEvent> {
         cell.mechanics.spring_length += cell.growth_rate * dt;
         if cell.mechanics.spring_length > cell.spring_length_threshold {
             Some(CycleEvent::Division)

@@ -1,6 +1,6 @@
 use pyo3::prelude::*;
-use serde::{Deserialize, Serialize};
 use rayon::prelude::*;
+use serde::{Deserialize, Serialize};
 
 use crate::{run_simulation, Configuration, SimResult};
 
