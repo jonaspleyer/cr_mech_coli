@@ -1,7 +1,7 @@
 <div align="center">
     <picture>
-        <source media="(prefers-color-scheme: dark)" srcset="https://github.com/jonaspleyer/cellular_raza/blob/22baabe0b7ac732c9738d6bd099f2edf7e0bc090/cellular_raza/logos/cellular_raza_dark_mode.svg">
-        <source media="(prefers-color-scheme: light)" srcset="https://github.com/jonaspleyer/cellular_raza/blob/22baabe0b7ac732c9738d6bd099f2edf7e0bc090/cellular_raza/logos/cellular_raza.svg">
+        <source media="(prefers-color-scheme: dark)" srcset="docs/source/_static/cellular_raza_dark_mode.svg">
+        <source media="(prefers-color-scheme: light)" srcset="docs/source_static/cellular_raza.svg">
         <img alt="The cellular_raza logo" src="doc/cellular_raza.svg">
     </picture>
 </div>
