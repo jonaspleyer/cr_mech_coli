@@ -107,7 +107,7 @@ pub struct AgentSettings {
 #[pyclass(set_all, get_all)]
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct Configuration {
-    agent_settings: AgentSettings,
+    agent_settings: Py<AgentSettings>,
     n_agents: usize,
     n_threads: NonZeroUsize,
     t0: f32,
@@ -128,7 +128,9 @@ impl Configuration {
     #[new]
     pub fn new(py: Python) -> pyo3::PyResult<Self> {
         Ok(Self {
-            agent_settings: AgentSettings {
+            agent_settings: Py::new(
+                py,
+                AgentSettings {
                     mechanics: Py::new(py, RodMechanicsSettings::default())?,
                     interaction: Py::new(
                         py,
@@ -142,6 +144,7 @@ impl Configuration {
                     growth_rate: 0.1,
                     spring_length_threshold: 6.0,
                 },
+            )?,
             n_agents: 2,
             n_threads: 1.try_into().unwrap(),
             t0: 0.0,             // MIN
@@ -294,8 +297,9 @@ pub fn run_simulation(config: Configuration) -> Result<SimResult, PyErr> {
     use rand_chacha::rand_core::SeedableRng;
     Python::with_gil(|py| {
         let mut rng = rand_chacha::ChaCha8Rng::seed_from_u64(config.rng_seed);
-        let mechanics: RodMechanicsSettings = config.agent_settings.mechanics.extract(py)?;
-        let interaction: MorsePotentialF32 = config.agent_settings.interaction.extract(py)?;
+        let agent_settings: AgentSettings = config.agent_settings.extract(py)?;
+        let mechanics: RodMechanicsSettings = agent_settings.mechanics.extract(py)?;
+        let interaction: MorsePotentialF32 = agent_settings.interaction.extract(py)?;
         let spring_length = mechanics.spring_length;
         let dx = spring_length * N_ROD_SEGMENTS as f32;
         let s = config.randomize_position;
@@ -330,8 +334,8 @@ pub fn run_simulation(config: Configuration) -> Result<SimResult, PyErr> {
                     damping: mechanics.damping,
                 },
                 interaction: RodInteraction(interaction.clone()),
-                growth_rate: config.agent_settings.growth_rate,
-                spring_length_threshold: config.agent_settings.spring_length_threshold,
+                growth_rate: agent_settings.growth_rate,
+                spring_length_threshold: agent_settings.spring_length_threshold,
             }
         });
 
