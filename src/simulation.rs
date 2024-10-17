@@ -343,3 +343,13 @@ pub fn run_simulation(config: Configuration) -> Result<SimResult, PyErr> {
         Ok(all_agents)
     })
 }
+
+/// Sorts an iterator of [CellIdentifier] deterministically.
+#[pyfunction]
+pub fn sort_cellular_identifiers(
+    identifiers: Vec<CellIdentifier>,
+) -> Result<Vec<CellIdentifier>, PyErr> {
+    let mut identifiers = identifiers;
+    identifiers.sort();
+    Ok(identifiers)
+}
