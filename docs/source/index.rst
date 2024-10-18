@@ -58,6 +58,8 @@ We combine functionalities from multiple packages:
 
     Documentation <documentation/index>
     Model <model>
+    Imaging <imaging>
+    Segmentation <segmentation>
 
 Indices and tables
 ##################
