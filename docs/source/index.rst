@@ -6,6 +6,13 @@
 cr_mech_coli
 ============
 
+.. image:: https://img.shields.io/github/license/jonaspleyer/cr_mech_coli\?style=flat-square
+   :alt: GPLv2 License
+.. image:: https://img.shields.io/github/actions/workflow/status/jonaspleyer/cr_mech_coli/CI.yml?style=flat-square
+   :alt: Test Status
+.. image:: https://img.shields.io/github/actions/workflow/status/jonaspleyer/cr_mech_coli/sphinx_doc.yml?style=flat-square
+   :alt: Build Status
+
 This package is centered around a mechanical model for rod-shaped bacteria such as `E.Coli`.
 The :ref:`model`
 
