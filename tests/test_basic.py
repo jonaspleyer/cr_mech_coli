@@ -4,11 +4,10 @@ from concurrent.futures import ProcessPoolExecutor
 
 def run_config(config):
     config = crm.Configuration.from_json(config)
-    config.n_agents = 8
     config.t0 = 0.0
     config.dt = 0.1
     config.t_max = 100.0
-    config.save_interval = 5.0
+    config.save_interval = 20.0
 
     sim_result = crm.run_simulation(config)
     render_settings = crm.RenderSettings()
@@ -26,8 +25,9 @@ def run_config(config):
 
 if __name__ == "__main__":
     configs = [
-        crm.Configuration(growth_rate=rate).to_json()
+        crm.Configuration(growth_rate=rate, n_agents=n_agents).to_json()
         for rate in np.linspace(0.0, 0.1, 20)
+        for n_agents in np.arange(3, 6)
     ]
 
     pool = ProcessPoolExecutor(max_workers=14)
