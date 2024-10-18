@@ -276,10 +276,10 @@ def store_all_images(
         save_dir: Path of the directory where to save all images.
         use_hash (bool): Use a hash generated from the :class:`Configuration` class as subfolder of
             `save_dir` to store results in.
-        render_raw_pv (bool): If `True`, also render the intermediate image before applying effects
+        render_raw_pv (bool): Additionaly render the intermediate image before applying effects
             from :mod:`cv2`.
-        colors (dict): See :func:`render_pv_image`.
-        filename: See :func:`render_pv_image`.
+        render_mask_artistic (bool): Additionaly render artistic masks and save them.
+        show_progressbar (bool): Shows a progressbar of how many iterations have been rendered.
         store_config (bool): Store config as json string in directory.
 
     Returns:
