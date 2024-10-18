@@ -138,7 +138,6 @@ impl AgentSettings {
                     Ok(_) => as_new.setattr(py, &key, value)?,
                     Err(e) => {
                         let as_new = as_new.borrow_mut(py);
-                        println!("not in ags");
                         match (
                             as_new.interaction.getattr(py, &key),
                             as_new.mechanics.getattr(py, &key),
@@ -208,7 +207,6 @@ impl Configuration {
         if let Some(kwds) = kwds {
             for (key, value) in kwds.iter() {
                 let key: Py<PyString> = key.extract()?;
-                println!("key: {}", key);
                 match res_new.getattr(py, &key) {
                     Ok(_) => res_new.setattr(py, &key, value)?,
                     Err(_) => res_new
