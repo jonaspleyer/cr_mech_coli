@@ -1,10 +1,10 @@
-from .cr_mech_coli_rs import sort_cellular_identifiers
-
 """
 This module contains functionality to configure and run simulations.
 """
 
-def extract_all_identifiers(cells_at_iterations: dict) -> set:
+from .cr_mech_coli_rs import run_simulation, AgentSettings, RodAgent, Configuration, sort_cellular_identifiers, CellIdentifier
+
+def extract_all_identifiers(sim_result: dict) -> set:
     """Extracts all identifiers of the given simulation data and returns them as a set.
 
     Args:
@@ -15,4 +15,4 @@ def extract_all_identifiers(cells_at_iterations: dict) -> set:
     Returns:
         set: All identifiers which were present during the simulation.
     """
-    return set(cells_at_iterations.keys())
+    return set(sim_result.keys())

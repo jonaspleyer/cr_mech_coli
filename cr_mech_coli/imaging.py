@@ -9,29 +9,30 @@ from tqdm import tqdm
 
 @dataclasses.dataclass
 class RenderSettings:
-    resolution: int = 1280
-    # Between 0 and 1
-    diffuse: float = 0.5
-    # Between 0 and 1
-    ambient: float = 0.5
-    # Between 0 and 1
-    specular: float = 0.5
-    # Between 0 and 250. See pyvista add_mesh.
-    specular_power: float = 10.0
-    # Between 0 and 1
-    metallic: float = 1.0
-    # RGB values per pixel
-    noise: int = 25
-    # Background brightness
-    bg_brightness: int = 100
-    cell_brightness: int = 30
-    ssao_radius: int = 12
-    # For smoothing of image
-    kernel_size: int = 10
-    # Enable physics-based rendering
-    pbr: bool = True
+    """
+    This class contains all settings to render images with
+    `pyvista <https://docs.pyvista.org/>_ and `opencv <https://opencv.org>_ to create
+    near-realistic microscopic images.
+    Many of the values will be given directly to pyvistas :meth:`pyvista.plotter.add_mesh` function.
+    Others are used by :mod:`cv2`.
+    """
+    resolution: int = 1280#: Resolution of the generated image
+    diffuse: float = 0.5#: Value Between 0 and 1.
+    ambient: float = 0.5#: Value between 0 and 1.
+    specular: float = 0.5#: Value between 0 and 1.
+    specular_power: float = 10.0#: Value between 0 and 250.
+    metallic: float = 1.0#: Value between 0 and 1
+    noise: int = 25#: RGB values per pixel
+    bg_brightness: int = 100#: Background brightness
+    cell_brightness: int = 30#: Brightness of the individual cells
+    ssao_radius: int = 12#: Radius for ssao scattering
+    kernel_size: int = 10#: Smoothing kernel size
+    pbr: bool = True#: Enable physics-based rendering
 
     def prepare_for_masks(self):
+        """
+        Prepares all render settings such that the image generated is a mask.
+        """
         rs = dataclasses.replace(self)
         rs.diffuse = 0
         rs.ambient = 1
@@ -47,6 +48,17 @@ class RenderSettings:
 
 
 def counter_to_color(counter: int, artistic: bool = False) -> list[int]:
+    """
+    Converts an integer counter between 0 and 256^3-1 to an RGB value.
+
+    Args:
+        counter (int): Counter between 0 and 256^3-1
+        artistic (bool): Enables artistic to provide larger differences between single steps instead
+            of simple incremental one.
+
+    Returns:
+        list[int]: A list with exactly 3 entries containing the calculated color.
+    """
     if artistic:
         counter = (counter * 157 * 163 * 173) % 255**3
     color = [0, 0, 0]
@@ -59,7 +71,14 @@ def counter_to_color(counter: int, artistic: bool = False) -> list[int]:
 
 
 def assign_colors_to_cells(sim_result: dict, artistic: bool = False) -> dict:
-    """This functions assigns unique colors to given cellular identifiers. Note that this
+    """
+    This functions assigns unique colors to given cellular identifiers. Note that this
+
+    Args:
+        sim_result (dict): A dictionary which maps integer iterations to a list of cells.
+            This is typically produced by the :func:`cr_mech_coli.simulation.run_simulation`.
+            function.
+        artistic (bool): Enables artistic color generation. See :func:`counter_to_color`.
     """
     iterations = sorted(sim_result.keys())
     color_index = 1
@@ -108,6 +127,22 @@ def render_pv_image(
         colors: dict | None = None,
         filename: str | Path | None = None,
     ) -> np.ndarray:
+    """
+    Creates a 3D render of the given cells.
+
+    Args:
+        config (Configuration): The configuration used to run the simulation.
+        cells: A iterable which contains all cells at a specific iteration.
+        render_settings (RenderSettings): Contains all settings to specify how to render image.
+        colors (dict): A dictionary mapping a :class:`CellIdentifier` to a color.
+            If not given use color from `render_settings`.
+        filename: Name of the file in which to save the image. If not specified, do
+            not save.
+
+    Returns:
+        np.ndarray: An array of shape `(resolution, resolution, 3)` which contains the rendered
+            pixels.
+    """
     plotter = pv.Plotter(off_screen=True, window_size=[render_settings.resolution]*2)
     plotter.enable_parallel_projection()
     plotter.set_background([render_settings.bg_brightness]*3)
@@ -153,15 +188,25 @@ def render_mask(
         render_settings: RenderSettings | None = None,
         filename: str | Path | None = None,
     ) -> np.ndarray:
+    """
+    Creates an image containing masks of the given cells.
+    This function internally uses the :func:`render_pv_image` function and
+    :meth:`RenderSettings.prepare_for_masks` method.
+
+    Args:
+        config (Configuration): See :func:`render_pv_image`.
+        cells: See :func:`render_pv_image`.
+        render_settings (RenderSettings): See :func:`render_pv_image`.
+        colors (dict): See :func:`render_pv_image`.
+        filename: See :func:`render_pv_image`.
+
+    Returns:
+        np.ndarray: See :func:`render_pv_image`.
+    """
     if render_settings is None:
         render_settings = RenderSettings()
     rs = render_settings.prepare_for_masks()
-    img = render_pv_image(config, cells, rs, colors)
-    if filename is not None:
-        # Check that folder exist and if not create them
-        odir = Path(filename).parents[0]
-        odir.mkdir(parents=True, exist_ok=True)
-        cv.imwrite(str(filename), img)
+    img = render_pv_image(config, cells, rs, colors, filename=filename)
     return img
 
 
@@ -171,6 +216,20 @@ def render_image(
         render_settings: RenderSettings | None = None,
         filename: str | Path | None = None
     ) -> np.ndarray:
+    """
+    Aims to create a near-realistic microscopic image with the given cells.
+    This function internally uses the :func:`render_pv_image` function but changes some of the 
+
+    Args:
+        config (Configuration): See :func:`render_pv_image`.
+        cells: See :func:`render_pv_image`.
+        render_settings (RenderSettings): See :func:`render_pv_image`.
+        colors (dict): See :func:`render_pv_image`.
+        filename: See :func:`render_pv_image`.
+
+    Returns:
+        np.ndarray: See :func:`render_pv_image`.
+    """
     if render_settings is None:
         render_settings = RenderSettings()
     img = render_pv_image(config, cells, render_settings)
@@ -202,7 +261,28 @@ def store_all_images(
         use_hash: bool = True,
         render_raw_pv: bool = False,
         render_mask_artistic: bool = False,
+        show_progressbar: bool | int = False,
     ):
+    """
+    Combines multiple functions and renders images to files for a complete simulation result.
+    This function calls the :func:`render_image`, :func:`render_pv_image` and
+    :func:`render_mask` functions to create multiple images.
+
+    Args:
+        config (Configuration): See :func:`render_pv_image`.
+        sim_result: See :func:`cr_mech_coli.simulation.run_simulation`.
+        render_settings (RenderSettings): See :func:`render_pv_image`.
+        save_dir: Path of the directory where to save all images.
+        use_hash (bool): Use a hash generated from the :class:`Configuration` class as subfolder of
+            `save_dir` to store results in.
+        render_raw_pv (bool): If `True`, also render the intermediate image before applying effects
+            from :mod:`cv2`.
+        colors (dict): See :func:`render_pv_image`.
+        filename: See :func:`render_pv_image`.
+
+    Returns:
+        np.ndarray: See :func:`render_pv_image`.
+    """
     if render_settings is None:
         render_settings = RenderSettings()
     colors = assign_colors_to_cells(sim_result)
@@ -214,10 +294,11 @@ def store_all_images(
 
     if use_hash:
         sim_hash = config.to_hash()
-        print(sim_hash)
-        save_dir = Path(save_dir) / "{}/".format(sim_hash)
+        save_dir = Path(save_dir) / "{:020}/".format(sim_hash)
 
-    for iteration in tqdm(iterations, total=len(iterations)):
+    if show_progressbar is True:
+        iterations = tqdm(iterations, total=len(iterations))
+    for iteration in iterations:
         cells = sim_result[iteration]
         render_image(
             config,
