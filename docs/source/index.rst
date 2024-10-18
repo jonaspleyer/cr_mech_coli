@@ -43,29 +43,29 @@ We are planning to use `pytorch <https://pytorch.org>`_'s 'Faster R-CNN' to tack
 
 The images below show the steps outlined above.
 
-.. image:: _static/example_generated_images/raw_pv/000000200.png
+.. image:: _static/06725850956850056874/raw_pv/000000200.png
    :width: 30%
-.. image:: _static/example_generated_images/images/000000200.png
+.. image:: _static/06725850956850056874/images/000000200.png
    :width: 30%
-.. image:: _static/example_generated_images/masks_artistic/000000200.png
+.. image:: _static/06725850956850056874/masks_artistic/000000200.png
    :width: 30%
 
 Snapshots at `t=20min`.
 
-.. image:: _static/example_generated_images/raw_pv/000000400.png
+.. image:: _static/06725850956850056874/raw_pv/000000400.png
    :width: 30%
-.. image:: _static/example_generated_images/images/000000400.png
+.. image:: _static/06725850956850056874/images/000000400.png
    :width: 30%
-.. image:: _static/example_generated_images/masks_artistic/000000400.png
+.. image:: _static/06725850956850056874/masks_artistic/000000400.png
    :width: 30%
 
 Snapshots at `t=40min`.
 
-.. image:: _static/example_generated_images/raw_pv/000000600.png
+.. image:: _static/06725850956850056874/raw_pv/000000600.png
    :width: 30%
-.. image:: _static/example_generated_images/images/000000600.png
+.. image:: _static/06725850956850056874/images/000000600.png
    :width: 30%
-.. image:: _static/example_generated_images/masks_artistic/000000600.png
+.. image:: _static/06725850956850056874/masks_artistic/000000600.png
    :width: 30%
 
 Snapshots at `t=60min`.
