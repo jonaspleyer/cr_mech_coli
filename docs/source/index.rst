@@ -43,8 +43,6 @@ We combine functionalities from multiple packages:
     2. 3D Image rendering `pyvista <https://pyvista.org>`_
     3. Image distortions and effects: `opencv <https://opencv.org>`_
 
-This package aims to develop a coarse-grained, mechanistic spatial mechanical model for rod-shaped
-bacteria such as `E.Coli`.
 
 .. toctree::
    :maxdepth: 2
@@ -52,7 +50,7 @@ bacteria such as `E.Coli`.
    :titlesonly:
 
     Documentation <documentation/index>
-    Theory <theory>
+    Model <model>
 
 Indices and tables
 ==================
