@@ -8,3 +8,4 @@ Documentation
     crm.simulation <simulation>
     crm.imaging <imaging>
 
+.. automodule:: cr_mech_coli.__init__
