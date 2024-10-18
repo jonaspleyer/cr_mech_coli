@@ -1,6 +1,6 @@
-pyvista>=0.40
-torch>=2
-torchvision>=0.19.1
-numpy>=1.20
-opencv-python>=4.0
-tqdm>=4.60
+pyvista
+torch
+torchvision
+numpy
+opencv-python
+tqdm
