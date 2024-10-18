@@ -262,6 +262,7 @@ def store_all_images(
         render_raw_pv: bool = False,
         render_mask_artistic: bool = False,
         show_progressbar: bool | int = False,
+        store_config: bool = True,
     ):
     """
     Combines multiple functions and renders images to files for a complete simulation result.
@@ -279,6 +280,7 @@ def store_all_images(
             from :mod:`cv2`.
         colors (dict): See :func:`render_pv_image`.
         filename: See :func:`render_pv_image`.
+        store_config (bool): Store config as json string in directory.
 
     Returns:
         np.ndarray: See :func:`render_pv_image`.
@@ -295,6 +297,12 @@ def store_all_images(
     if use_hash:
         sim_hash = config.to_hash()
         save_dir = Path(save_dir) / "{:020}/".format(sim_hash)
+
+    if store_config:
+        config_string = config.to_json()
+        Path(save_dir).mkdir(parents=True, exist_ok=True)
+        with open(Path(save_dir) / "config.json", "w") as f:
+            f.write(config_string)
 
     if show_progressbar is True:
         iterations = tqdm(iterations, total=len(iterations))
