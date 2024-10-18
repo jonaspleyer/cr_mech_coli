@@ -219,7 +219,6 @@ impl Configuration {
                 randomize_position: 0.01,
                 n_voxels: 1,
                 rng_seed: 0,
-                storage_priority: vec![StorageOption::Memory],
             },
         )?;
         if let Some(kwds) = kwds {
@@ -438,7 +437,7 @@ pub fn run_simulation(config: Configuration) -> Result<SimResult, PyErr> {
         let save_interval = config.save_interval;
         let time = FixedStepsize::from_partial_save_interval(t0, dt, t_max, save_interval)
             .or_else(|x| Err(SimulationError::from(x)))?;
-        let storage = StorageBuilder::new().priority(config.storage_priority.clone());
+        let storage = StorageBuilder::new().priority([StorageOption::Memory]);
         let settings = Settings {
             n_threads: config.n_threads,
             time,
