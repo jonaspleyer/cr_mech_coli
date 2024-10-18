@@ -11,6 +11,17 @@ classifiers = [
     "Programming Language :: Python :: Implementation :: PyPy",
 ]
 dynamic = ["version"]
+dependencies = [
+    "pyvista",
+    "numpy",
+    "opencv-python",
+]
+
+[project.optional-dependencies]
+scripts = [
+    "torch",
+    "torchvision",
+]
 
 [tool.maturin]
 features = ["pyo3/extension-module"]
