@@ -140,6 +140,11 @@ impl AgentSettings {
 }
 
 /// Contains all settings needed to configure the simulation
+///
+/// The constructor `Configuration(**kwds)` takes a dictionary as an optional argument.
+/// This allows to easily set variables in a pythoic manner.
+/// In addition, every argument which is not an attribute of [Configuration] will be passed onwards
+/// to the [AgentSettings] field.
 #[pyclass(set_all, get_all)]
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct Configuration {
