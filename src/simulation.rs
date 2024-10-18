@@ -158,20 +158,38 @@ impl AgentSettings {
 #[pyclass(set_all, get_all)]
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct Configuration {
-    agent_settings: Py<AgentSettings>,
-    n_agents: usize,
-    n_threads: NonZeroUsize,
-    t0: f32,
-    dt: f32,
-    t_max: f32,
-    save_interval: f32,
-    show_progressbar: bool,
-    domain_size: f32,
-    domain_height: f32,
-    randomize_position: f32,
-    n_voxels: usize,
-    rng_seed: u64,
-    storage_priority: Vec<StorageOption>,
+    /// Contains a template for defining multiple [RodAgent] of the simulation.
+    pub agent_settings: Py<AgentSettings>,
+    /// Number of agents to put into the simulation. Depending on the size specified, this number
+    /// may be lowered artificially to account for the required space.
+    pub n_agents: usize,
+    /// Number of threads used for solving the system.
+    pub n_threads: NonZeroUsize,
+    /// Starting time
+    pub t0: f32,
+    /// Time increment
+    pub dt: f32,
+    /// Maximum solving time
+    pub t_max: f32,
+    /// Interval in which results will be saved
+    pub save_interval: f32,
+    /// Specifies if a progress bar should be shown during the solving process.
+    pub show_progressbar: bool,
+    /// Overall domain size of the simulation. This may determine an upper bound on the number of
+    /// agents which can be put into the simulation.
+    pub domain_size: f32,
+    /// We assume that the domain is a thin 3D slice. This specifies the height of the domain.
+    pub domain_height: f32,
+    /// Determines the amount with which positions should be randomized. Should be a value between
+    /// `0.0` and `1.0`.
+    pub randomize_position: f32,
+    /// Number of voxels used to solve the system. This may yield performance improvements but
+    /// specifying a too high number will yield incorrect results.
+    /// See also [https://cellular-raza.com/internals/concepts/domain/decomposition/].
+    pub n_voxels: usize,
+    /// Initial seed for randomizations. This can be useful to run multiple simulations with
+    /// identical parameters but slightly varying initial conditions.
+    pub rng_seed: u64,
 }
 
 #[pymethods]
@@ -267,12 +285,19 @@ mod test_config {
 #[pyclass]
 #[derive(CellAgent, Clone, Debug, Deserialize, Serialize)]
 pub struct RodAgent {
+    /// Determines mechanical properties of the agent.
+    /// See [RodMechanics].
     #[Mechanics]
-    mechanics: RodMechanics<f32, N_ROD_SEGMENTS, 3>,
+    pub mechanics: RodMechanics<f32, N_ROD_SEGMENTS, 3>,
+    /// Determines interaction between agents. See [MorsePotentialF32].
     #[Interaction]
-    interaction: RodInteraction<MorsePotentialF32>,
-    growth_rate: f32,
-    spring_length_threshold: f32,
+    pub interaction: RodInteraction<MorsePotentialF32>,
+    /// Rate with which the cell grows in units `1/MIN`.
+    #[pyo3(set, get)]
+    pub growth_rate: f32,
+    /// Threshold at which the cell will divide in units `MICROMETRE`.
+    #[pyo3(set, get)]
+    pub spring_length_threshold: f32,
 }
 
 #[pymethods]
@@ -281,8 +306,9 @@ impl RodAgent {
         format!("{:?}", self)
     }
 
+    /// Position of the agent given by a matrix containing all vertices in order.
     #[getter]
-    fn pos<'a>(&'a self, py: Python<'a>) -> Bound<'a, numpy::PyArray2<f32>> {
+    pub fn pos<'a>(&'a self, py: Python<'a>) -> Bound<'a, numpy::PyArray2<f32>> {
         use numpy::ToPyArray;
         let new_array = numpy::nalgebra::SMatrix::<f32, N_ROD_SEGMENTS, 3>::from_iterator(
             self.mechanics.pos.iter().map(|&x| x),
@@ -290,8 +316,9 @@ impl RodAgent {
         new_array.to_pyarray_bound(py)
     }
 
+    /// Position of the agent given by a matrix containing all vertices in order.
     #[setter]
-    fn set_pos<'a>(&'a mut self, pos: Bound<'a, numpy::PyArray2<f32>>) -> pyo3::PyResult<()> {
+    pub fn set_pos<'a>(&'a mut self, pos: Bound<'a, numpy::PyArray2<f32>>) -> pyo3::PyResult<()> {
         use numpy::PyArrayMethods;
         let iter: Vec<f32> = pos.to_vec()?;
         self.mechanics.pos =
@@ -299,8 +326,9 @@ impl RodAgent {
         Ok(())
     }
 
+    /// Velocity of the agent given by a matrix containing all velocities at vertices in order.
     #[getter]
-    fn vel<'a>(&'a self, py: Python<'a>) -> Bound<'a, numpy::PyArray2<f32>> {
+    pub fn vel<'a>(&'a self, py: Python<'a>) -> Bound<'a, numpy::PyArray2<f32>> {
         use numpy::ToPyArray;
         let new_array = numpy::nalgebra::SMatrix::<f32, N_ROD_SEGMENTS, 3>::from_iterator(
             self.mechanics.vel.iter().map(|&x| x),
@@ -308,8 +336,9 @@ impl RodAgent {
         new_array.to_pyarray_bound(py)
     }
 
+    /// Velocity of the agent given by a matrix containing all velocities at vertices in order.
     #[setter]
-    fn set_vel<'a>(&'a mut self, pos: Bound<'a, numpy::PyArray2<f32>>) -> pyo3::PyResult<()> {
+    pub fn set_vel<'a>(&'a mut self, pos: Bound<'a, numpy::PyArray2<f32>>) -> pyo3::PyResult<()> {
         use numpy::PyArrayMethods;
         let iter: Vec<f32> = pos.to_vec()?;
         self.mechanics.vel =
@@ -317,8 +346,9 @@ impl RodAgent {
         Ok(())
     }
 
+    /// The interaction radius as given by the [MorsePotentialF32] interaction struct.
     #[getter]
-    fn radius(&self) -> f32 {
+    pub fn radius(&self) -> f32 {
         self.interaction.0.radius
     }
 }
@@ -450,7 +480,16 @@ pub fn run_simulation(config: Configuration) -> Result<SimResult, PyErr> {
     })
 }
 
-/// Sorts an iterator of [CellIdentifier] deterministically.
+/// Sorts an iterator of :class:`CellIdentifier` deterministically.
+/// This function is usefull for generating identical masks every simulation run.
+/// This function is implemented as standalone since sorting of a :class:`CellIdentifier` is
+/// typically not supported.
+///
+/// Args:
+///     identifiers(list): A list of :class:`CellIdentifier`
+///
+/// Returns:
+///     list: The sorted list.
 #[pyfunction]
 pub fn sort_cellular_identifiers(
     identifiers: Vec<CellIdentifier>,
