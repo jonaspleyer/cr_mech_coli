@@ -74,3 +74,6 @@ docs/build/
 
 # Cargo
 Cargo.lock
+
+# Generated files
+out
