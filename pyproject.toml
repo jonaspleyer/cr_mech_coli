@@ -15,6 +15,7 @@ dependencies = [
     "pyvista",
     "numpy",
     "opencv-python",
+    "tqdm",
 ]
 
 [project.optional-dependencies]
