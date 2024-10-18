@@ -2,7 +2,7 @@ use std::{hash::Hasher, num::NonZeroUsize};
 
 use backend::chili::SimulationError;
 use cellular_raza::prelude::*;
-use pyo3::{prelude::*, types::PyString};
+use pyo3::{prelude::*, types::{PyDict, PyString}};
 use serde::{Deserialize, Serialize};
 use time::FixedStepsize;
 
@@ -103,6 +103,42 @@ pub struct AgentSettings {
     pub spring_length_threshold: f32,
 }
 
+#[pymethods]
+impl AgentSettings {
+    /// Constructs a new [AgentSettings] class.
+    #[new]
+    #[pyo3(signature = (**kwds))]
+    pub fn new(py: Python, kwds: Option<&Bound<pyo3::types::PyDict>>) -> pyo3::PyResult<Py<Self>> {
+        let as_new = Py::new(
+            py,
+            AgentSettings {
+                mechanics: Py::new(py, RodMechanicsSettings::default())?,
+                interaction: Py::new(
+                    py,
+                    MorsePotentialF32 {
+                        radius: 3.0,              // MICROMETRE
+                        potential_stiffness: 0.5, // 1/MICROMETRE
+                        cutoff: 10.0,             // MICROMETRE
+                        strength: 0.1,            // MICROMETRE^2 / MIN^2
+                    },
+                )?,
+                growth_rate: 0.1,
+                spring_length_threshold: 6.0,
+            },
+        )?;
+        if let Some(kwds) = kwds {
+            for (key, value) in kwds.iter() {
+                let key: Py<PyString> = key.extract()?;
+                match as_new.getattr(py, &key) {
+                    Ok(_) => as_new.setattr(py, &key, value)?,
+                    Err(_) => (),
+                }
+            }
+        }
+        Ok(as_new)
+    }
+}
+
 /// Contains all settings needed to configure the simulation
 #[pyclass(set_all, get_all)]
 #[derive(Clone, Debug, Deserialize, Serialize)]
@@ -127,39 +163,37 @@ pub struct Configuration {
 impl Configuration {
     /// Constructs a new [Configuration] class
     #[new]
-    pub fn new(py: Python) -> pyo3::PyResult<Self> {
-        Ok(Self {
-            agent_settings: Py::new(
-                py,
-                AgentSettings {
-                    mechanics: Py::new(py, RodMechanicsSettings::default())?,
-                    interaction: Py::new(
-                        py,
-                        MorsePotentialF32 {
-                            radius: 3.0,              // MICROMETRE
-                            potential_stiffness: 0.5, // 1/MICROMETRE
-                            cutoff: 10.0,             // MICROMETRE
-                            strength: 0.1,            // MICROMETRE^2/MINUTE^2
-                        },
-                    )?,
-                    growth_rate: 0.1,
-                    spring_length_threshold: 6.0,
-                },
-            )?,
-            n_agents: 2,
-            n_threads: 1.try_into().unwrap(),
-            t0: 0.0,             // MIN
-            dt: 0.1,             // MIN
-            t_max: 1_000.0,      // MIN
-            save_interval: 50.0, // MIN
-            show_progressbar: false,
-            domain_size: 100.0, // MICROMETRE
-            domain_height: 2.5, // MICROMETRE
-            randomize_position: 0.01,
-            n_voxels: 1,
-            rng_seed: 0,
-            storage_priority: vec![StorageOption::Memory],
-        })
+    #[pyo3(signature = (**kwds))]
+    pub fn new(py: Python, kwds: Option<&Bound<pyo3::types::PyDict>>) -> pyo3::PyResult<Py<Self>> {
+        let res_new = Py::new(
+            py,
+            Self {
+                agent_settings: Py::new(py, AgentSettings::new(py, kwds)?)?,
+                n_agents: 2,
+                n_threads: 1.try_into().unwrap(),
+                t0: 0.0,             // MIN
+                dt: 0.1,             // MIN
+                t_max: 1_000.0,      // MIN
+                save_interval: 50.0, // MIN
+                show_progressbar: false,
+                domain_size: 100.0, // MICROMETRE
+                domain_height: 2.5, // MICROMETRE
+                randomize_position: 0.01,
+                n_voxels: 1,
+                rng_seed: 0,
+                storage_priority: vec![StorageOption::Memory],
+            },
+        )?;
+        if let Some(kwds) = kwds {
+            for (key, value) in kwds.iter() {
+                let key: Py<PyString> = key.extract()?;
+                match res_new.getattr(py, &key) {
+                    Ok(_) => res_new.setattr(py, &key, value)?,
+                    Err(_) => (),
+                }
+            }
+        }
+        Ok(res_new)
     }
 
     /// Serializes this struct to the json format
@@ -192,11 +226,14 @@ mod test_config {
         use super::*;
         pyo3::prepare_freethreaded_python();
         Python::with_gil(|py| {
-            let c1 = Configuration::new(py).unwrap();
-            let c2 = Configuration::new(py).unwrap();
-            c2.agent_settings.setattr(py, "growth_rate", 200.0).unwrap();
-            let h1 = c1.to_hash().unwrap();
-            let h2 = c2.to_hash().unwrap();
+            let c1 = Configuration::new(py, None).unwrap();
+            let c2 = Configuration::new(py, None).unwrap();
+            c2.borrow_mut(py)
+                .agent_settings
+                .setattr(py, "growth_rate", 200.0)
+                .unwrap();
+            let h1 = c1.borrow(py).to_hash().unwrap();
+            let h2 = c2.borrow(py).to_hash().unwrap();
             assert!(h1 != h2);
         });
     }
