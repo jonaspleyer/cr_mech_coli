@@ -6,13 +6,16 @@
 cr_mech_coli documentation
 ==========================
 
+This package aims to develop a coarse-grained, mechanistic spatial mechanical model for rod-shaped
+bacteria such as `E.Coli`.
+
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
    :titlesonly:
 
     Documentation <documentation/index>
-    Theoretical Background <theoretical-background>
+    Theory <theory>
 
 Indices and tables
 ==================
