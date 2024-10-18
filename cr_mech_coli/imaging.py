@@ -1,4 +1,4 @@
-from .cr_mech_coli_rs import Configuration, sort_cellular_identifiers
+from .simulation import Configuration, sort_cellular_identifiers, CellIdentifier
 import pyvista as pv
 import numpy as np
 import cv2 as cv
