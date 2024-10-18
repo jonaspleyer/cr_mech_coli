@@ -21,13 +21,14 @@ This package is centered around a mechanical model for rod-shaped bacteria such 
 The model is mechanistic and coarse-grained enough such that we can estimate its parameters from
 even a small dataset.
 Its low computational cost mean that it can be readily applied in the construction of other
-Agent-Based Simulations within `cellular_raza <https://cellular-raza.com>`_.
+Agent-Based Simulations within `cellular_raza <https://cellular-raza.com>`_
+:cite:`Pleyer_cellular_raza_2023`.
 
 :ref:`Image Generation <image-generation>`
 ------------------------------------------
 
-We use `pyvista <https://pyvista.org/>`_ to create a 3D image which contains complex lighting
-and occlusion effects which would be harder to reproduce in a 2D plot.
+We use `pyvista <https://pyvista.org/>`_ :cite:`Sullivan2019` to create a 3D image which contains
+complex lighting and occlusion effects which would be harder to reproduce in a 2D plot.
 Afterwards, defects are inserted with `opencv <https://opencv.org/>`_ to mimick effects such as
 optical aberration, sensor noise or other imperfections which can be introduced by the measurement
 device.
