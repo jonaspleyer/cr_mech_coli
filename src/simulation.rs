@@ -2,7 +2,7 @@ use std::{hash::Hasher, num::NonZeroUsize};
 
 use backend::chili::SimulationError;
 use cellular_raza::prelude::*;
-use pyo3::{prelude::*, types::{PyDict, PyString}};
+use pyo3::{prelude::*, types::PyString};
 use serde::{Deserialize, Serialize};
 use time::FixedStepsize;
 
@@ -106,6 +106,11 @@ pub struct AgentSettings {
 #[pymethods]
 impl AgentSettings {
     /// Constructs a new [AgentSettings] class.
+    ///
+    /// Similarly to the [Configuration] class, this constructor takes `**kwargs` and sets
+    /// attributes accordingly.
+    /// If a given attribute is not present in the base of [AgentSettings] it will be passed on to
+    /// [RodMechanicsSettings] and [MorsePotentialF32].
     #[new]
     #[pyo3(signature = (**kwds))]
     pub fn new(py: Python, kwds: Option<&Bound<pyo3::types::PyDict>>) -> pyo3::PyResult<Py<Self>> {
@@ -131,7 +136,18 @@ impl AgentSettings {
                 let key: Py<PyString> = key.extract()?;
                 match as_new.getattr(py, &key) {
                     Ok(_) => as_new.setattr(py, &key, value)?,
-                    Err(_) => (),
+                    Err(e) => {
+                        let as_new = as_new.borrow_mut(py);
+                        println!("not in ags");
+                        match (
+                            as_new.interaction.getattr(py, &key),
+                            as_new.mechanics.getattr(py, &key),
+                        ) {
+                            (Ok(_), _) => as_new.interaction.setattr(py, &key, value)?,
+                            (Err(_), Ok(_)) => as_new.mechanics.setattr(py, &key, value)?,
+                            (Err(_), Err(_)) => Err(e)?,
+                        }
+                    }
                 }
             }
         }
@@ -140,11 +156,6 @@ impl AgentSettings {
 }
 
 /// Contains all settings needed to configure the simulation
-///
-/// The constructor `Configuration(**kwds)` takes a dictionary as an optional argument.
-/// This allows to easily set variables in a pythoic manner.
-/// In addition, every argument which is not an attribute of [Configuration] will be passed onwards
-/// to the [AgentSettings] field.
 #[pyclass(set_all, get_all)]
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct Configuration {
@@ -167,13 +178,18 @@ pub struct Configuration {
 #[pymethods]
 impl Configuration {
     /// Constructs a new [Configuration] class
+    ///
+    /// The constructor `Configuration(**kwargs)` takes a dictionary as an optional argument.
+    /// This allows to easily set variables in a pythoic manner.
+    /// In addition, every argument which is not an attribute of [Configuration] will be passed
+    /// onwards to the [AgentSettings] field.
     #[new]
     #[pyo3(signature = (**kwds))]
     pub fn new(py: Python, kwds: Option<&Bound<pyo3::types::PyDict>>) -> pyo3::PyResult<Py<Self>> {
         let res_new = Py::new(
             py,
             Self {
-                agent_settings: Py::new(py, AgentSettings::new(py, kwds)?)?,
+                agent_settings: Py::new(py, AgentSettings::new(py, None)?)?,
                 n_agents: 2,
                 n_threads: 1.try_into().unwrap(),
                 t0: 0.0,             // MIN
@@ -192,9 +208,13 @@ impl Configuration {
         if let Some(kwds) = kwds {
             for (key, value) in kwds.iter() {
                 let key: Py<PyString> = key.extract()?;
+                println!("key: {}", key);
                 match res_new.getattr(py, &key) {
                     Ok(_) => res_new.setattr(py, &key, value)?,
-                    Err(_) => (),
+                    Err(_) => res_new
+                        .borrow_mut(py)
+                        .agent_settings
+                        .setattr(py, &key, value)?,
                 }
             }
         }
