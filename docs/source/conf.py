@@ -53,6 +53,8 @@ html_theme = 'pydata_sphinx_theme'
 html_static_path = ['_static']
 
 bibtex_bibfiles = ['references.bib']
+bibtex_default_style = 'unsrt'
+bibtex_reference_style = 'label'
 
 html_theme_options = {
     "show_nav_level": 2,
