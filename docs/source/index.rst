@@ -4,7 +4,7 @@
    contain the root `toctree` directive.
 
 cr_mech_coli documentation
-=========================
+==========================
 
 .. toctree::
    :maxdepth: 2
