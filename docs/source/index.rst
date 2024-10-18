@@ -4,7 +4,7 @@
    contain the root `toctree` directive.
 
 cr_mech_coli
-============
+############
 
 .. image:: https://img.shields.io/github/license/jonaspleyer/cr_mech_coli\?style=flat-square
    :alt: GPLv2 License
@@ -60,7 +60,7 @@ We combine functionalities from multiple packages:
     Model <model>
 
 Indices and tables
-==================
+##################
 
 * :ref:`genindex`
 * :ref:`modindex`
