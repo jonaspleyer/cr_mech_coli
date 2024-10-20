@@ -454,6 +454,10 @@ impl SimResult {
     }
 }
 
+prepare_types!(
+    aspects: [Mechanics, Interaction, Cycle],
+);
+
 /// Executes the simulation with the given [Configuration]
 #[pyfunction]
 pub fn run_simulation(config: Configuration) -> Result<SimResult, PyErr> {
@@ -528,7 +532,13 @@ pub fn run_simulation(config: Configuration) -> Result<SimResult, PyErr> {
         domain.rng_seed = config.rng_seed;
         let domain = CartesianCuboidRods { domain };
 
-        let storage = run_simulation!(
+        test_compatibility!(
+            aspects: [Mechanics, Interaction, Cycle],
+            domain: domain,
+            agents: bacteria,
+            settings: settings,
+        );
+        let storage = run_main!(
             agents: bacteria,
             domain: domain,
             settings: settings,
