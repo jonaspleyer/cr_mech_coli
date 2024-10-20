@@ -10,7 +10,7 @@ use time::FixedStepsize;
 /// Determines the number of subsections to use for each bacterial rod
 pub const N_ROD_SEGMENTS: usize = 8;
 
-/// Contains all settings required to construct [RodMechanics]
+/// Contains all settings required to construct :class:`RodMechanics`
 #[pyclass]
 #[derive(Clone, Debug, Deserialize, Serialize)]
 #[pyo3_stub_gen::derive::gen_stub_pyclass]
@@ -91,7 +91,7 @@ impl Default for RodMechanicsSettings {
     }
 }
 
-/// Contains settings needed to specify properties of the [RodAgent]
+/// Contains settings needed to specify properties of the :class:`RodAgent`
 #[pyclass(get_all, set_all)]
 #[derive(Clone, Debug, Deserialize, Serialize)]
 #[pyo3_stub_gen::derive::gen_stub_pyclass]
@@ -284,7 +284,7 @@ mod test_config {
 }
 
 /// A basic cell-agent which makes use of
-/// [RodMechanics](https://cellular-raza.com/docs/cellular_raza_building_blocks/structs.RodMechanics.html)
+/// `RodMechanics <https://cellular-raza.com/docs/cellular_raza_building_blocks/structs.RodMechanics.html>`
 #[pyclass]
 #[derive(CellAgent, Clone, Debug, Deserialize, Serialize)]
 #[pyo3_stub_gen::derive::gen_stub_pyclass]
@@ -429,7 +429,13 @@ impl SimResult {
 
     /// Get cells at a specific iteration.
     ///
-    /// This uses the [cellular_raza::StorageInterface::load_all_elements_at_iteration] method.
+    /// Args:
+    ///     iteration (int): Positive integer of simulation step iteration.
+    /// Returns:
+    ///     cells (dict): A dictionary mapping identifiers to the cell and its possible parent.
+    /// Raises:
+    ///     SimulationError: Generic error related to :ref:`cellular_raza
+    ///         <https://cellular-raza.com>` if any of the internal methods returns an error.
     pub fn get_cells_at_iteration(
         &self,
         iteration: u64,
