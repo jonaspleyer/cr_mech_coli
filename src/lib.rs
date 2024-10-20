@@ -12,7 +12,6 @@ pub use sampling::*;
 pub use simulation::*;
 
 use pyo3::prelude::*;
-use pyo3_stub_gen::define_stub_info_gatherer;
 
 /// A Python module implemented in Rust.
 #[pymodule]
@@ -27,5 +26,3 @@ fn cr_mech_coli_rs(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<SimResult>()?;
     Ok(())
 }
-
-define_stub_info_gatherer!(stub_info);

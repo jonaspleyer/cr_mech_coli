@@ -11,12 +11,10 @@ crate-type = ["cdylib", "rlib"]
 [dependencies]
 # TODO change this from relative local path to the real cellular_raza
 cellular_raza = { version = "0.1.1", features = ["pyo3"] }
-env_logger = "0.11.5"
 nalgebra = { version = "0.33.0", features = ["serde", "serde-serialize"] }
 num = { version = "0.4.3", features = ["rand", "serde"] }
 numpy = { version = "0.21.0", features = ["nalgebra"] }
 pyo3 = { version = "0.21", features = ["serde"] }
-pyo3-stub-gen = "0.6.0"
 rand = { version = "0.8.5", features = ["serde", "serde1"] }
 rand_chacha = { version = "0.3.1", features = ["serde"] }
 rayon = "1.10.0"
