@@ -38,6 +38,39 @@ class Configuration:
     """
     Contains all settings needed to configure the simulation
     """
+    # Contains a template for defining multiple [RodAgent] of the simulation.
+    agent_settings: AgentSettings
+    # Number of agents to put into the simulation. Depending on the size specified this number
+    # may be lowered artificially to account for the required space.
+    n_agents: int
+    # Number of threads used for solving the system.
+    n_threads: int
+    # Starting time
+    t0: float
+    # Time increment
+    dt: float
+    # Maximum solving time
+    t_max: float
+    # Interval in which results will be saved
+    save_interval: float
+    # Specifies if a progress bar should be shown during the solving process.
+    show_progressbar: bool
+    # Overall domain size of the simulation. This may determine an upper bound on the number of
+    # agents which can be put into the simulation.
+    domain_size: float
+    # We assume that the domain is a thin 3D slice. This specifies the height of the domain.
+    domain_height: float
+    # Determines the amount with which positions should be randomized. Should be a value between
+    # `0.0` and `1.0`.
+    randomize_position: float
+    # Number of voxels used to solve the system. This may yield performance improvements but
+    # specifying a too high number will yield incorrect results.
+    # See also [https://cellular-raza.com/internals/concepts/domain/decomposition/].
+    n_voxels: int
+    # Initial seed for randomizations. This can be useful to run multiple simulations with
+    # identical parameters but slightly varying initial conditions.
+    rng_seed: int
+
     @staticmethod
     def __new__(cls, **kwargs) -> Configuration: ...
     @staticmethod
