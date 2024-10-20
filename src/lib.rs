@@ -7,7 +7,7 @@
 mod sampling;
 mod simulation;
 
-use cellular_raza::prelude::CellIdentifier;
+pub use cellular_raza::prelude::CellIdentifier;
 pub use sampling::*;
 pub use simulation::*;
 
