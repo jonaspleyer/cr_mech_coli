@@ -10,6 +10,7 @@ def run_config(config):
     config.save_interval = 20.0
 
     sim_result = crm.run_simulation(config)
+    all_cells = sim_result.get_cells()
     render_settings = crm.RenderSettings()
     render_settings.noise = 50
     render_settings.kernel_size = 30
@@ -17,7 +18,7 @@ def run_config(config):
 
     crm.store_all_images(
         config,
-        sim_result,
+        all_cells,
         render_settings,
         render_raw_pv=True,
         render_mask_artistic=True,
