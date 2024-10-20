@@ -23,5 +23,6 @@ fn cr_mech_coli_rs(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<RodMechanicsSettings>()?;
     m.add_class::<AgentSettings>()?;
     m.add_class::<RodAgent>()?;
+    m.add_class::<SimResult>()?;
     Ok(())
 }
