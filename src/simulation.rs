@@ -3,6 +3,7 @@ use std::{collections::HashMap, hash::Hasher, num::NonZeroUsize};
 use backend::chili::SimulationError;
 use cellular_raza::prelude::*;
 use pyo3::{prelude::*, types::PyString};
+use pyo3_stub_gen::derive::gen_stub_pyfunction;
 use serde::{Deserialize, Serialize};
 use time::FixedStepsize;
 
@@ -12,6 +13,7 @@ pub const N_ROD_SEGMENTS: usize = 8;
 /// Contains all settings required to construct [RodMechanics]
 #[pyclass]
 #[derive(Clone, Debug, Deserialize, Serialize)]
+#[pyo3_stub_gen::derive::gen_stub_pyclass]
 pub struct RodMechanicsSettings {
     /// The current position
     pub pos: nalgebra::SMatrix<f32, N_ROD_SEGMENTS, 3>,
@@ -92,6 +94,7 @@ impl Default for RodMechanicsSettings {
 /// Contains settings needed to specify properties of the [RodAgent]
 #[pyclass(get_all, set_all)]
 #[derive(Clone, Debug, Deserialize, Serialize)]
+#[pyo3_stub_gen::derive::gen_stub_pyclass]
 pub struct AgentSettings {
     /// Settings for the mechanics part of [RodAgent]. See also [RodMechanicsSettings].
     pub mechanics: Py<RodMechanicsSettings>,
@@ -157,6 +160,7 @@ impl AgentSettings {
 /// Contains all settings needed to configure the simulation
 #[pyclass(set_all, get_all)]
 #[derive(Clone, Debug, Deserialize, Serialize)]
+#[pyo3_stub_gen::derive::gen_stub_pyclass]
 pub struct Configuration {
     /// Contains a template for defining multiple [RodAgent] of the simulation.
     pub agent_settings: Py<AgentSettings>,
@@ -283,6 +287,7 @@ mod test_config {
 /// [RodMechanics](https://cellular-raza.com/docs/cellular_raza_building_blocks/structs.RodMechanics.html)
 #[pyclass]
 #[derive(CellAgent, Clone, Debug, Deserialize, Serialize)]
+#[pyo3_stub_gen::derive::gen_stub_pyclass]
 pub struct RodAgent {
     /// Determines mechanical properties of the agent.
     /// See [RodMechanics].
@@ -376,6 +381,7 @@ impl Cycle<RodAgent, f32> for RodAgent {
 
 /// Resulting type when executing a full simulation
 #[pyclass]
+#[pyo3_stub_gen::derive::gen_stub_pyclass]
 pub struct SimResult {
     storage: StorageAccess<
         (
@@ -460,6 +466,7 @@ prepare_types!(
 
 /// Executes the simulation with the given [Configuration]
 #[pyfunction]
+#[gen_stub_pyfunction]
 pub fn run_simulation(config: Configuration) -> Result<SimResult, PyErr> {
     use rand::Rng;
     use rand_chacha::rand_core::SeedableRng;
@@ -548,16 +555,22 @@ pub fn run_simulation(config: Configuration) -> Result<SimResult, PyErr> {
     })
 }
 
-/// Sorts an iterator of :class:`CellIdentifier` deterministically.
-/// This function is usefull for generating identical masks every simulation run.
-/// This function is implemented as standalone since sorting of a :class:`CellIdentifier` is
-/// typically not supported.
-///
-/// Args:
-///     identifiers(list): A list of :class:`CellIdentifier`
-///
-/// Returns:
-///     list: The sorted list.
+macro_rules! sort_cellular_identifiers_doc(($($input:tt)*) => {
+"Sorts an iterator of :class:`CellIdentifier` deterministically.
+
+This function is usefull for generating identical masks every simulation run.
+This function is implemented as standalone since sorting of a :class:`CellIdentifier` is
+typically not supported.
+
+Args:
+    identifiers(list): A list of :class:`CellIdentifier`
+
+Returns:
+    list: The sorted list."
+    $($input)*
+});
+
+#[doc = sort_cellular_identifiers_doc!()]
 #[pyfunction]
 pub fn sort_cellular_identifiers(
     identifiers: Vec<CellIdentifier>,
@@ -565,4 +578,34 @@ pub fn sort_cellular_identifiers(
     let mut identifiers = identifiers;
     identifiers.sort();
     Ok(identifiers)
+}
+
+pyo3_stub_gen::inventory::submit!{
+    pyo3_stub_gen::type_info::PyFunctionInfo {
+        name: "sort_cellular_identifiers",
+        args: &[pyo3_stub_gen::type_info::ArgInfo {
+            name: "identifiers",
+            r#type: || pyo3_stub_gen::TypeInfo::builtin("list[CellIdentifier]"),
+        }],
+        r#return: || pyo3_stub_gen::TypeInfo::builtin("list[CellIdentifier]"),
+        doc: sort_cellular_identifiers_doc!(),
+        signature: None,
+        module: None,
+    }
+}
+
+pyo3_stub_gen::inventory::submit!{
+    pyo3_stub_gen::type_info::PyClassInfo {
+        struct_id: std::any::TypeId::of::<CellIdentifier>,
+        module: None,
+        pyclass_name: "CellIdentifier",
+        doc: "
+Unique identifier which is given to every cell in the simulation
+
+The identifier is comprised of the [VoxelPlainIndex] in which the cell was first spawned.
+This can be due to initial setup or due to other methods such as division in a cell cycle.
+The second parameter is a counter which is unique for each voxel.
+This ensures that each cell obtains a unique identifier over the course of the simulation.",
+        members: &[],
+    }
 }
