@@ -375,10 +375,84 @@ impl Cycle<RodAgent, f32> for RodAgent {
 }
 
 /// Resulting type when executing a full simulation
-pub type SimResult = std::collections::HashMap<
-    u64,
-    std::collections::HashMap<CellIdentifier, (RodAgent, Option<CellIdentifier>)>,
->;
+#[pyclass]
+pub struct SimResult {
+    storage: StorageAccess<
+        (
+            CellBox<RodAgent>,
+            _CrAuxStorage<
+                nalgebra::SMatrix<f32, N_ROD_SEGMENTS, 3>,
+                nalgebra::SMatrix<f32, N_ROD_SEGMENTS, 3>,
+                nalgebra::SMatrix<f32, N_ROD_SEGMENTS, 3>,
+                2,
+            >,
+        ),
+        CartesianSubDomainRods<f32, N_ROD_SEGMENTS, 3>,
+    >,
+}
+
+#[pymethods]
+impl SimResult {
+    /// Get all cells at all iterations
+    pub fn get_cells(
+        &self,
+    ) -> Result<
+        HashMap<u64, HashMap<CellIdentifier, (CellIdentifier, RodAgent, Option<CellIdentifier>)>>,
+        SimulationError,
+    > {
+        let all_agents = self
+            .storage
+            .cells
+            .load_all_elements()
+            .or_else(|x| Err(SimulationError::from(x)))?
+            .into_iter()
+            .map(|(iteration, cells)| {
+                (
+                    iteration,
+                    cells
+                        .into_iter()
+                        .map(|(identifier, (cell, _))| {
+                            (identifier, (cell.identifier, cell.cell, cell.parent))
+                        })
+                        .collect::<HashMap<_, _>>(),
+                )
+            })
+            .collect::<HashMap<_, _>>();
+        Ok(all_agents)
+    }
+
+    /// Get cells at a specific iteration.
+    ///
+    /// This uses the [cellular_raza::StorageInterface::load_all_elements_at_iteration] method.
+    pub fn get_cells_at_iteration(
+        &self,
+        iteration: u64,
+    ) -> Result<HashMap<CellIdentifier, (RodAgent, Option<CellIdentifier>)>, SimulationError> {
+        Ok(self
+            .storage
+            .cells
+            .load_all_elements_at_iteration(iteration)?
+            .into_iter()
+            .map(|(ident, (cbox, _))| (ident, (cbox.cell, cbox.parent)))
+            .collect())
+    }
+
+    /// Load the history of a single cell
+    ///
+    /// This uses the [cellular_raza::StorageInterface::
+    pub fn get_cell_history(
+        &self,
+        identifier: CellIdentifier,
+    ) -> Result<HashMap<u64, (RodAgent, Option<CellIdentifier>)>, SimulationError> {
+        Ok(self
+            .storage
+            .cells
+            .load_element_history(&identifier)?
+            .into_iter()
+            .map(|(ident, (cbox, _))| (ident, (cbox.cell, cbox.parent)))
+            .collect())
+    }
+}
 
 /// Executes the simulation with the given [Configuration]
 #[pyfunction]
@@ -454,28 +528,13 @@ pub fn run_simulation(config: Configuration) -> Result<SimResult, PyErr> {
         domain.rng_seed = config.rng_seed;
         let domain = CartesianCuboidRods { domain };
 
-        let storage_access = run_simulation!(
+        let storage = run_simulation!(
             agents: bacteria,
             domain: domain,
             settings: settings,
             aspects: [Mechanics, Interaction, Cycle],
         )?;
-        let all_agents = storage_access
-            .cells
-            .load_all_elements()
-            .or_else(|x| Err(SimulationError::from(x)))?
-            .into_iter()
-            .map(|(iteration, cells)| {
-                (
-                    iteration,
-                    cells
-                        .into_iter()
-                        .map(|(identifier, (cell, _))| (identifier, (cell.cell, cell.parent)))
-                        .collect::<std::collections::HashMap<_, _>>(),
-                )
-            })
-            .collect::<std::collections::HashMap<_, _>>();
-        Ok(all_agents)
+        Ok(SimResult { storage })
     })
 }
 
