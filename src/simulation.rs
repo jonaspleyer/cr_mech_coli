@@ -449,14 +449,19 @@ impl SimResult {
     pub fn get_cell_history(
         &self,
         identifier: CellIdentifier,
-    ) -> Result<HashMap<u64, (RodAgent, Option<CellIdentifier>)>, SimulationError> {
-        Ok(self
+    ) -> Result<(HashMap<u64, RodAgent>, Option<CellIdentifier>), SimulationError> {
+        let mut parent = None;
+        let hist = self
             .storage
             .cells
             .load_element_history(&identifier)?
             .into_iter()
-            .map(|(ident, (cbox, _))| (ident, (cbox.cell, cbox.parent)))
-            .collect())
+            .map(|(ident, (cbox, _))| {
+                parent = cbox.parent;
+                (ident, cbox.cell)
+            })
+            .collect();
+        Ok((hist, parent))
     }
 }
 
