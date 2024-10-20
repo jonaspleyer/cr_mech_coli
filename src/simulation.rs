@@ -1,4 +1,4 @@
-use std::{hash::Hasher, num::NonZeroUsize};
+use std::{collections::HashMap, hash::Hasher, num::NonZeroUsize};
 
 use backend::chili::SimulationError;
 use cellular_raza::prelude::*;
