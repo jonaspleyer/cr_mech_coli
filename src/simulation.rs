@@ -93,9 +93,9 @@ impl Default for RodMechanicsSettings {
 #[pyclass(get_all, set_all)]
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct AgentSettings {
-    /// Settings for the mechanics part of [RodAgent]. See also [RodMechanicsSettings].
+    /// Settings for the mechanics part of :class:`RodAgent`. See also :class:`RodMechanicsSettings`.
     pub mechanics: Py<RodMechanicsSettings>,
-    /// Settings for the interaction part of [RodAgent]. See also [MorsePotentialF32].
+    /// Settings for the interaction part of :class:`RodAgent`. See also :class:`MorsePotentialF32`.
     pub interaction: Py<MorsePotentialF32>,
     /// Rate with which the length of the bacterium grows
     pub growth_rate: f32,
@@ -105,12 +105,13 @@ pub struct AgentSettings {
 
 #[pymethods]
 impl AgentSettings {
-    /// Constructs a new [AgentSettings] class.
+    /// Constructs a new :class:`AgentSettings` class.
     ///
-    /// Similarly to the [Configuration] class, this constructor takes `**kwargs` and sets
+    /// Similarly to the :class:`Configuration` class, this constructor takes `**kwargs` and sets
     /// attributes accordingly.
-    /// If a given attribute is not present in the base of [AgentSettings] it will be passed on to
-    /// [RodMechanicsSettings] and [MorsePotentialF32].
+    /// If a given attribute is not present in the base of :class:`AgentSettings` it will be
+    /// passed on to
+    /// :class:`RodMechanicsSettings` and :class:`MorsePotentialF32`.
     #[new]
     #[pyo3(signature = (**kwds))]
     pub fn new(py: Python, kwds: Option<&Bound<pyo3::types::PyDict>>) -> pyo3::PyResult<Py<Self>> {
@@ -158,7 +159,7 @@ impl AgentSettings {
 #[pyclass(set_all, get_all)]
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct Configuration {
-    /// Contains a template for defining multiple [RodAgent] of the simulation.
+    /// Contains a template for defining multiple :class:`RodAgent` of the simulation.
     pub agent_settings: Py<AgentSettings>,
     /// Number of agents to put into the simulation. Depending on the size specified, this number
     /// may be lowered artificially to account for the required space.
@@ -194,12 +195,12 @@ pub struct Configuration {
 
 #[pymethods]
 impl Configuration {
-    /// Constructs a new [Configuration] class
+    /// Constructs a new :class:`Configuration` class
     ///
     /// The constructor `Configuration(**kwargs)` takes a dictionary as an optional argument.
     /// This allows to easily set variables in a pythoic manner.
-    /// In addition, every argument which is not an attribute of [Configuration] will be passed
-    /// onwards to the [AgentSettings] field.
+    /// In addition, every argument which is not an attribute of :class:`Configuration` will be
+    /// passed onwards to the :class:`AgentSettings` field.
     #[new]
     #[pyo3(signature = (**kwds))]
     pub fn new(py: Python, kwds: Option<&Bound<pyo3::types::PyDict>>) -> pyo3::PyResult<Py<Self>> {
@@ -250,7 +251,7 @@ impl Configuration {
         Ok(res.or_else(|e| Err(pyo3::exceptions::PyIOError::new_err(format!("{e}"))))?)
     }
 
-    /// Attempts to create a hash from the contents of this [Configuration].
+    /// Attempts to create a hash from the contents of this :class:`Configuration`.
     /// Warning: This feature is experimental.
     pub fn to_hash(&self) -> PyResult<u64> {
         let json_string = self.to_json()?;
@@ -285,7 +286,7 @@ mod test_config {
 #[derive(CellAgent, Clone, Debug, Deserialize, Serialize)]
 pub struct RodAgent {
     /// Determines mechanical properties of the agent.
-    /// See [RodMechanics].
+    /// See :class:`RodMechanics`.
     #[Mechanics]
     pub mechanics: RodMechanics<f32, N_ROD_SEGMENTS, 3>,
     /// Determines interaction between agents. See [MorsePotentialF32].
@@ -469,7 +470,7 @@ prepare_types!(
     aspects: [Mechanics, Interaction, Cycle],
 );
 
-/// Executes the simulation with the given [Configuration]
+/// Executes the simulation with the given :class:`Configuration`
 #[pyfunction]
 pub fn run_simulation(config: Configuration) -> Result<SimResult, PyErr> {
     use rand::Rng;
@@ -559,22 +560,17 @@ pub fn run_simulation(config: Configuration) -> Result<SimResult, PyErr> {
     })
 }
 
-macro_rules! sort_cellular_identifiers_doc(($($input:tt)*) => {
-"Sorts an iterator of :class:`CellIdentifier` deterministically.
-
-This function is usefull for generating identical masks every simulation run.
-This function is implemented as standalone since sorting of a :class:`CellIdentifier` is
-typically not supported.
-
-Args:
-    identifiers(list): A list of :class:`CellIdentifier`
-
-Returns:
-    list: The sorted list."
-    $($input)*
-});
-
-#[doc = sort_cellular_identifiers_doc!()]
+/// Sorts an iterator of :class:`CellIdentifier` deterministically.
+///
+/// This function is usefull for generating identical masks every simulation run.
+/// This function is implemented as standalone since sorting of a :class:`CellIdentifier` is
+/// typically not supported.
+///
+/// Args:
+///     identifiers(list): A list of :class:`CellIdentifier`
+///
+/// Returns:
+///     list: The sorted list.
 #[pyfunction]
 pub fn sort_cellular_identifiers(
     identifiers: Vec<CellIdentifier>,
