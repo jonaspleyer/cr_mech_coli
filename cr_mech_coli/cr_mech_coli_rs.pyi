@@ -27,12 +27,17 @@ class CellIdentifier:
     """
     Unique identifier which is given to every cell in the simulation
     
-    The identifier is comprised of the [VoxelPlainIndex] in which the cell was first spawned.
+    The identifier is comprised of the :class:`VoxelPlainIndex` in which the cell was first spawned.
     This can be due to initial setup or due to other methods such as division in a cell cycle.
     The second parameter is a counter which is unique for each voxel.
     This ensures that each cell obtains a unique identifier over the course of the simulation.
     """
     ...
+
+class VoxelPlainIndex:
+    """
+    Identifier for voxels used internally to get rid of user-defined ones.
+    """
 
 class Configuration:
     """

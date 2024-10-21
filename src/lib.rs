@@ -7,7 +7,7 @@
 mod sampling;
 mod simulation;
 
-pub use cellular_raza::prelude::CellIdentifier;
+pub use cellular_raza::prelude::{CellIdentifier, VoxelPlainIndex};
 pub use sampling::*;
 pub use simulation::*;
 
@@ -19,6 +19,7 @@ fn cr_mech_coli_rs(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(run_simulation, m)?)?;
     m.add_function(wrap_pyfunction!(sort_cellular_identifiers, m)?)?;
     m.add_class::<CellIdentifier>()?;
+    m.add_class::<VoxelPlainIndex>()?;
     m.add_class::<Configuration>()?;
     m.add_class::<RodMechanicsSettings>()?;
     m.add_class::<AgentSettings>()?;
