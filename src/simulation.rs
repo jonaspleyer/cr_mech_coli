@@ -479,6 +479,18 @@ impl SimResult {
     pub fn get_all_iterations(&self) -> Result<Vec<u64>, SimulationError> {
         Ok(self.storage.cells.get_all_iterations()?)
     }
+
+    /// Returns all :class:`CellIdentifier`s used in the simulation sorted in order.
+    pub fn get_all_identifiers(&self) -> PyResult<Vec<CellIdentifier>> {
+        let idents: std::collections::BTreeSet<CellIdentifier> = self
+            .get_cells()?
+            .into_iter()
+            .map(|(_, cells)| cells.into_iter())
+            .flatten()
+            .map(|(ident, _)| ident)
+            .collect();
+        Ok(idents.into_iter().collect())
+    }
 }
 
 prepare_types!(
