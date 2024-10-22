@@ -480,6 +480,27 @@ impl SimResult {
         Ok(self.storage.cells.get_all_iterations()?)
     }
 
+    /// Builds a dictionary containing :class:`CellIdentifier` and their children.
+    pub fn build_lineage_tree(&self) -> PyResult<HashMap<CellIdentifier, Vec<CellIdentifier>>> {
+        let all_cells = self.get_cells()?;
+        Ok(all_cells
+            .into_iter()
+            .fold(HashMap::new(), |mut acc, (_, cells)| {
+                let new_entries = cells
+                    .into_iter()
+                    .map(|(ident, (_, _, parent))| (parent, ident));
+                for (parent, child) in new_entries {
+                    match parent {
+                        Some(p) => acc.entry(p).or_insert(Vec::new()).push(child),
+                        None => {
+                            acc.entry(child).or_insert(Vec::new());
+                        }
+                    }
+                }
+                acc
+            }))
+    }
+
     /// Returns all :class:`CellIdentifier`s used in the simulation sorted in order.
     pub fn get_all_identifiers(&self) -> PyResult<Vec<CellIdentifier>> {
         let idents: std::collections::BTreeSet<CellIdentifier> = self
