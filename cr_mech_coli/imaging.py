@@ -23,11 +23,11 @@ class RenderSettings:
     specular: float = 0.5#: Value between 0 and 1.
     specular_power: float = 10.0#: Value between 0 and 250.
     metallic: float = 1.0#: Value between 0 and 1
-    noise: int = 25#: RGB values per pixel
+    noise: int = 50#: RGB values per pixel
     bg_brightness: int = 100#: Background brightness
     cell_brightness: int = 30#: Brightness of the individual cells
-    ssao_radius: int = 12#: Radius for ssao scattering
-    kernel_size: int = 10#: Smoothing kernel size
+    ssao_radius: int = 50#: Radius for ssao scattering
+    kernel_size: int = 30#: Smoothing kernel size
     pbr: bool = True#: Enable physics-based rendering
     lighting: bool = True# Enable lighting in 3D render
     render_mask: bool = False# If enabled, notifies rendering engine to disable effects
