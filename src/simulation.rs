@@ -217,7 +217,7 @@ impl Configuration {
                 n_threads: 1.try_into().unwrap(),
                 t0: 0.0,             // MIN
                 dt: 0.1,             // MIN
-                t_max: 100.0,      // MIN
+                t_max: 100.0,        // MIN
                 save_interval: 10.0, // MIN
                 show_progressbar: false,
                 domain_size: 100.0, // MICROMETRE
@@ -440,7 +440,7 @@ impl SimResult {
     ///     cells (dict): A dictionary mapping identifiers to the cell and its possible parent.
     /// Raises:
     ///     SimulationError: Generic error related to :ref:`cellular_raza
-    ///         <https://cellular-raza.com>` if any of the internal methods returns an error.
+    ///         <https://cellular-raza.com>`_ if any of the internal methods returns an error.
     pub fn get_cells_at_iteration(
         &self,
         iteration: u64,
@@ -455,8 +455,6 @@ impl SimResult {
     }
 
     /// Load the history of a single cell
-    ///
-    /// This uses the [cellular_raza::StorageInterface::
     pub fn get_cell_history(
         &self,
         identifier: CellIdentifier,
@@ -549,7 +547,7 @@ impl SimResult {
             }))
     }
 
-    /// Returns all :class:`CellIdentifier`s used in the simulation sorted in order.
+    /// Returns all :class:`CellIdentifier` used in the simulation sorted in order.
     pub fn get_all_identifiers(&self) -> PyResult<Vec<CellIdentifier>> {
         let idents: std::collections::BTreeSet<CellIdentifier> = self
             .get_cells()?
