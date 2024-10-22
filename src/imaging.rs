@@ -39,7 +39,6 @@ pub fn counter_to_color(counter: u32) -> [u8; 3] {
     color
 }
 
-
 /// Converts a given color back to the counter value.
 ///
 /// The is the inverse of the :function:`counter_to_color` function.
@@ -84,7 +83,7 @@ mod test {
         for i in 1..251u8 {
             for j in 1..251u8 {
                 for k in 1..251u8 {
-                    let color = [i,j,k];
+                    let color = [i, j, k];
                     let counter = color_to_counter(color);
                     let color_back = counter_to_color(counter);
                     assert_eq!(color, color_back);
