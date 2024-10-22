@@ -21,7 +21,6 @@ def run_config(config):
         all_cells,
         render_settings,
         render_raw_pv=True,
-        render_mask_artistic=True,
     )
 
 if __name__ == "__main__":
