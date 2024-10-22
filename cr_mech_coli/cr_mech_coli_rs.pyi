@@ -1,7 +1,7 @@
 import numpy as np
 
 class MorsePotentialF32:
-    """
+    """\
     Interaction potential of our Agents.
 
     Famous :ref:`Morse <https://doi.org/10.1103/PhysRev.34.57>` potential for diatomic molecules.
@@ -12,7 +12,7 @@ class MorsePotentialF32:
     strength: float
 
 class AgentSettings:
-    """
+    """\
     Contains settings needed to specify properties of the :class:`RodAgent`
     """
     mechanics: RodMechanicsSettings
@@ -36,12 +36,12 @@ class CellIdentifier:
     ...
 
 class VoxelPlainIndex:
-    """
+    """\
     Identifier for voxels used internally to get rid of user-defined ones.
     """
 
 class Configuration:
-    """
+    """\
     Contains all settings needed to configure the simulation
     """
     agent_settings: AgentSettings
@@ -66,7 +66,7 @@ class Configuration:
     def to_hash(self) -> int: ...
 
 class RodAgent:
-    """
+    """\
     A basic cell-agent which makes use of
     `RodMechanics <https://cellular-raza.com/docs/cellular_raza_building_blocks/structs.RodMechanics.html>`_
     """
@@ -78,7 +78,7 @@ class RodAgent:
     def __repr__(self) -> str: ...
 
 class RodMechanicsSettings:
-    """
+    """\
     Contains all settings required to construct :class:`RodMechanics`
     """
     pos: np.ndarray
@@ -90,7 +90,7 @@ class RodMechanicsSettings:
     damping: float
 
 class SimResult:
-    """
+    """\
     Resulting type when executing a full simulation
     """
     def get_cells(self) -> dict[int, dict[CellIdentifier, RodAgent]]: ...
@@ -98,15 +98,20 @@ class SimResult:
         dict[CellIdentifier, RodAgent], CellIdentifier | None
     ]: ...
     def get_cell_history(self, identifier: CellIdentifier) -> dict[int, RodAgent]: ...
+    def get_all_iterations(self) -> list[int]: ...
+    def get_parent(self, identifier: CellIdentifier) -> CellIdentifier | None: ...
+    def have_shared_parent(self, ident1: CellIdentifier, ident2: CellIdentifier) -> bool: ...
+    def build_lineage_tree(self) -> dict[CellIdentifier, list[CellIdentifier]]: ...
+    def get_all_identifiers(self) -> list[CellIdentifier]: ...
 
 def run_simulation(config: Configuration) -> SimResult:
-    """
+    """\
     Executes the simulation with the given :class:`Configuration`
     """
     ...
 
 def sort_cellular_identifiers(identifiers: list[CellIdentifier]) -> list[CellIdentifier]:
-    """
+    """\
     Sorts an iterator of :class:`CellIdentifier` deterministically.
     
     This function is usefull for generating identical masks every simulation run.
