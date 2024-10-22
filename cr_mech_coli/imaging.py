@@ -48,29 +48,6 @@ class RenderSettings:
         return rs
 
 
-def counter_to_color(counter: int, artistic: bool = False) -> list[int]:
-    """
-    Converts an integer counter between 0 and 256^3-1 to an RGB value.
-
-    Args:
-        counter (int): Counter between 0 and 256^3-1
-        artistic (bool): Enables artistic to provide larger differences between single steps instead
-            of simple incremental one.
-
-    Returns:
-        list[int]: A list with exactly 3 entries containing the calculated color.
-    """
-    if artistic:
-        counter = (counter * 157 * 163 * 173) % 255**3
-    color = [0, 0, 0]
-    q, mod = divmod(counter, 255**2)
-    color[0] = q
-    q, mod = divmod(mod, 255)
-    color[1] = q
-    color[2] = mod
-    return color
-
-
 def __create_cell_surfaces(cells: dict) -> list:
     cell_surfaces = []
     for ident in cells:
