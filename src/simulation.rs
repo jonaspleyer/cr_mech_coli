@@ -153,6 +153,11 @@ impl AgentSettings {
         }
         Ok(as_new)
     }
+
+    /// Formats and prints the :class:`AgentSettings`
+    pub fn __repr__(&self) -> String {
+        format!("{:#?}", self)
+    }
 }
 
 /// Contains all settings needed to configure the simulation
@@ -235,6 +240,11 @@ impl Configuration {
             }
         }
         Ok(res_new)
+    }
+
+    /// Formats and prints the :class:`Configuration`
+    pub fn __repr__(&self) -> String {
+        format!("{:#?}", self)
     }
 
     /// Serializes this struct to the json format
