@@ -41,7 +41,7 @@ pub fn counter_to_color(counter: u32) -> [u8; 3] {
 
 /// Converts a given color back to the counter value.
 ///
-/// The is the inverse of the :function:`counter_to_color` function.
+/// The is the inverse of the :func:`counter_to_color` function.
 /// The formulae can be calculated with the `Extended Euclidean Algorithm
 /// <https://en.wikipedia.org/wiki/Extended_Euclidean_algorithm>`_.
 /// The multiplicative inverse (mod 251) of the numbers of 157, 163 and 173 are:
