@@ -191,7 +191,7 @@ pub struct Configuration {
     pub randomize_position: f32,
     /// Number of voxels used to solve the system. This may yield performance improvements but
     /// specifying a too high number will yield incorrect results.
-    /// See also [https://cellular-raza.com/internals/concepts/domain/decomposition/].
+    /// See also https://cellular-raza.com/internals/concepts/domain/decomposition/.
     pub n_voxels: usize,
     /// Initial seed for randomizations. This can be useful to run multiple simulations with
     /// identical parameters but slightly varying initial conditions.
