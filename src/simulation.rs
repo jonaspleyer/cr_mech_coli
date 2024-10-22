@@ -212,8 +212,8 @@ impl Configuration {
                 n_threads: 1.try_into().unwrap(),
                 t0: 0.0,             // MIN
                 dt: 0.1,             // MIN
-                t_max: 1_000.0,      // MIN
-                save_interval: 50.0, // MIN
+                t_max: 100.0,      // MIN
+                save_interval: 10.0, // MIN
                 show_progressbar: false,
                 domain_size: 100.0, // MICROMETRE
                 domain_height: 2.5, // MICROMETRE
