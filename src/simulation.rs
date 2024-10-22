@@ -291,7 +291,7 @@ mod test_config {
 }
 
 /// A basic cell-agent which makes use of
-/// `RodMechanics <https://cellular-raza.com/docs/cellular_raza_building_blocks/structs.RodMechanics.html>`
+/// `RodMechanics <https://cellular-raza.com/docs/cellular_raza_building_blocks/structs.RodMechanics.html>`_
 #[pyclass]
 #[derive(CellAgent, Clone, Debug, Deserialize, Serialize)]
 pub struct RodAgent {
