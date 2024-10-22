@@ -214,7 +214,6 @@ def store_all_images(
         save_dir: str | Path = "out",
         use_hash: bool = True,
         render_raw_pv: bool = False,
-        render_mask_artistic: bool = False,
         show_progressbar: bool | int = False,
         store_config: bool = True,
     ):
@@ -232,7 +231,6 @@ def store_all_images(
             `save_dir` to store results in.
         render_raw_pv (bool): Additionaly render the intermediate image before applying effects
             from :mod:`cv2`.
-        render_mask_artistic (bool): Additionaly render artistic masks and save them.
         show_progressbar (bool): Shows a progressbar of how many iterations have been rendered.
         store_config (bool): Store config as json string in directory.
 
@@ -243,9 +241,7 @@ def store_all_images(
         render_settings = RenderSettings()
     colors = assign_colors_to_cells(sim_result)
 
-    colors_artistic = {}
-    if render_mask_artistic:
-        colors_artistic = assign_colors_to_cells(sim_result, artistic=True)
+    colors = assign_colors_to_cells(sim_result)
     iterations = sorted(sim_result.keys())
 
     if use_hash:
@@ -282,12 +278,4 @@ def store_all_images(
                 render_settings,
                 colors = None,
                 filename=Path(save_dir) / "raw_pv/{:09}.png".format(iteration),
-            )
-        if render_mask_artistic:
-            render_mask(
-                config,
-                cells,
-                colors_artistic,
-                render_settings,
-                Path(save_dir) / "masks_artistic/{:09}.png".format(iteration),
             )
