@@ -480,6 +480,54 @@ impl SimResult {
         Ok(self.storage.cells.get_all_iterations()?)
     }
 
+    /// Obtains the parent identifier of a cell if it had a parent.
+    ///
+    /// TODO this function can be optimized more. For now the amount of iterations and cells is low
+    /// enough that performance here should not matter too much. But it is almost a linear search
+    /// in a somewhat structured list.
+    pub fn get_parent(&self, identifier: &CellIdentifier) -> PyResult<Option<CellIdentifier>> {
+        // Check the first iteration
+        let iterations = self.get_all_iterations()?;
+
+        for &iter in iterations.iter() {
+            let cells = self.get_cells_at_iteration(iter)?;
+            if let Some(cell) = cells.get(identifier) {
+                return Ok(cell.1);
+            }
+        }
+
+        Ok(None)
+    }
+
+    /// Determines if two cells share a common parent
+    pub fn have_shared_parent(
+        &self,
+        ident1: &CellIdentifier,
+        ident2: &CellIdentifier,
+    ) -> PyResult<bool> {
+        let iterations = self.get_all_iterations()?;
+        let mut p1 = None;
+        let mut p2 = None;
+        for &iter in iterations.iter() {
+            let cells = self.get_cells_at_iteration(iter)?;
+            if p1.is_none() {
+                if let Some(cell) = cells.get(ident1) {
+                    p1 = cell.1;
+                }
+            }
+            if p2.is_none() {
+                if let Some(cell) = cells.get(ident2) {
+                    p2 = cell.1;
+                }
+            }
+            match (p1, p2) {
+                (Some(p1x), Some(p2x)) => return Ok(p1x == p2x),
+                _ => (),
+            }
+        }
+        Ok(false)
+    }
+
     /// Builds a dictionary containing :class:`CellIdentifier` and their children.
     pub fn build_lineage_tree(&self) -> PyResult<HashMap<CellIdentifier, Vec<CellIdentifier>>> {
         let all_cells = self.get_cells()?;
