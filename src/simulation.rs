@@ -474,6 +474,11 @@ impl SimResult {
             .collect();
         Ok((hist, parent))
     }
+
+    /// Obtain all iterations as a sorted list.
+    pub fn get_all_iterations(&self) -> Result<Vec<u64>, SimulationError> {
+        Ok(self.storage.cells.get_all_iterations()?)
+    }
 }
 
 prepare_types!(
