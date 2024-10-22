@@ -70,30 +70,6 @@ def counter_to_color(counter: int, artistic: bool = False) -> list[int]:
     return color
 
 
-def assign_colors_to_cells(sim_result: dict, artistic: bool = False) -> dict:
-    """
-    This functions assigns unique colors to given cellular identifiers. Note that this
-
-    Args:
-        sim_result (dict): A dictionary which maps integer iterations to a list of cells.
-            This is typically produced by the :func:`cr_mech_coli.simulation.run_simulation`.
-            function.
-        artistic (bool): Enables artistic color generation. See :func:`counter_to_color`.
-    """
-    iterations = sorted(sim_result.keys())
-    color_index = 1
-    colors = {}
-    for i in iterations:
-        for ident in sort_cellular_identifiers(list(sim_result[i].keys())):
-            if ident not in colors:
-                if color_index > 255**3:
-                    raise ValueError("The maximum supported number of cells is 255^3")
-                color = counter_to_color(color_index, artistic)
-                color_index += 1
-                colors[ident] = color
-    return colors
-
-
 def __create_cell_surfaces(cells: dict) -> list:
     cell_surfaces = []
     for ident in cells:
