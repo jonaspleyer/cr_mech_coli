@@ -439,8 +439,8 @@ impl SimResult {
     /// Returns:
     ///     cells (dict): A dictionary mapping identifiers to the cell and its possible parent.
     /// Raises:
-    ///     SimulationError: Generic error related to :ref:`cellular_raza
-    ///         <https://cellular-raza.com>`_ if any of the internal methods returns an error.
+    ///     SimulationError: Generic error related to `cellular_raza <https://cellular-raza.com>`_
+    ///     if any of the internal methods returns an error.
     pub fn get_cells_at_iteration(
         &self,
         iteration: u64,

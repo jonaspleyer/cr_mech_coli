@@ -8,6 +8,7 @@ mod imaging;
 mod sampling;
 mod simulation;
 
+use cellular_raza::prelude::MorsePotentialF32;
 pub use cellular_raza::prelude::{CellIdentifier, VoxelPlainIndex};
 pub use imaging::*;
 pub use sampling::*;
@@ -28,6 +29,7 @@ fn cr_mech_coli_rs(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(assign_colors_to_cells, m)?)?;
     m.add_class::<Configuration>()?;
     m.add_class::<RodMechanicsSettings>()?;
+    m.add_class::<MorsePotentialF32>()?;
     m.add_class::<AgentSettings>()?;
     m.add_class::<RodAgent>()?;
     m.add_class::<SimResult>()?;
