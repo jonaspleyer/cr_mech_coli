@@ -49,7 +49,7 @@ The images below show the steps outlined above.
    :width: 30%
 .. image:: _static/06725850956850056874/images/000000200.png
    :width: 30%
-.. image:: _static/06725850956850056874/masks_artistic/000000200.png
+.. image:: _static/06725850956850056874/masks/000000200.png
    :width: 30%
 
 Snapshots at `t=20min`.
@@ -58,7 +58,7 @@ Snapshots at `t=20min`.
    :width: 30%
 .. image:: _static/06725850956850056874/images/000000400.png
    :width: 30%
-.. image:: _static/06725850956850056874/masks_artistic/000000400.png
+.. image:: _static/06725850956850056874/masks/000000400.png
    :width: 30%
 
 Snapshots at `t=40min`.
@@ -67,7 +67,7 @@ Snapshots at `t=40min`.
    :width: 30%
 .. image:: _static/06725850956850056874/images/000000600.png
    :width: 30%
-.. image:: _static/06725850956850056874/masks_artistic/000000600.png
+.. image:: _static/06725850956850056874/masks/000000600.png
    :width: 30%
 
 Snapshots at `t=60min`.
