@@ -1,3 +1,4 @@
+from .cr_mech_coli_rs import counter_to_color, color_to_counter, assign_colors_to_cells
 from .simulation import Configuration, sort_cellular_identifiers, CellIdentifier
 import pyvista as pv
 import numpy as np
