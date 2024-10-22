@@ -56,8 +56,8 @@ def __create_cell_surfaces(cells: dict) -> list:
     cell_surfaces = []
     for ident in cells:
         meshes = []
-        p = cells[ident][0].pos.T
-        r = cells[ident][0].radius
+        p = cells[ident][1].pos.T
+        r = cells[ident][1].radius
 
         meshes.append(pv.Sphere(center=p[:,0], radius=r))
         for j in range(max(p.shape[1]-1,0)):
