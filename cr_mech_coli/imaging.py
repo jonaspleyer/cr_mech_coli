@@ -29,6 +29,8 @@ class RenderSettings:
     ssao_radius: int = 12#: Radius for ssao scattering
     kernel_size: int = 10#: Smoothing kernel size
     pbr: bool = True#: Enable physics-based rendering
+    lighting: bool = True# Enable lighting in 3D render
+    render_mask: bool = False# If enabled, notifies rendering engine to disable effects
 
     def prepare_for_masks(self):
         """
@@ -45,6 +47,8 @@ class RenderSettings:
         rs.ssao_radius = 0
         rs.kernel_size = 1
         rs.pbr = False
+        rs.lighting = False
+        rs.render_mask = True
         return rs
 
 
@@ -117,13 +121,17 @@ def render_pv_image(
             specular_power=render_settings.specular_power,
             metallic=render_settings.metallic,
             pbr=render_settings.pbr,
+            lighting=render_settings.lighting,
         )
     dx = config.domain_size
     plotter.camera.position = (0.5*dx, -0.5*dx, 5*dx)
     plotter.camera.focal_point = (0.5*dx, 0.5*dx, 0)
 
-    plotter.enable_ssao(radius=render_settings.ssao_radius)
-    plotter.enable_anti_aliasing()
+    if not render_settings.render_mask:
+        plotter.enable_ssao(radius=render_settings.ssao_radius)
+        plotter.enable_anti_aliasing()
+    else:
+        plotter.disable_anti_aliasing()
     img = np.array(plotter.screenshot())
     plotter.close()
 
