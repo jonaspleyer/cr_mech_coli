@@ -453,6 +453,13 @@ impl SimResult {
     }
 
     /// Load the history of a single cell
+    ///
+    /// Args:
+    ///     identifier(CellIdentifier): The identifier of the cell in question
+    /// Returns:
+    ///     tuple[dict[int, RodAgent], CellIdentifier | None]: A dictionary with all timespoints
+    ///     and the cells confiruation at this time-point. Also returns the parent
+    ///     :class:`CellIdentifier` if present.
     pub fn get_cell_history(
         &self,
         identifier: CellIdentifier,
