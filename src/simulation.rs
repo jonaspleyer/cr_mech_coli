@@ -532,7 +532,7 @@ impl SimResult {
             .fold(HashMap::new(), |mut acc, (_, cells)| {
                 let new_entries = cells
                     .into_iter()
-                    .map(|(ident, (_, _, parent))| (parent, ident));
+                    .map(|(ident, (_, parent))| (parent, ident));
                 for (parent, child) in new_entries {
                     match parent {
                         Some(p) => acc.entry(p).or_insert(Vec::new()).push(child),
