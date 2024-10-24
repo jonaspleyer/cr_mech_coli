@@ -587,6 +587,26 @@ impl SimResult {
             Err(e) => Err(e),
         }
     }
+
+    /// Obtains the cell corresponding to the given counter of this simulation
+    ///
+    /// Args:
+    ///     counter(int): Counter of some cell
+    /// Returns:
+    ///     CellIdentifier: The unique identifier associated with this counter
+    pub fn counter_to_cell_identifier(
+        &self,
+        counter: u32,
+    ) -> pyo3::PyResult<CellIdentifier> {
+        let identifiers = self.get_all_identifiers()?;
+        Ok(identifiers
+            .get(counter as usize)
+            .ok_or(pyo3::exceptions::PyKeyError::new_err(format!(
+                "Cannot assign CellIdentifier to counter {}",
+                counter
+            )))?
+            .clone())
+    }
 }
 
 prepare_types!(
