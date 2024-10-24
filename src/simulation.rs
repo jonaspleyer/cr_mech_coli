@@ -408,7 +408,7 @@ impl SimResult {
     pub fn get_cells(
         &self,
     ) -> Result<
-        HashMap<u64, HashMap<CellIdentifier, (CellIdentifier, RodAgent, Option<CellIdentifier>)>>,
+        HashMap<u64, HashMap<CellIdentifier, (RodAgent, Option<CellIdentifier>)>>,
         SimulationError,
     > {
         let all_agents = self
@@ -422,9 +422,7 @@ impl SimResult {
                     iteration,
                     cells
                         .into_iter()
-                        .map(|(identifier, (cell, _))| {
-                            (identifier, (cell.identifier, cell.cell, cell.parent))
-                        })
+                        .map(|(identifier, (cell, _))| (identifier, (cell.cell, cell.parent)))
                         .collect::<HashMap<_, _>>(),
                 )
             })
