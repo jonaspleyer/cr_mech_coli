@@ -93,36 +93,3 @@ mod test {
     }
 }
 
-/// This functions assigns unique colors to given cellular identifiers. Note that this
-///
-/// Args:
-///     sim_result (dict): An instance of the :class:`SimResult` class.
-/// Returns:
-///     dict: A dictionary mapping :class:`CellIdentifier` to colors.
-#[pyfunction]
-pub fn assign_colors_to_cells(
-    sim_result: &SimResult,
-) -> PyResult<HashMap<CellIdentifier, [u8; 3]>> {
-    let identifiers = sim_result.get_all_identifiers()?;
-    let mut color_counter = 1;
-    let mut colors = HashMap::new();
-    let mut err = Ok(());
-    for ident in identifiers.iter() {
-        colors.entry(ident.clone()).or_insert_with(|| {
-            let color = counter_to_color(color_counter);
-            color_counter += 1;
-            if color_counter > 251u32.pow(3) {
-                err = Err(pyo3::exceptions::PyValueError::new_err(format!(
-                    "Too many identifiers: {} MAX: {}.",
-                    identifiers.len(),
-                    251u32.pow(3)
-                )));
-            }
-            color
-        });
-    }
-    match err {
-        Ok(()) => Ok(colors),
-        Err(e) => Err(e),
-    }
-}

@@ -247,10 +247,10 @@ def store_all_images(
     """
     if render_settings is None:
         render_settings = RenderSettings()
-    colors = assign_colors_to_cells(sim_result)
+    colors = sim_result.assign_colors_to_cells()
 
-    colors = assign_colors_to_cells(sim_result)
-    iterations = sorted(sim_result.keys())
+    colors = sim_result.assign_colors_to_cells()
+    iterations = sim_result.get_all_iterations()
 
     if use_hash:
         sim_hash = config.to_hash()

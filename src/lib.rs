@@ -26,7 +26,6 @@ fn cr_mech_coli_rs(m: &Bound<'_, PyModule>) -> PyResult<()> {
 
     m.add_function(wrap_pyfunction!(counter_to_color, m)?)?;
     m.add_function(wrap_pyfunction!(color_to_counter, m)?)?;
-    m.add_function(wrap_pyfunction!(assign_colors_to_cells, m)?)?;
     m.add_class::<Configuration>()?;
     m.add_class::<RodMechanicsSettings>()?;
     m.add_class::<MorsePotentialF32>()?;
