@@ -1,4 +1,4 @@
-from .cr_mech_coli_rs import counter_to_color, color_to_counter, assign_colors_to_cells
+from .cr_mech_coli_rs import RodAgent, counter_to_color, color_to_counter, SimResult
 from .simulation import Configuration, sort_cellular_identifiers, CellIdentifier
 import pyvista as pv
 import numpy as np
@@ -52,12 +52,12 @@ class RenderSettings:
         return rs
 
 
-def __create_cell_surfaces(cells: dict) -> list:
+def __create_cell_surfaces(cells: dict[CellIdentifier, tuple[RodAgent, CellIdentifier | None]]) -> list:
     cell_surfaces = []
-    for ident in cells:
+    for ident in cells.keys():
         meshes = []
-        p = cells[ident][1].pos.T
-        r = cells[ident][1].radius
+        p = cells[ident][0].pos.T
+        r = cells[ident][0].radius
 
         meshes.append(pv.Sphere(center=p[:,0], radius=r))
         for j in range(max(p.shape[1]-1,0)):
@@ -80,7 +80,7 @@ def __create_cell_surfaces(cells: dict) -> list:
 
 def render_pv_image(
         config: Configuration,
-        cells,
+        cells: dict[CellIdentifier, tuple[RodAgent, CellIdentifier | None]],
         render_settings: RenderSettings,
         colors: dict | None = None,
         filename: str | Path | None = None,
@@ -217,7 +217,7 @@ def render_image(
 
 def store_all_images(
         config: Configuration,
-        sim_result: dict,
+        sim_result: SimResult,
         render_settings: RenderSettings | None = None,
         save_dir: str | Path = "out",
         use_hash: bool = True,
@@ -265,7 +265,7 @@ def store_all_images(
     if show_progressbar is True:
         iterations = tqdm(iterations, total=len(iterations))
     for iteration in iterations:
-        cells = sim_result[iteration]
+        cells = sim_result.get_cells_at_iteration(iteration)
         render_image(
             config,
             cells,
