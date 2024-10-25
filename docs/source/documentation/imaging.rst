@@ -3,6 +3,7 @@ Imaging
 
 .. automodule:: cr_mech_coli.imaging
     :members:
+    :member-order: groupwise
     :inherited-members:
     :show-inheritance:
     :undoc-members:

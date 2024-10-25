@@ -3,6 +3,7 @@ Simulation
 
 .. automodule:: cr_mech_coli.simulation
     :members:
+    :member-order: groupwise
     :inherited-members:
     :show-inheritance:
     :undoc-members:
