@@ -1,6 +1,4 @@
 pyvista
-torch
-torchvision
 numpy
 opencv-python
 tqdm
