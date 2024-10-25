@@ -576,6 +576,26 @@ impl SimResult {
             .clone())
     }
 
+    /// Obtains the color assigned to the cell
+    ///
+    /// Args:
+    ///     identifier(CellIdentifier): The cells unique identifier
+    /// Returns:
+    ///     tuple[int, int, int] | None: The assigned color
+    pub fn get_color(&self, identifier: &CellIdentifier) -> Option<[u8; 3]> {
+        self.cell_to_color.get(identifier).copied()
+    }
+
+    /// Obtains the cell which had been assigned this color
+    ///
+    /// Args:
+    ///     color(tuple[int, int, int]): A tuple (or list) with 3 8bit values
+    /// Returns:
+    ///     CellIdentifier | None: The identifier of the cell
+    pub fn get_cell_from_color(&self, color: [u8; 3]) -> Option<CellIdentifier> {
+        self.color_to_cell.get(&color).copied()
+    }
+
     /// Determines if two cells share a common parent
     pub fn cells_are_siblings(&self, ident1: &CellIdentifier, ident2: &CellIdentifier) -> bool {
         let px1 = self.parent_map.get(ident1);
