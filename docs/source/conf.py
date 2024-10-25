@@ -49,17 +49,14 @@ exclude_patterns = []
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
-html_theme = 'pydata_sphinx_theme'
+html_theme = 'sphinx_rtd_theme'
 html_static_path = ['_static']
 
 bibtex_bibfiles = ['references.bib']
 bibtex_default_style = 'unsrt'
 bibtex_reference_style = 'label'
 
+html_logo = "_static/cellular_raza_dark_mode.png"
 html_theme_options = {
-    "show_nav_level": 2,
-    "logo": {
-        "image_dark": '_static/cellular_raza_dark_mode.png',
-        "image_light": '_static/cellular_raza.png'
-    },
+    "logo_only": True,
 }
