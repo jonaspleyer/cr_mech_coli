@@ -533,45 +533,28 @@ impl SimResult {
     /// in a somewhat structured list.
     pub fn get_parent(&self, identifier: &CellIdentifier) -> PyResult<Option<CellIdentifier>> {
         // Check the first iteration
-        let iterations = self.get_all_iterations()?;
-
-        for &iter in iterations.iter() {
-            let cells = self.get_cells_at_iteration(iter)?;
-            if let Some(cell) = cells.get(identifier) {
-                return Ok(cell.1);
-            }
-        }
+        Ok(self
+            .parent_map
+            .get(identifier)
+            .ok_or(pyo3::exceptions::PyKeyError::new_err(format!(
+                "No CellIdentifier {:?} in map",
+                identifier
+            )))?
+            .clone())
+    }
 
         Ok(None)
     }
 
     /// Determines if two cells share a common parent
-    pub fn have_shared_parent(
-        &self,
-        ident1: &CellIdentifier,
-        ident2: &CellIdentifier,
-    ) -> PyResult<bool> {
-        let iterations = self.get_all_iterations()?;
-        let mut p1 = None;
-        let mut p2 = None;
-        for &iter in iterations.iter() {
-            let cells = self.get_cells_at_iteration(iter)?;
-            if p1.is_none() {
-                if let Some(cell) = cells.get(ident1) {
-                    p1 = cell.1;
-                }
-            }
-            if p2.is_none() {
-                if let Some(cell) = cells.get(ident2) {
-                    p2 = cell.1;
-                }
-            }
-            match (p1, p2) {
-                (Some(p1x), Some(p2x)) => return Ok(p1x == p2x),
-                _ => (),
-            }
+    pub fn cells_are_siblings(&self, ident1: &CellIdentifier, ident2: &CellIdentifier) -> bool {
+        let px1 = self.parent_map.get(ident1);
+        let px2 = self.parent_map.get(ident2);
+        if let (Some(p1), Some(p2)) = (px1, px2) {
+            p1 == p2
+        } else {
+            false
         }
-        Ok(false)
     }
 
     /// A dictionary mapping each cell to its parent
