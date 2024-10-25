@@ -16,6 +16,13 @@ To adjust visualization settings, we provide the :class:`.RenderSettings` class.
 >>> render_settings = RenderSettings()
 >>> render_settings.noise = 30
 >>> crm.store_all_images(config, sim_result, save_dir="out")
+
+.. note::
+    This package is based on the `f32 <https://doc.rust-lang.org/std/primitive.f32.html>`_ floating
+    point type.
+    All numerical calculations performed by `cellular_raza <https://cellular-raza.com>`_ are done
+    in this format.
+    However the same can not be guaranteed for calculations involving any of the python packages.
 """
 
 from .simulation import *
