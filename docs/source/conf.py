@@ -14,7 +14,7 @@ import cr_mech_coli
 project = 'cr_mech_coli'
 copyright = '2024, Jonas Pleyer'
 author = 'Jonas Pleyer'
-release = '0.0.1'
+release = '0.2.0'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
