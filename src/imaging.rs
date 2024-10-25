@@ -3,7 +3,8 @@ use pyo3::prelude::*;
 /// Converts an integer counter between 0 and 251^3-1 to an RGB value.
 /// The reason why 251 was chosen is due to the fact that it is the highest prime number which is
 /// below 255.
-/// This will yield a Field of numbers Z/251Z.
+/// This will yield a Field of numbers :math:`\mathbb{Z}/251 \mathbb{Z}` and thus we will be able
+/// to determine an exact inverse function.
 ///
 /// To calculate artistic color values we multiply the counter by 157*163*173 which are three prime
 /// numbers roughyl in the middle of 255.
