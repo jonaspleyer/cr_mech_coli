@@ -645,6 +645,22 @@ impl SimResult {
             )))?
             .clone())
     }
+
+    /// Get the :class:`CellIdentifier` associated to the given counter.
+    /// Used in :mod:`cr_mech_coli.imaging` techniques.
+    ///
+    pub fn cell_identifier_to_counter(&self, identifier: &CellIdentifier) -> pyo3::PyResult<u32> {
+        let identifiers = self.get_all_identifiers();
+        for (i, ident) in identifiers.iter().enumerate() {
+            if identifier == ident {
+                return Ok(i as u32);
+            }
+        }
+        Err(pyo3::exceptions::PyKeyError::new_err(format!(
+            "No CellIdentifier {:?} in map",
+            identifier
+        )))
+    }
 }
 
 prepare_types!(
