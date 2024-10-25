@@ -175,13 +175,3 @@ def color_to_counter(color: list[int]) -> int:
     """
     ...
 
-def assign_colors_to_cells(sim_result: SimResult) -> dict[CellIdentifier, list[int]]:
-    """\
-    This functions assigns unique colors to given cellular identifiers. Note that this
-
-    Args:
-        sim_result (dict): An instance of the :class:`SimResult` class.
-    Returns:
-        dict: A dictionary mapping :class:`CellIdentifier` to colors.
-    """
-    ...
