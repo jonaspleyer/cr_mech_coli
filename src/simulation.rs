@@ -420,16 +420,41 @@ impl SimResult {
             CartesianSubDomainRods<f32, N_ROD_SEGMENTS, 3>,
         >,
     ) -> pyo3::PyResult<Self> {
+        let cells = storage
+            .cells
+            .load_all_elements()
+            .unwrap()
+            .into_iter()
+            .map(|(iteration, cells)| {
+                (
+                    iteration,
+                    cells
+                        .into_iter()
+                        .map(|(ident, (cbox, _))| (ident, (cbox.cell, cbox.parent)))
+                        .collect(),
+                )
+            })
+            .collect();
         let sim_result = Self {
-            storage,
+            cells,
             parent_map: HashMap::new(),
             child_map: HashMap::new(),
+            cell_to_color: HashMap::new(),
+            color_to_cell: HashMap::new(),
         };
-        let all_cells = sim_result.get_cells()?;
+        let all_cells = sim_result.get_cells();
         let parent_map: HashMap<CellIdentifier, Option<CellIdentifier>> = all_cells
             .into_iter()
             .flat_map(|(_, cells)| cells.into_iter())
             .map(|(ident, (_, parent))| (ident, parent))
+            .collect();
+        let mut identifiers: Vec<_> = parent_map.iter().map(|(i, _)| i.clone()).collect();
+        identifiers.sort();
+        let cell_to_color: HashMap<_, _> = Self::assign_colors_to_cells(identifiers)?;
+        let color_to_cell: HashMap<_, _> = cell_to_color
+            .clone()
+            .into_iter()
+            .map(|(x, y)| (y, x))
             .collect();
         let child_map = parent_map
             .iter()
@@ -441,6 +466,8 @@ impl SimResult {
         Ok(Self {
             parent_map,
             child_map,
+            cell_to_color,
+            color_to_cell,
             ..sim_result
         })
     }
