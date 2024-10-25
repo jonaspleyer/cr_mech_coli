@@ -102,8 +102,8 @@ def render_pv_image(
             pixels.
     """
     plotter = pv.Plotter(off_screen=True, window_size=[render_settings.resolution]*2)
-    plotter.enable_parallel_projection()
-    plotter.set_background([render_settings.bg_brightness]*3)
+    pv.Plotter.enable_parallel_projection(plotter)
+    pv.Plotter.set_background(plotter, [render_settings.bg_brightness]*3)
 
     cell_surfaces = __create_cell_surfaces(cells)
 
@@ -128,7 +128,7 @@ def render_pv_image(
     plotter.camera.focal_point = (0.5*dx, 0.5*dx, 0)
 
     if not render_settings.render_mask:
-        plotter.enable_ssao(radius=render_settings.ssao_radius)
+        pv.Plotter.enable_ssao(plotter, radius=render_settings.ssao_radius)
         plotter.enable_anti_aliasing()
     else:
         plotter.disable_anti_aliasing()
