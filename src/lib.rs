@@ -31,6 +31,6 @@ fn cr_mech_coli_rs(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<MorsePotentialF32>()?;
     m.add_class::<AgentSettings>()?;
     m.add_class::<RodAgent>()?;
-    m.add_class::<SimResult>()?;
+    m.add_class::<CellContainer>()?;
     Ok(())
 }

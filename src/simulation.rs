@@ -387,7 +387,7 @@ impl Cycle<RodAgent, f32> for RodAgent {
 
 /// Manages all information resulting from an executed simulation
 #[pyclass]
-pub struct SimResult {
+pub struct CellContainer {
     /// Contains snapshots of all cells at each saved step
     #[pyo3(get)]
     pub cells: HashMap<u64, HashMap<CellIdentifier, (RodAgent, Option<CellIdentifier>)>>,
@@ -405,19 +405,19 @@ pub struct SimResult {
     pub color_to_cell: HashMap<[u8; 3], CellIdentifier>,
 }
 
-impl SimResult {
+impl CellContainer {
     fn new(
         all_cells: HashMap<u64, HashMap<CellIdentifier, (RodAgent, Option<CellIdentifier>)>>,
     ) -> pyo3::PyResult<Self> {
         let cells = all_cells;
-        let sim_result = Self {
+        let cell_container = Self {
             cells,
             parent_map: HashMap::new(),
             child_map: HashMap::new(),
             cell_to_color: HashMap::new(),
             color_to_cell: HashMap::new(),
         };
-        let all_cells = sim_result.get_cells();
+        let all_cells = cell_container.get_cells();
         let parent_map: HashMap<CellIdentifier, Option<CellIdentifier>> = all_cells
             .into_iter()
             .flat_map(|(_, cells)| cells.into_iter())
@@ -443,13 +443,13 @@ impl SimResult {
             child_map,
             cell_to_color,
             color_to_cell,
-            ..sim_result
+            ..cell_container
         })
     }
 }
 
 #[pymethods]
-impl SimResult {
+impl CellContainer {
     /// Get all cells at all iterations
     ///
     /// Returns:
@@ -599,7 +599,7 @@ impl SimResult {
         idents
     }
 
-    /// Identical to :func:`SimResult.get_all_identifiers` but returns unsorted list.
+    /// Identical to :func:`CellContainer.get_all_identifiers` but returns unsorted list.
     pub fn get_all_identifiers_unsorted(&self) -> Vec<CellIdentifier> {
         self.parent_map
             .iter()
@@ -611,7 +611,7 @@ impl SimResult {
     /// Used in :mod:`cr_mech_coli.imaging` techniques.
     ///
     /// Args:
-    ///     sim_result (dict): An instance of the :class:`SimResult` class.
+    ///     cell_container (dict): An instance of the :class:`CellContainer` class.
     /// Returns:
     ///     dict: A dictionary mapping :class:`CellIdentifier` to colors.
     #[staticmethod]
@@ -682,7 +682,7 @@ prepare_types!(
 
 /// Executes the simulation with the given :class:`Configuration`
 #[pyfunction]
-pub fn run_simulation(config: Configuration) -> pyo3::PyResult<SimResult> {
+pub fn run_simulation(config: Configuration) -> pyo3::PyResult<CellContainer> {
     use rand::Rng;
     use rand_chacha::rand_core::SeedableRng;
     Python::with_gil(|py| {
@@ -782,7 +782,7 @@ pub fn run_simulation(config: Configuration) -> pyo3::PyResult<SimResult> {
             })
             .collect();
 
-        Ok(SimResult::new(cells)?)
+        Ok(CellContainer::new(cells)?)
     })
 }
 

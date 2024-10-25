@@ -3,15 +3,15 @@
     :header-rows: 1
     :widths: 40 60
 
-    * - Methods of :class:`~.simulation.SimResult`
+    * - Methods of :class:`~.simulation.CellContainer`
       - Description
-    * - :func:`~.simulation.SimResult.assign_colors_to_cells`
+    * - :func:`~.simulation.CellContainer.assign_colors_to_cells`
       - Assigns unique colors to cells.
-    * - :func:`~.simulation.SimResult.counter_to_cell_identifier`
+    * - :func:`~.simulation.CellContainer.counter_to_cell_identifier`
       - Converts an integer counter to a cell
-    * - :func:`~.simulation.SimResult.get_color`
+    * - :func:`~.simulation.CellContainer.get_color`
       - Obtains the color assigned to the cell
-    * - :func:`~.simulation.SimResult.get_cell_from_color`
+    * - :func:`~.simulation.CellContainer.get_cell_from_color`
       - Given a color, determines the :class:`CellIdentifier`
     * - :func:`counter_to_color`
       - Maps an integer counter uniquely to a color value
@@ -34,7 +34,7 @@
       - Creates and stores images in files.
 """
 
-from .cr_mech_coli_rs import RodAgent, counter_to_color, color_to_counter, SimResult
+from .cr_mech_coli_rs import RodAgent, counter_to_color, color_to_counter, CellContainer
 from .simulation import Configuration, sort_cellular_identifiers, CellIdentifier
 import pyvista as pv
 import numpy as np
@@ -253,7 +253,7 @@ def render_image(
 
 def store_all_images(
         config: Configuration,
-        sim_result: SimResult,
+        cell_container: CellContainer,
         render_settings: RenderSettings | None = None,
         save_dir: str | Path = "out",
         use_hash: bool = True,
@@ -268,7 +268,7 @@ def store_all_images(
 
     Args:
         config (Configuration): See :func:`render_pv_image`.
-        sim_result: See :func:`cr_mech_coli.simulation.run_simulation`.
+        cell_container: See :func:`cr_mech_coli.simulation.run_simulation`.
         render_settings (RenderSettings): See :func:`render_pv_image`.
         save_dir: Path of the directory where to save all images.
         use_hash (bool): Use a hash generated from the :class:`Configuration` class as subfolder of
@@ -283,8 +283,8 @@ def store_all_images(
     """
     if render_settings is None:
         render_settings = RenderSettings()
-    colors = sim_result.cell_to_color
-    iterations = sim_result.get_all_iterations()
+    colors = cell_container.cell_to_color
+    iterations = cell_container.get_all_iterations()
 
     if use_hash:
         sim_hash = config.to_hash()
@@ -299,7 +299,7 @@ def store_all_images(
     if show_progressbar is True:
         iterations = tqdm(iterations, total=len(iterations))
     for iteration in iterations:
-        cells = sim_result.get_cells_at_iteration(iteration)
+        cells = cell_container.get_cells_at_iteration(iteration)
         render_image(
             config,
             cells,
