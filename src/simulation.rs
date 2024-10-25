@@ -483,27 +483,8 @@ impl SimResult {
     ///     every iteration.
     pub fn get_cells(
         &self,
-    ) -> Result<
-        HashMap<u64, HashMap<CellIdentifier, (RodAgent, Option<CellIdentifier>)>>,
-        SimulationError,
-    > {
-        let all_agents = self
-            .storage
-            .cells
-            .load_all_elements()
-            .or_else(|x| Err(SimulationError::from(x)))?
-            .into_iter()
-            .map(|(iteration, cells)| {
-                (
-                    iteration,
-                    cells
-                        .into_iter()
-                        .map(|(identifier, (cell, _))| (identifier, (cell.cell, cell.parent)))
-                        .collect::<HashMap<_, _>>(),
-                )
-            })
-            .collect::<HashMap<_, _>>();
-        Ok(all_agents)
+    ) -> HashMap<u64, HashMap<CellIdentifier, (RodAgent, Option<CellIdentifier>)>> {
+        self.cells.clone()
     }
 
     /// Get cells at a specific iteration.
@@ -518,14 +499,12 @@ impl SimResult {
     pub fn get_cells_at_iteration(
         &self,
         iteration: u64,
-    ) -> Result<HashMap<CellIdentifier, (RodAgent, Option<CellIdentifier>)>, SimulationError> {
-        Ok(self
-            .storage
-            .cells
-            .load_all_elements_at_iteration(iteration)?
-            .into_iter()
-            .map(|(ident, (cbox, _))| (ident, (cbox.cell, cbox.parent)))
-            .collect())
+    ) -> HashMap<CellIdentifier, (RodAgent, Option<CellIdentifier>)> {
+        self.cells
+            .get(&iteration)
+            .cloned()
+            .or(Some(HashMap::new()))
+            .unwrap()
     }
 
     /// Load the history of a single cell
@@ -539,24 +518,27 @@ impl SimResult {
     pub fn get_cell_history(
         &self,
         identifier: CellIdentifier,
-    ) -> Result<(HashMap<u64, RodAgent>, Option<CellIdentifier>), SimulationError> {
+    ) -> (HashMap<u64, RodAgent>, Option<CellIdentifier>) {
         let mut parent = None;
         let hist = self
-            .storage
             .cells
-            .load_element_history(&identifier)?
+            .clone()
             .into_iter()
-            .map(|(ident, (cbox, _))| {
-                parent = cbox.parent;
-                (ident, cbox.cell)
+            .filter_map(|(iteration, mut cells)| {
+                cells.remove(&identifier).map(|(x, p)| {
+                    parent = p;
+                    (iteration, x)
+                })
             })
             .collect();
-        Ok((hist, parent))
+        (hist, parent)
     }
 
     /// Obtain all iterations as a sorted list.
-    pub fn get_all_iterations(&self) -> Result<Vec<u64>, SimulationError> {
-        Ok(self.storage.cells.get_all_iterations()?)
+    pub fn get_all_iterations(&self) -> Vec<u64> {
+        let mut iterations: Vec<_> = self.cells.iter().map(|(&it, _)| it).collect();
+        iterations.sort();
+        iterations
     }
 
     /// Obtains the parent identifier of a cell if it had a parent.
