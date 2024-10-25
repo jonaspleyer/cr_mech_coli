@@ -118,7 +118,7 @@ def render_pv_image(
         config: Configuration,
         cells: dict[CellIdentifier, tuple[RodAgent, CellIdentifier | None]],
         render_settings: RenderSettings,
-        colors: dict | None = None,
+        colors: dict[CellIdentifier, tuple[int, int, int]] | None = None,
         filename: str | Path | None = None,
     ) -> np.ndarray:
     """
@@ -182,7 +182,7 @@ def render_pv_image(
 def render_mask(
         config: Configuration,
         cells: dict,
-        colors: dict,
+        colors: dict[CellIdentifier, tuple[int, int, int]],
         render_settings: RenderSettings | None = None,
         filename: str | Path | None = None,
     ) -> np.ndarray:
@@ -195,7 +195,7 @@ def render_mask(
         config (Configuration): See :func:`render_pv_image`.
         cells: See :func:`render_pv_image`.
         render_settings (RenderSettings): See :func:`render_pv_image`.
-        colors (dict): See :func:`render_pv_image`.
+        colors (dict[CellIdentifier, tuple[int, int, int]]): See :func:`render_pv_image`.
         filename: See :func:`render_pv_image`.
 
     Returns:
