@@ -639,8 +639,10 @@ impl SimResult {
     ///     sim_result (dict): An instance of the :class:`SimResult` class.
     /// Returns:
     ///     dict: A dictionary mapping :class:`CellIdentifier` to colors.
-    pub fn assign_colors_to_cells(&self) -> PyResult<HashMap<CellIdentifier, [u8; 3]>> {
-        let identifiers = self.get_all_identifiers();
+    #[staticmethod]
+    pub fn assign_colors_to_cells(
+        identifiers: Vec<CellIdentifier>,
+    ) -> PyResult<HashMap<CellIdentifier, [u8; 3]>> {
         let mut color_counter = 1;
         let mut colors = HashMap::new();
         let mut err = Ok(());
