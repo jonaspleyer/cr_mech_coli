@@ -582,25 +582,29 @@ impl SimResult {
     }
 
     /// Returns all :class:`CellIdentifier` used in the simulation sorted in order.
-    pub fn get_all_identifiers(&self) -> PyResult<Vec<CellIdentifier>> {
-        let idents: std::collections::BTreeSet<CellIdentifier> = self
-            .get_cells()?
-            .into_iter()
-            .map(|(_, cells)| cells.into_iter())
-            .flatten()
-            .map(|(ident, _)| ident)
-            .collect();
-        Ok(idents.into_iter().collect())
+    pub fn get_all_identifiers(&self) -> Vec<CellIdentifier> {
+        let mut idents = self.get_all_identifiers_unsorted();
+        idents.sort();
+        idents
     }
 
-    /// This functions assigns unique colors to given cellular identifiers. Note that this
+    /// Identical to :func:`SimResult.get_all_identifiers` but returns unsorted list.
+    pub fn get_all_identifiers_unsorted(&self) -> Vec<CellIdentifier> {
+        self.parent_map
+            .iter()
+            .map(|(ident, _)| ident.clone())
+            .collect()
+    }
+
+    /// This functions assigns unique colors to given cellular identifiers.
+    /// Used in :mod:`cr_mech_coli.imaging` techniques.
     ///
     /// Args:
     ///     sim_result (dict): An instance of the :class:`SimResult` class.
     /// Returns:
     ///     dict: A dictionary mapping :class:`CellIdentifier` to colors.
     pub fn assign_colors_to_cells(&self) -> PyResult<HashMap<CellIdentifier, [u8; 3]>> {
-        let identifiers = self.get_all_identifiers()?;
+        let identifiers = self.get_all_identifiers();
         let mut color_counter = 1;
         let mut colors = HashMap::new();
         let mut err = Ok(());
@@ -625,16 +629,14 @@ impl SimResult {
     }
 
     /// Obtains the cell corresponding to the given counter of this simulation
+    /// Used in :mod:`cr_mech_coli.imaging` techniques.
     ///
     /// Args:
     ///     counter(int): Counter of some cell
     /// Returns:
     ///     CellIdentifier: The unique identifier associated with this counter
-    pub fn counter_to_cell_identifier(
-        &self,
-        counter: u32,
-    ) -> pyo3::PyResult<CellIdentifier> {
-        let identifiers = self.get_all_identifiers()?;
+    pub fn counter_to_cell_identifier(&self, counter: u32) -> pyo3::PyResult<CellIdentifier> {
+        let identifiers = self.get_all_identifiers();
         Ok(identifiers
             .get(counter as usize)
             .ok_or(pyo3::exceptions::PyKeyError::new_err(format!(
