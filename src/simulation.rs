@@ -543,7 +543,21 @@ impl SimResult {
             .clone())
     }
 
-        Ok(None)
+    /// Obtains all children of a given cell
+    ///
+    /// Args:
+    ///     identifier(CellIdentifier): The cells unique identifier
+    /// Returns:
+    ///     list[CellIdentifier]: All children of the given cell
+    pub fn get_children(&self, identifier: &CellIdentifier) -> PyResult<Vec<CellIdentifier>> {
+        Ok(self
+            .child_map
+            .get(identifier)
+            .ok_or(pyo3::exceptions::PyKeyError::new_err(format!(
+                "No CellIdentifier {:?} in map",
+                identifier
+            )))?
+            .clone())
     }
 
     /// Determines if two cells share a common parent
