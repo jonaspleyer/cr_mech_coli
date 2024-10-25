@@ -1,9 +1,4 @@
-use std::collections::HashMap;
-
-use cellular_raza::prelude::CellIdentifier;
 use pyo3::prelude::*;
-
-use crate::SimResult;
 
 /// Converts an integer counter between 0 and 251^3-1 to an RGB value.
 /// The reason why 251 was chosen is due to the fact that it is the highest prime number which is
