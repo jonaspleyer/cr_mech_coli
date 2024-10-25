@@ -388,20 +388,21 @@ impl Cycle<RodAgent, f32> for RodAgent {
 /// Manages all information resulting from an executed simulation
 #[pyclass]
 pub struct SimResult {
-    storage: StorageAccess<
-        (
-            CellBox<RodAgent>,
-            _CrAuxStorage<
-                nalgebra::SMatrix<f32, N_ROD_SEGMENTS, 3>,
-                nalgebra::SMatrix<f32, N_ROD_SEGMENTS, 3>,
-                nalgebra::SMatrix<f32, N_ROD_SEGMENTS, 3>,
-                2,
-            >,
-        ),
-        CartesianSubDomainRods<f32, N_ROD_SEGMENTS, 3>,
-    >,
-    parent_map: HashMap<CellIdentifier, Option<CellIdentifier>>,
-    child_map: HashMap<CellIdentifier, Vec<CellIdentifier>>,
+    /// Contains snapshots of all cells at each saved step
+    #[pyo3(get)]
+    pub cells: HashMap<u64, HashMap<CellIdentifier, (RodAgent, Option<CellIdentifier>)>>,
+    /// Maps each cell to its parent if existent
+    #[pyo3(get)]
+    pub parent_map: HashMap<CellIdentifier, Option<CellIdentifier>>,
+    /// Maps each cell to its children
+    #[pyo3(get)]
+    pub child_map: HashMap<CellIdentifier, Vec<CellIdentifier>>,
+    /// Maps each cell to its color
+    #[pyo3(get)]
+    pub cell_to_color: HashMap<CellIdentifier, [u8; 3]>,
+    /// Maps each color back to its cell
+    #[pyo3(get)]
+    pub color_to_cell: HashMap<[u8; 3], CellIdentifier>,
 }
 
 impl SimResult {
