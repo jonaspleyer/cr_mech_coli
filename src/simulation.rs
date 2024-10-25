@@ -385,7 +385,43 @@ impl Cycle<RodAgent, f32> for RodAgent {
     }
 }
 
-/// Resulting type when executing a full simulation
+/// Manages all information resulting from an executed simulation
+///
+/// .. list-table:: Cellular History and Relations
+///     :header-rows: 1
+///
+///     * - Method
+///       - Description
+///     * - :func:`SimResult.get_cells`
+///       - All simulation snapshots
+///     * - :func:`SimResult.get_cells_at_iteration`
+///       - Simulation snapshot at iteration
+///     * - :func:`SimResult.get_cell_history`
+///       - History of one particular cell
+///     * - :func:`SimResult.get_all_identifiers`
+///       - Get all identifiers of all cells
+///     * - :func:`SimResult.get_all_identifiers_unsorted`
+///       - Get all identifiers (unsorted)
+///     * - :func:`SimResult.get_parent_map`
+///       - Maps a cell to its parent.
+///     * - :func:`SimResult.get_child_map`
+///       - Maps each cell to its children.
+///     * - :func:`SimResult.get_parent`
+///       - Get parent of a cell
+///     * - :func:`SimResult.get_children`
+///       - Get all children of a cell
+///     * - :func:`SimResult.cells_are_siblings`
+///       - Check if two cells have the same parent
+///
+/// .. list-table:: Imaging related methods
+///     :header-rows: 1
+///
+///     * - Method
+///       - Description
+///     * - :func:`SimResult.assign_colors_to_cells`
+///       - Assigns unique colors to cells.
+///     * - :func:`SimResult.counter_to_cell_identifier`
+///       - Converts an integer counter to a cell
 #[pyclass]
 pub struct SimResult {
     storage: StorageAccess<
@@ -448,6 +484,11 @@ impl SimResult {
 #[pymethods]
 impl SimResult {
     /// Get all cells at all iterations
+    ///
+    /// Returns:
+    ///     dict[int, dict[CellIdentifier, tuple[RodAgent, CellIdentifier | None]]: A dictionary
+    ///     containing all cells with their identifiers, values and possible parent identifiers for
+    ///     every iteration.
     pub fn get_cells(
         &self,
     ) -> Result<
@@ -528,9 +569,10 @@ impl SimResult {
 
     /// Obtains the parent identifier of a cell if it had a parent.
     ///
-    /// TODO this function can be optimized more. For now the amount of iterations and cells is low
-    /// enough that performance here should not matter too much. But it is almost a linear search
-    /// in a somewhat structured list.
+    /// Args:
+    ///     identifier(CellIdentifier): The cells unique identifier
+    /// Returns:
+    ///     CellIdentifier | None: The parents identifier or :class:`None`
     pub fn get_parent(&self, identifier: &CellIdentifier) -> PyResult<Option<CellIdentifier>> {
         // Check the first iteration
         Ok(self
