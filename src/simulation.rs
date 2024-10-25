@@ -400,6 +400,49 @@ pub struct SimResult {
         ),
         CartesianSubDomainRods<f32, N_ROD_SEGMENTS, 3>,
     >,
+    parent_map: HashMap<CellIdentifier, Option<CellIdentifier>>,
+    child_map: HashMap<CellIdentifier, Vec<CellIdentifier>>,
+}
+
+impl SimResult {
+    fn new(
+        storage: StorageAccess<
+            (
+                CellBox<RodAgent>,
+                _CrAuxStorage<
+                    nalgebra::SMatrix<f32, N_ROD_SEGMENTS, 3>,
+                    nalgebra::SMatrix<f32, N_ROD_SEGMENTS, 3>,
+                    nalgebra::SMatrix<f32, N_ROD_SEGMENTS, 3>,
+                    2,
+                >,
+            ),
+            CartesianSubDomainRods<f32, N_ROD_SEGMENTS, 3>,
+        >,
+    ) -> pyo3::PyResult<Self> {
+        let sim_result = Self {
+            storage,
+            parent_map: HashMap::new(),
+            child_map: HashMap::new(),
+        };
+        let all_cells = sim_result.get_cells()?;
+        let parent_map: HashMap<CellIdentifier, Option<CellIdentifier>> = all_cells
+            .into_iter()
+            .flat_map(|(_, cells)| cells.into_iter())
+            .map(|(ident, (_, parent))| (ident, parent))
+            .collect();
+        let child_map = parent_map
+            .iter()
+            .filter_map(|(child, parent)| parent.map(|x| (x, child)))
+            .fold(HashMap::new(), |mut acc, (parent, &child)| {
+                acc.entry(parent).or_insert(vec![child]).push(child);
+                acc
+            });
+        Ok(Self {
+            parent_map,
+            child_map,
+            ..sim_result
+        })
+    }
 }
 
 #[pymethods]
@@ -706,7 +749,7 @@ pub fn run_simulation(config: Configuration) -> Result<SimResult, PyErr> {
             settings: settings,
             aspects: [Mechanics, Interaction, Cycle],
         )?;
-        Ok(SimResult { storage })
+        Ok(SimResult::new(storage)?)
     })
 }
 
