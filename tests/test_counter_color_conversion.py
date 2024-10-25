@@ -22,7 +22,7 @@ def test_assign_colors():
     config = crm.Configuration()
     sim_result = crm.run_simulation(config)
 
-    cell_to_color = crm.assign_colors_to_cells(sim_result)
+    cell_to_color = sim_result.cell_to_color
     iterations = sim_result.get_all_iterations()
     cells = sim_result.get_cells()
     cells = cells[iterations[0]]

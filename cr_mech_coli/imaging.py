@@ -283,9 +283,7 @@ def store_all_images(
     """
     if render_settings is None:
         render_settings = RenderSettings()
-    colors = sim_result.assign_colors_to_cells()
-
-    colors = sim_result.assign_colors_to_cells()
+    colors = sim_result.cell_to_color
     iterations = sim_result.get_all_iterations()
 
     if use_hash:
