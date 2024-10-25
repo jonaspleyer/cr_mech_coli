@@ -56,7 +56,7 @@ bibtex_bibfiles = ['references.bib']
 bibtex_default_style = 'unsrt'
 bibtex_reference_style = 'label'
 
-html_logo = "_static/cellular_raza_dark_mode.png"
+html_logo = "_static/cr_mech_coli_dark_mode.png"
 html_theme_options = {
     "logo_only": True,
 }
