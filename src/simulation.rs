@@ -407,34 +407,9 @@ pub struct SimResult {
 
 impl SimResult {
     fn new(
-        storage: StorageAccess<
-            (
-                CellBox<RodAgent>,
-                _CrAuxStorage<
-                    nalgebra::SMatrix<f32, N_ROD_SEGMENTS, 3>,
-                    nalgebra::SMatrix<f32, N_ROD_SEGMENTS, 3>,
-                    nalgebra::SMatrix<f32, N_ROD_SEGMENTS, 3>,
-                    2,
-                >,
-            ),
-            CartesianSubDomainRods<f32, N_ROD_SEGMENTS, 3>,
-        >,
+        all_cells: HashMap<u64, HashMap<CellIdentifier, (RodAgent, Option<CellIdentifier>)>>,
     ) -> pyo3::PyResult<Self> {
-        let cells = storage
-            .cells
-            .load_all_elements()
-            .unwrap()
-            .into_iter()
-            .map(|(iteration, cells)| {
-                (
-                    iteration,
-                    cells
-                        .into_iter()
-                        .map(|(ident, (cbox, _))| (ident, (cbox.cell, cbox.parent)))
-                        .collect(),
-                )
-            })
-            .collect();
+        let cells = all_cells;
         let sim_result = Self {
             cells,
             parent_map: HashMap::new(),
@@ -791,7 +766,23 @@ pub fn run_simulation(config: Configuration) -> pyo3::PyResult<SimResult> {
             settings: settings,
             aspects: [Mechanics, Interaction, Cycle],
         )?;
-        Ok(SimResult::new(storage)?)
+        let cells = storage
+            .cells
+            .load_all_elements()
+            .unwrap()
+            .into_iter()
+            .map(|(iteration, cells)| {
+                (
+                    iteration,
+                    cells
+                        .into_iter()
+                        .map(|(ident, (cbox, _))| (ident, (cbox.cell, cbox.parent)))
+                        .collect(),
+                )
+            })
+            .collect();
+
+        Ok(SimResult::new(cells)?)
     })
 }
 
