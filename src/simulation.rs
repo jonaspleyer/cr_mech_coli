@@ -669,7 +669,7 @@ prepare_types!(
 
 /// Executes the simulation with the given :class:`Configuration`
 #[pyfunction]
-pub fn run_simulation(config: Configuration) -> Result<SimResult, PyErr> {
+pub fn run_simulation(config: Configuration) -> pyo3::PyResult<SimResult> {
     use rand::Rng;
     use rand_chacha::rand_core::SeedableRng;
     Python::with_gil(|py| {
