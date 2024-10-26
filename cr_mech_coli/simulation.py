@@ -8,7 +8,8 @@ This module contains functionality to configure and run simulations.
     * - :class:`AgentSettings`
       - A template for defining an agent.
     * - :class:`RodMechanicsSettings`
-      - Defines properties of to the `RodMechanics <https://cellular-raza.com/docs/cellular_raza_building_blocks/struct.RodMechanics.html>`_ struct.
+      - Defines properties of to the `RodMechanics struct
+        <https://cellular-raza.com/docs/cellular_raza_building_blocks/struct.RodMechanics.html>`_.
     * - :class:`MorsePotentialF32`
       - Define interaction properties of the agent.
 
