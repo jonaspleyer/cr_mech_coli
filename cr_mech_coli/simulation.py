@@ -1,5 +1,33 @@
 """
 This module contains functionality to configure and run simulations.
+
+.. list-table:: Define Agent Properties
+    :header-rows: 1
+    :widths: 40 60
+
+    * - :class:`AgentSettings`
+      - Define all settings related to the definition of agents.
+    * - :class:`RodMechanicsSettings`
+      - Defines properties of to the `RodMechanics <https://cellular-raza.com/docs/cellular_raza_building_blocks/struct.RodMechanics.html>`_ struct.
+    * - :class:`MorsePotentialF32`
+      - Define interaction properties of the agent.
+
+
+.. list-table:: Running a Simulation
+    :header-rows: 1
+    :widths: 40 60
+
+    * - :class:`Configuration`
+      - Bundles all information required for a simulation.
+    * - :func:`run_simulation`
+      - Executes the simulation and returns a :class:`CellContainer`.
 """
 
-from .cr_mech_coli_rs import run_simulation, AgentSettings, RodAgent, RodMechanicsSettings, Configuration, sort_cellular_identifiers, CellIdentifier, MorsePotentialF32
+from .cr_mech_coli_rs import run_simulation,\
+    AgentSettings,\
+    RodAgent,\
+    RodMechanicsSettings,\
+    Configuration,\
+    sort_cellular_identifiers,\
+    CellIdentifier,\
+    MorsePotentialF32
