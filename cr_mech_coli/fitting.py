@@ -1,4 +1,25 @@
 """
+This module provides functionality around fitting the :ref:`model` to given data.
+
+.. list-table:: Compare Masks
+    :header-rows: 0
+    :widths: 40 60
+
+    * - :func:`area_diff_mask`
+      - Computes a 2D array where the two masks differ.
+    * - :func:`penalty_area_diff`
+      - Calculates the penalty based on difference in colors.
+    * - :func:`parents_diff_mask`
+      - Computes a 2D penalty array which accounts if cells are related.
+    * - :func:`penalty_area_diff_account_parents`
+      - Uses the :func:`parents_diff_mask` to calculate the associated penatly.
+
+.. list-table:: Determine Positions from Mask
+    :header-rows: 0
+    :widths: 40 60
+
+    * - :func:`extract_positions`
+      - Extracts a list of position from a given mask.
 """
 
 import numpy as np
@@ -8,6 +29,10 @@ from .imaging import color_to_counter
 from .cr_mech_coli_rs import parents_diff_mask
 
 def extract_positions(mask: np.ndarray, n_vertices: int = 8) -> list[np.ndarray]:
+    """
+    .. error::
+        This function is not yet implemented
+    """
     pass
 
 def predict_from_mask(mask: np.ndarray, dt: float) -> CellContainer:

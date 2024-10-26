@@ -2,11 +2,11 @@
 This module contains functionality to configure and run simulations.
 
 .. list-table:: Define Agent Properties
-    :header-rows: 1
+    :header-rows: 0
     :widths: 40 60
 
     * - :class:`AgentSettings`
-      - Define all settings related to the definition of agents.
+      - A template for defining an agent.
     * - :class:`RodMechanicsSettings`
       - Defines properties of to the `RodMechanics <https://cellular-raza.com/docs/cellular_raza_building_blocks/struct.RodMechanics.html>`_ struct.
     * - :class:`MorsePotentialF32`
@@ -14,7 +14,7 @@ This module contains functionality to configure and run simulations.
 
 
 .. list-table:: Running a Simulation
-    :header-rows: 1
+    :header-rows: 0
     :widths: 40 60
 
     * - :class:`Configuration`
