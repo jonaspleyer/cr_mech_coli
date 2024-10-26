@@ -22,13 +22,14 @@ macro_rules! new_error (
 /// Calculates the penalty in relative area difference accounting for a lower number when cells have
 /// the same parent.
 #[pyfunction]
-#[pyo3(signature = (mask1, mask2, cell_container))]
+#[pyo3(signature = (mask1, mask2, cell_container, parent_penalty = 0.5))]
 pub fn parents_diff_mask<'py>(
     py: Python<'py>,
     mask1: numpy::PyReadonlyArray3<'py, u8>,
     mask2: numpy::PyReadonlyArray3<'py, u8>,
     cell_container: &CellContainer,
-) -> pyo3::PyResult<Bound<'py, numpy::PyArray2<u8>>> {
+    parent_penalty: f32,
+) -> pyo3::PyResult<Bound<'py, numpy::PyArray2<f32>>> {
     use numpy::*;
     let m1 = mask1.as_array();
     let m2 = mask2.as_array();
@@ -41,7 +42,7 @@ pub fn parents_diff_mask<'py>(
     let m2 = m2
         .to_shape(new_shape)
         .or_else(|e| Err(new_error!(PyValueError, "{e}")))?;
-    let diff_mask = numpy::ndarray::Array1::<u8>::from_iter(
+    let diff_mask = numpy::ndarray::Array1::<f32>::from_iter(
         m1.outer_iter()
             .zip(m2.outer_iter())
             .map(|(c1, c2)| {
@@ -73,12 +74,16 @@ pub fn parents_diff_mask<'py>(
                     ))?;
 
                     if Some(i1) == p2.as_ref() || Some(i2) == p1.as_ref() {
-                        return Ok(1);
+                        return Ok(parent_penalty);
                     }
+                    Ok(1.0)
+                } else if c1 != c2 {
+                    Ok(1.0)
+                } else {
+                    Ok(0.0)
                 }
-                Ok(0)
             })
-            .collect::<pyo3::PyResult<Vec<u8>>>()?
+            .collect::<pyo3::PyResult<Vec<f32>>>()?
             .into_iter(),
     );
     let diff_mask = diff_mask

@@ -28,7 +28,7 @@ fn cr_mech_coli_rs(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<CellIdentifier>()?;
     m.add_class::<VoxelPlainIndex>()?;
 
-    m.add_function(wrap_pyfunction!(penalty_area_diff_account_parents, m)?)?;
+    m.add_function(wrap_pyfunction!(parents_diff_mask, m)?)?;
     m.add_function(wrap_pyfunction!(counter_to_color, m)?)?;
     m.add_function(wrap_pyfunction!(color_to_counter, m)?)?;
     m.add_class::<Configuration>()?;
