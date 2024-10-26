@@ -8,7 +8,7 @@ Simulation
     :show-inheritance:
     :undoc-members:
     :imported-members:
-    :exclude-members: MorsePotentialF32
+    :exclude-members: MorsePotentialF32, CellIdentifier
 
 .. py:class:: MorsePotentialF32
 
