@@ -26,5 +26,6 @@ To adjust visualization settings, we provide the :class:`.RenderSettings` class.
 """
 
 from .datatypes import *
+from .fitting import *
 from .simulation import *
 from .imaging import *
