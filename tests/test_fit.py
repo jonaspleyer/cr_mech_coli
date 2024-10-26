@@ -9,7 +9,6 @@ def produce_masks():
     config.t_max = 100.0
     config.save_interval = 20.0
     config.n_agents = 4
-    config.show_progressbar = True
 
     cell_container = crm.run_simulation(config)
 
