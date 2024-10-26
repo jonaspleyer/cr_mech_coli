@@ -1,7 +1,5 @@
-use crate::{color_to_counter, CellContainer};
-use cellular_raza::prelude::CellIdentifier;
+use crate::CellContainer;
 use pyo3::prelude::*;
-use std::collections::HashMap;
 
 macro_rules! check_shape_identical_nonempty(
     ($a1:ident, $a2:ident) => {
