@@ -39,7 +39,7 @@ def penalty_area_diff(mask1, mask2) -> float:
         float: The penalty
     """
     p = (mask1.reshape((-1, 3)) - mask2.reshape((-1, 3)))
-    return 1 - np.mean(p == np.array([0, 0, 0,]).T)
+    return np.mean(p != np.array([0, 0, 0,]).T)
 
 def penalty_area_diff_account_parents(
         mask1: np.ndarray,
