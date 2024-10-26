@@ -4,12 +4,14 @@
 //! The bacteria grow and divide thus resulting in a packed environment after short periods of
 //! time.
 
+mod datatypes;
 mod imaging;
 mod sampling;
 mod simulation;
 
 use cellular_raza::prelude::MorsePotentialF32;
 pub use cellular_raza::prelude::{CellIdentifier, VoxelPlainIndex};
+pub use datatypes::*;
 pub use imaging::*;
 pub use sampling::*;
 pub use simulation::*;

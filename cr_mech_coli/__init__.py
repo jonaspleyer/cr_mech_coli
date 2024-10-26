@@ -25,5 +25,6 @@ To adjust visualization settings, we provide the :class:`.RenderSettings` class.
     However the same can not be guaranteed for calculations involving any of the python packages.
 """
 
+from .datatypes import *
 from .simulation import *
 from .imaging import *
