@@ -1,7 +1,7 @@
 use pyo3::prelude::*;
 use rayon::prelude::*;
 
-use crate::{run_simulation, Configuration, CellContainer};
+use crate::{run_simulation, CellContainer, Configuration};
 
 /*
 /// Defines how to sample the given value
