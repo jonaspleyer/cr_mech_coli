@@ -1,17 +1,17 @@
 Fitting Methods
 ===============
 
-.. image:: _static/fitting/progressions-1.png
+.. image:: _static/fitting-methods/progressions-1.png
    :width: 45%
-.. image:: _static/fitting/progressions-2.png
+.. image:: _static/fitting-methods/progressions-2.png
    :width: 45%
 
 Snapshots at `t=20min` and `t=40min`.
 All cells have divided.
 
-.. image:: _static/fitting/progressions-3.png
+.. image:: _static/fitting-methods/progressions-3.png
    :width: 45%
-.. image:: _static/fitting/progressions-4.png
+.. image:: _static/fitting-methods/progressions-4.png
    :width: 45%
 
 Calculations of differences between the images.

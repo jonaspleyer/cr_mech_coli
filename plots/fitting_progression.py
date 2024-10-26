@@ -26,7 +26,7 @@ if __name__ == "__main__":
     mask4 = crm.parents_diff_mask(mask1, mask2, cell_container)
 
     # Save first mask
-    path = Path("docs/source/_static/fitting/")
+    path = Path("docs/source/_static/fitting-methods/")
     path.mkdir(parents=True, exist_ok=True)
     cv.imwrite(filename=str(path / "progressions-1.png"), img=mask1)
     cv.imwrite(filename=str(path / "progressions-2.png"), img=mask2)
