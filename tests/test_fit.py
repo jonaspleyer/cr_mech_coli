@@ -1,4 +1,5 @@
 import cr_mech_coli as crm
+import numpy as np
 
 def produce_masks():
     config = crm.Configuration()
@@ -62,3 +63,12 @@ def test_area_diff_comparison():
     p1 = crm.penalty_area_diff_account_parents(mask1, mask2, cell_container)
 
     assert p1 < q1
+
+def test_area_diff_with_mask():
+    mask1, mask2, _ = produce_masks()
+
+    m = crm.area_diff_mask(mask1, mask2)
+    p1 = np.mean(m)
+    p2 = crm.penalty_area_diff(mask1, mask2)
+
+    assert np.abs(p1 - p2) < 1e-4
