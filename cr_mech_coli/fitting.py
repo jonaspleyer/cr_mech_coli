@@ -13,7 +13,31 @@ def extract_positions(mask: np.ndarray, n_vertices: int = 8) -> list[np.ndarray]
 def predict_from_mask(mask: np.ndarray, dt: float) -> CellContainer:
     pass
 
+def area_diff_mask(mask1, mask2) -> np.ndarray:
+    """
+    Calculates a 2D array with entries 1 whenever colors differ and 0 if not.
+
+    Args:
+        mask1(np.ndarray): Mask of segmented cells at one time-point
+        mask2(np.ndarray): Mask of segmented cells at other time-point
+    Returns:
+        np.ndarray: A 2D array with entries of value 1 where a difference was calculated.
+    """
+    s = mask1.shape
+    p = (mask1.reshape((-1, 3)) - mask2.reshape((-1, 3)))
+    return (p != np.array([0, 0, 0]).T).reshape(s)[:,:,0]
+
 def penalty_area_diff(mask1, mask2) -> float:
+    """
+    Calculates the penalty between two masks based on differences in color values (See also:
+    :func:`area_diff_mask`).
+
+    Args:
+        mask1(np.ndarray): Mask of segmented cells at one time-point
+        mask2(np.ndarray): Mask of segmented cells at other time-point
+    Returns:
+        float: The penalty
+    """
     p = (mask1.reshape((-1, 3)) - mask2.reshape((-1, 3)))
     return 1 - np.mean(p == np.array([0, 0, 0,]).T)
 
