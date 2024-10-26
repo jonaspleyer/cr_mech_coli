@@ -5,6 +5,7 @@ import numpy as np
 
 from .datatypes import CellContainer, CellIdentifier
 from .imaging import color_to_counter
+from .cr_mech_coli_rs import parents_diff_mask
 
 def extract_positions(mask: np.ndarray, n_vertices: int = 8) -> list[np.ndarray]:
     pass
@@ -20,26 +21,20 @@ def penalty_area_diff_account_parents(
         mask1: np.ndarray,
         mask2: np.ndarray,
         cell_container: CellContainer,
-        parent_penalty: float = 0.25,
+        parent_penalty: float = 0.5,
     ) -> float:
-    m1 = mask1.reshape((-1, 3))
-    m2 = mask2.reshape((-1, 3))
-    penalty = 0
-    for i in range(m1.shape[0]):
-        x1 = m1[i,:]
-        x2 = m2[i,:]
-        if np.all(x1 != x2):
-            c1 = cell_container.get_cell_from_color(x1)
-            c2 = cell_container.get_cell_from_color(x2)
-            if c1 is not None and c2 is not None:
-                pc1 = cell_container.get_parent(c1)
-                pc2 = cell_container.get_parent(c2)
-                if pc1 == pc2:
-                    penalty += parent_penalty
-                else:
-                    penalty += 1
-            else:
-                penalty += 1
+    """
+    Calculates the penalty between two masks while accounting for relations between parent and child
+    cells.
 
-    return penalty / m1.shape[0]
-
+    Args:
+        mask1(np.ndarray): Mask of segmented cells at one time-point
+        mask2(np.ndarray): Mask of segmented cells at other time-point
+        cell_container(CellContainer): See :class:`CellContainer`
+        parent_penalty(float): Penalty value when one cell is daughter of other.
+            Should be between 0 and 1.
+    Returns:
+        np.ndarray: A 2D array containing penalty values between 0 and 1.
+    """
+    diff_mask = parents_diff_mask(mask1, mask2, cell_container, parent_penalty)
+    return np.mean(diff_mask)
