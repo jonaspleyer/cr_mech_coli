@@ -64,6 +64,8 @@ brownian motion such as given by the
 `Brownian3D <https://cellular-raza.com/docs/cellular_raza_building_blocks/struct.Brownian3D.html>`_
 struct of `cellular-raza <https://cellular-raza.com>`_.
 
+.. _ TODO insert table with all parameters
+
 Interaction
 -----------
 
@@ -84,6 +86,8 @@ the vertex :math:`\vec{w}_i,\vec{w}_{i+1}` with relative strength :math:`(1-q)` 
     :label: force-external
 
 .. _ TODO MORSEPOTENTIAL
+
+.. _ TODO insert table with all parameters
 
 Cycle
 -----
