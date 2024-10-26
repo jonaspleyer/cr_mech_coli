@@ -1,5 +1,4 @@
 import cr_mech_coli as crm
-from cr_mech_coli.imaging import RenderSettings
 
 def produce_masks():
     config = crm.Configuration()
@@ -11,18 +10,18 @@ def produce_masks():
     config.n_agents = 4
     config.show_progressbar = True
 
-    sim_result = crm.run_simulation(config)
+    cell_container = crm.run_simulation(config)
 
-    all_cells = sim_result.get_cells()
-    iterations = sim_result.get_all_iterations()
-    colors = sim_result.cell_to_color
-    i1 = iterations[0]
-    i2 = iterations[1]
+    all_cells = cell_container.get_cells()
+    iterations = cell_container.get_all_iterations()
+    colors = cell_container.cell_to_color
+    i1 = iterations[1]
+    i2 = iterations[2]
 
-    rs = RenderSettings(resolution=200)
+    rs = crm.RenderSettings(resolution=800)
     mask1 = crm.render_mask(config, all_cells[i1], colors, render_settings=rs)
     mask2 = crm.render_mask(config, all_cells[i2], colors, render_settings=rs)
-    return mask1, mask2, sim_result
+    return mask1, mask2, cell_container
 
 
 def test_area_diff():
@@ -42,11 +41,11 @@ def test_area_diff():
 
 
 def test_area_diff_parents():
-    mask1, mask2, sim_result = produce_masks()
+    mask1, mask2, cell_container = produce_masks()
 
-    p1 = crm.penalty_area_diff_account_parents(mask1, mask2, sim_result)
-    p2 = crm.penalty_area_diff_account_parents(mask1, mask1, sim_result)
-    p3 = crm.penalty_area_diff_account_parents(mask2, mask2, sim_result)
+    p1 = crm.penalty_area_diff_account_parents(mask1, mask2, cell_container)
+    p2 = crm.penalty_area_diff_account_parents(mask1, mask1, cell_container)
+    p3 = crm.penalty_area_diff_account_parents(mask2, mask2, cell_container)
 
     assert p1 > 0
     assert p2 == 0
@@ -57,9 +56,9 @@ def test_area_diff_parents():
     assert p3 <= 1
 
 def test_area_diff_comparison():
-    mask1, mask2, parent_map = produce_masks()
+    mask1, mask2, cell_container = produce_masks()
 
-    p1 = crm.penalty_area_diff_account_parents(mask1, mask2, parent_map)
     q1 = crm.penalty_area_diff(mask1, mask2)
+    p1 = crm.penalty_area_diff_account_parents(mask1, mask2, cell_container)
 
     assert p1 < q1
