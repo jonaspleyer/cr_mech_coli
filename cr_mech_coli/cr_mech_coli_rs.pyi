@@ -89,7 +89,7 @@ class RodMechanicsSettings:
     spring_length: float
     damping: float
 
-class SimResult:
+class CellContainer:
     """\
     Resulting type when executing a full simulation
     """
@@ -110,7 +110,7 @@ class SimResult:
     def get_all_identifiers(self) -> list[CellIdentifier]: ...
     def assign_colors_to_cells(self) -> dict[CellIdentifier, list[int]]: ...
 
-def run_simulation(config: Configuration) -> SimResult:
+def run_simulation(config: Configuration) -> CellContainer:
     """\
     Executes the simulation with the given :class:`Configuration`
     """
