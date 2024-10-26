@@ -5,6 +5,8 @@ use pyo3::prelude::*;
 /// below 255.
 /// This will yield a Field of numbers :math:`\mathbb{Z}/251 \mathbb{Z}` and thus we will be able
 /// to determine an exact inverse function.
+/// This system is bettern known as
+/// `modular arithmetic <https://en.wikipedia.org/wiki/Modular_arithmetic>`_.
 ///
 /// To calculate artistic color values we multiply the counter by 157*163*173 which are three prime
 /// numbers roughyl in the middle of 255.
