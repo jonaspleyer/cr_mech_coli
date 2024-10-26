@@ -1,6 +1,5 @@
 import cr_mech_coli as crm
 import numpy as np
-import cv2 as cv
 from tqdm import tqdm
 
 def test_counter_color_conversion():
