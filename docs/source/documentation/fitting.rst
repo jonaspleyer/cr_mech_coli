@@ -7,3 +7,5 @@ Fitting
     :inherited-members:
     :show-inheritance:
     :undoc-members:
+
+.. autofunction:: cr_mech_coli.fitting.parents_diff_mask
