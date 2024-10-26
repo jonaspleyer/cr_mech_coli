@@ -80,6 +80,7 @@ Snapshots at `t=60min`.
 
     Documentation <documentation/index>
     Model <model>
+    Fitting Methods <fitting-methods>
     Imaging Generation <image-generation>
     Cell Segmentation <cell-segmentation>
     References <references>
