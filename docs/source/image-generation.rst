@@ -1,8 +1,8 @@
 Image-Generation
 ================
 
-Comparison with Real-World Images
----------------------------------
+Comparing Microscopic Images
+----------------------------
 
 .. subfigure:: ABC
     :layout-sm: A|B|C
@@ -11,10 +11,16 @@ Comparison with Real-World Images
     :class-grid: outline
 
     .. image:: _static/image-generation/Coli3.jpg
+        :alt: Electron Microscopy
     .. image:: _static/image-generation/image001133-cropped.png
+        :alt: Light Microscopy (1)
     .. image:: _static/image-generation/E_choli_Gram-cropped.JPG
+        :alt: Light Microscopy (2)
 
-    Figures from :cite:`WikimediaPicturesEColi`.
+    There exist a great variety of microscopes which generate differing images
+    :cite:`WikimediaPicturesEColi`.
+    For our interests, images taken by Electron Microscopes :cite:`Knoll1932` can not be taken into
+    account since the imaging process kills the bacteria and thus no dynamics can be captured.
 
 - Microscopic images
 - Surface of the Cell
@@ -30,11 +36,15 @@ List of Imaging Efects
     - Intensity
     - Refraction
 
-3-dimensional Render
---------------------
+3D Rendering
+------------
 
 - Which effects can we capture with that?
 
 
-Projection and Calculating Masks
---------------------------------
+Calculating Masks
+-----------------
+
+- parallel projection
+- maybe switch to something less calculation-instense (such as matplotlib)
+    - can we still trust that the generated image and the masks match?
