@@ -29,6 +29,7 @@ extensions = [
     'sphinx.ext.mathjax',
     'sphinx.ext.autosectionlabel',
     'sphinxcontrib.bibtex',
+    'sphinx_subfigure',
 ]
 
 source_suffix = {
