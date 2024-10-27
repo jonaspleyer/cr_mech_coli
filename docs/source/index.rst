@@ -23,6 +23,15 @@ even a small dataset.
 Its low computational cost mean that it can be readily applied in the construction of other
 Agent-Based Simulations within :code:`cellular_raza` :cite:`Pleyer_cellular_raza_2023`.
 
+:ref:`Fitting Methods <fitting-methods>`
+----------------------------------------
+
+To quantify if calculated results from our model match with given experimental data, we need to
+extract agent information from masks and compare them with calculated results.
+To capture the spatial effects and make our methods applicable in a wider context, we focus on the
+masks instead of other possible approaches.
+We use methods from :code:`sciki-image` :cite:`vanderWalt2014`.
+
 :ref:`Image Generation <image-generation>`
 ------------------------------------------
 
