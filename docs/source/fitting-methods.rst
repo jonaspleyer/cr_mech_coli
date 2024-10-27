@@ -1,6 +1,27 @@
 Fitting Methods
 ===============
 
+Extracting Positions from Masks
+-------------------------------
+
+.. subfigure:: AB
+    :layout-sm: A|B
+    :gap: 8px
+    :subcaptions: below
+    :class-grid: outline
+
+    .. image:: _static/fitting-methods/fit-1.png
+        :alt: Fit1
+    .. image:: _static/fitting-methods/fit-2.png
+        :alt: Fit2
+
+- Calculate individual mask segments for cells
+- Skeletonize cell-mask :cite:`Lee1994`
+- Approximate polygon :cite:`wiki:Ramer–Douglas–Peucker_algorithm`
+
+Constucting a Cost Function
+---------------------------
+
 - Talk about how to measure differences between masks
 
 .. subfigure:: AB
@@ -37,5 +58,3 @@ Fitting Methods
    We can clearly see that cell-division introduces undesirable spikes between individual
    time-steps.
    Relations between daughter and parent-cells have been weighted with a penalty of :math:`p=0`.
-
-New text here
