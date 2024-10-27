@@ -45,32 +45,41 @@ We are planning to use `pytorch <https://pytorch.org>`_'s 'Faster R-CNN'
 
 The images below show the steps outlined above.
 
-.. image:: _static/06725850956850056874/raw_pv/000000200.png
-   :width: 30%
-.. image:: _static/06725850956850056874/images/000000200.png
-   :width: 30%
-.. image:: _static/06725850956850056874/masks/000000200.png
-   :width: 30%
+.. subfigure:: ABC
+    :layout-sm: A|B|C
+    :gap: 8px
+    :subcaptions: below
+    :class-grid: outline
 
-Snapshots at `t=20min`.
+    .. image:: _static/06725850956850056874/raw_pv/000000200.png
+    .. image:: _static/06725850956850056874/images/000000200.png
+    .. image:: _static/06725850956850056874/masks/000000200.png
 
-.. image:: _static/06725850956850056874/raw_pv/000000400.png
-   :width: 30%
-.. image:: _static/06725850956850056874/images/000000400.png
-   :width: 30%
-.. image:: _static/06725850956850056874/masks/000000400.png
-   :width: 30%
+    Snapshots at `t=20min`.
 
-Snapshots at `t=40min`.
+.. subfigure:: ABC
+    :layout-sm: A|B|C
+    :gap: 8px
+    :subcaptions: below
+    :class-grid: outline
 
-.. image:: _static/06725850956850056874/raw_pv/000000600.png
-   :width: 30%
-.. image:: _static/06725850956850056874/images/000000600.png
-   :width: 30%
-.. image:: _static/06725850956850056874/masks/000000600.png
-   :width: 30%
+    .. image:: _static/06725850956850056874/raw_pv/000000400.png
+    .. image:: _static/06725850956850056874/images/000000400.png
+    .. image:: _static/06725850956850056874/masks/000000400.png
 
-Snapshots at `t=60min`.
+    Snapshots at `t=40min`.
+
+.. subfigure:: ABC
+    :layout-sm: A|B|C
+    :gap: 8px
+    :subcaptions: below
+    :class-grid: outline
+
+    .. image:: _static/06725850956850056874/raw_pv/000000600.png
+    .. image:: _static/06725850956850056874/images/000000600.png
+    .. image:: _static/06725850956850056874/masks/000000600.png
+
+    Snapshots at `t=60min`.
 
 .. toctree::
    :maxdepth: 2
