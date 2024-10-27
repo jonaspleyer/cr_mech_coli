@@ -35,6 +35,7 @@ List of Imaging Efects
     - Direction (Backlight, Front, Side, etc.)
     - Intensity
     - Refraction
+- Optical Aberration
 
 3D Rendering
 ------------
