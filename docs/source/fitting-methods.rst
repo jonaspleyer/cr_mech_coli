@@ -10,9 +10,9 @@ Extracting Positions from Masks
     :subcaptions: below
     :class-grid: outline
 
-    .. image:: _static/fitting-methods/fit-1.png
+    .. image:: _static/fitting-methods/progressions-1.png
         :alt: Fit1
-    .. image:: _static/fitting-methods/fit-2.png
+    .. image:: _static/fitting-methods/progressions-1.png
         :alt: Fit2
 
 - Calculate individual mask segments for cells
