@@ -1,4 +1,4 @@
-Fitting Methods
+Fitting-Methods
 ===============
 
 Extracting Positions from Masks
