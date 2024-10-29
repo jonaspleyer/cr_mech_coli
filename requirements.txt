@@ -2,3 +2,4 @@ pyvista
 numpy
 opencv-python
 tqdm
+skimage
