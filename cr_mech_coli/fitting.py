@@ -29,6 +29,29 @@ from .datatypes import CellContainer, CellIdentifier
 from .imaging import color_to_counter
 from .cr_mech_coli_rs import parents_diff_mask
 
+def _sort_points(skeleton) -> np.ndarray:
+    # Get the directions in which the skeletons are pointing
+    x, y = np.where(skeleton)
+    x_min = np.min(x)
+    x_max = np.max(x)
+    y_min = np.min(y)
+    y_max = np.max(y)
+
+    do_not_reverse = x_max-x_min >= y_max-y_min
+    if do_not_reverse:
+        points = np.column_stack((y, x))
+    else:
+        x, y = np.where(skeleton.T)
+        points = np.column_stack((x, y))
+
+    # Calculate the vector of projection
+    A = np.vstack([points[:,0], np.ones(len(points))]).T
+    m, c = np.linalg.lstsq(A, points[:,1])[0]
+    # Do the projection onto the calcualted vector
+    projection = np.sum((points - np.array([0,m])) * np.array([-1, -c])/(1+c**2)**0.5, axis=1)
+    indices = np.argsort(projection)
+    return np.roll(points[indices], 1, axis=1)
+
 def extract_positions(mask: np.ndarray, n_vertices: int = 8) -> list[np.ndarray]:
     """
     .. error::
