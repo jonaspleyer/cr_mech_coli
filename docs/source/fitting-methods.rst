@@ -10,14 +10,16 @@ Extracting Positions from Masks
     :subcaptions: below
     :class-grid: outline
 
-    .. image:: _static/fitting-methods/progressions-1.png
+    .. image:: _static/fitting-methods/extract_positions-000400.png
         :alt: Fit1
-    .. image:: _static/fitting-methods/progressions-1.png
+    .. image:: _static/fitting-methods/extract_positions-000600.png
         :alt: Fit2
 
 - Calculate individual mask segments for cells
 - Skeletonize cell-mask :cite:`Lee1994`
+- Sort points along major axis
 - Approximate polygon :cite:`wiki:Ramer–Douglas–Peucker_algorithm`
+- Calculate evenly-spaced segments along polygon
 
 Constucting a Cost Function
 ---------------------------
@@ -53,8 +55,8 @@ Constucting a Cost Function
 
    We performed penalty calculations for simulation snapshots in lock-step with two different
    techniques.
-   Due to the linear growth of the cells, we expect a constant amount of difference reported by our
-   implemented methods.
+   Due to the overall exponential growth of the ensemble, we also expect an exponential difference
+   (its derivative) reported by our implemented methods as time increases.
    We can clearly see that cell-division introduces undesirable spikes between individual
    time-steps.
    Relations between daughter and parent-cells have been weighted with a penalty of :math:`p=0`.
