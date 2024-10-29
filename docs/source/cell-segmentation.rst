@@ -1,8 +1,8 @@
 Cell-Segmentation
 #################
 
-Possible referencces: :cite:`Cutler2022,Stringer2020,Hardo2022`
+Possible referencces:
 
-- Omnipose
-- Cellpose
-- SyMBac
+- Omnipose :cite:`Cutler2022`
+- Cellpose :cite:`Stringer2020`
+- SyMBac :cite:`Hardo2022`
