@@ -73,4 +73,7 @@ if __name__ == "__main__":
         for p in positions.reshape((-1, 2)):
             mask = cv.drawMarker(mask, p, (50, 50, 50), cv.MARKER_TILTED_CROSS, 14, 2)
         path = Path("docs/source/_static/fitting-methods/")
-        cv.imwrite(filename=str(path / "extract_positions-{:06}.png".format(iteration)), img=mask)
+        cv.imwrite(
+            filename=str(path / "extract_positions-{:06}.png".format(iteration)),
+            img=mask[200:-200,200:-200],
+        )

@@ -28,8 +28,8 @@ if __name__ == "__main__":
     # Save first mask
     path = Path("docs/source/_static/fitting-methods/")
     path.mkdir(parents=True, exist_ok=True)
-    cv.imwrite(filename=str(path / "progressions-1.png"), img=mask1)
-    cv.imwrite(filename=str(path / "progressions-2.png"), img=mask2)
-    cv.imwrite(filename=str(path / "progressions-3.png"), img=mask3*255.0)
-    cv.imwrite(filename=str(path / "progressions-4.png"), img=mask4*255.0)
+    cv.imwrite(filename=str(path / "progressions-1.png"), img=mask1[100:-100,100:-100])
+    cv.imwrite(filename=str(path / "progressions-2.png"), img=mask2[100:-100,100:-100])
+    cv.imwrite(filename=str(path / "progressions-3.png"), img=mask3[100:-100,100:-100]*255.0)
+    cv.imwrite(filename=str(path / "progressions-4.png"), img=mask4[100:-100,100:-100]*255.0)
 
