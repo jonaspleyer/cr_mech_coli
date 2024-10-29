@@ -29,6 +29,37 @@ from .datatypes import CellContainer, CellIdentifier
 from .imaging import color_to_counter
 from .cr_mech_coli_rs import parents_diff_mask
 
+def points_along_polygon(polygon: list[np.ndarray] | np.ndarray, n_vertices: int = 8) -> np.ndarray:
+    """
+    Returns evenly-spaced points along the given polygon.
+    The initial and final point are always included.
+
+    Args:
+        polygon(list[np.ndarray] | np.ndarray: Ordered points which make up the polygon.
+        n_vertices(int): Number of vertices which should be extracted.
+    Returns:
+        np.ndarray: Array containing all extracted points (along the 0th axis).
+    """
+    polygon = np.array(polygon, dtype=float)
+
+    # Calculate the total length
+    length_segments = np.sqrt(np.sum((polygon[1:]-polygon[:-1])**2, axis=1))
+    length_segments_increasing = np.cumsum([0, *length_segments])
+    length_total = length_segments_increasing[-1]
+    dx = length_total / (n_vertices - 1)
+
+    points = [polygon[0]]
+    for i in range(1, n_vertices-1):
+        diffs = i * dx - length_segments_increasing
+        j = max(int(np.argmin(diffs > 0))-1, 0)
+        p1 = polygon[j]
+        p2 = polygon[j+1]
+        t = diffs[j] / length_segments[j]
+        p_new = p1 * (1-t) + p2 * t
+        points.append(p_new)
+    points.append(polygon[-1])
+    return np.array(points)
+
 def _sort_points(skeleton) -> np.ndarray:
     # Get the directions in which the skeletons are pointing
     x, y = np.where(skeleton)
