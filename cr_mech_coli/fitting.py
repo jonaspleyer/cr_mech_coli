@@ -23,6 +23,7 @@ This module provides functionality around fitting the :ref:`model` to given data
 """
 
 import numpy as np
+import skimage as sk
 
 from .datatypes import CellContainer, CellIdentifier
 from .imaging import color_to_counter
@@ -33,10 +34,20 @@ def extract_positions(mask: np.ndarray, n_vertices: int = 8) -> list[np.ndarray]
     .. error::
         This function is not yet implemented
     """
-    pass
+    # First determine the number of unique identifiers
+    m = mask.reshape((-1, 3))
+    colors = filter(lambda x: np.sum(x)!=0, np.unique(m, axis=0))
 
-def predict_from_mask(mask: np.ndarray, dt: float) -> CellContainer:
-    pass
+    cell_masks = [(m==c)[:,0].reshape(mask.shape[:2]) for c in colors]
+    skeleton_points = [
+        _sort_points(sk.morphology.skeletonize(m, method="lee")) for m in cell_masks
+    ]
+    polys = [
+        sk.measure.approximate_polygon(sp, 1)
+        for sp in skeleton_points
+    ]
+    points = [points_along_polygon(p, n_vertices) for p in polys]
+    return points
 
 def area_diff_mask(mask1, mask2) -> np.ndarray:
     """
