@@ -93,7 +93,7 @@ class CellContainer:
     """\
     Resulting type when executing a full simulation
     """
-    def get_cells(self) -> dict[int, dict[CellIdentifier, RodAgent]]: ...
+    def get_cells(self) -> dict[int, dict[CellIdentifier, tuple[RodAgent, CellIdentifier | None]]]: ...
     def get_cells_at_iteration(self, iteration: int) -> dict[
         CellIdentifier,
         tuple[RodAgent, CellIdentifier | None]
