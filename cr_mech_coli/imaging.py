@@ -159,15 +159,19 @@ def render_pv_image(
             pbr=render_settings.pbr,
             lighting=render_settings.lighting,
         )
-    dx = config.domain_size
-    plotter.camera.position = (0.5*dx, -0.5*dx, 5*dx)
-    plotter.camera.focal_point = (0.5*dx, 0.5*dx, 0)
 
     if not render_settings.render_mask:
         pv.Plotter.enable_ssao(plotter, radius=render_settings.ssao_radius)
         plotter.enable_anti_aliasing()
     else:
         plotter.disable_anti_aliasing()
+
+    dx = config.domain_size
+    pv.Plotter.view_xy(
+        plotter,
+        bounds=(0, dx, 0, dx, 0, 0)
+    )
+
     img = np.array(plotter.screenshot())
     plotter.close()
 
