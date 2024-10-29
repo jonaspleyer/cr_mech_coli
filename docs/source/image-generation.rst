@@ -28,14 +28,34 @@ Comparing Microscopic Images
 List of Imaging Efects
 ----------------------
 
-- Sensory Noise
-- Smudges (Dirt)
-- Lensing
-- Lighting
-    - Direction (Backlight, Front, Side, etc.)
-    - Intensity
-    - Refraction
-- Optical Aberration
+.. list-table:: Effects Introduced by Light Microscopes
+    :widths: 30 30 40
+    :header-rows: 1
+
+    * - Effect
+      - CG Equivalent
+      - Description
+    * - Sensory Noise
+      - Uniform noise at each pixel
+      - Sensors are noisy?
+    * - "Smudges"
+      - Distortion Layers
+      - Persistent across single time-series
+    * - Lensing
+      -
+      -
+    * - Angle of Lighting
+      -
+      -
+    * - Intensity
+      -
+      -
+    * - Indirect Lighting/Refraction
+      -
+      -
+    * - Optical Aberration
+      -
+      -
 
 3D Rendering
 ------------
