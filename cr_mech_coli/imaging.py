@@ -120,7 +120,8 @@ def render_pv_image(
         render_settings: RenderSettings,
         colors: dict[CellIdentifier, tuple[int, int, int]] | None = None,
         filename: str | Path | None = None,
-    ) -> np.ndarray:
+        get_render_window_diag: bool = False,
+    ) -> np.ndarray | float:
     """
     Creates a 3D render of the given cells.
 
@@ -132,6 +133,9 @@ def render_pv_image(
             If not given use color from `render_settings`.
         filename: Name of the file in which to save the image. If not specified, do
             not save.
+        get_length(bool): If specified omit all plotting actions and only return the diagonal of the
+        bounding box (See `pyvista.Plotter.length
+        <https://docs.pyvista.org/api/plotting/_autosummary/pyvista.plotter.length>`_).
 
     Returns:
         np.ndarray: An array of shape `(resolution, resolution, 3)` which contains the rendered
@@ -162,6 +166,9 @@ def render_pv_image(
     dx = config.domain_size
     plotter.camera.position = (0.5*dx, -0.5*dx, 5*dx)
     plotter.camera.focal_point = (0.5*dx, 0.5*dx, 0)
+
+    if get_render_window_diag:
+        return plotter.length
 
     if not render_settings.render_mask:
         pv.Plotter.enable_ssao(plotter, radius=render_settings.ssao_radius)
