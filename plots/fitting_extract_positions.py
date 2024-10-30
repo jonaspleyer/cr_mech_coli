@@ -53,7 +53,6 @@ if __name__ == "__main__":
         pixel_per_length = domain_pixels / dl
 
         # Calculate differences in positions
-        fig, ax = plt.subplots(figsize=(6, 6))
         pos_exact = []
         for p1 in positions:
             # Get color
