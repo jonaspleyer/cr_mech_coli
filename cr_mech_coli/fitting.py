@@ -85,8 +85,16 @@ def _sort_points(skeleton) -> np.ndarray:
 
 def extract_positions(mask: np.ndarray, n_vertices: int = 8) -> list[np.ndarray]:
     """
-    .. error::
-        This function is not yet implemented
+    Extracts positions from a mask for each sub-mask associated to a single cell.
+    To read more about the used methods, visit the :ref:`Fitting-Methods` page.
+
+    Args:
+        mask(np.ndarray): Array of shape :code:`(D1, D2, 3)` containing pixel values of a mask for
+            multiple cells.
+        n_vertices(int): Number of vertices which should be extracted from each given cell-mask.
+    Returns:
+        list[np.ndarray]: A list containing arrays of shape :code:`(n_vertices, 2)` containing the
+            individual positions of the cells.
     """
     # First determine the number of unique identifiers
     m = mask.reshape((-1, 3))
