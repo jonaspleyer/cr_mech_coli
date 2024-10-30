@@ -29,9 +29,10 @@ Extracting Positions from Masks
     We can clearly see that the fitting method slightly underestimates the total rod length.
     This can be attributed to the Skelezonization algorithm :cite:`Lee1994` which truncates the ends
     of the point set more.
-    Furthermore, at some point the fitting procedure breaks down and does not yield reliable
-    results anymore which most likely stems from non-trivial geometries of the cell which makes it
-    harder to properly estimate the approximating polygon of the Skelezonization result.
+    As time increases, our fitting method becomes less accurate.
+    However, overall slopes and division events are still captured correctly.
+    This behaviour is due non-trivial geometries of the cell which makes it harder to properly
+    estimate the approximating polygon.
 
 - Calculate individual mask segments for cells
 - Skeletonize cell-mask :cite:`Lee1994`
