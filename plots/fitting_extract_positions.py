@@ -75,3 +75,79 @@ if __name__ == "__main__":
             filename=str(path / "extract_positions-{:06}.png".format(iteration)),
             img=mask[200:-200,200:-200],
         )
+
+    distances = []
+    lengths1 = []
+    lengths2 = []
+    for n_iter in tqdm(iterations):
+        mask = crm.render_mask(config, all_cells[n_iter], colors)
+        positions = np.array(crm.extract_positions(mask))
+
+        distances_i = []
+        lengths_i_1 = []
+        lengths_i_2 = []
+        for p in positions:
+            color = mask[int(p[0][0]), int(p[0][1])]
+            ident = cell_container.get_cell_from_color([*color])
+            cell = all_cells[n_iter][ident][0]
+            q = convert_cell_pos_to_pixels(cell.pos, config.domain_size, mask.shape[:2])
+
+            # Determine if we need to use the reverse order
+            d1 = np.sum((p-q)**2)
+            d2 = np.sum((p-q[::-1])**2)
+            d = np.sqrt(min(d1, d2))**0.5 / len(p)
+            distances_i.append(d)
+
+            # Compare total length
+            l1 = np.sum((p[1:] - p[:-1])**2)**0.5
+            l2 = np.sum((q[1:] - q[:-1])**2)**0.5
+            lengths_i_1.append(l1)
+            lengths_i_2.append(l2)
+
+        distances.append(distances_i)
+        lengths1.append(lengths_i_1)
+        lengths2.append(lengths_i_2)
+
+    fig, ax1 = plt.subplots()
+    # ax2 = ax1.twinx()
+
+    x = np.arange(len(distances)) * config.save_interval
+    ax1.errorbar(
+        x=x,
+        y=[np.mean(d) for d in distances],
+        yerr=[np.std(d) for d in distances],
+        linestyle="-.",
+        color="k",
+        label="Average vertex Distance",
+    )
+    ax1.errorbar(
+        x,
+        y=[np.mean(li) for li in lengths1],
+        yerr=[np.std(li) for li in lengths1],
+        linestyle=":",
+        color="gray",
+        label="Calculated Rod Length",
+    )
+    ax1.errorbar(
+        x,
+        y=[np.mean(li) for li in lengths2],
+        yerr=[np.std(li) for li in lengths2],
+        linestyle=(0, (5, 7)),
+        color="gray",
+        label="Average Rod Length",
+    )
+    # ax2.errorbar(
+    #     x=x,
+    #     y=[np.mean(li) for li in lengths],
+    #     yerr=[np.std(li) for li in lengths],
+    #     linestyle=":",
+    #     color="k",
+    #     label="Difference Rod Lengths",
+    # )
+    ax1.legend()
+    ax1.set_ylabel("Length [µm]")
+    ax1.set_xlabel("Time [min]")
+    # ax2.set_ylabel("Length [µm]")
+    fig.tight_layout()
+    fig.savefig("docs/source/_static/fitting-methods/displacement-calculations.png")
+    plt.show()
