@@ -158,6 +158,12 @@ def convert_cell_pos_to_pixels(cell_pos: np.ndarray, domain_size: float, image_r
     Converts the position of a cell (collection of vertices) from length units (typically µm) to
     pixels.
 
+    .. warning::
+        This function performs only an approximate inverse to the :func:`convert_pixel_to_position`
+        function.
+        When converting from floating-point values to pixels and back rounding errors will be
+        introcued.
+
     Args:
         cell_pos(np.ndarray): Array of shape (N,2) containing the position of the cells vertices.
         domain_size(float): The overall edge length of the domain (typically in µm).
@@ -184,7 +190,14 @@ def convert_cell_pos_to_pixels(cell_pos: np.ndarray, domain_size: float, image_r
 def convert_pixel_to_position(pos_pixel, domain_size, image_resolution):
     """
     Contains identical arguments as the :func:`convert_cell_pos_to_pixels` function and performs the
-    inverse operation.
+    approximate inverse operation.
+
+    .. warning::
+        This function performs only an approximate inverse to the :func:`convert_cell_pos_to_pixels`
+        function.
+        When converting from floating-point values to pixels and back rounding errors will be
+        introcued.
+
 
     Returns:
         np.ndarray: The converted position of the cell.
