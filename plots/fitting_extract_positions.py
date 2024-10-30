@@ -33,7 +33,6 @@ if __name__ == "__main__":
     for iteration, mask in tqdm(iter_masks):
         positions = crm.extract_positions(mask)
         positions = np.round(np.array(positions))
-        positions = np.roll(positions, 1, axis=2)
         positions = np.array(positions, dtype=int).reshape((len(positions), -1, 1, 2))
 
         dl = 2**0.5 * config.domain_size
