@@ -5,21 +5,6 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 from tqdm import tqdm
 
-def convert_cell_pos_to_pixels(cell_pos, domain_size, image_resolution):
-    dl = 2**0.5 * domain_size
-    domain_pixels = np.array(image_resolution, dtype=float)
-    pixel_per_length = domain_pixels / dl
-
-    # Shift coordinates to center
-    p2 = np.array([0.5 * domain_size]*2) - cell_pos[:,:2]
-    # Scale with conversion between pixels and length
-    p2 *= np.array([-1, 1]) * pixel_per_length
-    # Shift coordinate system again
-    p2 += 0.5 * domain_pixels
-    # Round to plot in image
-    p2 = np.array(np.round(p2), dtype=int)
-    return p2
-
 if __name__ == "__main__":
     config = crm.Configuration(
         growth_rate = 0.05,
@@ -60,7 +45,7 @@ if __name__ == "__main__":
             ident = cell_container.get_cell_from_color([*color])
             cell = all_cells[iteration][ident][0]
             p1 = np.array(p1[:,0,:], dtype=float)
-            p2 = convert_cell_pos_to_pixels(cell.pos, config.domain_size, mask.shape[:2])
+            p2 = crm.convert_cell_pos_to_pixels(cell.pos, config.domain_size, mask.shape[:2])
             pos_exact.append(p2)
 
         pos_exact = np.round(np.array(pos_exact)).reshape((len(pos_exact), -1, 1, 2))
@@ -87,10 +72,11 @@ if __name__ == "__main__":
         lengths_i_1 = []
         lengths_i_2 = []
         for p in positions:
-            color = mask[int(p[0][0]), int(p[0][1])]
+            color = mask[int(p[0][1]), int(p[0][0])]
             ident = cell_container.get_cell_from_color([*color])
             cell = all_cells[n_iter][ident][0]
-            q = convert_cell_pos_to_pixels(cell.pos, config.domain_size, mask.shape[:2])
+            q = cell.pos[:,:2]
+            p = crm.convert_pixel_to_position(p, config.domain_size, mask.shape[:2])
 
             # Determine if we need to use the reverse order
             d1 = np.sum(np.sum((p-q)**2, axis=1)**0.5)
