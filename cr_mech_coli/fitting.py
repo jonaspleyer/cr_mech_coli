@@ -14,12 +14,16 @@ This module provides functionality around fitting the :ref:`model` to given data
     * - :func:`penalty_area_diff_account_parents`
       - Uses the :func:`parents_diff_mask` to calculate the associated penatly.
 
-.. list-table:: Determine Positions from Mask
+.. list-table:: Work with Masks and Cell Positions
     :header-rows: 0
     :widths: 40 60
 
     * - :func:`extract_positions`
       - Extracts a list of position from a given mask.
+    * - :func:`convert_pixel_to_position`
+      - Converts positions in pixel units to units of length (typically µm).
+    * - :func:`convert_cell_pos_to_pixels`
+      - Converts positions in length units (typically µm) to pixel units.
 """
 
 import numpy as np
