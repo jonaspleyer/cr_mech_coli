@@ -26,7 +26,7 @@ if __name__ == "__main__":
         t0=0.0,
         dt=0.1,
         t_max=100.0,
-        save_interval=20.0,
+        save_interval=4.0,
         n_agents=4,
         domain_size=100,
     )
@@ -39,8 +39,8 @@ if __name__ == "__main__":
 
     # Pick one iteration to plot results
     iter_masks = [
-        (iterations[1], crm.render_mask(config, all_cells[iterations[1]], colors)),
-        (iterations[2], crm.render_mask(config, all_cells[iterations[2]], colors)),
+        (iterations[9], crm.render_mask(config, all_cells[iterations[9]], colors)),
+        (iterations[14], crm.render_mask(config, all_cells[iterations[14]], colors)),
     ]
     for iteration, mask in tqdm(iter_masks):
         positions = crm.extract_positions(mask)
