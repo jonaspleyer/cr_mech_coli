@@ -109,45 +109,43 @@ if __name__ == "__main__":
         lengths2.append(lengths_i_2)
 
     fig, ax1 = plt.subplots()
-    # ax2 = ax1.twinx()
 
     x = np.arange(len(distances)) * config.save_interval
-    ax1.errorbar(
-        x=x,
-        y=[np.mean(d) for d in distances],
-        yerr=[np.std(d) for d in distances],
-        linestyle="-.",
-        color="k",
-        label="Average vertex Distance",
-    )
+    # ax1.errorbar(
+    #     x=x,
+    #     y=[np.mean(d) for d in distances],
+    #     yerr=[np.std(d) for d in distances],
+    #     linestyle="-.",
+    #     color="k",
+    #     label="Average vertex Distance",
+    # )
     ax1.errorbar(
         x,
         y=[np.mean(li) for li in lengths1],
         yerr=[np.std(li) for li in lengths1],
-        linestyle=":",
+        linestyle="--",
+        color="k",
+        label="Rod Length (Fit)",
+    )
+    ax1.fill_between(
+        x,
+        y1=[np.mean(lengths1[i])-np.mean(distances[i]) for i in range(len(lengths1))],
+        y2=[np.mean(lengths1[i])+np.mean(distances[i]) for i in range(len(lengths1))],
+        alpha=0.3,
         color="gray",
-        label="Calculated Rod Length",
+        label="Vertex Difference",
     )
     ax1.errorbar(
         x,
         y=[np.mean(li) for li in lengths2],
         yerr=[np.std(li) for li in lengths2],
-        linestyle=(0, (5, 7)),
+        linestyle=":",
         color="gray",
-        label="Average Rod Length",
+        label="Rod Length",
     )
-    # ax2.errorbar(
-    #     x=x,
-    #     y=[np.mean(li) for li in lengths],
-    #     yerr=[np.std(li) for li in lengths],
-    #     linestyle=":",
-    #     color="k",
-    #     label="Difference Rod Lengths",
-    # )
     ax1.legend()
     ax1.set_ylabel("Length [µm]")
     ax1.set_xlabel("Time [min]")
-    # ax2.set_ylabel("Length [µm]")
     fig.tight_layout()
     fig.savefig("docs/source/_static/fitting-methods/displacement-calculations.png")
     plt.show()
