@@ -10,11 +10,13 @@ if __name__ == "__main__":
         growth_rate = 0.05,
         t0=0.0,
         dt=0.1,
-        t_max=100.0,
+        t_max=200.0,
         save_interval=4.0,
         n_agents=4,
         domain_size=100,
     )
+    config.agent_settings.mechanics.angle_stiffness = 1.0
+    config.domain_height = 0.2
 
     cell_container = crm.run_simulation(config)
 
