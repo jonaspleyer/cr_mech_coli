@@ -51,7 +51,7 @@ Constucting a Cost Function
     .. image:: _static/fitting-methods/progressions-1.png
     .. image:: _static/fitting-methods/progressions-2.png
 
-    Snapshots at `t=20min` and `t=40min`.
+    Snapshots at `t=40min` and `t=60min`.
     All cells have undergone a division event.
 
 .. subfigure:: AB
