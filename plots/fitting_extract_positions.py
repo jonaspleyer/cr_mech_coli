@@ -28,6 +28,7 @@ if __name__ == "__main__":
     iter_masks = [
         (iterations[9], crm.render_mask(config, all_cells[iterations[9]], colors)),
         (iterations[14], crm.render_mask(config, all_cells[iterations[14]], colors)),
+        (iterations[29], crm.render_mask(config, all_cells[iterations[29]], colors)),
     ]
     for iteration, mask in tqdm(iter_masks):
         positions = crm.extract_positions(mask)
