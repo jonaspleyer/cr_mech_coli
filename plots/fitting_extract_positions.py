@@ -93,9 +93,9 @@ if __name__ == "__main__":
             q = convert_cell_pos_to_pixels(cell.pos, config.domain_size, mask.shape[:2])
 
             # Determine if we need to use the reverse order
-            d1 = np.sum((p-q)**2)
-            d2 = np.sum((p-q[::-1])**2)
-            d = np.sqrt(min(d1, d2))**0.5 / len(p)
+            d1 = np.sum(np.sum((p-q)**2, axis=1)**0.5)
+            d2 = np.sum(np.sum((p-q[::-1])**2, axis=1)**0.5)
+            d = min(d1, d2) / len(p)
             distances_i.append(d)
 
             # Compare total length
