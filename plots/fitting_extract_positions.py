@@ -3,6 +3,7 @@ import numpy as np
 import cv2 as cv
 from pathlib import Path
 import matplotlib.pyplot as plt
+from tqdm import tqdm
 
 def convert_cell_pos_to_pixels(cell_pos, domain_size, image_resolution):
     dl = 2**0.5 * domain_size
@@ -41,7 +42,7 @@ if __name__ == "__main__":
         (iterations[1], crm.render_mask(config, all_cells[iterations[1]], colors)),
         (iterations[2], crm.render_mask(config, all_cells[iterations[2]], colors)),
     ]
-    for iteration, mask in iter_masks:
+    for iteration, mask in tqdm(iter_masks):
         positions = crm.extract_positions(mask)
         positions = np.round(np.array(positions))
         positions = np.roll(positions, 1, axis=2)
