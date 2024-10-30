@@ -152,3 +152,49 @@ def penalty_area_diff_account_parents(
     """
     diff_mask = parents_diff_mask(mask1, mask2, cell_container, parent_penalty)
     return np.mean(diff_mask)
+
+def convert_cell_pos_to_pixels(cell_pos: np.ndarray, domain_size: float, image_resolution: tuple[int, int] | np.ndarray):
+    """
+    Converts the position of a cell (collection of vertices) from length units (typically µm) to
+    pixels.
+
+    Args:
+        cell_pos(np.ndarray): Array of shape (N,2) containing the position of the cells vertices.
+        domain_size(float): The overall edge length of the domain (typically in µm).
+        image_resolution(tuple[int, int] | np.ndarray): A tuple containing the resolution of the
+            image.
+            Typically, the values for width and height are identical.
+    Returns:
+        np.ndarray: The converted position of the cell.
+    """
+    dl = 2**0.5 * domain_size
+    domain_pixels = np.array(image_resolution, dtype=float)
+    pixel_per_length = domain_pixels / dl
+
+    # Shift coordinates to center
+    p = np.array([0.5 * domain_size]*2) - cell_pos[:,:2]
+    # Scale with conversion between pixels and length
+    p *= np.array([-1, 1]) * pixel_per_length
+    # Shift coordinate system again
+    p += 0.5 * domain_pixels
+    # Round to plot in image
+    p = np.array(np.round(p), dtype=int)
+    return p
+
+def convert_pixel_to_position(pos_pixel, domain_size, image_resolution):
+    """
+    Contains identical arguments as the :func:`convert_cell_pos_to_pixels` function and performs the
+    inverse operation.
+
+    Returns:
+        np.ndarray: The converted position of the cell.
+    """
+    dl = 2**0.5 * domain_size
+    domain_pixels = np.array(image_resolution, dtype=float)
+    pixel_per_length = domain_pixels / dl
+
+    p = np.array(pos_pixel, dtype=float)
+    p -= 0.5 * domain_pixels
+    p = p * np.array([-1, 1]) / pixel_per_length
+    p = 0.5 * domain_size - p
+    return p
