@@ -90,7 +90,7 @@ The images below show the steps outlined above.
     Snapshots at `t=60min`.
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 4
    :caption: Contents:
    :titlesonly:
    :hidden:
@@ -101,6 +101,7 @@ The images below show the steps outlined above.
     Imaging Generation <image-generation>
     Cell Segmentation <cell-segmentation>
     References <references>
+    Todo <todo>
 
 Indices and tables
 ##################
