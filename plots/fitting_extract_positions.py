@@ -100,21 +100,13 @@ if __name__ == "__main__":
     fig, ax1 = plt.subplots()
 
     x = np.arange(len(distances)) * config.save_interval
-    # ax1.errorbar(
-    #     x=x,
-    #     y=[np.mean(d) for d in distances],
-    #     yerr=[np.std(d) for d in distances],
-    #     linestyle="-.",
-    #     color="k",
-    #     label="Average vertex Distance",
-    # )
-    ax1.errorbar(
+    ax1.plot(
         x,
-        y=[np.mean(li) for li in lengths1],
-        yerr=[np.std(li) for li in lengths1],
+        [np.mean(li) for li in lengths1],
+        # yerr=[np.std(li) for li in lengths1],
         linestyle="--",
         color="k",
-        label="Rod Length (Fit)",
+        label="Average Rod Length (Fit)",
     )
     ax1.fill_between(
         x,
@@ -122,15 +114,15 @@ if __name__ == "__main__":
         y2=[np.mean(lengths1[i])+np.mean(distances[i]) for i in range(len(lengths1))],
         alpha=0.3,
         color="gray",
-        label="Vertex Difference",
+        label="Average Vertex Difference",
     )
-    ax1.errorbar(
+    ax1.plot(
         x,
-        y=[np.mean(li) for li in lengths2],
-        yerr=[np.std(li) for li in lengths2],
+        [np.mean(li) for li in lengths2],
+        # yerr=[np.std(li) for li in lengths2],
         linestyle=":",
-        color="gray",
-        label="Rod Length",
+        color="k",
+        label="Average Rod Length",
     )
     ax1.legend()
     ax1.set_ylabel("Length [µm]")
