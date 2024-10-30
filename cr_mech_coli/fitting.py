@@ -79,7 +79,7 @@ def _sort_points(skeleton) -> np.ndarray:
     A = np.vstack([points[:,0], np.ones(len(points))]).T
     m, c = np.linalg.lstsq(A, points[:,1])[0]
     # Do the projection onto the calcualted vector
-    projection = np.sum((points - np.array([0,m])) * np.array([-1, -c])/(1+c**2)**0.5, axis=1)
+    projection = np.sum((points - np.array([0,c])) * np.array([-1, -m])/(1+m**2)**0.5, axis=1)
     indices = np.argsort(projection)
     return np.roll(points[indices], 1, axis=1)
 
