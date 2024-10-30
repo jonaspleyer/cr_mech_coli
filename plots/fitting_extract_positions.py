@@ -4,6 +4,21 @@ import cv2 as cv
 from pathlib import Path
 import matplotlib.pyplot as plt
 
+def convert_cell_pos_to_pixels(cell_pos, domain_size, image_resolution):
+    dl = 2**0.5 * domain_size
+    domain_pixels = np.array(image_resolution, dtype=float)
+    pixel_per_length = domain_pixels / dl
+
+    # Shift coordinates to center
+    p2 = np.array([0.5 * domain_size]*2) - cell_pos[:,:2]
+    # Scale with conversion between pixels and length
+    p2 *= np.array([-1, 1]) * pixel_per_length
+    # Shift coordinate system again
+    p2 += 0.5 * domain_pixels
+    # Round to plot in image
+    p2 = np.array(np.round(p2), dtype=int)
+    return p2
+
 if __name__ == "__main__":
     config = crm.Configuration(
         growth_rate = 0.05,
@@ -45,24 +60,7 @@ if __name__ == "__main__":
             ident = cell_container.get_cell_from_color([*color])
             cell = all_cells[iteration][ident][0]
             p1 = np.array(p1[:,0,:], dtype=float)
-
-            # Shift coordinates to center
-            p2 = np.array([0.5 * config.domain_size]*2) - cell.pos[:,:2]
-            # Scale with conversion between pixels and length
-            p2 *= np.array([-1, 1]) * pixel_per_length
-            # Shift coordinate system again
-            p2 += 0.5 * domain_pixels
-            # Round to plot in image
-            p2 = np.array(np.round(p2), dtype=int)
-
-            # Determine if we need to use the reverse order
-            d1 = np.sum((p2-p1)**2)
-            d2 = np.sum((p2-p1[::-1])**2)
-            d = np.sqrt(min(d1, d2)) / len(p2)
-
-            # Compare total length
-            l1 = np.sum((p2[1:] - p2[:-1])**2)**0.5
-            l2 = np.sum((p1[1:] - p1[:-1])**2)**0.5
+            p2 = convert_cell_pos_to_pixels(cell.pos, config.domain_size, mask.shape[:2])
             pos_exact.append(p2)
 
         pos_exact = np.round(np.array(pos_exact)).reshape((len(pos_exact), -1, 1, 2))
