@@ -100,7 +100,7 @@ def extract_positions(mask: np.ndarray, n_vertices: int = 8) -> list[np.ndarray]
         sk.measure.approximate_polygon(sp, 1)
         for sp in skeleton_points
     ]
-    points = [points_along_polygon(p, n_vertices) for p in polys]
+    points = [np.roll(points_along_polygon(p, n_vertices), 1, axis=1) for p in polys]
     return points
 
 def area_diff_mask(mask1, mask2) -> np.ndarray:
