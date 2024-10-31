@@ -101,6 +101,7 @@ The images below show the steps outlined above.
     Imaging Generation <image-generation>
     Cell Segmentation <cell-segmentation>
     References <references>
+    Changelog <changelog>
     Todo <todo>
 
 Indices and tables

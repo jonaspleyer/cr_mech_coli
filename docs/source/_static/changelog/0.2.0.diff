@@ -1,0 +1,66 @@
+ {cr_mech_coli/.github => .github}/workflows/CI.yml |   0
+ .github/workflows/sphinx_doc.yml                   |  72 +++
+ cr_mech_coli/.gitignore => .gitignore              |   4 +
+ cr_mech_coli/Cargo.toml => Cargo.toml              |  11 +-
+ LICENSE                                            | 339 +++++++++++
+ README.md                                          |  15 +
+ cr_mech_coli/__init__.py                           |  22 +
+ cr_mech_coli/cr_mech_coli/__init__.py              |   1 -
+ cr_mech_coli/cr_mech_coli_rs.pyi                   | 185 ++++++
+ cr_mech_coli/imaging.py                            | 289 +++++++++
+ cr_mech_coli/simulation.py                         |   5 +
+ cr_mech_coli/src/lib.rs                            | 317 ----------
+ cr_mech_coli/src/main.rs                           |  80 ---
+ cr_mech_coli/tests/test_basic.py                   |  22 -
+ docs/Makefile                                      |  20 +
+ docs/make.bat                                      |  35 ++
+ docs/requirements.txt                              |   5 +
+ .../_static/06725850956850056874/config.json       |  83 +++
+ .../06725850956850056874/images/000000200.png      | Bin 0 -> 3923934 bytes
+ .../06725850956850056874/images/000000400.png      | Bin 0 -> 3923807 bytes
+ .../06725850956850056874/images/000000600.png      | Bin 0 -> 3924451 bytes
+ .../06725850956850056874/images/000000800.png      | Bin 0 -> 3924057 bytes
+ .../06725850956850056874/images/000001000.png      | Bin 0 -> 3924924 bytes
+ .../06725850956850056874/masks/000000200.png       | Bin 0 -> 17551 bytes
+ .../06725850956850056874/masks/000000400.png       | Bin 0 -> 20399 bytes
+ .../06725850956850056874/masks/000000600.png       | Bin 0 -> 20580 bytes
+ .../06725850956850056874/masks/000000800.png       | Bin 0 -> 22593 bytes
+ .../06725850956850056874/masks/000001000.png       | Bin 0 -> 25844 bytes
+ .../06725850956850056874/raw_pv/000000200.png      | Bin 0 -> 179108 bytes
+ .../06725850956850056874/raw_pv/000000400.png      | Bin 0 -> 183755 bytes
+ .../06725850956850056874/raw_pv/000000600.png      | Bin 0 -> 188960 bytes
+ .../06725850956850056874/raw_pv/000000800.png      | Bin 0 -> 208741 bytes
+ .../06725850956850056874/raw_pv/000001000.png      | Bin 0 -> 228463 bytes
+ docs/source/_static/cellular_raza.png              | Bin 0 -> 21120 bytes
+ docs/source/_static/cellular_raza.svg              |  70 +++
+ docs/source/_static/cellular_raza_dark_mode.png    | Bin 0 -> 19562 bytes
+ docs/source/_static/cellular_raza_dark_mode.svg    |  70 +++
+ docs/source/cell-segmentation.rst                  |   8 +
+ docs/source/conf.py                                |  65 ++
+ docs/source/documentation/imaging.rst              |   8 +
+ docs/source/documentation/index.rst                |  11 +
+ docs/source/documentation/simulation.rst           |   9 +
+ docs/source/image-generation.md                    |   2 +
+ docs/source/index.rst                              |  93 +++
+ docs/source/model.rst                              | 116 ++++
+ docs/source/references.bib                         | 123 ++++
+ docs/source/references.rst                         |   5 +
+ cr_mech_coli/pyproject.toml => pyproject.toml      |  14 +
+ requirements.txt                                   |   6 +
+ scripts/coco_eval.py                               | 192 ++++++
+ scripts/coco_utils.py                              | 234 +++++++
+ scripts/cp.ipynb                                   | 283 +++++++++
+ scripts/engine.py                                  | 115 ++++
+ scripts/rcnn.ipynb                                 | 395 ++++++++++++
+ scripts/segment.ipynb                              | 186 ++++++
+ scripts/src/cp.py                                  |  45 ++
+ scripts/transforms.py                              | 601 ++++++++++++++++++
+ scripts/utils.py                                   | 282 +++++++++
+ src/imaging.rs                                     | 128 ++++
+ src/lib.rs                                         |  35 ++
+ src/sampling.rs                                    |  45 ++
+ src/simulation.rs                                  | 675 +++++++++++++++++++++
+ tests/test_basic.py                                |  35 ++
+ tests/test_config.py                               |  25 +
+ tests/test_counter_color_conversion.py             |  46 ++
+ 65 files changed, 5001 insertions(+), 426 deletions(-)

@@ -1,0 +1,64 @@
+ .github/workflows/CI.yml                           |   6 +-
+ Cargo.toml                                         |  12 +-
+ README.md                                          |   4 +-
+ cr_mech_coli/__init__.py                           |   9 +
+ cr_mech_coli/cr_mech_coli_rs.pyi                   |  28 +-
+ cr_mech_coli/datatypes.py                          |  32 ++
+ cr_mech_coli/fitting.py                            | 242 +++++++++
+ cr_mech_coli/imaging.py                            |  82 ++-
+ cr_mech_coli/simulation.py                         |  31 +-
+ docs/requirements.txt                              |   3 +-
+ docs/source/_static/cellular_raza.png              | Bin 21120 -> 0 bytes
+ docs/source/_static/cellular_raza_dark_mode.png    | Bin 19562 -> 0 bytes
+ docs/source/_static/cr_mech_coli.png               | Bin 0 -> 21193 bytes
+ .../{cellular_raza.svg => cr_mech_coli.svg}        |  20 +-
+ docs/source/_static/cr_mech_coli_dark_mode.png     | Bin 0 -> 19569 bytes
+ ...za_dark_mode.svg => cr_mech_coli_dark_mode.svg} |  14 +-
+ .../fitting-methods/displacement-calculations.png  | Bin 0 -> 64444 bytes
+ .../fitting-methods/extract_positions-000400.png   | Bin 0 -> 23638 bytes
+ .../fitting-methods/extract_positions-000600.png   | Bin 0 -> 30803 bytes
+ .../fitting-methods/extract_positions-001200.png   | Bin 0 -> 41295 bytes
+ .../_static/fitting-methods/penalty-time-flow.png  | Bin 0 -> 56315 bytes
+ .../_static/fitting-methods/progressions-1.png     | Bin 0 -> 6513 bytes
+ .../_static/fitting-methods/progressions-2.png     | Bin 0 -> 8038 bytes
+ .../_static/fitting-methods/progressions-3.png     | Bin 0 -> 3344 bytes
+ .../_static/fitting-methods/progressions-4.png     | Bin 0 -> 4947 bytes
+ docs/source/_static/image-generation/Coli3.jpg     | Bin 0 -> 196667 bytes
+ .../image-generation/E_choli_Gram-cropped.JPG      | Bin 0 -> 428669 bytes
+ .../image-generation/image001133-cropped.png       | Bin 0 -> 136428 bytes
+ docs/source/cell-segmentation.rst                  |   8 +-
+ docs/source/conf.py                                |  12 +-
+ docs/source/documentation/datatypes.rst            |  10 +
+ docs/source/documentation/fitting.rst              |  11 +
+ docs/source/documentation/imaging.rst              |   4 +
+ docs/source/documentation/index.rst                |   2 +
+ docs/source/documentation/simulation.rst           |   8 +
+ docs/source/fitting-methods.rst                    |  82 +++
+ docs/source/image-generation.md                    |   2 -
+ docs/source/image-generation.rst                   |  71 +++
+ docs/source/index.rst                              |  75 ++-
+ docs/source/model.rst                              |   4 +
+ docs/source/references.bib                         |  71 +++
+ docs/source/todo.rst                               |   4 +
+ plots/fitting_extract_positions.py                 | 131 +++++
+ plots/fitting_penalty_over_time.py                 |  52 ++
+ plots/fitting_progression.py                       |  35 ++
+ plots/index_simulation.py                          |  26 +
+ requirements.txt                                   |   3 +-
+ scripts/coco_eval.py                               | 192 -------
+ scripts/coco_utils.py                              | 234 --------
+ scripts/engine.py                                  | 115 ----
+ scripts/rcnn.ipynb                                 | 395 --------------
+ scripts/transforms.py                              | 601 ---------------------
+ scripts/utils.py                                   | 282 ----------
+ src/datatypes.rs                                   | 294 ++++++++++
+ src/fitting.rs                                     | 100 ++++
+ src/imaging.rs                                     |  46 +-
+ src/lib.rs                                         |  10 +-
+ src/sampling.rs                                    |   4 +-
+ src/simulation.rs                                  | 199 +------
+ tests/test_basic.py                                |   3 +-
+ tests/test_convert_positions.py                    |  44 ++
+ tests/test_counter_color_conversion.py             |   3 +-
+ tests/test_fit.py                                  |  73 +++
+ 63 files changed, 1535 insertions(+), 2154 deletions(-)
