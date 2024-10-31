@@ -165,7 +165,11 @@ def penalty_area_diff_account_parents(
     diff_mask = parents_diff_mask(mask1, mask2, cell_container, parent_penalty)
     return np.mean(diff_mask)
 
-def convert_cell_pos_to_pixels(cell_pos: np.ndarray, domain_size: float, image_resolution: tuple[int, int] | np.ndarray):
+def convert_cell_pos_to_pixels(
+        cell_pos: np.ndarray,
+        domain_size: np.ndarray | tuple[float, float] | float,
+        image_resolution: tuple[int, int] | np.ndarray
+    ):
     """
     Converts the position of a cell (collection of vertices) from length units (typically µm) to
     pixels.
@@ -185,12 +189,16 @@ def convert_cell_pos_to_pixels(cell_pos: np.ndarray, domain_size: float, image_r
     Returns:
         np.ndarray: The converted position of the cell.
     """
+    if type(domain_size) is float:
+        domain_size = np.array([domain_size]*2, dtype=float)
+    domain_size = np.array(domain_size)
+
     dl = 2**0.5 * domain_size
     domain_pixels = np.array(image_resolution, dtype=float)
     pixel_per_length = domain_pixels / dl
 
     # Shift coordinates to center
-    p = np.array([0.5 * domain_size]*2) - cell_pos[:,:2]
+    p = 0.5 * domain_size - cell_pos[:,:2]
     # Scale with conversion between pixels and length
     p *= np.array([-1, 1]) * pixel_per_length
     # Shift coordinate system again
@@ -199,7 +207,11 @@ def convert_cell_pos_to_pixels(cell_pos: np.ndarray, domain_size: float, image_r
     p = np.array(np.round(p), dtype=int)
     return p
 
-def convert_pixel_to_position(pos_pixel, domain_size, image_resolution):
+def convert_pixel_to_position(
+        pos_pixel: np.ndarray,
+        domain_size: np.ndarray | tuple[float, float] | float,
+        image_resolution: tuple[float, float]
+    ):
     """
     Contains identical arguments as the :func:`convert_cell_pos_to_pixels` function and performs the
     approximate inverse operation.
@@ -214,6 +226,11 @@ def convert_pixel_to_position(pos_pixel, domain_size, image_resolution):
     Returns:
         np.ndarray: The converted position of the cell.
     """
+    # Convert to numpy array
+    if type(domain_size) is float:
+        domain_size = np.array([domain_size]*2, dtype=float)
+    domain_size = np.array(domain_size, dtype=float)
+
     dl = 2**0.5 * domain_size
     domain_pixels = np.array(image_resolution, dtype=float)
     pixel_per_length = domain_pixels / dl
