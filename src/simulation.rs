@@ -2,6 +2,7 @@ use std::{hash::Hasher, num::NonZeroUsize};
 
 use backend::chili::SimulationError;
 use cellular_raza::prelude::*;
+use numpy::PyUntypedArrayMethods;
 use pyo3::{prelude::*, types::PyString};
 use serde::{Deserialize, Serialize};
 use time::FixedStepsize;
@@ -15,9 +16,9 @@ use crate::agent::*;
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct RodMechanicsSettings {
     /// The current position
-    pub pos: nalgebra::SMatrix<f32, N_ROD_SEGMENTS, 3>,
+    pub pos: nalgebra::MatrixXx3<f32>,
     /// The current velocity
-    pub vel: nalgebra::SMatrix<f32, N_ROD_SEGMENTS, 3>,
+    pub vel: nalgebra::MatrixXx3<f32>,
     /// Controls magnitude of32 stochastic motion
     #[pyo3(get, set)]
     pub diffusion_constant: f32,
@@ -44,24 +45,26 @@ impl RodMechanicsSettings {
     #[getter]
     fn pos<'a>(&'a self, py: Python<'a>) -> Bound<'a, numpy::PyArray2<f32>> {
         use numpy::ToPyArray;
-        let new_array = numpy::nalgebra::SMatrix::<f32, N_ROD_SEGMENTS, 3>::from_iterator(
-            self.pos.iter().map(|&x| x),
-        );
+        let nrows = self.pos.nrows();
+        let new_array =
+            numpy::nalgebra::MatrixXx3::from_iterator(nrows, self.pos.iter().map(|&x| x));
         new_array.to_pyarray_bound(py)
     }
 
     #[setter]
     fn set_pos<'a>(&'a mut self, pos: Bound<'a, numpy::PyArray2<f32>>) -> pyo3::PyResult<()> {
         use numpy::PyArrayMethods;
+        let nrows = pos.shape()[0];
         let iter: Vec<f32> = pos.to_vec()?;
-        self.pos = nalgebra::SMatrix::<f32, N_ROD_SEGMENTS, 3>::from_iterator(iter.into_iter());
+        self.pos = nalgebra::MatrixXx3::<f32>::from_iterator(nrows, iter.into_iter());
         Ok(())
     }
 
     #[getter]
     fn vel<'a>(&'a self, py: Python<'a>) -> Bound<'a, numpy::PyArray2<f32>> {
         use numpy::ToPyArray;
-        let new_array = numpy::nalgebra::SMatrix::<f32, N_ROD_SEGMENTS, 3>::from_iterator(
+        let new_array = numpy::nalgebra::MatrixXx3::<f32>::from_iterator(
+            self.vel.nrows(),
             self.vel.iter().map(|&x| x),
         );
         new_array.to_pyarray_bound(py)
@@ -70,8 +73,9 @@ impl RodMechanicsSettings {
     #[setter]
     fn set_vel<'a>(&'a mut self, pos: Bound<'a, numpy::PyArray2<f32>>) -> pyo3::PyResult<()> {
         use numpy::PyArrayMethods;
+        let nrows = pos.shape()[0];
         let iter: Vec<f32> = pos.to_vec()?;
-        self.vel = nalgebra::SMatrix::<f32, N_ROD_SEGMENTS, 3>::from_iterator(iter.into_iter());
+        self.vel = nalgebra::MatrixXx3::<f32>::from_iterator(nrows, iter.into_iter());
         Ok(())
     }
 }
@@ -79,8 +83,8 @@ impl RodMechanicsSettings {
 impl Default for RodMechanicsSettings {
     fn default() -> Self {
         RodMechanicsSettings {
-            pos: nalgebra::SMatrix::zeros(),
-            vel: nalgebra::SMatrix::zeros(),
+            pos: nalgebra::MatrixXx3::zeros(8),
+            vel: nalgebra::MatrixXx3::zeros(8),
             diffusion_constant: 0.0, // MICROMETRE^2 / MIN^2
             spring_tension: 1.0,     // 1 / MIN
             angle_stiffness: 0.5,
@@ -102,6 +106,8 @@ pub struct AgentSettings {
     pub growth_rate: f32,
     /// Threshold when the bacterium divides
     pub spring_length_threshold: f32,
+    /// Number of vertices to use for this agent
+    pub n_vertices: usize,
 }
 
 #[pymethods]
@@ -131,6 +137,7 @@ impl AgentSettings {
                 )?,
                 growth_rate: 0.1,
                 spring_length_threshold: 6.0,
+                n_vertices: 8,
             },
         )?;
         if let Some(kwds) = kwds {
@@ -306,7 +313,7 @@ pub fn run_simulation(config: Configuration) -> pyo3::PyResult<CellContainer> {
         let mechanics: RodMechanicsSettings = agent_settings.mechanics.extract(py)?;
         let interaction: MorsePotentialF32 = agent_settings.interaction.extract(py)?;
         let spring_length = mechanics.spring_length;
-        let dx = spring_length * N_ROD_SEGMENTS as f32;
+        let dx = spring_length * mechanics.pos.nrows() as f32;
         let s = config.randomize_position;
         let bacteria = (0..config.n_agents).map(|_| {
             // TODO make these positions much more spaced
@@ -318,7 +325,7 @@ pub fn run_simulation(config: Configuration) -> pyo3::PyResult<CellContainer> {
             let angle: f32 = rng.gen_range(0.0..2.0 * std::f32::consts::PI);
             RodAgent {
                 mechanics: RodMechanics {
-                    pos: nalgebra::SMatrix::<f32, N_ROD_SEGMENTS, 3>::from_fn(|r, c| {
+                    pos: nalgebra::MatrixXx3::<f32>::from_fn(agent_settings.n_vertices, |r, c| {
                         p1[c]
                             + r as f32
                                 * spring_length
@@ -331,7 +338,7 @@ pub fn run_simulation(config: Configuration) -> pyo3::PyResult<CellContainer> {
                                     0.0
                                 }
                     }),
-                    vel: nalgebra::SMatrix::<f32, N_ROD_SEGMENTS, 3>::from_fn(|_, _| 0.0),
+                    vel: nalgebra::MatrixXx3::<f32>::from_fn(agent_settings.n_vertices, |_, _| 0.0),
                     diffusion_constant: mechanics.diffusion_constant,
                     spring_tension: mechanics.spring_tension,
                     angle_stiffness: mechanics.angle_stiffness,
@@ -380,6 +387,7 @@ pub fn run_simulation(config: Configuration) -> pyo3::PyResult<CellContainer> {
             domain: domain,
             settings: settings,
             aspects: [Mechanics, Interaction, Cycle],
+            zero_force_default: |c: &RodAgent| {nalgebra::MatrixXx3::zeros(c.mechanics.pos().nrows())},
         )?;
         let cells = storage
             .cells
