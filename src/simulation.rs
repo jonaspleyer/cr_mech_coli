@@ -387,7 +387,9 @@ pub fn run_simulation(config: Configuration) -> pyo3::PyResult<CellContainer> {
             domain: domain,
             settings: settings,
             aspects: [Mechanics, Interaction, Cycle],
-            zero_force_default: |c: &RodAgent| {nalgebra::MatrixXx3::zeros(c.mechanics.pos().nrows())},
+            zero_force_default: |c: &RodAgent| {
+                nalgebra::MatrixXx3::zeros(c.mechanics.pos().nrows())
+            },
         )?;
         let cells = storage
             .cells
