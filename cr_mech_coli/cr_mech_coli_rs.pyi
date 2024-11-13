@@ -85,7 +85,7 @@ class RodMechanicsSettings:
     vel: np.ndarray
     diffusion_constant: float
     spring_tension: float
-    angle_stiffness: float
+    rigidity: float
     spring_length: float
     damping: float
 

@@ -27,7 +27,7 @@ pub struct RodMechanicsSettings {
     pub spring_tension: f32,
     /// Stif32fness at each joint connecting two edges
     #[pyo3(get, set)]
-    pub angle_stiffness: f32,
+    pub rigidity: f32,
     /// Target spring length
     #[pyo3(get, set)]
     pub spring_length: f32,
@@ -87,7 +87,7 @@ impl Default for RodMechanicsSettings {
             vel: nalgebra::MatrixXx3::zeros(8),
             diffusion_constant: 0.0, // MICROMETRE^2 / MIN^2
             spring_tension: 1.0,     // 1 / MIN
-            angle_stiffness: 0.5,
+            rigidity: 0.5,
             spring_length: 3.0, // MICROMETRE
             damping: 1.0,       // 1/MIN
         }
@@ -341,7 +341,7 @@ pub fn run_simulation(config: Configuration) -> pyo3::PyResult<CellContainer> {
                     vel: nalgebra::MatrixXx3::<f32>::from_fn(agent_settings.n_vertices, |_, _| 0.0),
                     diffusion_constant: mechanics.diffusion_constant,
                     spring_tension: mechanics.spring_tension,
-                    angle_stiffness: mechanics.angle_stiffness,
+                    rigidity: mechanics.rigidity,
                     spring_length: mechanics.spring_length,
                     damping: mechanics.damping,
                 },
