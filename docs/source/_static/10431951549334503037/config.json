@@ -1,0 +1,92 @@
+{
+  "agent_settings": {
+    "mechanics": {
+      "pos": [
+        [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        8,
+        null
+      ],
+      "vel": [
+        [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        8,
+        null
+      ],
+      "diffusion_constant": 0.0,
+      "spring_tension": 1.0,
+      "rigidity": 2.0,
+      "spring_length": 3.0,
+      "damping": 1.0
+    },
+    "interaction": {
+      "radius": 3.0,
+      "potential_stiffness": 0.5,
+      "cutoff": 10.0,
+      "strength": 0.1
+    },
+    "growth_rate": 0.078947365,
+    "spring_length_threshold": 6.0,
+    "n_vertices": 8
+  },
+  "n_agents": 4,
+  "n_threads": 1,
+  "t0": 0.0,
+  "dt": 0.1,
+  "t_max": 100.0,
+  "save_interval": 20.0,
+  "show_progressbar": false,
+  "domain_size": 100.0,
+  "domain_height": 2.5,
+  "randomize_position": 0.01,
+  "n_voxels": 1,
+  "rng_seed": 0
+}
