@@ -6,6 +6,7 @@ use crate::counter_to_color;
 
 /// Manages all information resulting from an executed simulation
 #[pyclass]
+#[derive(Clone)]
 pub struct CellContainer {
     /// Contains snapshots of all cells at each saved step
     #[pyo3(get)]
@@ -71,6 +72,11 @@ impl CellContainer {
             color_to_cell,
             ..cell_container
         })
+    }
+
+    /// Returns an identical clone
+    pub fn __deepcopy__(&self, _memo: pyo3::Bound<pyo3::types::PyDict>) -> Self {
+        self.clone()
     }
 
     /// Get all cells at all iterations
