@@ -5,7 +5,35 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 from tqdm import tqdm
 
-if __name__ == "__main__":
+def calculate_lengths_distances(args) -> tuple[list, list, list]:
+    cells_at_iteration, cell_container, colors, config = args
+    mask = crm.render_mask(config, cells_at_iteration, colors)
+    positions = np.array(crm.extract_positions(mask))
+
+    distances_i = []
+    lengths_i_1 = []
+    lengths_i_2 = []
+    for p in positions:
+        color = mask[int(p[0][1]), int(p[0][0])]
+        ident = cell_container.get_cell_from_color([*color])
+        cell = cells_at_iteration[ident][0]
+        q = cell.pos[:,:2]
+        p = crm.convert_pixel_to_position(p, config.domain_size, mask.shape[:2])
+
+        # Determine if we need to use the reverse order
+        d1 = np.sum(np.sum((p-q)**2, axis=1)**0.5)
+        d2 = np.sum(np.sum((p-q[::-1])**2, axis=1)**0.5)
+        d = min(d1, d2) / len(p)
+        distances_i.append(d)
+
+        # Compare total length
+        l1 = np.sum((p[1:] - p[:-1])**2)**0.5
+        l2 = np.sum((q[1:] - q[:-1])**2)**0.5
+        lengths_i_1.append(l1)
+        lengths_i_2.append(l2)
+    return distances_i, lengths_i_1, lengths_i_2
+
+if __nam__ == "__main__":
     config = crm.Configuration(
         growth_rate = 0.05,
         t0=0.0,
@@ -65,38 +93,11 @@ if __name__ == "__main__":
             img=mask[200:-200,200:-200],
         )
 
-    distances = []
-    lengths1 = []
-    lengths2 = []
-    for n_iter in tqdm(iterations):
-        mask = crm.render_mask(config, all_cells[n_iter], colors)
-        positions = np.array(crm.extract_positions(mask))
-
-        distances_i = []
-        lengths_i_1 = []
-        lengths_i_2 = []
-        for p in positions:
-            color = mask[int(p[0][1]), int(p[0][0])]
-            ident = cell_container.get_cell_from_color([*color])
-            cell = all_cells[n_iter][ident][0]
-            q = cell.pos[:,:2]
-            p = crm.convert_pixel_to_position(p, config.domain_size, mask.shape[:2])
-
-            # Determine if we need to use the reverse order
-            d1 = np.sum(np.sum((p-q)**2, axis=1)**0.5)
-            d2 = np.sum(np.sum((p-q[::-1])**2, axis=1)**0.5)
-            d = min(d1, d2) / len(p)
-            distances_i.append(d)
-
-            # Compare total length
-            l1 = np.sum((p[1:] - p[:-1])**2)**0.5
-            l2 = np.sum((q[1:] - q[:-1])**2)**0.5
-            lengths_i_1.append(l1)
-            lengths_i_2.append(l2)
-
-        distances.append(distances_i)
-        lengths1.append(lengths_i_1)
-        lengths2.append(lengths_i_2)
+    arglist = [(all_cells[n_iter], cell_container, colors, config) for n_iter in iterations]
+    results = [calculate_lengths_distances(a) for a in tqdm(arglist)]
+    distances = [r[0] for r in results]
+    lengths1 = [r[1] for r in results]
+    lengths2 = [r[2] for r in results]
 
     fig, ax1 = plt.subplots()
 
