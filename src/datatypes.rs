@@ -2,6 +2,8 @@ use cellular_raza::prelude::CellIdentifier;
 use pyo3::prelude::*;
 use std::collections::HashMap;
 
+use crate::counter_to_color;
+
 /// Manages all information resulting from an executed simulation
 #[pyclass]
 pub struct CellContainer {
@@ -45,7 +47,11 @@ impl CellContainer {
             .collect();
         let mut identifiers: Vec<_> = parent_map.iter().map(|(i, _)| i.clone()).collect();
         identifiers.sort();
-        let cell_to_color: HashMap<_, _> = Self::assign_colors_to_cells(identifiers)?;
+        let cell_to_color: HashMap<_, _> = identifiers
+            .into_iter()
+            .enumerate()
+            .map(|(n, ident)| (ident, counter_to_color(n as u32)))
+            .collect();
         let color_to_cell: HashMap<_, _> = cell_to_color
             .clone()
             .into_iter()
@@ -222,40 +228,6 @@ impl CellContainer {
             .iter()
             .map(|(ident, _)| ident.clone())
             .collect()
-    }
-
-    /// This functions assigns unique colors to given cellular identifiers.
-    /// Used in :mod:`cr_mech_coli.imaging` techniques.
-    ///
-    /// Args:
-    ///     cell_container (dict): An instance of the :class:`CellContainer` class.
-    /// Returns:
-    ///     dict: A dictionary mapping :class:`CellIdentifier` to colors.
-    #[staticmethod]
-    pub fn assign_colors_to_cells(
-        identifiers: Vec<CellIdentifier>,
-    ) -> PyResult<HashMap<CellIdentifier, [u8; 3]>> {
-        let mut color_counter = 1;
-        let mut colors = HashMap::new();
-        let mut err = Ok(());
-        for ident in identifiers.iter() {
-            colors.entry(ident.clone()).or_insert_with(|| {
-                let color = crate::imaging::counter_to_color(color_counter);
-                color_counter += 1;
-                if color_counter > 251u32.pow(3) {
-                    err = Err(pyo3::exceptions::PyValueError::new_err(format!(
-                        "Too many identifiers: {} MAX: {}.",
-                        identifiers.len(),
-                        251u32.pow(3)
-                    )));
-                }
-                color
-            });
-        }
-        match err {
-            Ok(()) => Ok(colors),
-            Err(e) => Err(e),
-        }
     }
 
     /// Obtains the cell corresponding to the given counter of this simulation
