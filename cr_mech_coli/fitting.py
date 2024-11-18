@@ -130,7 +130,7 @@ def extract_positions(mask: np.ndarray, n_vertices: int = 8) -> list[np.ndarray]
     m = mask.reshape((-1, 3))
     colors = filter(lambda x: np.sum(x)!=0, np.unique(m, axis=0))
 
-    cell_masks = [(m==c)[:,0].reshape(mask.shape[:2]) for c in colors]
+    cell_masks = [np.all(mask==c, axis=2) for c in colors]
     skeleton_points = [
         _sort_points(sk.morphology.skeletonize(m, method="lee")) for m in cell_masks
     ]
