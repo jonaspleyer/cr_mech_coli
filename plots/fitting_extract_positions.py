@@ -43,7 +43,7 @@ if __nam__ == "__main__":
         n_agents=4,
         domain_size=100,
     )
-    config.agent_settings.mechanics.rigidity = 1.0
+    config.agent_settings.mechanics.rigidity = 2.0
     config.domain_height = 0.2
 
     cell_container = crm.run_simulation(config)
