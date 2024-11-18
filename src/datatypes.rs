@@ -51,7 +51,7 @@ impl CellContainer {
         let cell_to_color: HashMap<_, _> = identifiers
             .into_iter()
             .enumerate()
-            .map(|(n, ident)| (ident, counter_to_color(n as u32)))
+            .map(|(n, ident)| (ident, counter_to_color(n as u32 + 1)))
             .collect();
         let color_to_cell: HashMap<_, _> = cell_to_color
             .clone()
