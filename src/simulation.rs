@@ -87,7 +87,7 @@ impl Default for RodMechanicsSettings {
             vel: nalgebra::MatrixXx3::zeros(8),
             diffusion_constant: 0.0, // MICROMETRE^2 / MIN^2
             spring_tension: 1.0,     // 1 / MIN
-            rigidity: 0.5,
+            rigidity: 2.0,
             spring_length: 3.0, // MICROMETRE
             damping: 1.0,       // 1/MIN
         }
