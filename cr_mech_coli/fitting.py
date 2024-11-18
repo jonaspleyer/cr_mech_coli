@@ -65,27 +65,53 @@ def points_along_polygon(polygon: list[np.ndarray] | np.ndarray, n_vertices: int
     return np.array(points)
 
 def _sort_points(skeleton) -> np.ndarray:
-    # Get the directions in which the skeletons are pointing
+    # Calculate end points
+    neighbors = np.zeros(skeleton.shape)
+    #   x
+    # x x x
+    #   x
+    neighbors[1:,:] += skeleton[:-1,:]
+    neighbors[:-1,:] += skeleton[1:,:]
+    neighbors[:,1:] += skeleton[:,:-1]
+    neighbors[:,:-1] += skeleton[:,1:]
+    # Corners
+    # x   x
+    #   x
+    # x   x
+    neighbors[1:,1:] += skeleton[:-1,:-1]
+    neighbors[:-1,1:] += skeleton[1:,:-1]
+    neighbors[1:,:-1] += skeleton[:-1,1:]
+    neighbors[:-1,:-1] += skeleton[1:,1:]
+
+    neighbors *= skeleton
+
+    if np.sum(neighbors==1)!=2:
+        raise ValueError("Detected more or less than 2 endpoints after skeletonization")
+
+    endpoints = np.array([*np.where(neighbors==1)])
+    e1, e2 = endpoints.T
+
+    # Pre-Sort the points
     x, y = np.where(skeleton)
-    x_min = np.min(x)
-    x_max = np.max(x)
-    y_min = np.min(y)
-    y_max = np.max(y)
-
-    do_not_reverse = x_max-x_min >= y_max-y_min
-    if do_not_reverse:
-        points = np.column_stack((y, x))
+    if len(np.unique(x)) > len(np.unique(y)):
+        indices = np.argsort(x)
     else:
-        x, y = np.where(skeleton.T)
-        points = np.column_stack((x, y))
+        indices = np.argsort(y)
+    all_points = np.array([x, y]).T
+    remaining = all_points[np.any(all_points!=e1, axis=1)]
+    remaining = remaining[np.any(remaining!=e2, axis=1)]
 
-    # Calculate the vector of projection
-    A = np.vstack([points[:,0], np.ones(len(points))]).T
-    m, c = np.linalg.lstsq(A, points[:,1])[0]
-    # Do the projection onto the calcualted vector
-    projection = np.sum((points - np.array([0,c])) * np.array([-1, -m])/(1+m**2)**0.5, axis=1)
-    indices = np.argsort(projection)
-    return np.roll(points[indices], 1, axis=1)
+    points_sorted = np.array([e1]).reshape(-1, 2)
+    for i in range(1, len(remaining)+1):
+        p = points_sorted[i-1]
+        distances = np.linalg.norm(remaining - p, axis=1)
+        indices = np.argsort(distances)
+        points_sorted = np.append(points_sorted, [remaining[indices[0]]], axis=0)
+        remaining = np.delete(remaining, indices[0], axis=0)
+
+    # Include endpoint as well
+    points_sorted = np.append(points_sorted, [e2]).reshape(-1, 2)
+    return points_sorted
 
 def extract_positions(mask: np.ndarray, n_vertices: int = 8) -> list[np.ndarray]:
     """
