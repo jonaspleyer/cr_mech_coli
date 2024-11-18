@@ -250,6 +250,11 @@ impl Configuration {
         Ok(res_new)
     }
 
+    /// Returns an identical clone of the current object
+    pub fn __deepcopy__(&self, memo: pyo3::Bound<pyo3::types::PyDict>) -> Self {
+        self.clone()
+    }
+
     /// Formats and prints the :class:`Configuration`
     pub fn __repr__(&self) -> String {
         format!("{:#?}", self)

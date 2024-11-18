@@ -28,6 +28,10 @@ impl RodAgent {
         format!("{:?}", self)
     }
 
+    fn __deepcopy__(&self, _memo: pyo3::Bound<pyo3::types::PyDict>) -> Self {
+        self.clone()
+    }
+
     /// Position of the agent given by a matrix containing all vertices in order.
     #[getter]
     pub fn pos<'a>(&'a self, py: Python<'a>) -> Bound<'a, numpy::PyArray2<f32>> {
