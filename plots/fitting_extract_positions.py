@@ -33,7 +33,7 @@ def calculate_lengths_distances(args) -> tuple[list, list, list]:
         lengths_i_2.append(l2)
     return distances_i, lengths_i_1, lengths_i_2
 
-if __nam__ == "__main__":
+if __name__ == "__main__":
     config = crm.Configuration(
         growth_rate = 0.05,
         t0=0.0,
