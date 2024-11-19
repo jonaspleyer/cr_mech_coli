@@ -242,7 +242,7 @@ impl Configuration {
     }
 
     /// Returns an identical clone of the current object
-    pub fn __deepcopy__(&self, memo: pyo3::Bound<pyo3::types::PyDict>) -> Self {
+    pub fn __deepcopy__(&self, _memo: pyo3::Bound<pyo3::types::PyDict>) -> Self {
         self.clone()
     }
 
