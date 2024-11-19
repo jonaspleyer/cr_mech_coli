@@ -119,18 +119,27 @@ def extract_positions(mask: np.ndarray, n_vertices: int = 8) -> list[np.ndarray]
     To read more about the used methods, visit the :ref:`Fitting-Methods` page.
 
     Args:
-        mask(np.ndarray): Array of shape :code:`(D1, D2, 3)` containing pixel values of a mask for
-            multiple cells.
+        mask(np.ndarray): Array of shape :code:`(D1, D2, 3)`, `(D1, D2, 1)` or `(D1, D2)` containing
+            pixel values of a mask for multiple cells.
         n_vertices(int): Number of vertices which should be extracted from each given cell-mask.
     Returns:
         list[np.ndarray]: A list containing arrays of shape :code:`(n_vertices, 2)` containing the
             individual positions of the cells.
     """
     # First determine the number of unique identifiers
-    m = mask.reshape((-1, 3))
+    if len(mask.shape)==3:
+        assert mask.shape[2] == 3 or mask.shape[2] == 1
+        m = mask.reshape((-1, mask.shape[2]))
+    elif len(mask.shape)==2:
+        m = mask.reshape(-1)
+    else:
+        raise ValueError("We only support masks with shapes (n, m), (n, m, 1) or (n, m, 3)")
     colors = filter(lambda x: np.sum(x)!=0, np.unique(m, axis=0))
 
-    cell_masks = [np.all(mask==c, axis=2) for c in colors]
+    if len(m.shape)==2:
+        cell_masks = [np.all(mask==c, axis=2) for c in colors]
+    else:
+        cell_masks = [mask==c for c in colors]
     skeleton_points = [
         _sort_points(sk.morphology.skeletonize(m, method="lee")) for m in cell_masks
     ]
