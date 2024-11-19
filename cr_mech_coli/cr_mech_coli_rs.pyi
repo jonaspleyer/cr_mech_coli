@@ -116,9 +116,21 @@ class CellContainer:
     def get_all_identifiers(self) -> list[CellIdentifier]: ...
     def assign_colors_to_cells(self) -> dict[CellIdentifier, list[int]]: ...
 
-def run_simulation(config: Configuration) -> CellContainer:
+def run_simulation(config: Configuration, agent_settings: AgentSettings) -> CellContainer:
     """\
+    Use the :func:`run_simulation_with_agents`
+
     Executes the simulation with the given :class:`Configuration`
+
+    .. deprecated:: 0.4
+        This function is deprecated and should not be used.
+        Use the :func:`run_simulation_with_agents` function instead.
+    """
+    ...
+
+def run_simulation_with_agents(config: Configuration, agents: list[RodAgent]) -> CellContainer:
+    """\
+    Executes a simulation given a :class:`Configuration` and a list of :class:`RodAgent`.
     """
     ...
 
