@@ -172,8 +172,6 @@ impl AgentSettings {
 #[pyclass(set_all, get_all)]
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct Configuration {
-    /// Contains a template for defining multiple :class:`RodAgent` of the simulation.
-    pub agent_settings: Py<AgentSettings>,
     /// Number of agents to put into the simulation. Depending on the size specified, this number
     /// may be lowered artificially to account for the required space.
     pub n_agents: usize,
@@ -220,7 +218,6 @@ impl Configuration {
         let res_new = Py::new(
             py,
             Self {
-                agent_settings: Py::new(py, AgentSettings::new(py, None)?)?,
                 n_agents: 2,
                 n_threads: 1.try_into().unwrap(),
                 t0: 0.0,             // MIN
@@ -238,13 +235,7 @@ impl Configuration {
         if let Some(kwds) = kwds {
             for (key, value) in kwds.iter() {
                 let key: Py<PyString> = key.extract()?;
-                match res_new.getattr(py, &key) {
-                    Ok(_) => res_new.setattr(py, &key, value)?,
-                    Err(_) => res_new
-                        .borrow_mut(py)
-                        .agent_settings
-                        .setattr(py, &key, value)?,
-                }
+                res_new.setattr(py, &key, value)?;
             }
         }
         Ok(res_new)
@@ -292,10 +283,7 @@ mod test_config {
         Python::with_gil(|py| {
             let c1 = Configuration::new(py, None).unwrap();
             let c2 = Configuration::new(py, None).unwrap();
-            c2.borrow_mut(py)
-                .agent_settings
-                .setattr(py, "growth_rate", 200.0)
-                .unwrap();
+            c2.setattr(py, "save_interval", 100.0).unwrap();
             let h1 = c1.borrow(py).to_hash().unwrap();
             let h2 = c2.borrow(py).to_hash().unwrap();
             assert!(h1 != h2);
