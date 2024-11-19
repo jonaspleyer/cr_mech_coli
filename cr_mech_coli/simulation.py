@@ -25,6 +25,7 @@ This module contains functionality to configure and run simulations.
 """
 
 from .cr_mech_coli_rs import run_simulation,\
+    run_simulation_with_agents,\
     AgentSettings,\
     RodAgent,\
     RodMechanicsSettings,\
