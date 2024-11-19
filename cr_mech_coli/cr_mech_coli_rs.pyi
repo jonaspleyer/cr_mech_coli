@@ -93,6 +93,12 @@ class CellContainer:
     """\
     Resulting type when executing a full simulation
     """
+    cells: dict[int, dict[CellIdentifier, tuple[RodAgent, CellIdentifier | None]]]
+    parent_map: dict[CellIdentifier, CellIdentifier | None]
+    child_map: dict[CellIdentifier, list[CellIdentifier]]
+    cell_to_color: dict[CellIdentifier, list[int]]
+    color_to_cell: dict[list[int], CellIdentifier]
+
     def get_cells(self) -> dict[int, dict[CellIdentifier, tuple[RodAgent, CellIdentifier | None]]]: ...
     def get_cells_at_iteration(self, iteration: int) -> dict[
         CellIdentifier,
