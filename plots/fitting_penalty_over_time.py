@@ -4,14 +4,14 @@ from pathlib import Path
 
 if __name__ == "__main__":
     config = crm.Configuration()
-    config.agent_settings.growth_rate = 0.05
     config.t0 = 0.0
     config.dt = 0.1
     config.t_max = 200.0
     config.save_interval = 4.0
     config.n_agents = 4
 
-    cell_container = crm.run_simulation(config)
+    agent_settings = crm.AgentSettings(growth_rate=0.05)
+    cell_container = crm.run_simulation(config, agent_settings)
 
     all_cells = cell_container.get_cells()
     iterations = cell_container.get_all_iterations()

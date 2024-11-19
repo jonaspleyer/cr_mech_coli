@@ -35,7 +35,6 @@ def calculate_lengths_distances(args) -> tuple[list, list, list]:
 
 if __name__ == "__main__":
     config = crm.Configuration(
-        growth_rate = 0.05,
         t0=0.0,
         dt=0.1,
         t_max=200.0,
@@ -43,10 +42,13 @@ if __name__ == "__main__":
         n_agents=4,
         domain_size=100,
     )
-    config.agent_settings.mechanics.rigidity = 2.0
+    agent_settings = crm.AgentSettings(
+        growth_rate = 0.05,
+    )
+    agent_settings.mechanics.rigidity = 2.0
     config.domain_height = 0.2
 
-    cell_container = crm.run_simulation(config)
+    cell_container = crm.run_simulation(config, agent_settings)
 
     all_cells = cell_container.get_cells()
     iterations = cell_container.get_all_iterations()
