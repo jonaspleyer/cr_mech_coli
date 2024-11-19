@@ -334,7 +334,7 @@ fn _generate_positions_old(
         .collect())
 }
 
-/// Executes a simulation given the
+/// Executes a simulation given a :class:`Configuration` and a list of :class:`RodAgent`.
 #[pyfunction]
 pub fn run_simulation_with_agents(
     config: &Configuration,
@@ -400,7 +400,12 @@ pub fn run_simulation_with_agents(
     })
 }
 
+/// Use the :func:`run_simulation_with_agents`
+///
 /// Executes the simulation with the given :class:`Configuration`
+///
+/// .. deprecated:: 0.4
+///     Use the :func:`run_simulation_with_agents` function instead.
 #[pyfunction]
 #[deprecated(
     note = "This function automatically generates positions which is deprecated now.\
