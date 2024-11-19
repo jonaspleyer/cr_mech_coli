@@ -295,19 +295,130 @@ prepare_types!(
     aspects: [Mechanics, Interaction, Cycle],
 );
 
+/// Creates positions for multiple :class`RodAgent`s which can be used for simulation purposes.
+fn _generate_positions_old(
+    py: Python,
+    n_agents: usize,
+    agent_settings: &AgentSettings,
+    rng: &mut rand_chacha::ChaChaRng,
+    dx: f32,
+    config: &Configuration,
+) -> PyResult<Vec<nalgebra::MatrixXx3<f32>>> {
+    use rand::Rng;
+    let mechanics: RodMechanicsSettings = agent_settings.mechanics.extract(py)?;
+    let spring_length = mechanics.spring_length;
+    let s = config.randomize_position;
+    Ok((0..n_agents)
+        .map(|_| {
+            let p1 = [
+                rng.gen_range(dx..config.domain_size - dx),
+                rng.gen_range(dx..config.domain_size - dx),
+                rng.gen_range(0.4 * config.domain_height..0.6 * config.domain_height),
+            ];
+            let angle: f32 = rng.gen_range(0.0..2.0 * std::f32::consts::PI);
+            let pos = nalgebra::MatrixXx3::<f32>::from_fn(agent_settings.n_vertices, |r, c| {
+                p1[c]
+                    + r as f32
+                        * spring_length
+                        * rng.gen_range(1.0 - s..1.0 + s)
+                        * if c == 0 {
+                            (angle * rng.gen_range(1.0 - s..1.0 + s)).cos()
+                        } else if c == 1 {
+                            (angle * rng.gen_range(1.0 - s..1.0 + s)).sin()
+                        } else {
+                            0.0
+                        }
+            });
+            pos
+        })
+        .collect())
+}
+
+/// Executes a simulation given the
+#[pyfunction]
+pub fn run_simulation_with_agents(
+    config: &Configuration,
+    agents: Vec<RodAgent>,
+) -> pyo3::PyResult<CellContainer> {
+    Python::with_gil(|py| {
+        // TODO after initializing this state, we need to check that it is actually valid
+        let t0 = config.t0;
+        let dt = config.dt;
+        let t_max = config.t_max;
+        let save_interval = config.save_interval;
+        let time = FixedStepsize::from_partial_save_interval(t0, dt, t_max, save_interval)
+            .or_else(|x| Err(SimulationError::from(x)))?;
+        let storage = StorageBuilder::new().priority([StorageOption::Memory]);
+        let settings = Settings {
+            n_threads: config.n_threads,
+            time,
+            storage,
+            show_progressbar: config.show_progressbar,
+        };
+
+        let mut domain = CartesianCuboid::from_boundaries_and_n_voxels(
+            [0.0; 3],
+            [config.domain_size, config.domain_size, config.domain_height],
+            [config.n_voxels, config.n_voxels, 1],
+        )
+        .or_else(|x| Err(SimulationError::from(x)))?;
+        domain.rng_seed = config.rng_seed;
+        let domain = CartesianCuboidRods { domain };
+
+        test_compatibility!(
+            aspects: [Mechanics, Interaction, Cycle],
+            domain: domain,
+            agents: agents,
+            settings: settings,
+        );
+        let storage = run_main!(
+            agents: agents,
+            domain: domain,
+            settings: settings,
+            aspects: [Mechanics, Interaction, Cycle],
+            zero_force_default: |c: &RodAgent| {
+                nalgebra::MatrixXx3::zeros(c.mechanics.pos().nrows())
+            },
+        )?;
+        let cells = storage
+            .cells
+            .load_all_elements()
+            .unwrap()
+            .into_iter()
+            .map(|(iteration, cells)| {
+                (
+                    iteration,
+                    cells
+                        .into_iter()
+                        .map(|(ident, (cbox, _))| (ident, (cbox.cell.into_py(py), cbox.parent)))
+                        .collect(),
+                )
+            })
+            .collect();
+
+        Ok(CellContainer::new(cells)?)
+    })
+}
+
 /// Executes the simulation with the given :class:`Configuration`
 #[pyfunction]
-pub fn run_simulation(config: Configuration) -> pyo3::PyResult<CellContainer> {
+#[deprecated(
+    note = "This function automatically generates positions which is deprecated now.\
+    please use the `` functions."
+)]
+pub fn run_simulation(
+    config: Configuration,
+    agent_settings: AgentSettings,
+) -> pyo3::PyResult<CellContainer> {
     use rand::Rng;
     use rand_chacha::rand_core::SeedableRng;
     Python::with_gil(|py| {
         let mut rng = rand_chacha::ChaCha8Rng::seed_from_u64(config.rng_seed);
-        let agent_settings: AgentSettings = config.agent_settings.extract(py)?;
         let mechanics: RodMechanicsSettings = agent_settings.mechanics.extract(py)?;
         let interaction: MorsePotentialF32 = agent_settings.interaction.extract(py)?;
+        let s = config.randomize_position;
         let spring_length = mechanics.spring_length;
         let dx = spring_length * mechanics.pos.nrows() as f32;
-        let s = config.randomize_position;
         let bacteria = (0..config.n_agents).map(|_| {
             // TODO make these positions much more spaced
             let p1 = [
@@ -343,64 +454,7 @@ pub fn run_simulation(config: Configuration) -> pyo3::PyResult<CellContainer> {
                 spring_length_threshold: agent_settings.spring_length_threshold,
             }
         });
-
-        // TODO after initializing this state, we need to check that it is actually valid
-
-        let t0 = config.t0;
-        let dt = config.dt;
-        let t_max = config.t_max;
-        let save_interval = config.save_interval;
-        let time = FixedStepsize::from_partial_save_interval(t0, dt, t_max, save_interval)
-            .or_else(|x| Err(SimulationError::from(x)))?;
-        let storage = StorageBuilder::new().priority([StorageOption::Memory]);
-        let settings = Settings {
-            n_threads: config.n_threads,
-            time,
-            storage,
-            show_progressbar: config.show_progressbar,
-        };
-
-        let mut domain = CartesianCuboid::from_boundaries_and_n_voxels(
-            [0.0; 3],
-            [config.domain_size, config.domain_size, config.domain_height],
-            [config.n_voxels, config.n_voxels, 1],
-        )
-        .or_else(|x| Err(SimulationError::from(x)))?;
-        domain.rng_seed = config.rng_seed;
-        let domain = CartesianCuboidRods { domain };
-
-        test_compatibility!(
-            aspects: [Mechanics, Interaction, Cycle],
-            domain: domain,
-            agents: bacteria,
-            settings: settings,
-        );
-        let storage = run_main!(
-            agents: bacteria,
-            domain: domain,
-            settings: settings,
-            aspects: [Mechanics, Interaction, Cycle],
-            zero_force_default: |c: &RodAgent| {
-                nalgebra::MatrixXx3::zeros(c.mechanics.pos().nrows())
-            },
-        )?;
-        let cells = storage
-            .cells
-            .load_all_elements()
-            .unwrap()
-            .into_iter()
-            .map(|(iteration, cells)| {
-                (
-                    iteration,
-                    cells
-                        .into_iter()
-                        .map(|(ident, (cbox, _))| (ident, (cbox.cell.into_py(py), cbox.parent)))
-                        .collect(),
-                )
-            })
-            .collect();
-
-        Ok(CellContainer::new(cells)?)
+        Ok(run_simulation_with_agents(&config, bacteria.collect())?)
     })
 }
 
