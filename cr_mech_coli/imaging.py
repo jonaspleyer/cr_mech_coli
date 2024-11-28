@@ -115,9 +115,9 @@ def __create_cell_surfaces(cells: dict[CellIdentifier, tuple[RodAgent, CellIdent
 
 
 def render_pv_image(
-        config: Configuration,
         cells: dict[CellIdentifier, tuple[RodAgent, CellIdentifier | None]],
         render_settings: RenderSettings,
+        domain_size: float,
         colors: dict[CellIdentifier, list[int]] | None = None,
         filename: str | Path | None = None,
     ) -> np.ndarray:
@@ -125,9 +125,9 @@ def render_pv_image(
     Creates a 3D render of the given cells.
 
     Args:
-        config (Configuration): The configuration used to run the simulation.
         cells: A iterable which contains all cells at a specific iteration.
         render_settings (RenderSettings): Contains all settings to specify how to render image.
+        domain_size (float): The domain size as specified in :class:`Configuration`.
         colors (dict): A dictionary mapping a :class:`CellIdentifier` to a color.
             If not given use color from `render_settings`.
         filename: Name of the file in which to save the image. If not specified, do
@@ -166,10 +166,9 @@ def render_pv_image(
     else:
         plotter.disable_anti_aliasing()
 
-    dx = config.domain_size
     pv.Plotter.view_xy(
         plotter,
-        bounds=(0, dx, 0, dx, 0, 0)
+        bounds=(0, domain_size, 0, domain_size, 0, 0)
     )
 
     img = np.array(plotter.screenshot())
@@ -184,9 +183,9 @@ def render_pv_image(
     return img
 
 def render_mask(
-        config: Configuration,
         cells: dict,
         colors: dict[CellIdentifier, list[int]],
+        domain_size: float,
         render_settings: RenderSettings | None = None,
         filename: str | Path | None = None,
     ) -> np.ndarray:
@@ -196,9 +195,9 @@ def render_mask(
     :meth:`RenderSettings.prepare_for_masks` method.
 
     Args:
-        config (Configuration): See :func:`render_pv_image`.
         cells: See :func:`render_pv_image`.
         render_settings (RenderSettings): See :func:`render_pv_image`.
+        domain_size (float): See :func:`render_pv_image`.
         colors (dict[CellIdentifier, tuple[int, int, int]]): See :func:`render_pv_image`.
         filename: See :func:`render_pv_image`.
 
@@ -208,13 +207,13 @@ def render_mask(
     if render_settings is None:
         render_settings = RenderSettings()
     rs = render_settings.prepare_for_masks()
-    img = render_pv_image(config, cells, rs, colors, filename=filename)
+    img = render_pv_image(cells, rs, domain_size, colors, filename=filename)
     return img
 
 
 def render_image(
-        config: Configuration,
-        cells: dict,
+        cells: dict[CellIdentifier, tuple[RodAgent, CellIdentifier | None]],
+        domain_size: float,
         render_settings: RenderSettings | None = None,
         filename: str | Path | None = None
     ) -> np.ndarray:
@@ -223,8 +222,8 @@ def render_image(
     This function internally uses the :func:`render_pv_image` function but changes some of the 
 
     Args:
-        config (Configuration): See :func:`render_pv_image`.
         cells: See :func:`render_pv_image`.
+        domain_size (float): See :func:`render_pv_image`.
         render_settings (RenderSettings): See :func:`render_pv_image`.
         colors (dict): See :func:`render_pv_image`.
         filename: See :func:`render_pv_image`.
@@ -234,7 +233,7 @@ def render_image(
     """
     if render_settings is None:
         render_settings = RenderSettings()
-    img = render_pv_image(config, cells, render_settings)
+    img = render_pv_image(cells, render_settings, domain_size)
 
     # Smoothen it out
     kernel = np.ones([render_settings.kernel_size]*2, np.float32) / render_settings.kernel_size**2
@@ -256,14 +255,14 @@ def render_image(
 
 
 def store_all_images(
-        config: Configuration,
         cell_container: CellContainer,
+        domain_size: float,
         render_settings: RenderSettings | None = None,
         save_dir: str | Path = "out",
-        use_hash: bool = True,
         render_raw_pv: bool = False,
         show_progressbar: bool | int = False,
-        store_config: bool = True,
+        store_config: Configuration | None = None,
+        use_hash: bool = True,
     ):
     """
     Combines multiple functions and renders images to files for a complete simulation result.
@@ -271,8 +270,8 @@ def store_all_images(
     :func:`render_mask` functions to create multiple images.
 
     Args:
-        config (Configuration): See :func:`render_pv_image`.
         cell_container: See :func:`cr_mech_coli.simulation.run_simulation`.
+        domain_size (float): See :func:`render_pv_image`.
         render_settings (RenderSettings): See :func:`render_pv_image`.
         save_dir: Path of the directory where to save all images.
         use_hash (bool): Use a hash generated from the :class:`Configuration` class as subfolder of
@@ -305,23 +304,23 @@ def store_all_images(
     for iteration in iterations:
         cells = cell_container.get_cells_at_iteration(iteration)
         render_image(
-            config,
             cells,
+            domain_size,
             render_settings,
             Path(save_dir) / "images/{:09}.png".format(iteration),
         )
         render_mask(
-            config,
             cells,
             colors,
+            domain_size,
             render_settings,
             Path(save_dir) / "masks/{:09}.png".format(iteration),
         )
         if render_raw_pv:
             render_pv_image(
-                config,
                 cells,
                 render_settings,
+                domain_size,
                 colors = None,
                 filename=Path(save_dir) / "raw_pv/{:09}.png".format(iteration),
             )
