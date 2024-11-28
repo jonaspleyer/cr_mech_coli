@@ -20,8 +20,8 @@ if __name__ == "__main__":
     i2 = iterations[2]
 
     rs = crm.RenderSettings(resolution=800)
-    mask1 = crm.render_mask(config, all_cells[i1], colors, render_settings=rs)
-    mask2 = crm.render_mask(config, all_cells[i2], colors, render_settings=rs)
+    mask1 = crm.render_mask(all_cells[i1], colors, config.domain_size, render_settings=rs)
+    mask2 = crm.render_mask(all_cells[i2], colors, config.domain_size, render_settings=rs)
     mask3 = crm.area_diff_mask(mask1, mask2)
     mask4 = crm.parents_diff_mask(mask1, mask2, cell_container)
 

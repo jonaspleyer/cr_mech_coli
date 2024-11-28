@@ -19,10 +19,11 @@ if __name__ == "__main__":
     render_settings.ssao_radius = 50
 
     crm.store_all_images(
-        config,
         sim_result,
+        config.domain_size,
         render_settings,
         render_raw_pv=True,
-        use_hash=True,
         save_dir="docs/source/_static/",
+        store_config=config,
+        use_hash=True,
     )
