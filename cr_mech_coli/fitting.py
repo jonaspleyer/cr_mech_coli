@@ -62,7 +62,7 @@ def points_along_polygon(polygon: list[np.ndarray] | np.ndarray, n_vertices: int
         p_new = p1 * (1-t) + p2 * t
         points.append(p_new)
     points.append(polygon[-1])
-    return np.array(points)
+    return np.array(points, dtype=np.float32)
 
 def _sort_points(skeleton) -> np.ndarray:
     # Calculate end points

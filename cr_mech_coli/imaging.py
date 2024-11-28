@@ -88,7 +88,9 @@ class RenderSettings:
         return rs
 
 
-def __create_cell_surfaces(cells: dict[CellIdentifier, tuple[RodAgent, CellIdentifier | None]]) -> list:
+def __create_cell_surfaces(
+        cells: dict[CellIdentifier, tuple[RodAgent, CellIdentifier | None]]
+    ) -> list:
     cell_surfaces = []
     for ident in cells.keys():
         meshes = []
@@ -183,7 +185,7 @@ def render_pv_image(
     return img
 
 def render_mask(
-        cells: dict,
+        cells: dict[CellIdentifier, tuple[RodAgent, CellIdentifier | None]],
         colors: dict[CellIdentifier, list[int]],
         domain_size: float,
         render_settings: RenderSettings | None = None,
