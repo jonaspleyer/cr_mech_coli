@@ -24,6 +24,65 @@ pub struct RodAgent {
 
 #[pymethods]
 impl RodAgent {
+    /// Constructs a new :class:`RodAgent`
+    #[new]
+    #[pyo3(signature = (
+        pos,
+        vel ,
+        diffusion_constant=0.0,
+        spring_tension=1.0,
+        rigidity=2.0,
+        spring_length=3.0,
+        damping=1.0,
+        radius=3.0,
+        strength=0.1,
+        potential_stiffness=0.5,
+        cutoff=10.0,
+        growth_rate=0.1,
+        spring_length_threshold=6.0,
+    ))]
+    pub fn new<'py>(
+        _py: Python<'py>,
+        pos: numpy::PyReadonlyArray2<'py, f32>,
+        vel: numpy::PyReadonlyArray2<'py, f32>,
+        diffusion_constant: f32,
+        spring_tension: f32,
+        rigidity: f32,
+        spring_length: f32,
+        damping: f32,
+        radius: f32,
+        strength: f32,
+        potential_stiffness: f32,
+        cutoff: f32,
+        growth_rate: f32,
+        spring_length_threshold: f32,
+    ) -> pyo3::PyResult<Self> {
+        let pos = pos.as_array();
+        let vel = vel.as_array();
+        let nrows = pos.shape()[0];
+        let pos = nalgebra::Matrix3xX::from_iterator(nrows, pos.to_owned().into_iter());
+        let vel = nalgebra::Matrix3xX::from_iterator(nrows, vel.to_owned().into_iter());
+        Ok(Self {
+            mechanics: RodMechanics {
+                pos: pos.transpose(),
+                vel: vel.transpose(),
+                diffusion_constant,
+                spring_tension,
+                rigidity,
+                spring_length,
+                damping,
+            },
+            interaction: RodInteraction(MorsePotentialF32 {
+                radius,
+                strength,
+                potential_stiffness,
+                cutoff,
+            }),
+            growth_rate,
+            spring_length_threshold,
+        })
+    }
+
     fn __repr__(&self) -> String {
         format!("{:?}", self)
     }

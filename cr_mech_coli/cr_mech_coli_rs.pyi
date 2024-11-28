@@ -75,6 +75,23 @@ class RodAgent:
     radius: float
     growth_rate: float
     spring_length_threshold: float
+    @staticmethod
+    def __new__(
+        cls,
+        pos,
+        vel ,
+        diffusion_constant=0.0,
+        spring_tension=1.0,
+        rigidity=2.0,
+        spring_length=3.0,
+        damping=1.0,
+        radius=3.0,
+        strength=0.1,
+        potential_stiffness=0.5,
+        cutoff=10.0,
+        growth_rate=0.1,
+        spring_length_threshold=6.0,
+    ): ...
     def __repr__(self) -> str: ...
 
 class RodMechanicsSettings:
