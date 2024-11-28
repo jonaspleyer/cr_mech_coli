@@ -274,12 +274,13 @@ def store_all_images(
         domain_size (float): See :func:`render_pv_image`.
         render_settings (RenderSettings): See :func:`render_pv_image`.
         save_dir: Path of the directory where to save all images.
-        use_hash (bool): Use a hash generated from the :class:`Configuration` class as subfolder of
-            `save_dir` to store results in.
         render_raw_pv (bool): Additionaly render the intermediate image before applying effects
             from :mod:`cv2`.
         show_progressbar (bool): Shows a progressbar of how many iterations have been rendered.
         store_config (bool): Store config as json string in directory.
+        use_hash (bool): Use a hash generated from the :class:`Configuration` class as subfolder of
+            `save_dir` to store results in.
+            This option can only be used together with the `store_config` option.
 
     Returns:
         np.ndarray: See :func:`render_pv_image`.
@@ -289,12 +290,12 @@ def store_all_images(
     colors = cell_container.cell_to_color
     iterations = cell_container.get_all_iterations()
 
-    if use_hash:
-        sim_hash = config.to_hash()
+    if use_hash and store_config is not None:
+        sim_hash = store_config.to_hash()
         save_dir = Path(save_dir) / "{:020}/".format(sim_hash)
 
-    if store_config:
-        config_string = config.to_json()
+    if store_config is not None:
+        config_string = store_config.to_json()
         Path(save_dir).mkdir(parents=True, exist_ok=True)
         with open(Path(save_dir) / "config.json", "w") as f:
             f.write(config_string)
