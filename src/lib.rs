@@ -12,8 +12,8 @@ mod sampling;
 mod simulation;
 
 pub use agent::*;
-use cellular_raza::prelude::MorsePotentialF32;
 pub use cellular_raza::prelude::{CellIdentifier, VoxelPlainIndex};
+use cellular_raza::prelude::{MiePotentialF32, MorsePotentialF32};
 pub use datatypes::*;
 pub use fitting::*;
 pub use imaging::*;
