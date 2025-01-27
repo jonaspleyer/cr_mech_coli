@@ -13,13 +13,89 @@ pub struct RodAgent {
     pub mechanics: RodMechanics<f32, 3>,
     /// Determines interaction between agents. See [MorsePotentialF32].
     #[Interaction]
-    pub interaction: RodInteraction<MorsePotentialF32>,
+    pub interaction: RodInteraction<PhysicalInteraction>,
     /// Rate with which the cell grows in units `1/MIN`.
     #[pyo3(set, get)]
     pub growth_rate: f32,
     /// Threshold at which the cell will divide in units `MICROMETRE`.
     #[pyo3(set, get)]
     pub spring_length_threshold: f32,
+}
+
+/// Describes all possible interaction variants
+#[derive(Clone, Debug, Deserialize, Serialize)]
+#[pyclass]
+pub enum PhysicalInteraction {
+    /// Wraps the :class:`MiePotentialF32`
+    MiePotentialF32(MiePotentialF32),
+    /// Wraps the :class:`MorsePotentialF32`
+    MorsePotentialF32(MorsePotentialF32),
+}
+
+#[pymethods]
+impl PhysicalInteraction {
+    #[new]
+    fn new(pyobject: Bound<PyAny>) -> PyResult<Self> {
+        let mie_pot: Result<MiePotentialF32, _> = pyobject.extract();
+        if let Ok(mie_pot) = mie_pot {
+            return Ok(Self::MiePotentialF32(mie_pot));
+        };
+        let morse_pot: Result<MorsePotentialF32, _> = pyobject.extract();
+        if let Ok(morse_pot) = morse_pot {
+            return Ok(Self::MorsePotentialF32(morse_pot));
+        }
+        let ty_name = pyobject.get_type();
+        Err(pyo3::exceptions::PyValueError::new_err(format!(
+            "Could not convert {ty_name} to any interaction potential. \
+                Use one of the provided potentials instead.",
+        )))
+    }
+}
+
+impl<T> Interaction<T, T, T, f32> for PhysicalInteraction
+where
+    MorsePotentialF32: Interaction<T, T, T, f32>,
+    MiePotentialF32: Interaction<T, T, T, f32>,
+{
+    fn calculate_force_between(
+        &self,
+        own_pos: &T,
+        own_vel: &T,
+        ext_pos: &T,
+        ext_vel: &T,
+        ext_info: &f32,
+    ) -> Result<(T, T), CalcError> {
+        use PhysicalInteraction::*;
+        match self {
+            MiePotentialF32(pot) => {
+                pot.calculate_force_between(own_pos, own_vel, ext_pos, ext_vel, ext_info)
+            }
+            MorsePotentialF32(pot) => {
+                pot.calculate_force_between(own_pos, own_vel, ext_pos, ext_vel, ext_info)
+            }
+        }
+    }
+
+    fn get_interaction_information(&self) -> f32 {
+        match self {
+            PhysicalInteraction::MiePotentialF32(pot) => <MiePotentialF32 as Interaction<
+                nalgebra::Vector2<f32>,
+                _,
+                _,
+                f32,
+            >>::get_interaction_information(
+                pot
+            ),
+            PhysicalInteraction::MorsePotentialF32(pot) => <MorsePotentialF32 as Interaction<
+                nalgebra::Vector2<f32>,
+                _,
+                _,
+                f32,
+            >>::get_interaction_information(
+                pot
+            ),
+        }
+    }
 }
 
 #[pymethods]
@@ -72,12 +148,14 @@ impl RodAgent {
                 spring_length,
                 damping,
             },
-            interaction: RodInteraction(MorsePotentialF32 {
-                radius,
-                strength,
-                potential_stiffness,
-                cutoff,
-            }),
+            interaction: RodInteraction(PhysicalInteraction::MorsePotentialF32(
+                MorsePotentialF32 {
+                    radius,
+                    strength,
+                    potential_stiffness,
+                    cutoff,
+                },
+            )),
             growth_rate,
             spring_length_threshold,
         })
@@ -124,15 +202,17 @@ impl RodAgent {
     pub fn set_vel<'a>(&'a mut self, pos: Bound<'a, numpy::PyArray2<f32>>) -> pyo3::PyResult<()> {
         use numpy::PyArrayMethods;
         let iter: Vec<f32> = pos.to_vec()?;
-        self.mechanics.vel =
-            nalgebra::MatrixXx3::<f32>::from_iterator(iter.len(), iter.into_iter());
+        self.mechanics.vel = nalgebra::MatrixXx3::<f32>::from_iterator(iter.len(), iter);
         Ok(())
     }
 
     /// The interaction radius as given by the [MorsePotentialF32] interaction struct.
     #[getter]
     pub fn radius(&self) -> f32 {
-        self.interaction.0.radius
+        match &self.interaction.0 {
+            PhysicalInteraction::MorsePotentialF32(pot) => pot.radius,
+            PhysicalInteraction::MiePotentialF32(pot) => pot.radius,
+        }
     }
 }
 
@@ -151,7 +231,7 @@ impl Cycle<RodAgent, f32> for RodAgent {
     }
 
     fn divide(_rng: &mut rand_chacha::ChaCha8Rng, cell: &mut Self) -> Result<Self, DivisionError> {
-        let c2_mechanics = cell.mechanics.divide(cell.interaction.0.radius)?;
+        let c2_mechanics = cell.mechanics.divide(cell.radius())?;
         let mut c2 = cell.clone();
         c2.mechanics = c2_mechanics;
         Ok(c2)

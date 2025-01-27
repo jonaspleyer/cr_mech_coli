@@ -101,7 +101,7 @@ pub struct AgentSettings {
     /// Settings for the mechanics part of :class:`RodAgent`. See also :class:`RodMechanicsSettings`.
     pub mechanics: Py<RodMechanicsSettings>,
     /// Settings for the interaction part of :class:`RodAgent`. See also :class:`MorsePotentialF32`.
-    pub interaction: Py<MorsePotentialF32>,
+    pub interaction: Py<PhysicalInteraction>,
     /// Rate with which the length of the bacterium grows
     pub growth_rate: f32,
     /// Threshold when the bacterium divides
@@ -128,12 +128,12 @@ impl AgentSettings {
                 mechanics: Py::new(py, RodMechanicsSettings::default())?,
                 interaction: Py::new(
                     py,
-                    MorsePotentialF32 {
+                    PhysicalInteraction::MorsePotentialF32(MorsePotentialF32 {
                         radius: 3.0,              // MICROMETRE
                         potential_stiffness: 0.5, // 1/MICROMETRE
                         cutoff: 10.0,             // MICROMETRE
                         strength: 0.1,            // MICROMETRE^2 / MIN^2
-                    },
+                    }),
                 )?,
                 growth_rate: 0.1,
                 spring_length_threshold: 6.0,
@@ -420,7 +420,7 @@ pub fn run_simulation(
     Python::with_gil(|py| {
         let mut rng = rand_chacha::ChaCha8Rng::seed_from_u64(config.rng_seed);
         let mechanics: RodMechanicsSettings = agent_settings.mechanics.extract(py)?;
-        let interaction: MorsePotentialF32 = agent_settings.interaction.extract(py)?;
+        let interaction: PhysicalInteraction = agent_settings.interaction.extract(py)?;
         let s = config.randomize_position;
         let spring_length = mechanics.spring_length;
         let dx = spring_length * mechanics.pos.nrows() as f32;
