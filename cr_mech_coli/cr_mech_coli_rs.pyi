@@ -6,6 +6,7 @@ class MorsePotentialF32:
 
     Famous :ref:`Morse <https://doi.org/10.1103/PhysRev.34.57>` potential for diatomic molecules.
     """
+
     radius: float
     potential_stiffness: float
     cutoff: float
@@ -15,24 +16,25 @@ class AgentSettings:
     """\
     Contains settings needed to specify properties of the :class:`RodAgent`
     """
+
     mechanics: RodMechanicsSettings
     interaction: MorsePotentialF32
     growth_rate: float
     spring_length_threshold: float
 
     @staticmethod
-    def __new__(cls, **kwargs) -> AgentSettings:
-        ...
+    def __new__(cls, **kwargs) -> AgentSettings: ...
 
 class CellIdentifier:
     """
     Unique identifier which is given to every cell in the simulation
-    
+
     The identifier is comprised of the :class:`VoxelPlainIndex` in which the cell was first spawned.
     This can be due to initial setup or due to other methods such as division in a cell cycle.
     The second parameter is a counter which is unique for each voxel.
     This ensures that each cell obtains a unique identifier over the course of the simulation.
     """
+
     ...
 
 class VoxelPlainIndex:
@@ -44,6 +46,7 @@ class Configuration:
     """\
     Contains all settings needed to configure the simulation
     """
+
     agent_settings: AgentSettings
     n_agents: int
     n_threads: int
@@ -70,6 +73,7 @@ class RodAgent:
     A basic cell-agent which makes use of
     `RodMechanics <https://cellular-raza.com/docs/cellular_raza_building_blocks/structs.RodMechanics.html>`_
     """
+
     pos: np.ndarray
     vel: np.ndarray
     radius: float
@@ -79,7 +83,7 @@ class RodAgent:
     def __new__(
         cls,
         pos,
-        vel ,
+        vel,
         diffusion_constant=0.0,
         spring_tension=1.0,
         rigidity=2.0,
@@ -98,6 +102,7 @@ class RodMechanicsSettings:
     """\
     Contains all settings required to construct :class:`RodMechanics`
     """
+
     pos: np.ndarray
     vel: np.ndarray
     diffusion_constant: float
@@ -110,30 +115,38 @@ class CellContainer:
     """\
     Resulting type when executing a full simulation
     """
+
     cells: dict[int, dict[CellIdentifier, tuple[RodAgent, CellIdentifier | None]]]
     parent_map: dict[CellIdentifier, CellIdentifier | None]
     child_map: dict[CellIdentifier, list[CellIdentifier]]
     cell_to_color: dict[CellIdentifier, list[int]]
     color_to_cell: dict[list[int], CellIdentifier]
 
-    def get_cells(self) -> dict[int, dict[CellIdentifier, tuple[RodAgent, CellIdentifier | None]]]: ...
-    def get_cells_at_iteration(self, iteration: int) -> dict[
-        CellIdentifier,
-        tuple[RodAgent, CellIdentifier | None]
-    ]: ...
+    def get_cells(
+        self,
+    ) -> dict[int, dict[CellIdentifier, tuple[RodAgent, CellIdentifier | None]]]: ...
+    def get_cells_at_iteration(
+        self, iteration: int
+    ) -> dict[CellIdentifier, tuple[RodAgent, CellIdentifier | None]]: ...
     def get_cell_history(self, identifier: CellIdentifier) -> dict[int, RodAgent]: ...
     def get_all_iterations(self) -> list[int]: ...
     def get_parent(self, identifier: CellIdentifier) -> CellIdentifier | None: ...
     def get_children(self, identifier: CellIdentifier) -> list[CellIdentifier]: ...
     def get_color(self, identifier: CellIdentifier) -> tuple[int, int, int] | None: ...
-    def get_cell_from_color(self, color: tuple[int, int, int]) -> CellIdentifier | None: ...
-    def have_shared_parent(self, ident1: CellIdentifier, ident2: CellIdentifier) -> bool: ...
+    def get_cell_from_color(
+        self, color: tuple[int, int, int]
+    ) -> CellIdentifier | None: ...
+    def have_shared_parent(
+        self, ident1: CellIdentifier, ident2: CellIdentifier
+    ) -> bool: ...
     def get_parent_map(self) -> dict[CellIdentifier, CellIdentifier | None]: ...
     def get_child_map(self) -> dict[CellIdentifier, list[CellIdentifier]]: ...
     def get_all_identifiers(self) -> list[CellIdentifier]: ...
     def assign_colors_to_cells(self) -> dict[CellIdentifier, list[int]]: ...
 
-def run_simulation(config: Configuration, agent_settings: AgentSettings) -> CellContainer:
+def run_simulation(
+    config: Configuration, agent_settings: AgentSettings
+) -> CellContainer:
     """\
     Use the :func:`run_simulation_with_agents`
 
@@ -145,13 +158,17 @@ def run_simulation(config: Configuration, agent_settings: AgentSettings) -> Cell
     """
     ...
 
-def run_simulation_with_agents(config: Configuration, agents: list[RodAgent]) -> CellContainer:
+def run_simulation_with_agents(
+    config: Configuration, agents: list[RodAgent]
+) -> CellContainer:
     """\
     Executes a simulation given a :class:`Configuration` and a list of :class:`RodAgent`.
     """
     ...
 
-def sort_cellular_identifiers(identifiers: list[CellIdentifier]) -> list[CellIdentifier]:
+def sort_cellular_identifiers(
+    identifiers: list[CellIdentifier],
+) -> list[CellIdentifier]:
     """\
     Sorts an iterator of :class:`CellIdentifier` deterministically.
     
@@ -213,4 +230,3 @@ def color_to_counter(color: list[int]) -> int:
     >>> counter = (counter * 12157008) % 251**3
     """
     ...
-

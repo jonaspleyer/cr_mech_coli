@@ -53,20 +53,23 @@ class RenderSettings:
     Many of the values will be given directly to pyvistas :meth:`pyvista.plotter.add_mesh` function.
     Others are used by :mod:`cv2`.
     """
-    resolution: int = 1280#: Resolution of the generated image
-    diffuse: float = 0.5#: Value Between 0 and 1.
-    ambient: float = 0.5#: Value between 0 and 1.
-    specular: float = 0.5#: Value between 0 and 1.
-    specular_power: float = 10.0#: Value between 0 and 250.
-    metallic: float = 1.0#: Value between 0 and 1
-    noise: int = 50#: RGB values per pixel
-    bg_brightness: int = 100#: Background brightness
-    cell_brightness: int = 30#: Brightness of the individual cells
-    ssao_radius: int = 50#: Radius for ssao scattering
-    kernel_size: int = 30#: Smoothing kernel size
-    pbr: bool = True#: Enable physics-based rendering
-    lighting: bool = True# Enable lighting in 3D render
-    render_mask: bool = False# If enabled, notifies rendering engine to disable effects
+
+    resolution: int = 1280  #: Resolution of the generated image
+    diffuse: float = 0.5  #: Value Between 0 and 1.
+    ambient: float = 0.5  #: Value between 0 and 1.
+    specular: float = 0.5  #: Value between 0 and 1.
+    specular_power: float = 10.0  #: Value between 0 and 250.
+    metallic: float = 1.0  #: Value between 0 and 1
+    noise: int = 50  #: RGB values per pixel
+    bg_brightness: int = 100  #: Background brightness
+    cell_brightness: int = 30  #: Brightness of the individual cells
+    ssao_radius: int = 50  #: Radius for ssao scattering
+    kernel_size: int = 30  #: Smoothing kernel size
+    pbr: bool = True  #: Enable physics-based rendering
+    lighting: bool = True  # Enable lighting in 3D render
+    render_mask: bool = (
+        False  # If enabled, notifies rendering engine to disable effects
+    )
 
     def prepare_for_masks(self):
         """
@@ -89,22 +92,22 @@ class RenderSettings:
 
 
 def __create_cell_surfaces(
-        cells: dict[CellIdentifier, tuple[RodAgent, CellIdentifier | None]]
-    ) -> list:
+    cells: dict[CellIdentifier, tuple[RodAgent, CellIdentifier | None]],
+) -> list:
     cell_surfaces = []
     for ident in cells.keys():
         meshes = []
         p = cells[ident][0].pos.T
         r = cells[ident][0].radius
 
-        meshes.append(pv.Sphere(center=p[:,0], radius=r))
-        for j in range(max(p.shape[1]-1,0)):
+        meshes.append(pv.Sphere(center=p[:, 0], radius=r))
+        for j in range(max(p.shape[1] - 1, 0)):
             # Add sphere at junction
-            meshes.append(pv.Sphere(center=p[:,j+1], radius=r))
+            meshes.append(pv.Sphere(center=p[:, j + 1], radius=r))
 
             # Otherwise add cylinders
-            pos1 = p[:,j]
-            pos2 = p[:,j+1]
+            pos1 = p[:, j]
+            pos2 = p[:, j + 1]
             center = 0.5 * (pos1 + pos2)
             direction = pos2 - center
             height = float(np.linalg.norm(pos1 - pos2))
@@ -117,12 +120,12 @@ def __create_cell_surfaces(
 
 
 def render_pv_image(
-        cells: dict[CellIdentifier, tuple[RodAgent, CellIdentifier | None]],
-        render_settings: RenderSettings,
-        domain_size: float,
-        colors: dict[CellIdentifier, list[int]] | None = None,
-        filename: str | Path | None = None,
-    ) -> np.ndarray:
+    cells: dict[CellIdentifier, tuple[RodAgent, CellIdentifier | None]],
+    render_settings: RenderSettings,
+    domain_size: float,
+    colors: dict[CellIdentifier, list[int]] | None = None,
+    filename: str | Path | None = None,
+) -> np.ndarray:
     """
     Creates a 3D render of the given cells.
 
@@ -139,14 +142,14 @@ def render_pv_image(
         np.ndarray: An array of shape `(resolution, resolution, 3)` which contains the rendered
             pixels.
     """
-    plotter = pv.Plotter(off_screen=True, window_size=[render_settings.resolution]*2)
+    plotter = pv.Plotter(off_screen=True, window_size=[render_settings.resolution] * 2)
     pv.Plotter.enable_parallel_projection(plotter)
-    pv.Plotter.set_background(plotter, [render_settings.bg_brightness]*3)
+    pv.Plotter.set_background(plotter, [render_settings.bg_brightness] * 3)
 
     cell_surfaces = __create_cell_surfaces(cells)
 
     for ident, cell in cell_surfaces:
-        color = [render_settings.cell_brightness]*3
+        color = [render_settings.cell_brightness] * 3
         if colors is not None:
             color = colors[ident]
         plotter.add_mesh(
@@ -168,10 +171,7 @@ def render_pv_image(
     else:
         plotter.disable_anti_aliasing()
 
-    pv.Plotter.view_xy(
-        plotter,
-        bounds=(0, domain_size, 0, domain_size, 0, 0)
-    )
+    pv.Plotter.view_xy(plotter, bounds=(0, domain_size, 0, domain_size, 0, 0))
 
     img = np.array(plotter.screenshot())
     plotter.close()
@@ -184,13 +184,14 @@ def render_pv_image(
 
     return img
 
+
 def render_mask(
-        cells: dict[CellIdentifier, tuple[RodAgent, CellIdentifier | None]],
-        colors: dict[CellIdentifier, list[int]],
-        domain_size: float,
-        render_settings: RenderSettings | None = None,
-        filename: str | Path | None = None,
-    ) -> np.ndarray:
+    cells: dict[CellIdentifier, tuple[RodAgent, CellIdentifier | None]],
+    colors: dict[CellIdentifier, list[int]],
+    domain_size: float,
+    render_settings: RenderSettings | None = None,
+    filename: str | Path | None = None,
+) -> np.ndarray:
     """
     Creates an image containing masks of the given cells.
     This function internally uses the :func:`render_pv_image` function and
@@ -214,14 +215,14 @@ def render_mask(
 
 
 def render_image(
-        cells: dict[CellIdentifier, tuple[RodAgent, CellIdentifier | None]],
-        domain_size: float,
-        render_settings: RenderSettings | None = None,
-        filename: str | Path | None = None
-    ) -> np.ndarray:
+    cells: dict[CellIdentifier, tuple[RodAgent, CellIdentifier | None]],
+    domain_size: float,
+    render_settings: RenderSettings | None = None,
+    filename: str | Path | None = None,
+) -> np.ndarray:
     """
     Aims to create a near-realistic microscopic image with the given cells.
-    This function internally uses the :func:`render_pv_image` function but changes some of the 
+    This function internally uses the :func:`render_pv_image` function but changes some of the
 
     Args:
         cells: See :func:`render_pv_image`.
@@ -238,14 +239,19 @@ def render_image(
     img = render_pv_image(cells, render_settings, domain_size)
 
     # Smoothen it out
-    kernel = np.ones([render_settings.kernel_size]*2, np.float32) / render_settings.kernel_size**2
+    kernel = (
+        np.ones([render_settings.kernel_size] * 2, np.float32)
+        / render_settings.kernel_size**2
+    )
     img = cv.filter2D(img, -1, kernel)
 
     # Make noise on image
     rng = np.random.default_rng()
-    noise = rng.integers(0, render_settings.noise, img.shape[:2], dtype=np.uint8, endpoint=True)
+    noise = rng.integers(
+        0, render_settings.noise, img.shape[:2], dtype=np.uint8, endpoint=True
+    )
     for j in range(3):
-        img[:,:,j] = cv.add(img[:,:,j], noise)
+        img[:, :, j] = cv.add(img[:, :, j], noise)
 
     if filename is not None:
         # Check that folder exist and if not create them
@@ -257,15 +263,15 @@ def render_image(
 
 
 def store_all_images(
-        cell_container: CellContainer,
-        domain_size: float,
-        render_settings: RenderSettings | None = None,
-        save_dir: str | Path = "out",
-        render_raw_pv: bool = False,
-        show_progressbar: bool | int = False,
-        store_config: Configuration | None = None,
-        use_hash: bool = True,
-    ):
+    cell_container: CellContainer,
+    domain_size: float,
+    render_settings: RenderSettings | None = None,
+    save_dir: str | Path = "out",
+    render_raw_pv: bool = False,
+    show_progressbar: bool | int = False,
+    store_config: Configuration | None = None,
+    use_hash: bool = True,
+):
     """
     Combines multiple functions and renders images to files for a complete simulation result.
     This function calls the :func:`render_image`, :func:`render_pv_image` and
@@ -324,6 +330,6 @@ def store_all_images(
                 cells,
                 render_settings,
                 domain_size,
-                colors = None,
+                colors=None,
                 filename=Path(save_dir) / "raw_pv/{:09}.png".format(iteration),
             )
