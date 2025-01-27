@@ -137,8 +137,8 @@ impl RodAgent {
         let pos = pos.as_array();
         let vel = vel.as_array();
         let nrows = pos.shape()[0];
-        let pos = nalgebra::Matrix3xX::from_iterator(nrows, pos.to_owned().into_iter());
-        let vel = nalgebra::Matrix3xX::from_iterator(nrows, vel.to_owned().into_iter());
+        let pos = nalgebra::Matrix3xX::from_iterator(nrows, pos.to_owned());
+        let vel = nalgebra::Matrix3xX::from_iterator(nrows, vel.to_owned());
         Ok(Self {
             mechanics: RodMechanics {
                 pos: pos.transpose(),
@@ -174,11 +174,7 @@ impl RodAgent {
     #[getter]
     pub fn pos<'a>(&'a self, py: Python<'a>) -> Bound<'a, numpy::PyArray2<f32>> {
         use numpy::ToPyArray;
-        let new_array =
-            numpy::nalgebra::Matrix::<f32, numpy::nalgebra::Dyn, numpy::nalgebra::U3, _>::from(
-                self.mechanics.pos.clone(),
-            );
-        new_array.to_pyarray_bound(py)
+        self.mechanics.pos.clone().to_pyarray_bound(py)
     }
 
     /// Position of the agent given by a matrix containing all vertices in order.
@@ -187,7 +183,7 @@ impl RodAgent {
         use numpy::PyArrayMethods;
         let iter: Vec<f32> = pos.to_vec()?;
         self.mechanics.pos =
-            nalgebra::MatrixXx3::<f32>::from_iterator(self.mechanics.pos.nrows(), iter.into_iter());
+            nalgebra::MatrixXx3::<f32>::from_iterator(self.mechanics.pos.nrows(), iter);
         Ok(())
     }
 

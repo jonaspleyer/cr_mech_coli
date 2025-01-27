@@ -46,7 +46,7 @@ impl CellContainer {
             .flat_map(|(_, cells)| cells.into_iter())
             .map(|(ident, (_, parent))| (ident, parent))
             .collect();
-        let mut identifiers: Vec<_> = parent_map.iter().map(|(i, _)| i.clone()).collect();
+        let mut identifiers: Vec<_> = parent_map.clone().into_keys().collect();
         identifiers.sort();
         let cell_to_color: HashMap<_, _> = identifiers
             .into_iter()
@@ -107,8 +107,7 @@ impl CellContainer {
         self.cells
             .get(&iteration)
             .cloned()
-            .or(Some(HashMap::new()))
-            .unwrap()
+            .unwrap_or(HashMap::new())
     }
 
     /// Load the history of a single cell
@@ -230,10 +229,7 @@ impl CellContainer {
 
     /// Identical to :func:`CellContainer.get_all_identifiers` but returns unsorted list.
     pub fn get_all_identifiers_unsorted(&self) -> Vec<CellIdentifier> {
-        self.parent_map
-            .iter()
-            .map(|(ident, _)| ident.clone())
-            .collect()
+        self.parent_map.clone().into_keys().collect()
     }
 
     /// Obtains the cell corresponding to the given counter of this simulation

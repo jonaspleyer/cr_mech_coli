@@ -45,10 +45,10 @@ pub fn parents_diff_mask<'py>(
     let new_shape = [s[0] * s[1], s[2]];
     let m1 = m1
         .to_shape(new_shape)
-        .or_else(|e| Err(new_error!(PyValueError, "{e}")))?;
+        .map_err(|e| new_error!(PyValueError, "{e}"))?;
     let m2 = m2
         .to_shape(new_shape)
-        .or_else(|e| Err(new_error!(PyValueError, "{e}")))?;
+        .map_err(|e| new_error!(PyValueError, "{e}"))?;
     let diff_mask = numpy::ndarray::Array1::<f32>::from_iter(
         m1.outer_iter()
             .zip(m2.outer_iter())
@@ -69,12 +69,12 @@ pub fn parents_diff_mask<'py>(
                     ))?;
 
                     // Check if one is the parent of the other
-                    let p1 = cell_container.parent_map.get(&i1).ok_or(new_error!(
+                    let p1 = cell_container.parent_map.get(i1).ok_or(new_error!(
                         PyKeyError,
                         "could not find cell {:?}",
                         i1
                     ))?;
-                    let p2 = cell_container.parent_map.get(&i2).ok_or(new_error!(
+                    let p2 = cell_container.parent_map.get(i2).ok_or(new_error!(
                         PyKeyError,
                         "could not find cell {:?}",
                         i2
@@ -90,11 +90,10 @@ pub fn parents_diff_mask<'py>(
                     Ok(0.0)
                 }
             })
-            .collect::<pyo3::PyResult<Vec<f32>>>()?
-            .into_iter(),
+            .collect::<pyo3::PyResult<Vec<f32>>>()?,
     );
     let diff_mask = diff_mask
         .to_shape([s[0], s[1]])
-        .or_else(|e| Err(pyo3::exceptions::PyValueError::new_err(format!("{e}"))))?;
+        .map_err(|e| pyo3::exceptions::PyValueError::new_err(format!("{e}")))?;
     Ok(diff_mask.to_pyarray_bound(py))
 }

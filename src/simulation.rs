@@ -254,15 +254,15 @@ impl Configuration {
     /// Serializes this struct to the json format
     pub fn to_json(&self) -> PyResult<String> {
         let res = serde_json::to_string_pretty(&self);
-        Ok(res.or_else(|e| Err(pyo3::exceptions::PyIOError::new_err(format!("{e}"))))?)
+        res.map_err(|e| pyo3::exceptions::PyIOError::new_err(format!("{e}")))
     }
 
     /// Deserializes this struct from a json string
     #[staticmethod]
     pub fn from_json(json_string: Bound<PyString>) -> PyResult<Self> {
         let json_str = json_string.to_str()?;
-        let res = serde_json::from_str(&json_str);
-        Ok(res.or_else(|e| Err(pyo3::exceptions::PyIOError::new_err(format!("{e}"))))?)
+        let res = serde_json::from_str(json_str);
+        res.map_err(|e| pyo3::exceptions::PyIOError::new_err(format!("{e}")))
     }
 
     /// Attempts to create a hash from the contents of this :class:`Configuration`.
@@ -270,7 +270,7 @@ impl Configuration {
     pub fn to_hash(&self) -> PyResult<u64> {
         let json_string = self.to_json()?;
         let mut hasher = std::hash::DefaultHasher::new();
-        hasher.write(&json_string.as_bytes());
+        hasher.write(json_string.as_bytes());
         Ok(hasher.finish())
     }
 }
@@ -316,7 +316,7 @@ fn _generate_positions_old(
                 rng.gen_range(0.4 * config.domain_height..0.6 * config.domain_height),
             ];
             let angle: f32 = rng.gen_range(0.0..2.0 * std::f32::consts::PI);
-            let pos = nalgebra::MatrixXx3::<f32>::from_fn(agent_settings.n_vertices, |r, c| {
+            nalgebra::MatrixXx3::<f32>::from_fn(agent_settings.n_vertices, |r, c| {
                 p1[c]
                     + r as f32
                         * spring_length
@@ -328,8 +328,7 @@ fn _generate_positions_old(
                         } else {
                             0.0
                         }
-            });
-            pos
+            })
         })
         .collect())
 }
@@ -347,7 +346,7 @@ pub fn run_simulation_with_agents(
         let t_max = config.t_max;
         let save_interval = config.save_interval;
         let time = FixedStepsize::from_partial_save_interval(t0, dt, t_max, save_interval)
-            .or_else(|x| Err(SimulationError::from(x)))?;
+            .map_err(SimulationError::from)?;
         let storage = StorageBuilder::new().priority([StorageOption::Memory]);
         let settings = Settings {
             n_threads: config.n_threads,
@@ -361,7 +360,7 @@ pub fn run_simulation_with_agents(
             [config.domain_size, config.domain_size, config.domain_height],
             [config.n_voxels, config.n_voxels, 1],
         )
-        .or_else(|x| Err(SimulationError::from(x)))?;
+        .map_err(SimulationError::from)?;
         domain.rng_seed = config.rng_seed;
         let domain = CartesianCuboidRods { domain };
 
@@ -396,7 +395,7 @@ pub fn run_simulation_with_agents(
             })
             .collect();
 
-        Ok(CellContainer::new(cells)?)
+        CellContainer::new(cells)
     })
 }
 
@@ -459,7 +458,7 @@ pub fn run_simulation(
                 spring_length_threshold: agent_settings.spring_length_threshold,
             }
         });
-        Ok(run_simulation_with_agents(&config, bacteria.collect())?)
+        run_simulation_with_agents(&config, bacteria.collect())
     })
 }
 
