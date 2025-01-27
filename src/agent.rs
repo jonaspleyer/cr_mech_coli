@@ -117,6 +117,7 @@ impl RodAgent {
         growth_rate=0.1,
         spring_length_threshold=6.0,
     ))]
+    #[allow(clippy::too_many_arguments)]
     pub fn new<'py>(
         _py: Python<'py>,
         pos: numpy::PyReadonlyArray2<'py, f32>,
