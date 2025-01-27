@@ -34,4 +34,6 @@ from .cr_mech_coli_rs import (
     sort_cellular_identifiers,
     CellIdentifier,
     MorsePotentialF32,
+    MiePotentialF32,
+    PhysicalInteraction,
 )
