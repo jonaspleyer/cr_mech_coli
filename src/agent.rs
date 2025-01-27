@@ -181,6 +181,7 @@ impl RodAgent {
     #[setter]
     pub fn set_pos<'a>(&'a mut self, pos: Bound<'a, numpy::PyArray2<f32>>) -> pyo3::PyResult<()> {
         use numpy::PyArrayMethods;
+        // TODO check this function: I think this produces an error.
         let iter: Vec<f32> = pos.to_vec()?;
         self.mechanics.pos =
             nalgebra::MatrixXx3::<f32>::from_iterator(self.mechanics.pos.nrows(), iter);

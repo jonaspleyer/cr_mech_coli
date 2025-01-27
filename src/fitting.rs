@@ -1,6 +1,7 @@
 use crate::CellContainer;
 use pyo3::prelude::*;
 
+/// Checks if both arrays have identical shape and are non-empty
 macro_rules! check_shape_identical_nonempty(
     ($a1:ident, $a2:ident) => {
         if $a1.shape() != $a2.shape() || $a1.shape().len() == 0 {
@@ -13,6 +14,7 @@ macro_rules! check_shape_identical_nonempty(
     };
 );
 
+/// Simplify conversion of generic error messages to pyo3 errors
 macro_rules! new_error (
     ($error_kind:ident, $($message:tt),*) => {
         pyo3::exceptions:: $error_kind ::new_err(format!($($message),*))
