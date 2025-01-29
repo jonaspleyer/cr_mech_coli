@@ -12,7 +12,7 @@ crate-type = ["cdylib", "rlib"]
 doctest = false
 
 [dependencies]
-cellular_raza = { version="0.1.6", features = ["pyo3"] }
+cellular_raza = { git = "https://github.com/jonaspleyer/cellular_raza", features = ["pyo3"] }
 nalgebra = { version = "0.33", features = ["serde", "serde-serialize"] }
 num = { version = "0.4.3", features = ["rand", "serde"] }
 numpy = { git="https://github.com/jonaspleyer/rust-numpy", features = ["half", "nalgebra"] }
