@@ -44,6 +44,10 @@ impl PhysicalInteraction {
         if let Ok(morse_pot) = morse_pot {
             return Ok(Self::MorsePotentialF32(morse_pot));
         }
+        let pi: Result<PhysicalInteraction, _> = pyobject.extract();
+        if let Ok(pi) = pi {
+            return Ok(pi);
+        }
         let ty_name = pyobject.get_type();
         Err(pyo3::exceptions::PyValueError::new_err(format!(
             "Could not convert {ty_name} to any interaction potential. \
