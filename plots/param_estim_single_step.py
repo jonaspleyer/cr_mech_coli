@@ -131,17 +131,17 @@ if __name__ == "__main__":
     growth_rate = 0.03
     radius = 8.0
     strength = 0.1
-    potential_stiffness = 0.2
+    potential_stiffness = 0.4
     rigidity = 0.8
     parameters = (growth_rate, radius, strength, potential_stiffness, rigidity)
 
     # Optimize values
     bounds = [
-        [0.00, 0.05],# Growth Rate
-        [4.0, 10.0],# Radius
-        [0.1, 0.4],# Strength
-        [0.2, 0.6],# Potential Stiffness
-        [0.4, 1.0],# Rigidity
+        [0.00, 0.05],  # Growth Rate
+        [4.0, 10.0],  # Radius
+        [0.1, 0.4],  # Strength
+        [0.25, 0.55],  # Potential Stiffness
+        [0.4, 1.0],  # Rigidity
     ]
     res = sp.optimize.differential_evolution(
         predict_flatten,
@@ -149,10 +149,10 @@ if __name__ == "__main__":
         x0=parameters,
         args=args,
         workers=-1,
-        updating='deferred',
-        maxiter=20,
+        updating="deferred",
+        maxiter=100,
         disp=True,
-        tol=1e-3,
+        tol=1e-4,
         recombination=0.3,
         popsize=128,
     )
