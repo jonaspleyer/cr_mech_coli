@@ -39,13 +39,15 @@ def predict(
             vel=np.zeros(
                 (positions.shape[1], positions.shape[2] + 1), dtype=np.float32
             ),
+            interaction=crm.MorsePotentialF32(
+                radius=radius,
+                potential_stiffness=potential_stiffness,
+                cutoff=cutoff,
+                strength=strength,
+            ),
             growth_rate=growth_rate,
-            radius=radius,
             spring_length=pos_to_spring_length(positions[i]),
             spring_length_threshold=1000,
-            strength=strength,
-            potential_stiffness=potential_stiffness,
-            cutoff=cutoff,
             rigidity=rigidity,
         )
         for i in range(n_agents)
