@@ -119,7 +119,7 @@ impl RodAgent {
         _py: Python<'py>,
         pos: numpy::PyReadonlyArray2<'py, f32>,
         vel: numpy::PyReadonlyArray2<'py, f32>,
-        interaction: PhysicalInteraction,
+        interaction: Bound<PyAny>,
         diffusion_constant: f32,
         spring_tension: f32,
         rigidity: f32,
@@ -133,6 +133,7 @@ impl RodAgent {
         let nrows = pos.shape()[0];
         let pos = nalgebra::Matrix3xX::from_iterator(nrows, pos.to_owned());
         let vel = nalgebra::Matrix3xX::from_iterator(nrows, vel.to_owned());
+        let interaction = PhysicalInteraction::new(interaction)?;
         Ok(Self {
             mechanics: RodMechanics {
                 pos: pos.transpose(),
