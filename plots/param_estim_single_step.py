@@ -3,7 +3,8 @@ import cr_mech_coli as crm
 import numpy as np
 import matplotlib.pyplot as plt
 import scipy as sp
-from tqdm import tqdm
+import time
+
 
 def predict(
     # Parameters
@@ -98,6 +99,7 @@ def predict_flatten(
 
 
 if __name__ == "__main__":
+    interval = time.time()
     # markers = np.fromfile("./data/growth-2-marked/image001042-markers.tif").reshape(576, 768)
     mask1 = np.loadtxt("data/growth-2-marked/image001042-markers.csv", delimiter=",")
     img1 = imread("data/growth-2/image001042.png")
@@ -112,6 +114,9 @@ if __name__ == "__main__":
     ax[0, 1].imshow(img2)
     ax[1, 0].imshow(mask1)
     ax[1, 1].imshow(mask2)
+
+    print("[x] +[{:8.3}] Generated initial plots".format(time.time() - interval))
+    interval = time.time()
 
     domain_size = np.max(mask1.shape)
     n_agents = len(pos1)
@@ -146,6 +151,10 @@ if __name__ == "__main__":
         recombination=0.3,
         popsize=128,
     )
+    print(
+        "[x] +[{:8.4}s] Finished Parameter Optimization".format(time.time() - interval)
+    )
+    interval = time.time()
 
     param_infos = [
         ("Growth Rate", "\\mu m\\text{min}^{-1}"),
@@ -178,6 +187,9 @@ if __name__ == "__main__":
         )
         plt.close(fig2)
 
+    print("[x] +[{:8.3}] Plotted Profiles".format(time.time() - interval))
+    interval = time.time()
+
     cell_container = predict_flatten(
         res.x,
         *args,
@@ -206,3 +218,5 @@ if __name__ == "__main__":
         ax[0, 1].plot(p[:,0], p[:,1], color="white")
     fig.tight_layout()
     plt.show()
+
+    print("[x] +[{:8.3}] Rendered Masks".format(time.time() - interval))
