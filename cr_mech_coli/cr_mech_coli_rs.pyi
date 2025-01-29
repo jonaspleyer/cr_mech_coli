@@ -23,6 +23,9 @@ class MorsePotentialF32:
     cutoff: float
     strength: float
 
+    @staticmethod
+    def __new__(cls, **kwargs) -> MorsePotentialF32: ...
+
 class AgentSettings:
     """\
     Contains settings needed to specify properties of the :class:`RodAgent`
