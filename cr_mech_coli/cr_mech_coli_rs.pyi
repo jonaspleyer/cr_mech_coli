@@ -1,5 +1,16 @@
 import numpy as np
 
+class MiePotentialF32:
+    """\
+    See
+    :url:`https://cellular-raza.com/docs/cellular_raza_building_blocks/struct.MiePotentialF32.html`.
+    """
+
+    radius: float
+    potential_stiffness: float
+    cutoff: float
+    strength: float
+
 class MorsePotentialF32:
     """\
     Interaction potential of our Agents.
