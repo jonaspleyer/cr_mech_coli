@@ -125,9 +125,8 @@ if __name__ == "__main__":
     interval = time.time()
 
     domain_size = np.max(mask1.shape)
-    n_agents = len(pos1)
-    cutoff=30.0
-    args=(n_agents, cutoff, domain_size, pos1, pos2)
+    cutoff = 30.0
+    args = (cutoff, domain_size, pos1, pos2)
 
     growth_rate = 0.03
     radius = 8.0
