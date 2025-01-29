@@ -255,12 +255,16 @@ The following actions need to be taken for the old and new agent.
     \centering
     \begin{tikzonimage}[width=0.3\textwidth]
         {../docs/source/_static/09395645494836445480/raw_pv/000000400.png}
-        \node at (0.1, 0.9)[anchor=north west, rectangle, draw, white, minimum width=20pt, minimum height=20pt]{a)};
+        \node at (0.025, 0.975)[anchor=north west, rectangle, draw, white, minimum width=15pt, minimum height=15pt]{\textbf{a}};
     \end{tikzonimage}
-    \includegraphics[width=0.3\textwidth]
+    \begin{tikzonimage}[width=0.3\textwidth]
         {../docs/source/_static/09395645494836445480/images/000000400.png}
-    \includegraphics[width=0.3\textwidth]
+        \node at (0.025, 0.975)[anchor=north west, rectangle, draw, white, minimum width=15pt, minimum height=15pt]{\textbf{b}};
+    \end{tikzonimage}
+    \begin{tikzonimage}[width=0.3\textwidth]
         {../docs/source/_static/09395645494836445480/masks/000000400.png}
+        \node at (0.025, 0.975)[anchor=north west, rectangle, draw, white, minimum width=15pt, minimum height=15pt]{\textbf{c}};
+    \end{tikzonimage}
     \caption{Snapshots at \dots}
     \label{fig:progression-image-generation}
 \end{figure}
@@ -271,27 +275,36 @@ The following actions need to be taken for the old and new agent.
 
 \begin{figure}
     \centering
-    \includegraphics[width=0.3\textwidth]
-        {../docs/source/_static/fitting-methods/progressions-1.png}
-    \includegraphics[width=0.3\textwidth]
-        {../docs/source/_static/fitting-methods/progressions-2.png}
-    \linebreak
-    \includegraphics[width=0.3\textwidth]
-        {../docs/source/_static/fitting-methods/progressions-3.png}
-    \includegraphics[width=0.3\textwidth]
-        {../docs/source/_static/fitting-methods/progressions-4.png}
-    \caption{1}
-    \label{fig:mask-difference-metric}
+    \begin{tikzonimage}[width=0.32\textwidth]
+        {../docs/source/_static/fitting-methods/algorithm/image001042.png}
+        \node at (0.025, 0.975)[anchor=north west, rectangle, draw, white, minimum width=15pt, minimum height=15pt]{\textbf{a}};
+    \end{tikzonimage}
+    \begin{tikzonimage}[width=0.32\textwidth]
+        {../docs/source/_static/fitting-methods/algorithm/mask-zoom.png}
+        \node at (0.025, 0.975)[anchor=north west, rectangle, draw, white, minimum width=15pt, minimum height=15pt]{\textbf{b}};
+    \end{tikzonimage}
+    \begin{tikzonimage}[width=0.32\textwidth]
+        {../docs/source/_static/fitting-methods/algorithm/mask-zoom.png}
+        \node at (0.025, 0.975)[anchor=north west, rectangle, draw, white, minimum width=15pt, minimum height=15pt]{\textbf{c}};
+    \end{tikzonimage}
+    \caption{}
+    \label{fig:position-extraction-algorithm}
 \end{figure}
 
 \begin{figure}
     \centering
-    \includegraphics[width=0.32\textwidth]
+    \begin{tikzonimage}[width=0.32\textwidth]
         {../docs/source/_static/fitting-methods/extract_positions-000400.png}
-    \includegraphics[width=0.32\textwidth]
+        \node at (0.025, 0.975)[anchor=north west, rectangle, draw, white, minimum width=15pt, minimum height=15pt]{\textbf{a}};
+    \end{tikzonimage}
+    \begin{tikzonimage}[width=0.32\textwidth]
         {../docs/source/_static/fitting-methods/extract_positions-000600.png}
-    \includegraphics[width=0.32\textwidth]
+        \node at (0.025, 0.975)[anchor=north west, rectangle, draw, white, minimum width=15pt, minimum height=15pt]{\textbf{b}};
+    \end{tikzonimage}
+    \begin{tikzonimage}[width=0.32\textwidth]
         {../docs/source/_static/fitting-methods/extract_positions-001200.png}
+        \node at (0.025, 0.975)[anchor=north west, rectangle, draw, white, minimum width=15pt, minimum height=15pt]{\textbf{c}};
+    \end{tikzonimage}
     \caption{Progression of generated masks with estimated and exact positions.}
     \label{fig:position-extraction}
 \end{figure}
