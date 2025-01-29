@@ -111,11 +111,15 @@ if __name__ == "__main__":
     pos1 = np.array(crm.extract_positions(mask1, n_vertices))
     pos2 = np.array(crm.extract_positions(mask2, n_vertices))
 
-    fig, ax = plt.subplots(3, 2, figsize=(12, 12))
-    ax[0, 0].imshow(img1)
-    ax[0, 1].imshow(img2)
-    ax[1, 0].imshow(mask1)
-    ax[1, 1].imshow(mask2)
+    figs_axs = [plt.subplots() for _ in range(4)]
+    figs_axs[0][1].imshow(img1)
+    figs_axs[0][1].set_axis_off()
+    figs_axs[1][1].imshow(img2)
+    figs_axs[1][1].set_axis_off()
+    figs_axs[2][1].imshow(mask1)
+    figs_axs[2][1].set_axis_off()
+    figs_axs[3][1].imshow(mask2)
+    figs_axs[3][1].set_axis_off()
 
     print("[x] +[{:8.3}] Generated initial plots".format(time.time() - interval))
     interval = time.time()
@@ -208,17 +212,19 @@ if __name__ == "__main__":
     mask_gen2 = crm.render_mask(
         agents_predicted, cell_container.cell_to_color, domain_size
     )
-    ax[2, 0].imshow(mask_gen1[::-1])
-    ax[2, 1].imshow(mask_gen2[::-1])
 
     for p in pos1:
-        ax[0, 0].plot(p[:,0], p[:,1], color="white")
-    # for p in pos2:
-    #     ax[0, 1].plot(p[:,0], p[:,1], color="white")
+        figs_axs[0][1].plot(p[:, 0], p[:, 1], color="white")
     for agent, _ in agents_predicted.values():
         p = agent.pos
-        ax[0, 1].plot(p[:,0], p[:,1], color="white")
-    fig.tight_layout()
-    plt.show()
+        figs_axs[1][1].plot(p[:, 0], p[:, 1], color="white")
+
+    for i, (fig, _) in enumerate(figs_axs):
+        fig.tight_layout()
+        fig.savefig(
+            "docs/source/_static/fitting-methods/estimate-parameters1/microscopic-images-{}.png".format(
+                i
+            )
+        )
 
     print("[x] +[{:8.3}] Rendered Masks".format(time.time() - interval))
