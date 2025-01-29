@@ -6,18 +6,18 @@ import scipy as sp
 from tqdm import tqdm
 
 def predict(
-        # Parameters
-        growth_rate: float,# Shape (N)
-        radius: float,
-        strength: float,
-        cutoff: float,
-        potential_stiffness: float,
-        rigidity: float,
-        # Constants
-        positions: np.ndarray,# Shape (N, n_vertices, 3)
-        domain_size: float,
-        return_cells: bool = False,
-    ):
+    # Parameters
+    growth_rate: float,  # Shape (N)
+    radius: float,
+    strength: float,
+    cutoff: float,
+    potential_stiffness: float,
+    rigidity: float,
+    # Constants
+    positions: np.ndarray,  # Shape (N, n_vertices, 3)
+    domain_size: float,
+    return_cells: bool = False,
+):
     config = crm.Configuration(
         domain_size=domain_size,
     )
@@ -26,16 +26,18 @@ def predict(
     n_vertices = positions.shape[1]
 
     def pos_to_spring_length(pos):
-        res = np.sum(np.linalg.norm(pos[1:]-pos[:-1], axis=1)) / n_vertices
+        res = np.sum(np.linalg.norm(pos[1:] - pos[:-1], axis=1)) / n_vertices
         return res
 
     agents = [
         crm.RodAgent(
             pos=np.array(
-                [*positions[i].T, [config.domain_height / 2]*positions.shape[1]],
-                dtype=np.float32
+                [*positions[i].T, [config.domain_height / 2] * positions.shape[1]],
+                dtype=np.float32,
             ).T,
-            vel=np.zeros((positions.shape[1], positions.shape[2]+1), dtype=np.float32),
+            vel=np.zeros(
+                (positions.shape[1], positions.shape[2] + 1), dtype=np.float32
+            ),
             growth_rate=growth_rate,
             radius=radius,
             spring_length=pos_to_spring_length(positions[i]),
@@ -55,15 +57,15 @@ def predict(
     else:
         return np.array([agent.pos for agent, _ in agents_predicted.values()])
 
+
 def predict_flatten(
-        parameters,
-        n_agents,
-        cutoff,
-        domain_size,
-        pos_initial,
-        pos_final,
-        return_cells: bool = False,
-    ):
+    parameters,
+    cutoff,
+    domain_size,
+    pos_initial,
+    pos_final,
+    return_cells: bool = False,
+):
     (growth_rate, radius, strength, potential_stiffness, rigidity) = parameters
     pos_predicted = predict(
         growth_rate,
@@ -82,12 +84,18 @@ def predict_flatten(
     # This is currently very inefficient.
     # We could probably better match the
     # positions to each other
-    cost = np.min([min(
-        np.sum((pos_predicted[i][:,:2] - pos_final[j])**2),
-        np.sum((pos_predicted[i][:,:2] - pos_final[j])**2),
-        )
-    for j in range(len(pos_final)) for i in range(len(pos_predicted))])
+    cost = np.min(
+        [
+            min(
+                np.sum((pos_predicted[i][:, :2] - pos_final[j]) ** 2),
+                np.sum((pos_predicted[i][:, :2] - pos_final[j]) ** 2),
+            )
+            for j in range(len(pos_final))
+            for i in range(len(pos_predicted))
+        ]
+    )
     return cost
+
 
 if __name__ == "__main__":
     # markers = np.fromfile("./data/growth-2-marked/image001042-markers.tif").reshape(576, 768)
@@ -150,12 +158,9 @@ if __name__ == "__main__":
     # Plot Cost function against varying parameters
     for n, (p, bound) in enumerate(zip(res.x, bounds)):
         fig2, ax2 = plt.subplots()
-    
+
         x = np.linspace(bound[0], bound[1], 20)
-        ps = [
-            [pi if n!=i else xi for i, pi in enumerate(res.x)]
-            for xi in x
-        ]
+        ps = [[pi if n != i else xi for i, pi in enumerate(res.x)] for xi in x]
         y = [predict_flatten(p, *args) for p in ps]
 
         (name, units) = param_infos[n]
@@ -166,7 +171,11 @@ if __name__ == "__main__":
         ax2.scatter(p, res.fun, marker="o", color="red")
         ax2.plot(x, y)
         fig2.tight_layout()
-        plt.savefig("docs/source/_static/fitting-methods/estimate-parameters1/{}.png".format(name))
+        plt.savefig(
+            "docs/source/_static/fitting-methods/estimate-parameters1/{}.png".format(
+                name
+            )
+        )
         plt.close(fig2)
 
     cell_container = predict_flatten(
@@ -179,8 +188,12 @@ if __name__ == "__main__":
     agents_initial = cell_container.get_cells_at_iteration(iterations[0])
     agents_predicted = cell_container.get_cells_at_iteration(iterations[-1])
 
-    mask_gen1 = crm.render_mask(agents_initial, cell_container.cell_to_color, domain_size)
-    mask_gen2 = crm.render_mask(agents_predicted, cell_container.cell_to_color, domain_size)
+    mask_gen1 = crm.render_mask(
+        agents_initial, cell_container.cell_to_color, domain_size
+    )
+    mask_gen2 = crm.render_mask(
+        agents_predicted, cell_container.cell_to_color, domain_size
+    )
     ax[2, 0].imshow(mask_gen1[::-1])
     ax[2, 1].imshow(mask_gen2[::-1])
 
