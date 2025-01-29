@@ -143,7 +143,10 @@ def extract_positions(mask: np.ndarray, n_vertices: int = 8) -> list[np.ndarray]
         )
     colors = filter(lambda x: np.sum(x) != 0, np.unique(m, axis=0))
 
-    cell_masks = [np.all(mask == c, axis=2) for c in colors]
+    if len(mask.shape) > 2:
+        cell_masks = [np.all(mask == c, axis=2) for c in colors]
+    else:
+        cell_masks = [mask == c for c in colors]
     skeleton_points = [
         _sort_points(sk.morphology.skeletonize(m, method="lee")) for m in cell_masks
     ]
