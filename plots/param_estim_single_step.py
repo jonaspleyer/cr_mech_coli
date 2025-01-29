@@ -9,11 +9,8 @@ import time
 def predict(
     # Parameters
     growth_rate: float,  # Shape (N)
-    radius: float,
-    strength: float,
-    cutoff: float,
-    potential_stiffness: float,
     rigidity: float,
+    interaction,
     # Constants
     positions: np.ndarray,  # Shape (N, n_vertices, 3)
     domain_size: float,
@@ -39,12 +36,7 @@ def predict(
             vel=np.zeros(
                 (positions.shape[1], positions.shape[2] + 1), dtype=np.float32
             ),
-            interaction=crm.MorsePotentialF32(
-                radius=radius,
-                potential_stiffness=potential_stiffness,
-                cutoff=cutoff,
-                strength=strength,
-            ),
+            interaction=interaction,
             growth_rate=growth_rate,
             spring_length=pos_to_spring_length(positions[i]),
             spring_length_threshold=1000,
@@ -61,6 +53,17 @@ def predict(
         return np.array([agent.pos for agent, _ in agents_predicted.values()])
 
 
+def reconstruct_morse_potential(parameters):
+    (growth_rate, rigidity, radius, strength, potential_stiffness) = parameters
+    interaction = crm.MorsePotentialF32(
+        radius=radius,
+        potential_stiffness=potential_stiffness,
+        cutoff=cutoff,
+        strength=strength,
+    )
+    return (growth_rate, rigidity, interaction)
+
+
 def predict_flatten(
     parameters,
     cutoff,
@@ -69,14 +72,11 @@ def predict_flatten(
     pos_final,
     return_cells: bool = False,
 ):
-    (growth_rate, radius, strength, potential_stiffness, rigidity) = parameters
+    growth_rate, rigidity, interaction = reconstruct_morse_potential(parameters)
     pos_predicted = predict(
         growth_rate,
-        radius,
-        strength,
-        cutoff,
-        potential_stiffness,
         rigidity,
+        interaction,
         pos_initial,
         domain_size,
         return_cells=return_cells,
@@ -133,15 +133,15 @@ if __name__ == "__main__":
     strength = 0.1
     potential_stiffness = 0.4
     rigidity = 0.8
-    parameters = (growth_rate, radius, strength, potential_stiffness, rigidity)
+    parameters = (growth_rate, rigidity, radius, strength, potential_stiffness)
 
     # Optimize values
     bounds = [
         [0.00, 0.05],  # Growth Rate
+        [0.4, 1.0],  # Rigidity
         [4.0, 10.0],  # Radius
         [0.1, 0.4],  # Strength
         [0.25, 0.55],  # Potential Stiffness
-        [0.4, 1.0],  # Rigidity
     ]
     res = sp.optimize.differential_evolution(
         predict_flatten,
