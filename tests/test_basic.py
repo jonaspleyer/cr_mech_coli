@@ -2,6 +2,7 @@ import cr_mech_coli as crm
 import numpy as np
 from concurrent.futures import ProcessPoolExecutor
 
+
 def run_config(config):
     config = crm.Configuration.from_json(config)
     config.t0 = 0.0
@@ -9,18 +10,20 @@ def run_config(config):
     config.t_max = 100.0
     config.save_interval = 20.0
 
-    sim_result = crm.run_simulation(config)
+    agent_settings = crm.AgentSettings()
+    cell_container = crm.run_simulation(config, agent_settings)
     render_settings = crm.RenderSettings()
     render_settings.noise = 50
     render_settings.kernel_size = 30
     render_settings.ssao_radius = 50
 
     crm.store_all_images(
-        config,
-        sim_result,
+        cell_container,
+        config.domain_size,
         render_settings,
         render_raw_pv=True,
     )
+
 
 if __name__ == "__main__":
     configs = [
