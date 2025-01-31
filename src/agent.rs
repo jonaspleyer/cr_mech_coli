@@ -34,8 +34,9 @@ pub enum PhysicalInteraction {
 
 #[pymethods]
 impl PhysicalInteraction {
+    /// Constructs a new :class:`PhysicalInteraction`
     #[new]
-    fn new(pyobject: Bound<PyAny>) -> PyResult<Self> {
+    pub fn new(pyobject: Bound<PyAny>) -> PyResult<Self> {
         let mie_pot: Result<MiePotentialF32, _> = pyobject.extract();
         if let Ok(mie_pot) = mie_pot {
             return Ok(Self::MiePotentialF32(mie_pot));
