@@ -24,7 +24,8 @@ use pyo3::prelude::*;
 
 /// A Python module implemented in Rust.
 #[pymodule]
-fn cr_mech_coli_rs(m: &Bound<'_, PyModule>) -> PyResult<()> {
+#[pyo3(name = "cr_mech_coli")]
+fn cr_mech_coli(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(run_simulation, m)?)?;
     m.add_function(wrap_pyfunction!(run_simulation_with_agents, m)?)?;
     m.add_function(wrap_pyfunction!(sort_cellular_identifiers, m)?)?;

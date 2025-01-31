@@ -29,4 +29,4 @@ This module contains storage solutions for information about cellular history an
 
 """
 
-from .cr_mech_coli_rs import CellContainer, CellIdentifier
+from .cr_mech_coli import CellContainer, CellIdentifier

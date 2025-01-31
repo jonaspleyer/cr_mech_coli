@@ -24,7 +24,7 @@ This module contains functionality to configure and run simulations.
       - Executes the simulation and returns a :class:`CellContainer`.
 """
 
-from .cr_mech_coli_rs import (
+from .cr_mech_coli import (
     run_simulation,
     run_simulation_with_agents,
     AgentSettings,

@@ -27,5 +27,5 @@ scripts = [
 
 [tool.maturin]
 features = ["pyo3/extension-module"]
-python-source = "."
-module-name = "cr_mech_coli.cr_mech_coli_rs"
+# python-source = "."
+# module-name = "cr_mech_coli.cr_mech_coli"
