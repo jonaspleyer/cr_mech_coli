@@ -63,7 +63,7 @@ jobs:
           source .venv/bin/activate
           pip install cr_mech_coli --find-links dist --force-reinstall
           pip install pytest
-          pytest
+          python3 -m pytest tests
       - name: pytest
         if: ${{ !startsWith(matrix.platform.target, 'x86') && matrix.platform.target != 'ppc64' }}
         uses: uraimo/run-on-arch-action@v2
@@ -78,7 +78,7 @@ jobs:
           run: |
             set -e
             pip3 install cr_mech_coli --find-links dist --force-reinstall
-            pytest
+            python3 -m pytest tests
 
 
   musllinux:
@@ -125,7 +125,7 @@ jobs:
             source .venv/bin/activate
             pip install cr_mech_coli --no-index --find-links dist --force-reinstall
             pip install pytest
-            pytest
+            python3 -m pytest tests
       - name: pytest
         if: ${{ !startsWith(matrix.platform.target, 'x86') }}
         uses: uraimo/run-on-arch-action@v2
@@ -141,7 +141,7 @@ jobs:
             source .venv/bin/activate
             pip install pytest
             pip install cr_mech_coli --find-links dist --force-reinstall
-            pytest
+            python3 -m pytest tests
 
   windows:
     runs-on: ${{ matrix.platform.runner }}
@@ -179,7 +179,7 @@ jobs:
           source .venv/Scripts/activate
           pip install cr_mech_coli --find-links dist --force-reinstall
           pip install pytest
-          pytest
+          python3 -m pytest tests
 
   macos:
     runs-on: ${{ matrix.platform.runner }}
@@ -214,7 +214,7 @@ jobs:
           source .venv/bin/activate
           pip install cr_mech_coli --find-links dist --force-reinstall
           pip install pytest
-          pytest
+          python3 -m pytest tests
 
   sdist:
     runs-on: ubuntu-latest
