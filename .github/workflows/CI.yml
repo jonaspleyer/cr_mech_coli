@@ -80,69 +80,6 @@ jobs:
             pip3 install cr_mech_coli --find-links dist --force-reinstall
             .venv/bin/python3 .venv/bin/pytest tests
 
-
-  musllinux:
-    runs-on: ${{ matrix.platform.runner }}
-    strategy:
-      matrix:
-        platform:
-          - runner: ubuntu-latest
-            target: x86_64
-          - runner: ubuntu-latest
-            target: x86
-          - runner: ubuntu-latest
-            target: aarch64
-          - runner: ubuntu-latest
-            target: armv7
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: 3.12
-          nogil: false
-      - name: Build wheels
-        uses: PyO3/maturin-action@v1
-        with:
-          target: ${{ matrix.platform.target }}
-          args: --release --out dist -i 3.12
-          sccache: 'true'
-          manylinux: musllinux_1_2
-      - name: Upload wheels
-        uses: actions/upload-artifact@v4
-        with:
-          name: wheels-musllinux-${{ matrix.platform.target }}
-          path: dist
-      - name: pytest
-        if: ${{ startsWith(matrix.platform.target, 'x86_64') }}
-        uses: addnab/docker-run-action@v3
-        with:
-          image: alpine:latest
-          options: -v ${{ github.workspace }}:/io -w /io
-          run: |
-            set -e
-            apk add py3-pip py3-virtualenv
-            python3 -m virtualenv .venv
-            source .venv/bin/activate
-            pip install cr_mech_coli --no-index --find-links dist --force-reinstall
-            pip install pytest
-            .venv/bin/python3 .venv/bin/pytest tests
-      - name: pytest
-        if: ${{ !startsWith(matrix.platform.target, 'x86') }}
-        uses: uraimo/run-on-arch-action@v2
-        with:
-          arch: ${{ matrix.platform.target }}
-          distro: alpine_latest
-          githubToken: ${{ github.token }}
-          install: |
-            apk add py3-virtualenv
-          run: |
-            set -e
-            python3 -m virtualenv .venv
-            source .venv/bin/activate
-            pip install pytest
-            pip install cr_mech_coli --find-links dist --force-reinstall
-            .venv/bin/python3 .venv/bin/pytest tests
-
   windows:
     runs-on: ${{ matrix.platform.runner }}
     strategy:
@@ -235,7 +172,7 @@ jobs:
     name: Release
     runs-on: ubuntu-latest
     if: ${{ startsWith(github.ref, 'refs/tags/') || github.event_name == 'workflow_dispatch' }}
-    needs: [linux, musllinux, windows, macos, sdist]
+    needs: [linux, windows, macos, sdist]
     permissions:
       # Use to sign the release artifacts
       id-token: write
