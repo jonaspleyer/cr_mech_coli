@@ -55,6 +55,17 @@ impl PhysicalInteraction {
                 Use one of the provided potentials instead.",
         )))
     }
+
+    /// Extracts a copy of the inner value
+    pub fn inner<'a>(&self, py: Python<'a>) -> PyResult<Bound<'a, PyAny>> {
+        let res = match self {
+            PhysicalInteraction::MiePotentialF32(mie) => Bound::new(py, mie.clone())?.into_any(),
+            PhysicalInteraction::MorsePotentialF32(morse) => {
+                Bound::new(py, morse.clone())?.into_any()
+            }
+        };
+        Ok(res)
+    }
 }
 
 impl<T> Interaction<T, T, T, f32> for PhysicalInteraction
