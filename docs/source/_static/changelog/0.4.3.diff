@@ -1,0 +1,4 @@
+ .github/workflows/CI.yml                 |  8 --------
+ docs/source/_static/changelog/0.4.2.diff | 16 ++++++++++++++++
+ docs/source/changelog.rst                |  7 ++++++-
+ 3 files changed, 22 insertions(+), 9 deletions(-)
