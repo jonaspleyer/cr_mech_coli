@@ -1,0 +1,368 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+        <title>A Mechanical Model of Rod-Shaped Bacteria</title>
+
+        <link rel="stylesheet" href="reveal.js/dist/reset.css">
+        <link rel="stylesheet" href="reveal.js/dist/reveal.css">
+        <link rel="stylesheet" href="black.css">
+
+        <!-- Theme used for syntax highlighted code -->
+        <!-- <link rel="stylesheet" href="plugin/highlight/pojoaque.css"> -->
+        <!-- <link rel="stylesheet" href="plugin/highlight/shadows-of-purple.css"> -->
+        <link rel="stylesheet" href="stackoverflow-dark.css">
+
+    </head>
+    <body>
+        <div class="reveal">
+            <div class="slides">
+                <section data-markdown data-separator="^\n---\n$" data-separator-vertical="^\n--\n$">
+                    <textarea data-template>
+                        ## A Mechanical Model of
+                        ## Rod-Shaped Bacteria
+                        #### Jonas Pleyer
+                        ##### 03.02.2025
+
+                        ---
+
+                        ## Overview
+
+                        <!-- TODO this could be the right spot for a nice image
+                        - Biology: Rod-Shaped Bacteria
+                        - Physics: Mechanical Properties of Rods
+                        - Numerics: Agent-Based Modeling: Constructing a Model
+                        - Optimization & Parameter Estimation
+                        - Future Endeavours
+                        -->
+
+                        1. Mathematical Model
+                        2. Computational Algorithms
+                        3. Parameter Estimation
+                        4. Outlook
+
+                        ---
+
+                        ## Rod-Shaped Bacteria
+
+                        - What types?
+                            - _E.Coli_
+                        - Where do they live?
+                        - What other shapes are there?
+                        - State of current models
+                        - Length Scale
+                        - What is the "granularity" of the model/which effects are relevant?
+
+                        ---
+
+                        ## The (simplified) Physics of Bending 1
+
+                        ---
+
+                        ## The (simplified) Physics of Bending 2
+
+                        ---
+
+                        ## Other relevant Effects 1
+
+                        ---
+
+                        ## Other relevant Effects 2
+
+                        ---
+
+                        <div style="display: grid; grid-template-columns: 45% 55%; width: 100%;">
+                        <img
+                            src="https://cellular-raza.com/logos/cellular_raza_dark_mode.svg"
+                            style="margin: auto;"
+                        />
+                        <h2 style="margin: auto;">Variables/Parameters</h2>
+                        <div>
+
+
+                        <div class="fragment">
+
+                        ```rust [1-2|3-5|6-8|9-13|1-13]
+                        #[derive(CellAgent, Clone, Debug, Deserialize, Serialize)]
+                        pub struct RodAgent {
+                            /// Determines mechanical properties of the agent
+                            #[Mechanics]
+                            pub mechanics: RodMechanics&lt;f32, 3&gt;,
+                            /// Determines interaction between agents
+                            #[Interaction]
+                            pub interaction: RodInteraction&lt;PhysicalInteraction&gt;,
+                            /// Rate with which the cell grows
+                            pub growth_rate: f32,
+                            /// Threshold at which the cell will divide
+                            pub division_length: f32,
+                        }
+                        ```
+                        </div>
+                        <div class="fragment">
+
+                        ```rust [1-2|3-6|7-16|1-17]
+                        #[derive(Clone, Debug, PartialEq)]
+                        pub struct RodMechanics&lt;f32, 3&gt; {
+                            /// The current position
+                            pub pos: Matrix&lt;f32, Dyn, Const&lt;3&gt;, _&gt;,
+                            /// The current velocity
+                            pub vel: Matrix&lt;f32, Dyn, Const&lt;3&gt;, _&gt;,
+                            /// Controls stochastic motion
+                            pub diffusion_constant: f32,
+                            /// Spring tension between vertices
+                            pub spring_tension: f32,
+                            /// Stiffness between two edges
+                            pub rigidity: f32,
+                            /// Target spring length
+                            pub spring_length: f32,
+                            /// Daming constant
+                            pub damping: f32,
+                        }
+                        ```
+
+                        </div>
+                        </div>
+                        <div>
+                        <div class="fragment">
+
+                        | | Property | Type | |
+                        |---:|:---|:---:|:---:|
+                        | $\mu$ | Growth Rate | `f32`$\in\mathbb{R}^+$ | Fit |
+                        | $l_\text{max}$ | Division Length | `f32`$\in\mathbb{R}^+$ | Fit |
+                        | $\vec{x}_i$ | Position | `Matrix`$\in\mathbb{R}^{d\times 3}$ | I.V. |
+                        | $\vec{v}_i$ | Velocity | `Matrix`$\in\mathbb{R}^{d\times 3}$ | I.V. |
+                        | - | Diffusion | `f32`$\in\mathbb{R}^+$ | $0$ |
+                        | $l$ | Spr. Length | `f32`$\in\mathbb{R}^+$ | I.V. |
+                        | $\gamma$ | Spr. Tension | `f32`$\in\mathbb{R}^+$ | Fit |
+                        | $\eta$ | Rigidity | `f32`$\in\mathbb{R}^+$ | Fit |
+                        | $\lambda$ | Damping | `f32`$\in\mathbb{R}^+$ | Fit |
+
+                        </div>
+                        </div>
+
+                        ---
+
+                        ## Interaction 1: Morse-Potential
+
+                        \\begin{equation}
+                            V(r) = V_0\left(1 - e^{-\lambda(r-R)}\right)^2
+                        \\end{equation}
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; width: 100%;">
+                        <div class="fragment" data-fragment-index="1">
+
+                        <img src="morse_potential.png">
+
+                        </div>
+                        <div class="fragment" data-fragment-index="2">
+
+                        | | Name | Type | |
+                        |---:|:---|:---:|:---:|
+                        | $R$ | Radius | `f32`$\in\mathbb{R}^+$ | Fit |
+                        | $\lambda$ | Stiffness | `f32`$\in\mathbb{R}^+$ | Fit |
+                        | $\zeta$ | Cutoff | `f32`$\in\mathbb{R}^+$ | Assumption |
+                        | $V_0$ | Strength | `f32`$\in\mathbb{R}^+$ | Fit |
+
+                        </div>
+                        </div>
+
+                        --
+
+                        <img
+                            src="https://cellular-raza.com/logos/cellular_raza_dark_mode.svg"
+                            style="margin: auto; height: 2em"
+                        />
+
+                        ```rust
+                        #[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
+                        pub struct MorsePotentialF32 {
+                            /// Radius of the object
+                            pub radius: f32,
+                            /// Defines the length for the interaction range
+                            pub potential_stiffness: f32,
+                            /// Cutoff after which the interaction is set 0
+                            pub cutoff: f32,
+                            /// Strength of the interaction
+                            pub strength: f32,
+                        }
+                        ```
+
+                        ---
+
+                        ## Interaction 2: Mie-Potential
+
+                        <div style="display: grid; grid-template-columns: 47% 53%; width: 100%;">
+                        <div clas="fragment" data-fragment-index="3">
+
+                        \\begin{equation}
+                            U(r) = C\epsilon\left[ \left(\frac{\sigma}{r}\right)^n -
+                                \left(\frac{\sigma}{r}\right)^m\right]
+                        \\end{equation}
+
+                        </div>
+                        <div clas="fragment" data-fragment-index="3">
+
+                        \\[
+                            C = \frac{n}{n-m}\left(\frac{n}{m}\right)^{\frac{n}{n-m}}
+                        \\]
+
+                        </div>
+                        <div class="fragment" data-fragment-index="1">
+
+                        <img src="mie_potential.png">
+
+                        </div>
+                        <div class="fragment" data-fragment-index="2">
+
+                        | | Name | Type | |
+                        |---:|:---|:---:|:---:|
+                        | $R$ | Radius | `f32`$\in\mathbb{R}^+$ | Fit |
+                        | $\epsilon$ | Strength | `f32`$\in\mathbb{R}^+$ | Fit |
+                        | $\beta$ | Bound | `f32`$\in\mathbb{R}^+$ | Assumption |
+                        | $\zeta$ | Cutoff | `f32`$\in\mathbb{R}^+$ | Assumption |
+                        | $n,m$ | Exponents | `f32`$\in\mathbb{R}^+$ | Fit |
+
+                        </div>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: 50% 50%; width: 100%;">
+
+                        </div>
+
+                        --
+
+                        <img
+                            src="https://cellular-raza.com/logos/cellular_raza_dark_mode.svg"
+                            style="margin: auto; height: 2em"
+                        />
+
+                        ```rust
+                        #[derive(Clone, Debug, Deserialize, Serialize, PartialEq)]
+                        pub struct MiePotentialF32 {
+                            /// Interaction strength of the potential.
+                            pub radius: f32,
+                            /// Overall size of the object of the potential.
+                            pub strength: f32,
+                            /// Numerical bound of the interaction strength.
+                            pub bound: f32,
+                            /// Cutoff after which the potential will zero.
+                            pub cutoff: f32,
+                            /// Exponent $n$ of the potential
+                            pub en: f32,
+                            /// Exponent $m$ of the potential
+                            pub em: f32,
+                        }
+                        ```
+
+                        ---
+
+                        ## Comparison of Interaction Potentials
+
+                        <div style="display: grid; grid-template-columns: 50% 50%; width: 100%;">
+                        <!-- <img src="morse_potential.png">
+                        <img src="mie_potential.png"> -->
+
+                        ### Morse
+                        ### Mie
+
+                        <div>
+
+                        - Less steep for $r\rightarrow0$
+                        - Width of the well affects range and steepness
+                        - Less parameters
+
+                        </div>
+                        <div>
+
+                        - Can represent more types of interactions
+                        - Needs an upper bound for $r\rightarrow0$
+
+                        </div>
+                        </div>
+
+                        ---
+
+                        ## Image Analysis 1
+
+                        ---
+
+                        ## Image Analysis 2
+
+                        ---
+
+                        ## Image Generation 1
+
+                        ---
+
+                        ## Image Generation 2
+
+                        ---
+
+                        ## Parameter Estimation 1
+
+                        ---
+
+                        ## Parameter Estimation 2
+
+                        ---
+
+                        ## Parameter Estimation 3
+
+                        ---
+
+                        <iframe
+                            src="https://jonaspleyer.github.io/cr_mech_coli/"
+                            style="width: 1100px; height: 1080px; max-width: 100%; max-height: 100%;"
+                        ></iframe>
+
+                        ---
+
+                        ## Outlook
+
+                        - Cell Segmentation & Tracing
+                        - Cell-based Distribution of Parameters
+                        - Inheritance of Parameters
+                    </textarea>
+                </section>
+            </div>
+        </div>
+
+        <script src="reveal.js/dist/reveal.js"></script>
+        <script src="reveal.js/plugin/notes/notes.js"></script>
+        <script src="reveal.js/plugin/markdown/markdown.js"></script>
+        <script src="reveal.js/plugin/highlight/highlight.js"></script>
+        <script src="reveal.js/plugin/math/math.js"></script>
+        <script>
+            // More info about initialization & config:
+            // - https://revealjs.com/initialization/
+            // - https://revealjs.com/config/
+            Reveal.initialize({
+                hash: true,
+                width: 1920,
+                height: 1080,
+                margin: 0.04,
+                slideNumber: 'c/t',
+                katex: {
+                    version: 'latest',
+                    delimiters: [
+                        {left: "$$", right: "$$", display: true},
+                        {left: "\\(", right: "\\)", display: false},
+                        {left: "\\begin{equation}", right: "\\end{equation}", display: true},
+                        {left: "\\begin{align}", right: "\\end{align}", display: true},
+                        {left: "\\begin{alignat}", right: "\\end{alignat}", display: true},
+                        {left: "\\begin{gather}", right: "\\end{gather}", display: true},
+                        {left: "\\begin{CD}", right: "\\end{CD}", display: true},
+                        {left: "\\[", right: "\\]", display: true},
+                        {left: "$", right: "$", display: false},
+                    ],
+                    ignoredTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+                },
+
+                // Learn about plugins: https://revealjs.com/plugins/
+                plugins: [ RevealMarkdown, RevealHighlight, RevealNotes, RevealMath.KaTeX ]
+            });
+        </script>
+    </body>
+</html>
