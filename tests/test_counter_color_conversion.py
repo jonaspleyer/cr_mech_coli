@@ -1,6 +1,5 @@
 import cr_mech_coli as crm
 import numpy as np
-from tqdm import tqdm
 
 
 def test_counter_color_conversion():
@@ -33,7 +32,7 @@ def test_assign_colors():
 
     all_colors = set()
     all_counters = set()
-    for i in tqdm(range(img.shape[0])):
+    for i in range(img.shape[0]):
         for j in range(img.shape[1]):
             color = img[i, j, :]
             if np.sum(color) > 0:
