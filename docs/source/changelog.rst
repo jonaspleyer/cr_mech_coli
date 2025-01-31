@@ -1,6 +1,18 @@
 Changelog
 #########
 
+cr_mech_coli 0.4.1 `(19.11.2024) <_static/changelog/0.4.1.diff>`_
+-----------------------------------------------------------------
+
+- Short intermediate release to publish initial version to pypi
+  See release `0.5.0` for more in-depth notes.
+
+cr_mech_coli 0.4.0 `(19.11.2024) <_static/changelog/0.4.0.diff>`_
+-----------------------------------------------------------------
+
+- Added first iteration of preprint
+- Improved position extraction algorithm
+
 cr_mech_coli 0.3.0 `(31.10.2024) <_static/changelog/0.3.0.diff>`_
 -----------------------------------------------------------------
 

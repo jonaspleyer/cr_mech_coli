@@ -1,0 +1,50 @@
+ .github/workflows/CI.yml                           |   2 +-
+ Cargo.toml                                         |   8 +-
+ cr_mech_coli/cr_mech_coli_rs.pyi                   |  22 +-
+ cr_mech_coli/fitting.py                            |  81 ++++--
+ cr_mech_coli/imaging.py                            |   4 +-
+ cr_mech_coli/simulation.py                         |   1 +
+ .../_static/10431951549334503037/config.json       |  92 +++++++
+ .../10431951549334503037/images/000000200.png      | Bin 0 -> 3921957 bytes
+ .../10431951549334503037/images/000000400.png      | Bin 0 -> 3921541 bytes
+ .../10431951549334503037/images/000000600.png      | Bin 0 -> 3922313 bytes
+ .../10431951549334503037/images/000000800.png      | Bin 0 -> 3922959 bytes
+ .../10431951549334503037/images/000001000.png      | Bin 0 -> 3922775 bytes
+ .../10431951549334503037/masks/000000200.png       | Bin 0 -> 13494 bytes
+ .../10431951549334503037/masks/000000400.png       | Bin 0 -> 15790 bytes
+ .../10431951549334503037/masks/000000600.png       | Bin 0 -> 17944 bytes
+ .../10431951549334503037/masks/000000800.png       | Bin 0 -> 21928 bytes
+ .../10431951549334503037/masks/000001000.png       | Bin 0 -> 25434 bytes
+ .../10431951549334503037/raw_pv/000000200.png      | Bin 0 -> 88979 bytes
+ .../10431951549334503037/raw_pv/000000400.png      | Bin 0 -> 105692 bytes
+ .../10431951549334503037/raw_pv/000000600.png      | Bin 0 -> 126725 bytes
+ .../10431951549334503037/raw_pv/000000800.png      | Bin 0 -> 166255 bytes
+ .../10431951549334503037/raw_pv/000001000.png      | Bin 0 -> 195186 bytes
+ docs/source/_static/changelog/0.2.0.diff           |  66 +++++
+ docs/source/_static/changelog/0.3.0.diff           |  64 +++++
+ .../fitting-methods/displacement-calculations.png  | Bin 64444 -> 67840 bytes
+ .../fitting-methods/extract_positions-000400.png   | Bin 23638 -> 23626 bytes
+ .../fitting-methods/extract_positions-000600.png   | Bin 30803 -> 30867 bytes
+ .../fitting-methods/extract_positions-000800.png   | Bin 0 -> 33201 bytes
+ .../fitting-methods/extract_positions-001200.png   | Bin 41295 -> 44045 bytes
+ .../fitting-methods/extract_positions-001600.png   | Bin 0 -> 64466 bytes
+ .../fitting-methods/extract_positions-001880.png   | Bin 0 -> 75784 bytes
+ .../fitting-methods/extract_positions-002000.png   | Bin 0 -> 96787 bytes
+ .../_static/fitting-methods/penalty-time-flow.png  | Bin 56315 -> 45364 bytes
+ .../_static/fitting-methods/progressions-1.png     | Bin 6513 -> 6422 bytes
+ .../_static/fitting-methods/progressions-2.png     | Bin 8038 -> 7811 bytes
+ .../_static/fitting-methods/progressions-3.png     | Bin 3344 -> 3272 bytes
+ .../_static/fitting-methods/progressions-4.png     | Bin 4947 -> 4837 bytes
+ docs/source/changelog.rst                          |  21 ++
+ docs/source/index.rst                              |   1 +
+ docs/source/references.bib                         |  29 ++
+ plots/fitting_extract_positions.py                 |  77 +++---
+ plots/fitting_penalty_over_time.py                 |   4 +-
+ plots/fitting_progression.py                       |   4 +-
+ plots/index_simulation.py                          |   4 +-
+ src/agent.rs                                       | 100 +++++++
+ src/datatypes.rs                                   |  48 +---
+ src/lib.rs                                         |   3 +
+ src/sampling.rs                                    |  42 +--
+ src/simulation.rs                                  | 300 +++++++++------------
+ 49 files changed, 657 insertions(+), 316 deletions(-)

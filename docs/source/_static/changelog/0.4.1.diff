@@ -1,0 +1,90 @@
+ .github/workflows/CI.yml                           | 108 +++-
+ .github/workflows/sphinx_doc.yml                   |   2 +
+ .gitignore                                         |   3 +
+ .gitmodules                                        |   3 +
+ Cargo.toml                                         |   2 +-
+ cr_mech_coli/cr_mech_coli_rs.pyi                   |  71 ++-
+ cr_mech_coli/fitting.py                            | 123 +++--
+ cr_mech_coli/imaging.py                            | 156 +++---
+ cr_mech_coli/simulation.py                         |  22 +-
+ data/growth-2-marked/image001042-markers.csv       | 576 +++++++++++++++++++++
+ data/growth-2-marked/image001052-markers.csv       | 576 +++++++++++++++++++++
+ data/growth-2/image001042.png                      | Bin 0 -> 105141 bytes
+ data/growth-2/image001052.png                      | Bin 0 -> 108943 bytes
+ .../_static/06725850956850056874/config.json       |  83 ---
+ .../06725850956850056874/images/000000200.png      | Bin 3923934 -> 0 bytes
+ .../06725850956850056874/images/000000400.png      | Bin 3923807 -> 0 bytes
+ .../06725850956850056874/images/000000600.png      | Bin 3924451 -> 0 bytes
+ .../06725850956850056874/images/000000800.png      | Bin 3924057 -> 0 bytes
+ .../06725850956850056874/images/000001000.png      | Bin 3924924 -> 0 bytes
+ .../06725850956850056874/masks/000000200.png       | Bin 17551 -> 0 bytes
+ .../06725850956850056874/masks/000000400.png       | Bin 20399 -> 0 bytes
+ .../06725850956850056874/masks/000000600.png       | Bin 20580 -> 0 bytes
+ .../06725850956850056874/masks/000000800.png       | Bin 22593 -> 0 bytes
+ .../06725850956850056874/masks/000001000.png       | Bin 25844 -> 0 bytes
+ .../06725850956850056874/raw_pv/000000200.png      | Bin 179108 -> 0 bytes
+ .../06725850956850056874/raw_pv/000000400.png      | Bin 183755 -> 0 bytes
+ .../06725850956850056874/raw_pv/000000600.png      | Bin 188960 -> 0 bytes
+ .../06725850956850056874/raw_pv/000000800.png      | Bin 208741 -> 0 bytes
+ .../06725850956850056874/raw_pv/000001000.png      | Bin 228463 -> 0 bytes
+ .../_static/09395645494836445480/config.json       |  14 +
+ .../09395645494836445480/images/000000200.png      | Bin 0 -> 3922048 bytes
+ .../09395645494836445480/images/000000400.png      | Bin 0 -> 3922491 bytes
+ .../09395645494836445480/images/000000600.png      | Bin 0 -> 3922712 bytes
+ .../09395645494836445480/images/000000800.png      | Bin 0 -> 3921895 bytes
+ .../09395645494836445480/images/000001000.png      | Bin 0 -> 3922893 bytes
+ .../09395645494836445480/masks/000000200.png       | Bin 0 -> 13494 bytes
+ .../09395645494836445480/masks/000000400.png       | Bin 0 -> 15790 bytes
+ .../09395645494836445480/masks/000000600.png       | Bin 0 -> 17944 bytes
+ .../09395645494836445480/masks/000000800.png       | Bin 0 -> 21928 bytes
+ .../09395645494836445480/masks/000001000.png       | Bin 0 -> 25434 bytes
+ .../09395645494836445480/raw_pv/000000200.png      | Bin 0 -> 88979 bytes
+ .../09395645494836445480/raw_pv/000000400.png      | Bin 0 -> 105692 bytes
+ .../09395645494836445480/raw_pv/000000600.png      | Bin 0 -> 126725 bytes
+ .../09395645494836445480/raw_pv/000000800.png      | Bin 0 -> 166255 bytes
+ .../09395645494836445480/raw_pv/000001000.png      | Bin 0 -> 195186 bytes
+ docs/source/_static/changelog/0.4.0.diff           |  50 ++
+ docs/source/_static/changelog/0.4.1.diff           |  88 ++++
+ .../estimate-parameters1/Growth Rate.png           | Bin 0 -> 28684 bytes
+ .../estimate-parameters1/Potential Stiffness.png   | Bin 0 -> 26114 bytes
+ .../estimate-parameters1/Radius.png                | Bin 0 -> 26061 bytes
+ .../estimate-parameters1/Rigidity.png              | Bin 0 -> 27844 bytes
+ .../estimate-parameters1/Strength.png              | Bin 0 -> 26361 bytes
+ .../estimate-parameters1/microscopic-images-0.png  | Bin 0 -> 87521 bytes
+ .../estimate-parameters1/microscopic-images-1.png  | Bin 0 -> 90840 bytes
+ .../estimate-parameters1/microscopic-images-2.png  | Bin 0 -> 6860 bytes
+ .../estimate-parameters1/microscopic-images-3.png  | Bin 0 -> 7154 bytes
+ .../estimate-parameters1/microscopic-images.png    | Bin 0 -> 156614 bytes
+ docs/source/_static/presentation/black.css         | 362 +++++++++++++
+ docs/source/_static/presentation/index.html        | 368 +++++++++++++
+ docs/source/_static/presentation/mie_potential.png | Bin 0 -> 35875 bytes
+ .../_static/presentation/morse_potential.png       | Bin 0 -> 30284 bytes
+ docs/source/_static/presentation/plot.py           |  88 ++++
+ docs/source/_static/presentation/reveal.js         |   1 +
+ .../_static/presentation/stackoverflow-dark.css    | 126 +++++
+ docs/source/changelog.rst                          |  12 +
+ docs/source/documentation/simulation.rst           |   7 +-
+ docs/source/index.rst                              |  18 +-
+ docs/source/references.rst                         |   3 +
+ paper/.gitignore                                   |   2 +
+ paper/LICENSE                                      |  22 +
+ paper/Makefile                                     |  33 ++
+ paper/README.md                                    |  49 ++
+ paper/arxiv.sty                                    | 263 ++++++++++
+ paper/main.tex                                     | 385 ++++++++++++++
+ paper/onimage.dtx                                  | 315 +++++++++++
+ paper/onimage.sty                                  | 132 +++++
+ paper/orcid.pdf                                    | Bin 0 -> 12397 bytes
+ plots/fitting_progression.py                       |   4 +-
+ plots/index_simulation.py                          |   5 +-
+ plots/param_estim_single_step.py                   | 229 ++++++++
+ pyproject.toml                                     |   1 +
+ src/agent.rs                                       | 151 +++++-
+ src/datatypes.rs                                   |  10 +-
+ src/fitting.rs                                     |  15 +-
+ src/lib.rs                                         |   4 +-
+ src/simulation.rs                                  |  29 +-
+ tests/test_config.py                               |  13 +-
+ tests/test_counter_color_conversion.py             |  15 +-
+ tests/test_fit.py                                  |  14 +-
+ 89 files changed, 4238 insertions(+), 315 deletions(-)
