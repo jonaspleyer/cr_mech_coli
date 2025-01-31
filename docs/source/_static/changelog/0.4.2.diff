@@ -1,0 +1,16 @@
+ .github/workflows/CI.yml                           | 77 +++-------------------
+ .../{cr_mech_coli_rs.pyi => cr_mech_coli.pyi}      |  3 +
+ cr_mech_coli/datatypes.py                          |  2 +-
+ cr_mech_coli/fitting.py                            |  2 +-
+ cr_mech_coli/imaging.py                            |  2 +-
+ cr_mech_coli/simulation.py                         |  2 +-
+ docs/source/references.rst                         |  4 +-
+ pyproject.toml                                     | 17 ++---
+ requirements.txt                                   | 11 ++--
+ src/agent.rs                                       | 14 +++-
+ src/lib.rs                                         |  3 +-
+ tests/test_basic.py                                | 34 ----------
+ tests/test_convert_positions.py                    | 14 ++--
+ tests/test_counter_color_conversion.py             |  5 +-
+ tests/test_image_generation_basic.py               | 34 ++++++++++
+ 15 files changed, 95 insertions(+), 129 deletions(-)

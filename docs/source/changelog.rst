@@ -1,7 +1,12 @@
 Changelog
 #########
 
-cr_mech_coli 0.4.1 `(19.11.2024) <_static/changelog/0.4.1.diff>`_
+cr_mech_coli 0.4.2 `(31.01.2025) <_static/changelog/0.4.2.diff>`_
+-----------------------------------------------------------------
+
+- Get Github actions testing to work
+
+cr_mech_coli 0.4.1 `(31.01.2025) <_static/changelog/0.4.1.diff>`_
 -----------------------------------------------------------------
 
 - Short intermediate release to publish initial version to pypi
