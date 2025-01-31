@@ -54,6 +54,8 @@ jobs:
         with:
           name: wheels-linux-${{ matrix.platform.target }}
           path: dist
+      - name: Setup headless display
+        uses: pyvista/setup-headless-display-action@v3
       - name: pytest
         if: ${{ startsWith(matrix.platform.target, 'x86_64') }}
         shell: bash
@@ -107,6 +109,8 @@ jobs:
         with:
           name: wheels-windows-${{ matrix.platform.target }}
           path: dist
+      - name: Setup headless display
+        uses: pyvista/setup-headless-display-action@v3
       - name: pytest
         if: ${{ !startsWith(matrix.platform.target, 'aarch64') }}
         shell: bash
@@ -144,6 +148,8 @@ jobs:
         with:
           name: wheels-macos-${{ matrix.platform.target }}
           path: dist
+      - name: Setup headless display
+        uses: pyvista/setup-headless-display-action@v3
       - name: pytest
         run: |
           set -e
