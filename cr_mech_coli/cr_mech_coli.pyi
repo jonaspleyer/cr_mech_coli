@@ -11,6 +11,9 @@ class MiePotentialF32:
     cutoff: float
     strength: float
 
+    @staticmethod
+    def __new__(cls, **kwargs) -> MorsePotentialF32: ...
+
 class MorsePotentialF32:
     """\
     Interaction potential of our Agents.
