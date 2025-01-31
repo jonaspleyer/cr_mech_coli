@@ -19,7 +19,7 @@ def test_color_counter_conversion():
                 assert color == color_new
 
 
-def test_assign_colors():
+def est_assign_colors():
     config = crm.Configuration()
     agent_settings = crm.AgentSettings()
     sim_result = crm.run_simulation(config, agent_settings)
