@@ -10,6 +10,8 @@ jobs:
       # for this part here
       - name: Checkout sources
         uses: actions/checkout@v2
+        with:
+          submodules: recursive
 
       - name: Install stable toolchain
         uses: actions-rs/toolchain@v1
