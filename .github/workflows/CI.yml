@@ -116,7 +116,7 @@ jobs:
           source .venv/Scripts/activate
           pip install cr_mech_coli --find-links dist --force-reinstall
           pip install pytest
-          .venv/Scripts/python3 .venv/Scripts/pytest tests
+          pytest
 
   macos:
     runs-on: ${{ matrix.platform.runner }}
