@@ -11,5 +11,5 @@
 [![CI](https://img.shields.io/github/actions/workflow/status/jonaspleyer/cr_mech_coli/CI.yml?label=CI&style=flat-square)](https://github.com/jonaspleyer/cr_mech_coli/actions)
 [![Docs](https://img.shields.io/github/actions/workflow/status/jonaspleyer/cr_mech_coli/sphinx_doc.yml?label=Docs&style=flat-square)](https://github.com/jonaspleyer/cr_mech_coli/actions)
 
-Find the documentation of `cellular_raza` under
+Find the documentation of this package under
 [jonaspleyer.github.io/cr_mech_coli/](https://jonaspleyer.github.io/cr_mech_coli/).
