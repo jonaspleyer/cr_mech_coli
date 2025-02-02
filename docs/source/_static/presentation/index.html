@@ -38,32 +38,84 @@
                         - Future Endeavours
                         -->
 
+                        1. Rod-Shaped Bacteria
                         1. Mathematical Model
                         2. Computational Algorithms
                         3. Parameter Estimation
                         4. Outlook
 
+                    </textarea>
+                </section>
+                <section data-markdown data-auto-animate>
+                    <textarea data-template>
+
+                        ## Rod-Shaped Bacteria
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr;"><div>
+
+                        - One of many bacterial
+                          shapes<!-- .element: class="fragment" data-fragment-index="1" -->
+                            - We do not consider coccobacillus
+                              for now<!-- .element: class="fragment" -->
+                        - Length $\approx 1-10µm$, Diameter$\approx0.5-2µm$<!-- .element: class="fragment" -->
+                        - Mechanically similar to archaeon<!-- .element: class="fragment" -->
+
+                        </div><div class="fragment" data-fragment-index="1">
+                        <img src="./Bacterial_morphology_diagram.svg" />
+                        source: wikimedia.org
+                        </div>
+                        </div>
+
                         ---
 
                         ## Rod-Shaped Bacteria
 
-                        - What types?
-                            - _E.Coli_
-                        - Where do they live?
-                        - What other shapes are there?
-                        - State of current models
-                        - Length Scale
-                        - What is the "granularity" of the model/which effects are relevant?
+                        #### State of current models
 
-                        ---
+                        | ABM/Paper | |
+                        |:---|:---|
+                        | Biocellion | Only cylindrical potentials |
+                        | BSim | Support Rod-Shaped Bacteria; No parameters estimated. |
 
-                        ## The (simplified) Physics of Bending 1
 
-                        ---
+                    </textarea>
+                </section>
+                <section data-auto-animate>
+                    <h2>Rod-Shaped Bacteria</h2>
+                    <h4>Motivation</h4>
+                    <video height=800px controls src="../../../../data/e-coli-growth.mp4"></video>
+                </section>
+                <section data-markdown data-auto-animate>
+                    <textarea data-template>
 
-                        ## The (simplified) Physics of Bending 2
+                        ## Mechanics
 
-                        ---
+                        <div style="display: grid; grid-template-columns: 1fr 1fr;"><div class="fragment" data-fragment-index="2">
+
+                        $$
+                            \vec{c}\_i = \vec{v}\_{i}-\vec{v}\_{i-1}
+                        $$
+                        $$\\begin{align}
+                            \vec{F}\_{i,\text{springs}} =
+                                &-\gamma\left(1 - \\frac{l}{\left|\vec{c}\_i\right|}\right)
+                                \vec{c}\_i\\\\
+                                &+ \gamma\left(1 - \\frac{l}{\left|\vec{c}\_{i+1}\right|}\right)
+                                \vec{c}\_{i+1}
+                        \\end{align}$$
+
+                        </div><img src="../mechanics.png">
+                    </div>
+
+                    </textarea>
+                </section>
+                <section data-auto-animate>
+                    <h2>Mechanics</h2>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr;">
+                        <img src="../mechanics.png">
+                        <div class="fragment" data-fragment-index="2"></div>
+                </section>
+                <section data-markdown data-separator="^\n---\n$" data-separator-vertical="^\n--\n$">
+                    <textarea data-template>
 
                         ## Other relevant Effects 1
 
@@ -316,6 +368,44 @@
                             src="https://jonaspleyer.github.io/cr_mech_coli/"
                             style="width: 1100px; height: 1080px; max-width: 100%; max-height: 100%;"
                         ></iframe>
+
+                        --
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr;">
+
+                        ## Simple Python Script
+
+                        ## Results
+
+                        ```python [1|3-5|7-8|10-16|1-16]
+                        import cr_mech_coli as crm
+
+                        # Configure inputs
+                        config = crm.Configuration()
+                        agent_settings = crm.AgentSettings()
+
+                        # Run simulation
+                        cell_container = crm.run_simulation(config, agent_settings)
+
+                        # Render Images
+                        render_settings = crm.RenderSettings()
+                        crm.store_all_images(
+                            cell_container,
+                            config.domain_size,
+                            render_settings
+                        )
+                        ```
+
+                        <div>
+                            <img style="margin:0;" src="out-simple-script/images/000000100.png" width=30%>
+                            <img style="margin:0;" src="out-simple-script/images/000000500.png" width=30%>
+                            <img style="margin:0;" src="out-simple-script/images/000001000.png" width=30%>
+                            <img style="margin:0;" src="out-simple-script/masks/000000100.png" width=30%>
+                            <img style="margin:0;" src="out-simple-script/masks/000000500.png" width=30%>
+                            <img style="margin:0;" src="out-simple-script/masks/000001000.png" width=30%>
+                        </div>
+
+                        </div>
 
                         ---
 
