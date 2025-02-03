@@ -842,6 +842,12 @@
                 // Learn about plugins: https://revealjs.com/plugins/
                 plugins: [ RevealMarkdown, RevealHighlight, RevealNotes, RevealMath.KaTeX ]
             });
+            Reveal.configure({
+                keyboard: {
+                    33: 'left',
+                    34: 'right',
+                }
+            })
         </script>
     </body>
 </html>
