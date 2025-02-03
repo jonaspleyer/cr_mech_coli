@@ -451,31 +451,126 @@
 
                         ---
 
-                        ## Image Analysis 1
+                        ## Numerical Simulation Example
+
+                        <video
+                            height=800px
+                            preload controls
+                            src="https://cellular-raza.com/showcase/bacterial-rods/movie.mp4"
+                        />
 
                         ---
 
-                        ## Image Analysis 2
+                        ## Image Analysis
+
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr;column-gap: 2em;">
+                            <h4>Time Series of Microscopic Images</h4>
+                            <h4></h4>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr">
+                                <img width=100% src="../../../../data/growth-2/image001042.png"/>
+                                <img width=100% src="../../../../data/growth-2/image001062.png"/>
+                                <img width=100% src="../../../../data/growth-2/image001082.png"/>
+                                <img width=100% src="../../../../data/growth-2/image001102.png"/>
+                                <img width=100% src="../../../../data/growth-2/image001122.png"/>
+                                <img width=100% src="../../../../data/growth-2/image001142.png"/>
+                                <img
+                                    width=100%
+                                    src="../../../../data/growth-2-marked/image001042-marked.png"
+                                    class="fragment"
+                                    data-fragment-index="2"
+                                />
+                                <img
+                                    width=100%
+                                    src="../../../../data/growth-2-marked/image001062-marked.png"
+                                    class="fragment"
+                                    data-fragment-index="2"
+                                />
+                                <img
+                                    width=100%
+                                    src="../../../../data/growth-2-marked/image001082-marked.png"
+                                    class="fragment"
+                                    data-fragment-index="2"
+                                />
+                            </div>
+                        <div>
+
+                        <p style="color: orange;" class="fragment" data-fragment-index="1">
+                            We need methods to map between images<br>
+                            and our numerical simulation
+                        </p>
+
+                        1. Extract individual cells from image<br>
+                           <!-- .element: class="fragment" data-fragment-index="2" -->
+                           ✅ (_Cell-Segmentation_)
+                        2. Extract positions from individual cell<br>
+                           <!-- .element: class="fragment" -->
+                           ❌ (_No existing algorithm_)
+                        3. Advance simulation<br>
+                           <!-- .element: class="fragment" -->
+                           ✅ (_see implementation of our model_)
+                        4. Compare numerical and real-world results<br>
+                           <!-- .element: class="fragment" -->
+                           ❓ (_what is the cost function?_)
+
+                        </div>
+                        </div>
 
                         ---
 
-                        ## Image Generation 1
+                        ## Image Analysis
+                        #### Extracting Positions
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr;">
+                            <p class="fragment" data-fragment-index="1">Microscopic Image</p>
+                            <p class="fragment" data-fragment-index="2">Cell Masks</p>
+                            <p class="fragment" data-fragment-index="3">Skeletonization</p>
+                            <img
+                                width=100%
+                                src="../fitting-methods/algorithm/image001042.png"
+                                class="fragment"
+                                data-fragment-index="1"
+                            >
+                            <img
+                                width=100%
+                                src="../../../../data/growth-2-marked/image001042-marked.png"
+                                class="fragment"
+                                data-fragment-index="2"
+                            >
+                            <img
+                                width=100%
+                                src="../fitting-methods/algorithm/mask-zoom.png"
+                                class="fragment"
+                                data-fragment-index="3"
+                            >
+                        </div>
+
+                        - Take skeleton of cell-mask and interpolate to polygon with $N$ vertices
+                          <!-- .element: class="fragment" -->
 
                         ---
 
-                        ## Image Generation 2
+                        ## Image Analysis
+                        #### Extracting Positions
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr;">
+                        </div>
 
                         ---
 
-                        ## Parameter Estimation 1
+                        ## Image Generation
 
                         ---
 
-                        ## Parameter Estimation 2
+                        ## Parameter Estimation
 
                         ---
 
-                        ## Parameter Estimation 3
+                        ## Parameter Estimation
+
+                        ---
+
+                        ## Parameter Estimation
 
                         ---
 
