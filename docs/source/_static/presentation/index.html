@@ -48,7 +48,7 @@
                         |:---|---|
                         | 1. Rod-Shaped Bacteria | <div class="n-slides"> (3 slides)</div> |
                         | 2. Mathematical Model | <div class="n-slides"> (9 slides)</div>|
-                        | 3. Computational Algorithms | <div class="n-slides"> (4 slides)</div>|
+                        | 3. Computational Algorithms | <div class="n-slides"> (5 slides)</div>|
                         | 4. Parameter Estimation | <div class="n-slides"> (3 slides)</div>|
                         | 5. Outlook | <div class="n-slides"> (2 slide)</div>|
 
@@ -551,43 +551,208 @@
                         ---
 
                         ## Image Analysis
-                        #### Extracting Positions
+                        #### Generating Images
 
-                        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr;">
+                        - We can use the numerical simulation to generate<br>
+                          <!-- .element: class="fragment" data-fragment-index="1"-->
+                          artificial data & images
+                        - Create masks by projecting 3D image &<br>
+                          <!-- .element: class="fragment" data-fragment-index="2" -->
+                          assigning unique color to each cell
+                        - Use this data to test our position extraction algorithm<br>
+                          <!-- .element: class="fragment" -->
+                          Advantage: known input positions
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr;">
+                            <img
+                                width=100%
+                                src="../09395645494836445480/raw_pv/000000200.png"
+                                class="fragment"
+                                data-fragment-index="1"
+                            >
+                            <img
+                                width=100%
+                                src="../09395645494836445480/raw_pv/000000400.png"
+                                class="fragment"
+                                data-fragment-index="1"
+                            >
+                            <img
+                                width=100%
+                                src="../09395645494836445480/masks/000000200.png"
+                                class="fragment"
+                                data-fragment-index="2"
+                            >
+                            <img
+                                width=100%
+                                src="../09395645494836445480/masks/000000400.png"
+                                class="fragment"
+                                data-fragment-index="2"
+                            >
                         </div>
 
                         ---
 
-                        ## Image Generation
+                        ## Image Analysis
+                        #### Extracting Positions
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr;">
+                            <img
+                                class="fragment"
+                                data-fragment-index="1"
+                                width=100%
+                                src="../fitting-methods/extract_positions-000400.png"
+                            >
+                            <img
+                                class="fragment"
+                                data-fragment-index="1"
+                                width=100%
+                                src="../fitting-methods/extract_positions-000800.png"
+                            >
+                            <img
+                                class="fragment"
+                                data-fragment-index="1"
+                                width=100%
+                                src="../fitting-methods/extract_positions-001200.png"
+                            >
+                        </div>
+                        <div class="fragment">
+
+                        - Crosses show extracted positions
+                        - Lines show actual polygon
+                        - Seems to match quite well
+
+                        </div>
 
                         ---
 
-                        ## Parameter Estimation
-
-                        ---
-
-                        ## Parameter Estimation
-
-                        ---
-
-                        ## Parameter Estimation
-
-                        ---
-
-                        <iframe
-                            src="https://jonaspleyer.github.io/cr_mech_coli/"
-                            style="width: 1100px; height: 1080px; max-width: 100%; max-height: 100%;"
-                        ></iframe>
-
-                        --
+                        ## Image Analysis
+                        #### Extracting Positions
 
                         <div style="display: grid; grid-template-columns: 1fr 1fr;">
 
-                        ## Simple Python Script
+                        ![](../fitting-methods/displacement-calculations.png)
 
-                        ## Results
+                        <div class="fragment">
 
-                        ```python [1|3-5|7-8|10-16|1-16]
+                        - Measure difference between rod lengths
+                        - Calculate average vertex difference from extracted to known position
+                        - Good agreement with given positions
+                        - In the beginning small underestimation
+                        - In the end small overestimation
+
+                        </div>
+                        </div>
+
+                        ---
+
+                        ## Parameter Estimation
+                        #### Constructing a Cost Function
+
+                        - Assumption: We have no cell-division
+                        - $\Rightarrow$ compare euclidean distance between vertices
+                        - If we have cell-division, we need to do something else
+
+                        --
+
+                        ## Parameter Estimation
+                        #### Comparing Across Generations
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr;">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr;">
+                            <img height=350px src="../fitting-methods/progressions-1.png"/>
+                            <img height=350px src="../fitting-methods/progressions-2.png"/>
+                            <img height=350px src="../fitting-methods/progressions-3.png"/>
+                            <img height=350px src="../fitting-methods/progressions-4.png"/>
+                        </div><div>
+
+                        <img width=100% src="../fitting-methods/penalty-time-flow.png"/>
+
+                        </div></div>
+
+                        ---
+
+                        ## Parameter Estimation
+                        #### Results
+
+                        <div style="width:100%; display: grid; grid-template-columns: 1fr 1fr 2fr;">
+                            <img
+                                width=100%
+                                src="../fitting-methods/estimate-parameters1/microscopic-images-0.png"
+                            >
+                            <img
+                                width=100%
+                                src="../fitting-methods/estimate-parameters1/microscopic-images-1.png"
+                            >
+                        <div>
+
+                        - 2 Pairs are matching well
+                        - Left pair is not aligned very well
+
+                        $\Rightarrow$ this could be due to the `MorsePotentialF32` interaction
+                        potential
+
+                        </div>
+                            <img
+                                width=100%
+                                src="../fitting-methods/estimate-parameters1/microscopic-images-2.png"
+                            >
+                            <img
+                                width=100%
+                                src="../fitting-methods/estimate-parameters1/microscopic-images-3.png"
+                            >
+                        </div>
+
+
+                        ---
+
+                        ## Parameter Estimation
+                        #### Results
+
+                        <div style="
+                            width:100%;
+                            display: grid;
+                            grid-template-columns: 1fr 1fr 1fr;
+                        ">
+                            <img height=350px src="../fitting-methods/estimate-parameters1/Growth Rate.png"/>
+                            <img height=350px src="../fitting-methods/estimate-parameters1/Potential Stiffness.png"/>
+                            <img height=350px src="../fitting-methods/estimate-parameters1/Radius.png"/>
+                            <img height=350px src="../fitting-methods/estimate-parameters1/Rigidity.png"/>
+                            <img height=350px src="../fitting-methods/estimate-parameters1/Strength.png"/>
+
+                        - Only one parameter for all agents (not individual)
+                        - Only one time-step is fitted
+                        - Duration: $\approx 15\text{min}$ (depending on your hardware)
+
+                        </div>
+
+                        ---
+
+                        ## Parameter Estimation
+                        #### Optimization Strategies
+
+                        1. Estimate parameters for each time-step
+                        2. Run simulation over multiple time-steps and compare results
+                            - option to rebase every $n$ time-steps and start with new initial
+                                conditions
+                        3. Global vs Local optimization
+                            - unfortunately in general not possible to calculate Jacobian
+
+                        ---
+
+                        <div style="
+                            width:100%;
+                            display: grid;
+                            grid-template-columns: 40% 60%;
+                        ">
+                        <div>
+
+                        ### Python Package
+
+                        ```bash
+                        pip install cr_mech_coli
+                        ```
+
+                        ```python [1|3-5|7-11|13-19|1-19]
                         import cr_mech_coli as crm
 
                         # Configure inputs
@@ -595,7 +760,10 @@
                         agent_settings = crm.AgentSettings()
 
                         # Run simulation
-                        cell_container = crm.run_simulation(config, agent_settings)
+                        cell_container = crm.run_simulation(
+                            config,
+                            agent_settings,
+                        )
 
                         # Render Images
                         render_settings = crm.RenderSettings()
@@ -606,24 +774,35 @@
                         )
                         ```
 
-                        <div>
-                            <img style="margin:0;" src="out-simple-script/images/000000100.png" width=30%>
-                            <img style="margin:0;" src="out-simple-script/images/000000500.png" width=30%>
-                            <img style="margin:0;" src="out-simple-script/images/000001000.png" width=30%>
-                            <img style="margin:0;" src="out-simple-script/masks/000000100.png" width=30%>
-                            <img style="margin:0;" src="out-simple-script/masks/000000500.png" width=30%>
-                            <img style="margin:0;" src="out-simple-script/masks/000001000.png" width=30%>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr;">
+                            <img style="margin:0;" src="out-simple-script/images/000000500.png" width=100%>
+                            <img style="margin:0;" src="out-simple-script/masks/000000500.png" width=100%>
                         </div>
 
+                        </div>
+                        <div>
+                        <h3>Documentation</h3>
+                        <iframe
+                            src="https://jonaspleyer.github.io/cr_mech_coli/"
+                            style="width: 1100px; height: 980px; max-width: 100%; max-height: 100%;"
+                        ></iframe></div>
                         </div>
 
                         ---
 
                         ## Outlook
 
-                        - Cell Segmentation & Tracing
+                        - Cell-Segmentation & Cell-Tracking
+                          <!-- .element: class="fragment" -->
+                            - Generate Dataset of near-realistic images with masks
+                            - Asses if this can improve existing Cell-Segmentation tools
                         - Cell-based Distribution of Parameters
+                          <!-- .element: class="fragment" -->
+                            - Can we fit enough cells individually simultanously?
+                            - How are parameters of cells distributed?
                         - Inheritance of Parameters
+                          <!-- .element: class="fragment" -->
+                            - How are parameters inherited to daughter cells?
                     </textarea>
                 </section>
             </div>
