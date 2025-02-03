@@ -206,22 +206,8 @@
                 <section data-auto-animate data-markdown data-separator="^\n---\n$" data-separator-vertical="^\n--\n$">
                     <textarea data-template>
 
-                        <div style="display: grid; grid-template-columns: 1fr 1fr;"><div>
-
-                        ## Cell Cycle
-
-                        1. Cell divides in the middle when reaching threshold length
-                           $l\_\text{max}$
-                           <!-- .element: class="fragment" -->
-                        2. Calculate new spring lengths
-                           <!-- .element: class="fragment" -->
-                        3. Calculate new positions of vertices for both cells
-                           (interpolate new vertices between vertices of mother-cell)
-                           <!-- .element: class="fragment" -->
-                        4. (Optional) Pick new growth rate (or other parameters)
-                           <!-- .element: class="fragment" -->
-
-                        </div><div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr;">
+                        <div>
 
                         ## Growth
 
@@ -245,6 +231,21 @@
                             \partial\_t l = \mu\left(1 - \frac{\text{min}(n, N)}{N}\right)
                         \\end{equation}$$
                         <!-- .element: class="fragment" -->
+
+                        </div><div>
+
+                        ## Cell Cycle
+
+                        1. Cell divides in the middle when reaching threshold length
+                           $l\_\text{max}$
+                           <!-- .element: class="fragment" -->
+                        2. Calculate new spring lengths
+                           <!-- .element: class="fragment" -->
+                        3. Calculate new positions of vertices for both cells
+                           (interpolate new vertices between vertices of mother-cell)
+                           <!-- .element: class="fragment" -->
+                        4. (Optional) Pick new growth rate (or other parameters)
+                           <!-- .element: class="fragment" -->
 
                         </div>
 
