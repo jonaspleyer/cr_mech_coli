@@ -15,6 +15,12 @@
         <!-- <link rel="stylesheet" href="plugin/highlight/shadows-of-purple.css"> -->
         <link rel="stylesheet" href="stackoverflow-dark.css">
 
+        <style>
+        .n-slides {
+            display: inline;
+            color: #555;
+        }
+        </style>
     </head>
     <body>
         <div class="reveal">
@@ -38,52 +44,92 @@
                         - Future Endeavours
                         -->
 
-                        1. Rod-Shaped Bacteria
-                        1. Mathematical Model
-                        2. Computational Algorithms
-                        3. Parameter Estimation
-                        4. Outlook
+                        | | |
+                        |:---|---|
+                        | 1. Rod-Shaped Bacteria | <div class="n-slides"> (3 slides)</div> |
+                        | 2. Mathematical Model | <div class="n-slides"> (9 slides)</div>|
+                        | 3. Computational Algorithms | <div class="n-slides"> (4 slides)</div>|
+                        | 4. Parameter Estimation | <div class="n-slides"> (3 slides)</div>|
+                        | 5. Outlook | <div class="n-slides"> (2 slide)</div>|
 
                     </textarea>
                 </section>
-                <section data-markdown data-auto-animate>
+                <section>
+                <section data-markdown data-auto-animate data-markdown data-separator="^\n---\n$" data-separator-vertical="^\n--\n$">
                     <textarea data-template>
 
                         ## Rod-Shaped Bacteria
 
-                        <div style="display: grid; grid-template-columns: 1fr 1fr;"><div>
+                        <div style="display: grid; grid-template-columns: 50% 40%; grid-column-gap:
+                            5%; margin-left: 2.5%;"><div>
 
                         - One of many bacterial
                           shapes<!-- .element: class="fragment" data-fragment-index="1" -->
-                            - We do not consider coccobacillus
+                            - We do not consider coccobacillus (elliptical shape)
                               for now<!-- .element: class="fragment" -->
-                        - Length $\approx 1-10µm$, Diameter$\approx0.5-2µm$<!-- .element: class="fragment" -->
-                        - Mechanically similar to archaeon<!-- .element: class="fragment" -->
+                            - Main interest: bacillus<!-- .element: class="fragment" -->
+                        - Length $\approx 1-10µm$, Diameter$\approx0.5-2µm$
+                          <!-- .element: class="fragment" -->
+                        - Elongated shape (not simply point-particle) but flexible
+                          <!-- .element: class="fragment" -->
+                          [(Amir et al., 2014)](https://doi.org/10.1073/pnas.1317497111)
+                        - Asymmetric growth in direction of long axis
+                          <!-- .element: class="fragment" -->
+                        - <!-- .element: class="fragment" -->Why are we interested in this?<br>
+                          <div style="color: orange;">$\Rightarrow$ We will get to that later</div>
+                          
 
                         </div><div class="fragment" data-fragment-index="1">
                         <img src="./Bacterial_morphology_diagram.svg" />
-                        source: wikimedia.org
+                        <div style="font-size: 0.6em">wikimedia.org/wiki/File:Bacterial_morphology_diagram.svg</div>
                         </div>
                         </div>
 
-                        ---
+                    </textarea>
+                </section>
+                <section data-markdown data-auto-animate data-markdown data-separator="^\n---\n$" data-separator-vertical="^\n--\n$">
+                    <textarea data-template>
+
+                        ## Rod-Shaped Bacteria
+
+                        [(Amir et al., 2014)](https://doi.org/10.1073/pnas.1317497111)
+
+                        ![](amir-et-al-2014.webp)
+
+                        $\Rightarrow$ Anisotropic Mechanical Stress-Driven Differential Growth of Cell Walls
+
+                    </textarea>
+                </section>
+                </section>
+                <section data-auto-animate>
+                    <h2>Rod-Shaped Bacteria</h2>
+                    <h4>Growth of <em>E.Coli</em></h4>
+                    <video height=800px controls preload src="growth-2.mp4"></video>
+                    <div style="font-size: 0.6em;">Institut für den Wissenschaftlichen Film - Göttingen 1981</div>
+                </section>
+                <section data-markdown data-auto-animate data-markdown data-separator="^\n---\n$" data-separator-vertical="^\n--\n$">
+                    <textarea data-template>
 
                         ## Rod-Shaped Bacteria
 
                         #### State of current models
 
-                        | ABM/Paper | |
+                        | ABM/Paper | State |
                         |:---|:---|
                         | Biocellion | Only cylindrical potentials |
-                        | BSim | Support Rod-Shaped Bacteria; No parameters estimated. |
+                        | BSim | Supports Rod-Shaped Bacteria; No parameters estimated. |
+                        | `gro` | <div style="width: 100%; text-align: center;">⎯⎯⎯ \" ⎯⎯⎯<div> |
+                        | [(Martins et al., 2015)](https://doi.org/10.1109/ENBENG.2015.7088854) | Constructed model but no parameter estimations. |
+                        | [(Winkle et al., 2017)](https://doi.org/10.1088/1478-3975/aa7bae) | Authors used game engine `Chipmunk3D` to simulate<br>rods but only studied global phenomena. |
+                        | [(Doumic et al, 2020)](https://doi.org/10.3934/mbe.2020356) | Estimated distribution of some parameters (growth rate,<br>length) but no bending and not on individual level. |
 
+                        <div class="fragment" style="color: orange;">
+
+                        $\Rightarrow$ No literature on measuring properties of individual cells!
+
+                        </div>
 
                     </textarea>
-                </section>
-                <section data-auto-animate>
-                    <h2>Rod-Shaped Bacteria</h2>
-                    <h4>Motivation</h4>
-                    <video height=800px controls src="../../../../data/e-coli-growth.mp4"></video>
                 </section>
                 <section data-markdown data-auto-animate>
                     <textarea data-template>
@@ -92,8 +138,11 @@
 
                         <div style="display: grid; grid-template-columns: 1fr 1fr;"><div class="fragment" data-fragment-index="2">
 
+                        - Vertices $\vec{x}_i$ connected by springs
+                        - Exert force between two adjacent vertices
+
                         $$
-                            \vec{c}\_i = \vec{v}\_{i}-\vec{v}\_{i-1}
+                            \vec{c}\_i = \vec{x}\_{i}-\vec{x}\_{i-1}
                         $$
                         $$\\begin{align}
                             \vec{F}\_{i,\text{springs}} =
@@ -103,25 +152,231 @@
                                 \vec{c}\_{i+1}
                         \\end{align}$$
 
-                        </div><img src="../mechanics.png">
-                    </div>
-
+                        </div><img src="../mechanics.png"></div>
                     </textarea>
                 </section>
-                <section data-auto-animate>
-                    <h2>Mechanics</h2>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr;">
-                        <img src="../mechanics.png">
-                        <div class="fragment" data-fragment-index="2"></div>
-                </section>
-                <section data-markdown data-separator="^\n---\n$" data-separator-vertical="^\n--\n$">
+                <section data-markdown data-auto-animate>
                     <textarea data-template>
+                        <h2>Mechanics</h2>
+                        <div style="display: grid; grid-template-columns: 45% 55%;">
+                            <img src="../mechanics.png">
+                            <div class="fragment" data-fragment-index="1">
 
-                        ## Other relevant Effects 1
+
+                        - Bending force acts on vertices
+                          $\vec{x}\_{i-1},\vec{x}\_i,\vec{x}\_{i+1}$
+                          <!-- .element: class="fragment" -->
+                        - Proportional to curvature $\kappa\_i$ at vertex $\vec{x}\_i$
+                          <!-- .element: class="fragment" -->
+
+                        $$\\begin{align}
+                            \kappa\_i &= 2\tan\left(\frac{\alpha\_i}{2}\right)\\\\
+                            \vec{F}\_{i,\text{curvature}} &= \eta\kappa_i
+                                \frac{\vec{c}\_i - \vec{c}\_{i+1}}{|\vec{c}\_i-\vec{c}\_{i+1}|}\\\\
+                            \vec{F}\_{i-1,\text{curvature}} &= -\frac{1}{2}\vec{F}\_{i,\text{curvature}}\\\\
+                            \vec{F}\_{i+1,\text{curvature}} &= -\frac{1}{2}\vec{F}\_{i,\text{curvature}}
+                        \\end{align}$$
+                        <!-- .element: class="fragment" -->
 
                         ---
 
-                        ## Other relevant Effects 2
+                        ## Mechanics
+
+                        1. Sum all forces
+                           <!-- .element: class="fragment" -->
+
+                        $$\begin{equation}
+                            \vec{F}\_{i,\text{total}} = \vec{F}\_{i,\text{springs}}+ \vec{F}\_{i,\text{curvature}}
+                            + \vec{F}\_{i,\text{external}}
+                        \end{equation}$$
+                        <!-- .element: class="fragment" -->
+
+                        2. Integrate equations of motion
+                           <!-- .element: class="fragment" -->
+
+                        $$\begin{align}
+                            \partial\_t^2 \vec{x} &= \partial_t\vec{x} + \sqrt{2D}\vec{\xi}\\\\
+                            \partial\_t\vec{x} &= \vec{F}\_\text{total} - \lambda \partial_t\vec{x}
+                        \end{align}$$
+                        <!-- .element: class="fragment" -->
+
+                        </div>
+                    </textarea>
+                </section>
+                <section data-auto-animate data-markdown data-separator="^\n---\n$" data-separator-vertical="^\n--\n$">
+                    <textarea data-template>
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr;"><div>
+
+                        ## Cell Cycle
+
+                        1. Cell divides in the middle when reaching threshold length
+                           $l\_\text{max}$
+                           <!-- .element: class="fragment" -->
+                        2. Calculate new spring lengths
+                           <!-- .element: class="fragment" -->
+                        3. Calculate new positions of vertices for both cells
+                           (interpolate new vertices between vertices of mother-cell)
+                           <!-- .element: class="fragment" -->
+                        4. (Optional) Pick new growth rate (or other parameters)
+                           <!-- .element: class="fragment" -->
+
+                        </div><div>
+
+                        ## Growth
+
+                        - Elongation is constant in length growth<br>
+                          <!-- .element: class="fragment" -->
+                          [(Grover et al., 1977](https://doi.org/10.1016/0022-5193(77)90192-8)
+                          [Rosenberger et al., 1978)](https://doi.org/10.1016/0022-5193(78)90132-7)
+                        - Model as linear growth
+                          <!-- .element: class="fragment" -->
+
+                        $$\\begin{equation}
+                            \partial\_t l = \mu
+                        \\end{equation}$$
+                        <!-- .element: class="fragment" -->
+
+                        - For larger collections: introduce phenomenological saturation term
+                          depending on number of neighbors $n$
+                          <!-- .element: class="fragment" -->
+
+                        $$\\begin{equation}
+                            \partial\_t l = \mu\left(1 - \frac{\text{min}(n, N)}{N}\right)
+                        \\end{equation}$$
+                        <!-- .element: class="fragment" -->
+
+                        </div>
+
+                        ---
+
+                        ## Interaction
+
+                        <div style="display: grid; grid-template-columns: 1fr 2fr;">
+                        <img src="../mechanics.png"><div>
+
+                        - Calculate interaction for each vertex $\vec{x}\_i$
+                          <!-- .element: class="fragment" -->
+                        - Pointwise to nearest point on ther cells polygon
+                          <!-- .element: class="fragment" -->
+
+                        $$\vec{p} = h\vec{w}\_j + (1-h)\vec{w}\_{j+1}$$
+                        <!-- .element: class="fragment" -->
+
+                        ```rust
+                        for (i, vi) in vertices_cell_1.iter().enumerate() {
+                            // Calculate nearest point, index and segment as above
+                            let (p, j, h) = get_nearest_point_index_segment(&vi, &cell2)?;
+
+                            // Calculate force between these two points
+                            let calculated_force = cell1.calculate_force_between(&p)?;
+
+                            // Store calculated force for cell1 and cell2
+                            forces_cell_1[i] +=         calculated_force;
+                            forces_cell_2[j] -=    h  * calculated_force;
+                            forces_cell_2[j] -= (1-h) * calculated_force;
+                        }
+                        ```
+                        <!-- .element: class="fragment" -->
+
+                        </div>
+                        </div>
+
+                        ---
+
+                        ## Interaction
+                        #### Morse-Potential
+
+                        \\begin{equation}
+                            V(r) = V_0\left(1 - e^{-\lambda(r-R)}\right)^2
+                        \\end{equation}
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; width: 100%;">
+                        <div class="fragment" data-fragment-index="1">
+
+                        <img src="morse_potential.png">
+
+                        </div>
+                        <div class="fragment" data-fragment-index="2">
+
+                        | | Name | Type | |
+                        |---:|:---|:---:|:---:|
+                        | $R$ | Radius | `f32`$\in\mathbb{R}^+$ | Fit |
+                        | $\lambda$ | Stiffness | `f32`$\in\mathbb{R}^+$ | Fit |
+                        | $\zeta$ | Cutoff | `f32`$\in\mathbb{R}^+$ | Assumption |
+                        | $V_0$ | Strength | `f32`$\in\mathbb{R}^+$ | Fit |
+
+                        </div>
+                        </div>
+
+                        ---
+
+                        ## Interaction
+                        #### Mie-Potential
+
+                        <div style="display: grid; grid-template-columns: 47% 53%; width: 100%;">
+                        <div clas="fragment" data-fragment-index="3">
+
+                        \\begin{equation}
+                            U(r) = C\epsilon\left[ \left(\frac{\sigma}{r}\right)^n -
+                                \left(\frac{\sigma}{r}\right)^m\right]
+                        \\end{equation}
+
+                        </div>
+                        <div clas="fragment" data-fragment-index="3">
+
+                        \\[
+                            C = \frac{n}{n-m}\left(\frac{n}{m}\right)^{\frac{n}{n-m}}
+                        \\]
+
+                        </div>
+                        <div class="fragment" data-fragment-index="1">
+
+                        <img src="mie_potential.png">
+
+                        </div>
+                        <div class="fragment" data-fragment-index="2">
+
+                        | | Name | Type | |
+                        |---:|:---|:---:|:---:|
+                        | $R$ | Radius | `f32`$\in\mathbb{R}^+$ | Fit |
+                        | $\epsilon$ | Strength | `f32`$\in\mathbb{R}^+$ | Fit |
+                        | $\beta$ | Bound | `f32`$\in\mathbb{R}^+$ | Assumption |
+                        | $\zeta$ | Cutoff | `f32`$\in\mathbb{R}^+$ | Assumption |
+                        | $n,m$ | Exponents | `f32`$\in\mathbb{R}^+$ | Fit |
+
+                        </div>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: 50% 50%; width: 100%;">
+
+                        </div>
+
+                        ---
+
+                        ## Comparison of Interaction Potentials
+
+                        <div style="display: grid; grid-template-columns: 50% 50%; width: 100%;">
+                        <!-- <img src="morse_potential.png">
+                        <img src="mie_potential.png"> -->
+
+                        ### Morse
+                        ### Mie
+
+                        <div>
+
+                        - Less steep for $r\rightarrow0$
+                        - Width of the well affects range and steepness
+                        - Less parameters
+
+                        </div>
+                        <div>
+
+                        - Can represent more types of interactions
+                        - Needs an upper bound for $r\rightarrow0$
+
+                        </div>
+                        </div>
 
                         ---
 
@@ -190,146 +445,6 @@
                         | $\gamma$ | Spr. Tension | `f32`$\in\mathbb{R}^+$ | Fit |
                         | $\eta$ | Rigidity | `f32`$\in\mathbb{R}^+$ | Fit |
                         | $\lambda$ | Damping | `f32`$\in\mathbb{R}^+$ | Fit |
-
-                        </div>
-                        </div>
-
-                        ---
-
-                        ## Interaction 1: Morse-Potential
-
-                        \\begin{equation}
-                            V(r) = V_0\left(1 - e^{-\lambda(r-R)}\right)^2
-                        \\end{equation}
-
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; width: 100%;">
-                        <div class="fragment" data-fragment-index="1">
-
-                        <img src="morse_potential.png">
-
-                        </div>
-                        <div class="fragment" data-fragment-index="2">
-
-                        | | Name | Type | |
-                        |---:|:---|:---:|:---:|
-                        | $R$ | Radius | `f32`$\in\mathbb{R}^+$ | Fit |
-                        | $\lambda$ | Stiffness | `f32`$\in\mathbb{R}^+$ | Fit |
-                        | $\zeta$ | Cutoff | `f32`$\in\mathbb{R}^+$ | Assumption |
-                        | $V_0$ | Strength | `f32`$\in\mathbb{R}^+$ | Fit |
-
-                        </div>
-                        </div>
-
-                        --
-
-                        <img
-                            src="https://cellular-raza.com/logos/cellular_raza_dark_mode.svg"
-                            style="margin: auto; height: 2em"
-                        />
-
-                        ```rust
-                        #[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
-                        pub struct MorsePotentialF32 {
-                            /// Radius of the object
-                            pub radius: f32,
-                            /// Defines the length for the interaction range
-                            pub potential_stiffness: f32,
-                            /// Cutoff after which the interaction is set 0
-                            pub cutoff: f32,
-                            /// Strength of the interaction
-                            pub strength: f32,
-                        }
-                        ```
-
-                        ---
-
-                        ## Interaction 2: Mie-Potential
-
-                        <div style="display: grid; grid-template-columns: 47% 53%; width: 100%;">
-                        <div clas="fragment" data-fragment-index="3">
-
-                        \\begin{equation}
-                            U(r) = C\epsilon\left[ \left(\frac{\sigma}{r}\right)^n -
-                                \left(\frac{\sigma}{r}\right)^m\right]
-                        \\end{equation}
-
-                        </div>
-                        <div clas="fragment" data-fragment-index="3">
-
-                        \\[
-                            C = \frac{n}{n-m}\left(\frac{n}{m}\right)^{\frac{n}{n-m}}
-                        \\]
-
-                        </div>
-                        <div class="fragment" data-fragment-index="1">
-
-                        <img src="mie_potential.png">
-
-                        </div>
-                        <div class="fragment" data-fragment-index="2">
-
-                        | | Name | Type | |
-                        |---:|:---|:---:|:---:|
-                        | $R$ | Radius | `f32`$\in\mathbb{R}^+$ | Fit |
-                        | $\epsilon$ | Strength | `f32`$\in\mathbb{R}^+$ | Fit |
-                        | $\beta$ | Bound | `f32`$\in\mathbb{R}^+$ | Assumption |
-                        | $\zeta$ | Cutoff | `f32`$\in\mathbb{R}^+$ | Assumption |
-                        | $n,m$ | Exponents | `f32`$\in\mathbb{R}^+$ | Fit |
-
-                        </div>
-                        </div>
-
-                        <div style="display: grid; grid-template-columns: 50% 50%; width: 100%;">
-
-                        </div>
-
-                        --
-
-                        <img
-                            src="https://cellular-raza.com/logos/cellular_raza_dark_mode.svg"
-                            style="margin: auto; height: 2em"
-                        />
-
-                        ```rust
-                        #[derive(Clone, Debug, Deserialize, Serialize, PartialEq)]
-                        pub struct MiePotentialF32 {
-                            /// Interaction strength of the potential.
-                            pub radius: f32,
-                            /// Overall size of the object of the potential.
-                            pub strength: f32,
-                            /// Numerical bound of the interaction strength.
-                            pub bound: f32,
-                            /// Cutoff after which the potential will zero.
-                            pub cutoff: f32,
-                            /// Exponent $n$ of the potential
-                            pub en: f32,
-                            /// Exponent $m$ of the potential
-                            pub em: f32,
-                        }
-                        ```
-
-                        ---
-
-                        ## Comparison of Interaction Potentials
-
-                        <div style="display: grid; grid-template-columns: 50% 50%; width: 100%;">
-                        <!-- <img src="morse_potential.png">
-                        <img src="mie_potential.png"> -->
-
-                        ### Morse
-                        ### Mie
-
-                        <div>
-
-                        - Less steep for $r\rightarrow0$
-                        - Width of the well affects range and steepness
-                        - Less parameters
-
-                        </div>
-                        <div>
-
-                        - Can represent more types of interactions
-                        - Needs an upper bound for $r\rightarrow0$
 
                         </div>
                         </div>
