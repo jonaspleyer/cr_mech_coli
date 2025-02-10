@@ -90,7 +90,7 @@ def reconstruct_mie_potential(parameters, cutoff):
 
 
 def predict_flatten(
-    parameters,
+    parameters: tuple,
     cutoff,
     domain_size,
     pos_initial,
@@ -166,9 +166,8 @@ if __name__ == "__main__":
     args = (cutoff, domain_size, pos1, pos2, potential_type)
 
     growth_rate = 0.03
-    radius = 8.0
-    strength = 0.1
-    potential_stiffness = 0.4
+    radius = 6.0
+    strength = 0.2
     rigidity = 0.8
     if potential_type is PotentialType.Morse:
         potential_stiffness = 0.4
@@ -207,11 +206,13 @@ if __name__ == "__main__":
         args=args,
         workers=-1,
         updating="deferred",
-        maxiter=100,
+        maxiter=200,
+        constraints=constraints,
         disp=True,
         tol=1e-4,
         recombination=0.3,
-        popsize=128,
+        popsize=200,
+        polish=False,
     )
     print("{:8.4}s Finished Parameter Optimization".format(time.time() - interval))
     interval = time.time()
