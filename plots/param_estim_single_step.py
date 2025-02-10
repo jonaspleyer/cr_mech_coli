@@ -53,7 +53,7 @@ def predict(
         return np.array([agent.pos for agent, _ in agents_predicted.values()])
 
 
-def reconstruct_morse_potential(parameters):
+def reconstruct_morse_potential(parameters, cutoff):
     (growth_rate, rigidity, radius, strength, potential_stiffness) = parameters
     interaction = crm.MorsePotentialF32(
         radius=radius,
@@ -72,7 +72,7 @@ def predict_flatten(
     pos_final,
     return_cells: bool = False,
 ):
-    growth_rate, rigidity, interaction = reconstruct_morse_potential(parameters)
+    growth_rate, rigidity, interaction = reconstruct_morse_potential(parameters, cutoff)
     pos_predicted = predict(
         growth_rate,
         rigidity,
