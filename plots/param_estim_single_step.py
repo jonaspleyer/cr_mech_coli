@@ -4,6 +4,18 @@ import numpy as np
 import matplotlib.pyplot as plt
 import scipy as sp
 import time
+import enum
+
+
+class PotentialType(enum.Enum):
+    Morse = 0
+    Mie = 1
+
+    def to_string(self):
+        if self is PotentialType.Morse:
+            return "morse"
+        elif self is PotentialType.Mie:
+            return "mie"
 
 
 def predict(
