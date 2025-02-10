@@ -76,15 +76,36 @@ def reconstruct_morse_potential(parameters, cutoff):
     return (growth_rate, rigidity, interaction)
 
 
+def reconstruct_mie_potential(parameters, cutoff):
+    (growth_rate, rigidity, radius, strength, en, em) = parameters
+    interaction = crm.MiePotentialF32(
+        radius=radius,
+        strength=strength,
+        bound=4 * strength,
+        cutoff=cutoff,
+        en=en,
+        em=em,
+    )
+    return (growth_rate, rigidity, interaction)
+
+
 def predict_flatten(
     parameters,
     cutoff,
     domain_size,
     pos_initial,
     pos_final,
+    potential_type: PotentialType = PotentialType.Morse,
     return_cells: bool = False,
 ):
-    growth_rate, rigidity, interaction = reconstruct_morse_potential(parameters, cutoff)
+    if potential_type is PotentialType.Morse:
+        growth_rate, rigidity, interaction = reconstruct_morse_potential(
+            parameters, cutoff
+        )
+    elif potential_type is PotentialType.Mie:
+        growth_rate, rigidity, interaction = reconstruct_mie_potential(
+            parameters, cutoff
+        )
     pos_predicted = predict(
         growth_rate,
         rigidity,
@@ -141,23 +162,44 @@ if __name__ == "__main__":
 
     domain_size = np.max(mask1.shape)
     cutoff = 30.0
-    args = (cutoff, domain_size, pos1, pos2)
+    potential_type: PotentialType = PotentialType.Mie
+    args = (cutoff, domain_size, pos1, pos2, potential_type)
 
     growth_rate = 0.03
     radius = 8.0
     strength = 0.1
     potential_stiffness = 0.4
     rigidity = 0.8
-    parameters = (growth_rate, rigidity, radius, strength, potential_stiffness)
+    if potential_type is PotentialType.Morse:
+        potential_stiffness = 0.4
+        parameters = (growth_rate, rigidity, radius, strength, potential_stiffness)
+    elif potential_type is PotentialType.Mie:
+        en = 6.0
+        em = 5.5
+        parameters = (growth_rate, rigidity, radius, strength, en, em)
 
     # Optimize values
     bounds = [
         [0.00, 0.05],  # Growth Rate
-        [0.4, 1.0],  # Rigidity
-        [4.0, 10.0],  # Radius
-        [0.1, 0.4],  # Strength
-        [0.25, 0.55],  # Potential Stiffness
+        [0.4, 3.0],  # Rigidity
+        [5.0, 7.0],  # Radius
+        [0.1, 1.0],  # Strength
     ]
+    if potential_type is PotentialType.Morse:
+        bounds.append([0.25, 0.55])  # Potential Stiffness
+        A = np.zeros((len(bounds),) * 2)
+        constraints = sp.optimize.LinearConstraint(A, lb=-np.inf, ub=np.inf)
+    elif potential_type is PotentialType.Mie:
+        bounds.append([3.0, 30.0])  # en
+        bounds.append([3.0, 30.0])  # em
+        A = np.zeros((len(bounds),) * 2)
+        A[0][len(bounds) - 2] = -1
+        A[0][len(bounds) - 1] = 1
+        lb = -np.inf
+        ub = np.full(len(bounds), np.inf)
+        ub[0] = -1
+        constraints = sp.optimize.LinearConstraint(A, lb=lb, ub=ub)
+
     res = sp.optimize.differential_evolution(
         predict_flatten,
         bounds=bounds,
@@ -178,11 +220,15 @@ if __name__ == "__main__":
 
     param_infos = [
         ("Growth Rate", "\\mu m\\text{min}^{-1}"),
+        ("Rigidity", "\\mu m\\text{min}^{-1}"),
         ("Radius", "\\mu m"),
         ("Strength", "\\mu m^2\text{min}^{-2}"),
-        ("Potential Stiffness", "\\mu m"),
-        ("Rigidity", "\\mu m\\text{min}^{-1}"),
     ]
+    if potential_type is PotentialType.Morse:
+        param_infos.append(("Potential Stiffness", "\\mu m"))
+    elif potential_type is PotentialType.Mie:
+        param_infos.append(("Exponent n", "1"))
+        param_infos.append(("Exponent m", "1"))
 
     # Plot Cost function against varying parameters
     for n, (p, bound) in enumerate(zip(res.x, bounds)):
