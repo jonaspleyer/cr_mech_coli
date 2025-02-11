@@ -31,7 +31,7 @@ import skimage as sk
 
 from .datatypes import CellContainer, CellIdentifier
 from .imaging import color_to_counter
-from .cr_mech_coli import parents_diff_mask, _sort_points
+from .cr_mech_coli import parents_diff_mask
 
 
 def points_along_polygon(
@@ -81,6 +81,8 @@ def extract_positions(mask: np.ndarray, n_vertices: int = 8) -> list[np.ndarray]
         list[np.ndarray]: A list containing arrays of shape :code:`(n_vertices, 2)` containing the
             individual positions of the cells.
     """
+    from .cr_mech_coli import _sort_points
+
     # First determine the number of unique identifiers
     if len(mask.shape) == 3:
         assert mask.shape[2] == 3 or mask.shape[2] == 1
