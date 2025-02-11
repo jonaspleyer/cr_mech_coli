@@ -26,7 +26,6 @@ def predict(
     # Constants
     positions: np.ndarray,  # Shape (N, n_vertices, 3)
     domain_size: float,
-    return_cells: bool = False,
 ):
     config = crm.Configuration(
         domain_size=domain_size,
@@ -56,13 +55,7 @@ def predict(
         )
         for i in range(n_agents)
     ]
-    cell_container = crm.run_simulation_with_agents(config, agents)
-    iterations = cell_container.get_all_iterations()
-    agents_predicted = cell_container.get_cells_at_iteration(iterations[-1])
-    if return_cells:
-        return cell_container
-    else:
-        return np.array([agent.pos for agent, _ in agents_predicted.values()])
+    return crm.run_simulation_with_agents(config, agents)
 
 
 def reconstruct_morse_potential(parameters, cutoff):
@@ -106,16 +99,23 @@ def predict_flatten(
         growth_rate, rigidity, interaction = reconstruct_mie_potential(
             parameters, cutoff
         )
-    pos_predicted = predict(
+    cell_container = predict(
         growth_rate,
         rigidity,
         interaction,
         pos_initial,
         domain_size,
-        return_cells=return_cells,
     )
+
     if return_cells:
-        return pos_predicted
+        return cell_container
+
+    final_iter = cell_container.get_all_iterations()[-1]
+    final_cells = cell_container.get_cells_at_iteration(final_iter)
+    final_cells = [(k, final_cells[k]) for k in final_cells]
+    final_cells.sort(key=lambda x: x[0][1])
+    pos_predicted = np.array([(kv[1][0]).pos for kv in final_cells])
+
     # TODO
     # This is currently very inefficient.
     # We could probably better match the
