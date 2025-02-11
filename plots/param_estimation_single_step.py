@@ -89,6 +89,7 @@ def predict_flatten(
     pos_initial,
     pos_final,
     potential_type: PotentialType = PotentialType.Morse,
+    out_path: str | None = None,
     return_cells: bool = False,
 ):
     if potential_type is PotentialType.Morse:
@@ -126,10 +127,21 @@ def predict_flatten(
             for i in range(len(pos_predicted))
         ]
     )
+
+    if out_path is not None:
+        out = ""
+        for p in parameters:
+            out += f"{p},"
+        out += f"{cost}\n"
+        with open(f"{out_path}/param-costs.csv", "a") as f:
+            f.write(out)
+
     return cost
 
 
 if __name__ == "__main__":
+    import os
+
     interval = time.time()
     # markers = np.fromfile("./data/growth-2-marked/image001042-markers.tif").reshape(576, 768)
     # mask0 = np.loadtxt("data/growth-2-marked/image001032-markers.csv", delimiter=",")
@@ -159,7 +171,12 @@ if __name__ == "__main__":
     domain_size = np.max(mask1.shape)
     cutoff = 30.0
     potential_type: PotentialType = PotentialType.Mie
-    args = (cutoff, domain_size, pos1, pos2, potential_type)
+
+    # Create folder to store output
+    out = f"out/parameter-estimation/{potential_type.to_string()}"
+    os.makedirs(out, exist_ok=True)
+
+    args = (cutoff, domain_size, pos1, pos2, potential_type, out)
 
     growth_rate = 0.03
     radius = 6.0
