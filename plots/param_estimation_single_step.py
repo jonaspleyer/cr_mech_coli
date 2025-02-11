@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import scipy as sp
 import time
 import enum
+from pathlib import Path
 
 
 class PotentialType(enum.Enum):
@@ -89,7 +90,7 @@ def predict_flatten(
     pos_initial,
     pos_final,
     potential_type: PotentialType = PotentialType.Morse,
-    out_path: str | None = None,
+    out_path: Path | None = None,
     return_cells: bool = False,
 ):
     if potential_type is PotentialType.Morse:
@@ -140,8 +141,6 @@ def predict_flatten(
 
 
 if __name__ == "__main__":
-    import os
-
     interval = time.time()
     # markers = np.fromfile("./data/growth-2-marked/image001042-markers.tif").reshape(576, 768)
     # mask0 = np.loadtxt("data/growth-2-marked/image001032-markers.csv", delimiter=",")
@@ -173,8 +172,8 @@ if __name__ == "__main__":
     potential_type: PotentialType = PotentialType.Mie
 
     # Create folder to store output
-    out = f"out/parameter-estimation/{potential_type.to_string()}"
-    os.makedirs(out, exist_ok=True)
+    out = Path(f"out/parameter-estimation/{potential_type.to_string()}")
+    out.mkdir(parents=True, exist_ok=True)
 
     args = (cutoff, domain_size, pos1, pos2, potential_type, out)
 
