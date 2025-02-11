@@ -165,7 +165,7 @@ if __name__ == "__main__":
     figs_axs[3][1].imshow(mask2)
     figs_axs[3][1].set_axis_off()
 
-    print("{:8.3}s Generated initial plots".format(time.time() - interval))
+    print(f"{time.time() - interval:8.3}s Generated initial plots")
     interval = time.time()
 
     domain_size = np.max(mask1.shape)
@@ -227,7 +227,7 @@ if __name__ == "__main__":
         popsize=200,
         polish=False,
     )
-    print("{:8.4}s Finished Parameter Optimization".format(time.time() - interval))
+    print(f"{time.time() - interval:8.4}s Finished Parameter Optimization")
     interval = time.time()
 
     param_infos = [
@@ -254,18 +254,14 @@ if __name__ == "__main__":
 
         ax2.set_title(name)
         ax2.set_ylabel("Cost function $L$")
-        ax2.set_xlabel("Parameter Value [${}$]".format(units))
+        ax2.set_xlabel(f"Parameter Value [${units}$]")
         ax2.scatter(p, res.fun, marker="o", color="red")
         ax2.plot(x, y)
         fig2.tight_layout()
-        plt.savefig(
-            "docs/source/_static/fitting-methods/estimate-parameters/{}/{}.png".format(
-                potential_type.to_string(), name
-            )
-        )
+        plt.savefig(f"{out}/{name}.png")
         plt.close(fig2)
 
-    print("{:8.3} Plotted Profiles".format(time.time() - interval))
+    print(f"{time.time() - interval:8.3} Plotted Profiles")
     interval = time.time()
 
     cell_container = predict_flatten(
@@ -293,11 +289,6 @@ if __name__ == "__main__":
 
     for i, (fig, _) in enumerate(figs_axs):
         fig.tight_layout()
-        fig.savefig(
-            "docs/source/_static/fitting-methods/estimate-parameters/{}/microscopic-images-{}.png".format(
-                potential_type.to_string(),
-                i,
-            )
-        )
+        fig.savefig(f"{out}/microscopic-images-{i}.png")
 
-    print("{:8.3} Rendered Masks".format(time.time() - interval))
+    print(f"{time.time() - interval:8.3} Rendered Masks")
