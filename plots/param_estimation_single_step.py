@@ -120,13 +120,9 @@ def predict_flatten(
     # This is currently very inefficient.
     # We could probably better match the
     # positions to each other
-    cost = np.min(
+    cost = np.sum(
         [
-            min(
-                np.sum((pos_predicted[i][:, :2] - pos_final[j]) ** 2),
-                np.sum((pos_predicted[i][:, :2] - pos_final[j]) ** 2),
-            )
-            for j in range(len(pos_final))
+            (pos_predicted[i][:, :2] - pos_final[i]) ** 2
             for i in range(len(pos_predicted))
         ]
     )
