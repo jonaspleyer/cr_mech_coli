@@ -243,3 +243,21 @@ def color_to_counter(color: list[int]) -> int:
     >>> counter = (counter * 12157008) % 251**3
     """
     ...
+
+def parents_diff_mask(
+    mask1: np.ndarray,
+    mask2: np.ndarray,
+    cell_container: CellContainer,
+    parent_penalty: float,
+) -> np.ndarray:
+    """Calculates the difference between two masks and applies a lower value where one cell is the
+    daughter of the other.
+
+    Args:
+        mask1(np.ndarray): Mask of segmented cells at one time-point
+        mask2(np.ndarray): Mask of segmented cells at other time-point
+        cell_container(CellContainer): See :class:`CellContainer`
+        parent_penalty(float): Penalty value when one cell is daughter of other.
+            Should be between 0 and 1.
+    """
+    ...
