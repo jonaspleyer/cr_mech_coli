@@ -20,14 +20,23 @@ class PotentialType(enum.Enum):
 
 
 def predict(
+    parameters,
     # Parameters
-    growth_rates: list[float],  # Shape (N)
-    rigidity: float,
-    interaction,
     # Constants
+    cutoff,
     positions: np.ndarray,  # Shape (N, n_vertices, 3)
     domain_size: float,
+    potential_type: PotentialType,
 ):
+    if potential_type is PotentialType.Morse:
+        growth_rates, rigidity, interaction = reconstruct_morse_potential(
+            parameters, cutoff
+        )
+    elif potential_type is PotentialType.Mie:
+        growth_rates, rigidity, interaction = reconstruct_mie_potential(
+            parameters, cutoff
+        )
+
     config = crm.Configuration(
         domain_size=domain_size,
     )
@@ -84,33 +93,21 @@ def reconstruct_mie_potential(parameters, cutoff):
 
 
 def predict_flatten(
-    parameters: tuple,
+    parameters: tuple | list,
     cutoff,
     domain_size,
     pos_initial,
     pos_final,
     potential_type: PotentialType = PotentialType.Morse,
     out_path: Path | None = None,
-    return_cells: bool = False,
 ):
-    if potential_type is PotentialType.Morse:
-        growth_rates, rigidity, interaction = reconstruct_morse_potential(
-            parameters, cutoff
-        )
-    elif potential_type is PotentialType.Mie:
-        growth_rates, rigidity, interaction = reconstruct_mie_potential(
-            parameters, cutoff
-        )
     cell_container = predict(
-        growth_rates,
-        rigidity,
-        interaction,
+        parameters,
+        cutoff,
         pos_initial,
         domain_size,
+        potential_type,
     )
-
-    if return_cells:
-        return cell_container
 
     final_iter = cell_container.get_all_iterations()[-1]
     final_cells = cell_container.get_cells_at_iteration(final_iter)
@@ -263,10 +260,12 @@ if __name__ == "__main__":
     print(f"{time.time() - interval:8.3} Plotted Profiles")
     interval = time.time()
 
-    cell_container = predict_flatten(
-        res.x,
-        *args,
-        return_cells=True,
+    cell_container = predict(
+        final_params,
+        cutoff,
+        pos1,
+        domain_size,
+        potential_type,
     )
 
     iterations = cell_container.get_all_iterations()
