@@ -31,7 +31,7 @@ import skimage as sk
 
 from .datatypes import CellContainer, CellIdentifier
 from .imaging import color_to_counter
-from .cr_mech_coli import parents_diff_mask
+from .cr_mech_coli import parents_diff_mask, _sort_points
 
 
 def points_along_polygon(
@@ -66,56 +66,6 @@ def points_along_polygon(
         points.append(p_new)
     points.append(polygon[-1])
     return np.array(points, dtype=np.float32)
-
-
-def _sort_points(skeleton) -> np.ndarray:
-    # Calculate end points
-    neighbors = np.zeros(skeleton.shape)
-    #   x
-    # x x x
-    #   x
-    neighbors[1:, :] += skeleton[:-1, :]
-    neighbors[:-1, :] += skeleton[1:, :]
-    neighbors[:, 1:] += skeleton[:, :-1]
-    neighbors[:, :-1] += skeleton[:, 1:]
-    # Corners
-    # x   x
-    #   x
-    # x   x
-    neighbors[1:, 1:] += skeleton[:-1, :-1]
-    neighbors[:-1, 1:] += skeleton[1:, :-1]
-    neighbors[1:, :-1] += skeleton[:-1, 1:]
-    neighbors[:-1, :-1] += skeleton[1:, 1:]
-
-    neighbors *= skeleton
-
-    if np.sum(neighbors == 1) != 2:
-        raise ValueError("Detected more or less than 2 endpoints after skeletonization")
-
-    endpoints = np.array([*np.where(neighbors == 1)])
-    e1, e2 = endpoints.T
-
-    # Pre-Sort the points
-    x, y = np.where(skeleton)
-    if len(np.unique(x)) > len(np.unique(y)):
-        indices = np.argsort(x)
-    else:
-        indices = np.argsort(y)
-    all_points = np.array([x, y]).T
-    remaining = all_points[np.any(all_points != e1, axis=1)]
-    remaining = remaining[np.any(remaining != e2, axis=1)]
-
-    points_sorted = np.array([e1]).reshape(-1, 2)
-    for i in range(1, len(remaining) + 1):
-        p = points_sorted[i - 1]
-        distances = np.linalg.norm(remaining - p, axis=1)
-        indices = np.argsort(distances)
-        points_sorted = np.append(points_sorted, [remaining[indices[0]]], axis=0)
-        remaining = np.delete(remaining, indices[0], axis=0)
-
-    # Include endpoint as well
-    points_sorted = np.append(points_sorted, [e2]).reshape(-1, 2)
-    return points_sorted
 
 
 def extract_positions(mask: np.ndarray, n_vertices: int = 8) -> list[np.ndarray]:
