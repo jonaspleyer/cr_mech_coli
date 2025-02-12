@@ -247,12 +247,7 @@ if __name__ == "__main__":
 
     filename = "final_params.csv"
     if (out / filename).exists():
-        with open(out / filename, "r") as f:
-            import csv
-
-            reader = csv.reader(f, delimiter=",")
-            row = list(reader)[0]
-            params = [float(r) for r in row]
+        params = np.genfromtxt(out / filename, delimiter=",")
         final_params = params[:-1]
         final_cost = params[-1]
         print(f"{time.time() - interval:10.4f}s Found previous results")
