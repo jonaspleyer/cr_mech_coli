@@ -110,7 +110,7 @@ def predict_flatten(
     domain_size,
     pos_initial,
     pos_final,
-    potential_type: PotentialType = PotentialType.Morse,
+    potential_type: PotentialType,
     out_path: Path | None = None,
 ):
     cell_container = predict(
