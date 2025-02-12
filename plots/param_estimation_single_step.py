@@ -20,6 +20,30 @@ class PotentialType(enum.Enum):
             return "mie"
 
 
+def reconstruct_morse_potential(parameters, cutoff):
+    (*growth_rates, rigidity, radius, strength, potential_stiffness) = parameters
+    interaction = crm.MorsePotentialF32(
+        radius=radius,
+        potential_stiffness=potential_stiffness,
+        cutoff=cutoff,
+        strength=strength,
+    )
+    return (growth_rates, rigidity, interaction)
+
+
+def reconstruct_mie_potential(parameters, cutoff):
+    (*growth_rates, rigidity, radius, strength, en, em) = parameters
+    interaction = crm.MiePotentialF32(
+        radius=radius,
+        strength=strength,
+        bound=4 * strength,
+        cutoff=cutoff,
+        en=en,
+        em=em,
+    )
+    return (growth_rates, rigidity, interaction)
+
+
 def predict(
     parameters,
     cutoff,
@@ -64,30 +88,6 @@ def predict(
         )
         for i in range(n_agents)
     ]
-    return crm.run_simulation_with_agents(config, agents)
-
-
-def reconstruct_morse_potential(parameters, cutoff):
-    (*growth_rates, rigidity, radius, strength, potential_stiffness) = parameters
-    interaction = crm.MorsePotentialF32(
-        radius=radius,
-        potential_stiffness=potential_stiffness,
-        cutoff=cutoff,
-        strength=strength,
-    )
-    return (growth_rates, rigidity, interaction)
-
-
-def reconstruct_mie_potential(parameters, cutoff):
-    (*growth_rates, rigidity, radius, strength, en, em) = parameters
-    interaction = crm.MiePotentialF32(
-        radius=radius,
-        strength=strength,
-        bound=4 * strength,
-        cutoff=cutoff,
-        en=en,
-        em=em,
-    )
     return (growth_rates, rigidity, interaction)
 
 
