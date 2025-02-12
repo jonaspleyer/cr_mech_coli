@@ -44,5 +44,6 @@ fn cr_mech_coli(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<AgentSettings>()?;
     m.add_class::<RodAgent>()?;
     m.add_class::<CellContainer>()?;
+    m.add_class::<CellIdentifier>()?;
     Ok(())
 }
