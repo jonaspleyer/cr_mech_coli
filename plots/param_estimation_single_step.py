@@ -22,8 +22,6 @@ class PotentialType(enum.Enum):
 
 def predict(
     parameters,
-    # Parameters
-    # Constants
     cutoff,
     positions: np.ndarray,  # Shape (N, n_vertices, 3)
     domain_size: float,
