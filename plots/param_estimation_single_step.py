@@ -245,28 +245,40 @@ if __name__ == "__main__":
         ub[0] = -1
         constraints = sp.optimize.LinearConstraint(A, lb=lb, ub=ub)
 
-    res = sp.optimize.differential_evolution(
-        predict_flatten,
-        bounds=bounds,
-        x0=parameters,
-        args=args,
-        workers=-1,
-        updating="deferred",
-        maxiter=200,
-        constraints=constraints,
-        disp=True,
-        tol=1e-4,
-        recombination=0.3,
-        popsize=200,
-        polish=False,
-    )
-    print(f"{time.time() - interval:10.4f}s Finished Parameter Optimization")
-    interval = time.time()
-    # Store information in file
     filename = "final_params.csv"
-    final_cost = res.fun
-    final_params = res.x
-    store_parameters(final_params, filename, out, final_cost)
+    if (out / filename).exists():
+        with open(out / filename, "r") as f:
+            import csv
+
+            reader = csv.reader(f, delimiter=",")
+            row = list(reader)[0]
+            params = [float(r) for r in row]
+        final_params = params[:-1]
+        final_cost = params[-1]
+        print(f"{time.time() - interval:10.4f}s Found previous results")
+    else:
+        res = sp.optimize.differential_evolution(
+            predict_flatten,
+            bounds=bounds,
+            x0=parameters,
+            args=args,
+            workers=-1,
+            updating="deferred",
+            maxiter=20,
+            constraints=constraints,
+            disp=True,
+            tol=1e-4,
+            recombination=0.3,
+            popsize=200,
+            polish=False,
+        )
+        final_cost = res.fun
+        final_params = res.x
+        print(f"{time.time() - interval:10.4f}s Finished Parameter Optimization")
+        # Store information in file
+        store_parameters(final_params, filename, out, final_cost)
+
+    interval = time.time()
 
     param_infos = [
         *[(f"Growth Rate {i}", "\\mu m\\text{min}^{-1}") for i in range(pos1.shape[0])],
