@@ -92,6 +92,17 @@ def reconstruct_mie_potential(parameters, cutoff):
     return (growth_rates, rigidity, interaction)
 
 
+def store_parameters(parameters, filename, out_path, cost=None):
+    out_path.mkdir(parents=True, exist_ok=True)
+    out = ""
+    for p in parameters:
+        out += f"{p},"
+    if cost is not None:
+        out += f"{cost}\n"
+    with open(out_path / filename, "w+") as f:
+        f.write(out)
+
+
 def predict_flatten(
     parameters: tuple | list,
     cutoff,
@@ -127,12 +138,7 @@ def predict_flatten(
     )
 
     if out_path is not None:
-        out = ""
-        for p in parameters:
-            out += f"{p},"
-        out += f"{cost}\n"
-        with open(f"{out_path}/param-costs.csv", "a") as f:
-            f.write(out)
+        store_parameters(parameters, "param-costs.csv", out_path, cost)
 
     return cost
 
@@ -225,6 +231,11 @@ if __name__ == "__main__":
     )
     print(f"{time.time() - interval:8.4}s Finished Parameter Optimization")
     interval = time.time()
+    # Store information in file
+    filename = "final_params.csv"
+    final_cost = res.fun
+    final_params = res.x
+    store_parameters(final_params, filename, out, final_cost)
 
     param_infos = [
         *[(f"Growth Rate {i}", "\\mu m\\text{min}^{-1}") for i in range(pos1.shape[0])],
