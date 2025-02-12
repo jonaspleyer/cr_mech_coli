@@ -225,18 +225,18 @@ if __name__ == "__main__":
 
     # Optimize values
     bounds = [
-        *[[0.00, 0.1]] * pos1.shape[0],  # Growth Rates
-        [0.4, 3.0],  # Rigidity
-        [5.0, 7.0],  # Radius
-        [0.1, 1.0],  # Strength
+        *[[0.00, 0.08]] * pos1.shape[0],  # Growth Rates
+        [0.4, 8.0],  # Rigidity
+        [5.0, 8.0],  # Radius
+        [0.1, 3.0],  # Strength
     ]
     if potential_type is PotentialType.Morse:
         bounds.append([0.25, 0.55])  # Potential Stiffness
         A = np.zeros((len(bounds),) * 2)
         constraints = sp.optimize.LinearConstraint(A, lb=-np.inf, ub=np.inf)
     elif potential_type is PotentialType.Mie:
-        bounds.append([3.0, 30.0])  # en
-        bounds.append([3.0, 30.0])  # em
+        bounds.append([0.2, 10.0])  # en
+        bounds.append([0.2, 10.0])  # em
         A = np.zeros((len(bounds),) * 2)
         A[0][len(bounds) - 2] = -1
         A[0][len(bounds) - 1] = 1
