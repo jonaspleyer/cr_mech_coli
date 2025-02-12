@@ -198,7 +198,7 @@ if __name__ == "__main__":
     figs_axs[3][1].imshow(mask2)
     figs_axs[3][1].set_axis_off()
 
-    print(f"{time.time() - interval:8.3}s Generated initial plots")
+    print(f"{time.time() - interval:10.4f}s Generated initial plots")
     interval = time.time()
 
     domain_size = np.max(mask1.shape)
@@ -260,7 +260,7 @@ if __name__ == "__main__":
         popsize=200,
         polish=False,
     )
-    print(f"{time.time() - interval:8.4}s Finished Parameter Optimization")
+    print(f"{time.time() - interval:10.4f}s Finished Parameter Optimization")
     interval = time.time()
     # Store information in file
     filename = "final_params.csv"
@@ -290,7 +290,7 @@ if __name__ == "__main__":
         fig, _ = f_a
         plt.close(fig)
 
-    print(f"{time.time() - interval:8.3} Plotted Profiles")
+    print(f"{time.time() - interval:10.4f} Plotted Profiles")
     interval = time.time()
 
     cell_container = predict(
@@ -322,4 +322,4 @@ if __name__ == "__main__":
         fig.tight_layout()
         fig.savefig(f"{out}/microscopic-images-{i}.png")
 
-    print(f"{time.time() - interval:8.3} Rendered Masks")
+    print(f"{time.time() - interval:10.4f} Rendered Masks")
