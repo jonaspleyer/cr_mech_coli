@@ -6,6 +6,7 @@ import scipy as sp
 import time
 import enum
 from pathlib import Path
+import multiprocessing as mp
 
 
 class PotentialType(enum.Enum):
@@ -143,6 +144,36 @@ def predict_flatten(
     return cost
 
 
+def plot_profile(
+    bound, args, param_info, final_params, final_cost, out, pool, fig_ax=None
+):
+    if pool is None:
+        pool = mp.Pool()
+    if fig_ax is None:
+        fig_ax = plt.subplots()
+        fig, ax = fig_ax
+    else:
+        fig, ax = fig_ax
+        fig.clf()
+
+    x = np.linspace(bound[0], bound[1], 20)
+    ps = [[pi if n != i else xi for i, pi in enumerate(final_params)] for xi in x]
+
+    pool_args = [(p, *args) for p in ps]
+    y = pool.starmap(predict_flatten, pool_args)
+    # y = [predict_flatten(*pa) for pa in pool_args]
+
+    (name, units) = param_info
+    ax.set_title(name)
+    ax.set_ylabel("Cost function $L$")
+    ax.set_xlabel(f"Parameter Value [${units}$]")
+    ax.scatter(p, final_cost, marker="o", color="red")
+    ax.plot(x, y)
+    fig.tight_layout()
+    plt.savefig(f"{out}/{name}.png")
+    return (fig, ax)
+
+
 if __name__ == "__main__":
     interval = time.time()
     # markers = np.fromfile("./data/growth-2-marked/image001042-markers.tif").reshape(576, 768)
@@ -250,23 +281,14 @@ if __name__ == "__main__":
         param_infos.append(("Exponent m", "1"))
 
     # Plot Cost function against varying parameters
-    for n, (p, bound) in enumerate(zip(res.x, bounds)):
-        fig2, ax2 = plt.subplots()
-
-        x = np.linspace(bound[0], bound[1], 20)
-        ps = [[pi if n != i else xi for i, pi in enumerate(res.x)] for xi in x]
-        y = [predict_flatten(p, *args) for p in ps]
-
-        (name, units) = param_infos[n]
-
-        ax2.set_title(name)
-        ax2.set_ylabel("Cost function $L$")
-        ax2.set_xlabel(f"Parameter Value [${units}$]")
-        ax2.scatter(p, res.fun, marker="o", color="red")
-        ax2.plot(x, y)
-        fig2.tight_layout()
-        plt.savefig(f"{out}/{name}.png")
-        plt.close(fig2)
+    pool = mp.Pool()
+    for n, (p, bound) in enumerate(zip(final_params, bounds)):
+        f_a = None
+        f_a = plot_profile(
+            bound, args, param_infos[n], final_params, final_cost, out, pool, f_a
+        )
+        fig, _ = f_a
+        plt.close(fig)
 
     print(f"{time.time() - interval:8.3} Plotted Profiles")
     interval = time.time()
