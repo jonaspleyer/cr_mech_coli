@@ -100,7 +100,7 @@ def store_parameters(parameters, filename, out_path, cost=None):
         out += f"{p},"
     if cost is not None:
         out += f"{cost}\n"
-    with open(out_path / filename, "w+") as f:
+    with open(out_path / filename, "a+") as f:
         f.write(out)
 
 
