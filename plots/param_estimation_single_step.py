@@ -178,6 +178,37 @@ def plot_profile(
     return (fig, ax)
 
 
+def plot_distributions(final_params, agents_predicted, out: Path):
+    agents = [a[0] for a in agents_predicted.values()]
+    growth_rates = np.array([a.growth_rate for a in agents])
+    fig, ax = plt.subplots()
+    ax2 = ax.twiny()
+    ax.hist(
+        growth_rates,
+        edgecolor="k",
+        linestyle="--",
+        fill=None,
+        label="Growth Rates",
+        hatch=".",
+    )
+    ax.set_xlabel("Growth Rate [$\\mu\\text{min}^{-1}$]")
+    ax.set_ylabel("Count")
+
+    lengths = np.array([np.linalg.norm(a.pos[1:] - a.pos[:-1]) for a in agents])
+    ax2.hist(
+        lengths,
+        edgecolor="gray",
+        linestyle="-",
+        fill=None,
+        label="Lengths",
+        hatch="X",
+    )
+    ax2.set_xlabel("Rod Length [$\\mu m$]")
+    fig.legend(loc="upper right", bbox_to_anchor=(1, 1), bbox_transform=ax.transAxes)
+    fig.savefig(out / "growth_rates_lengths_distribution.png")
+    fig.clf()
+
+
 if __name__ == "__main__":
     interval = time.time()
     # markers = np.fromfile("./data/growth-2-marked/image001042-markers.tif").reshape(576, 768)
@@ -334,3 +365,8 @@ if __name__ == "__main__":
         fig.savefig(f"{out}/microscopic-images-{i}.png")
 
     print(f"{time.time() - interval:10.4f} Rendered Masks")
+    interval = time.time()
+
+    plot_distributions(final_params, agents_predicted, out)
+
+    print(f"{time.time() - interval:10.4f} Visualized parameter space")
