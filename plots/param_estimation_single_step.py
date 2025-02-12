@@ -294,7 +294,7 @@ if __name__ == "__main__":
     interval = time.time()
 
     domain_size = np.max(mask1.shape)
-    cutoff = 30.0
+    cutoff = 20.0
     potential_type: PotentialType = PotentialType.Mie
 
     # Create folder to store output
@@ -306,7 +306,7 @@ if __name__ == "__main__":
     growth_rates = [0.03] * pos1.shape[0]
     radius = 6.0
     strength = 0.2
-    rigidity = 0.8
+    rigidity = 1.2
     if potential_type is PotentialType.Morse:
         potential_stiffness = 0.4
         parameters = (*growth_rates, rigidity, radius, strength, potential_stiffness)
@@ -317,9 +317,9 @@ if __name__ == "__main__":
 
     # Optimize values
     bounds = [
-        *[[0.00, 0.08]] * pos1.shape[0],  # Growth Rates
-        [0.4, 8.0],  # Rigidity
-        [5.0, 8.0],  # Radius
+        *[[0.00, 0.2]] * pos1.shape[0],  # Growth Rates
+        [0.1, 10.0],  # Rigidity
+        [0.1, 10.0],  # Radius
         [0.1, 3.0],  # Strength
     ]
     if potential_type is PotentialType.Morse:
@@ -351,7 +351,7 @@ if __name__ == "__main__":
             args=args,
             workers=-1,
             updating="deferred",
-            maxiter=20,
+            maxiter=300,
             constraints=constraints,
             disp=True,
             tol=1e-4,
