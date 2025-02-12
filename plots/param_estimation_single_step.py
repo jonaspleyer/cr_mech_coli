@@ -178,6 +178,63 @@ def plot_profile(
     return (fig, ax)
 
 
+def _get_orthogonal_basis_by_cost(parameters, p0, costs, c0):
+    ps = parameters - p0
+    # Calculate geometric mean of differences
+    # dps = np.abs(ps).prod(axis=1) ** (1.0 / ps.shape[1])
+    dps = np.linalg.norm(ps, axis=1)
+    dcs = costs - c0
+
+    # Filter any values with smaller costs
+    filt = (dcs >= 0) * (dps > 0)
+    ps = ps[filt]
+    dps = dps[filt]
+    dcs = dcs[filt]
+
+    # Calculate gradient of biggest cost
+    dcs_dps = dcs / dps
+    ind = np.argmax(dcs_dps)
+    basis = [ps[ind] / np.linalg.norm(ps[ind])]
+
+    for i in range(len(p0) - 1):
+        b = basis[-1]
+
+        # Calculate orthogonal projection towards previous basis vector
+        ortho = ps - np.outer(np.sum(ps * b, axis=1) / np.sum(b**2), b)
+        factors = np.linalg.norm(ortho, axis=1) / np.linalg.norm(ps, axis=1)
+        dcs *= factors
+        ind = np.argmax(dcs)
+        basis.append(ortho[ind] / np.linalg.norm(ortho[ind]))
+    return np.array(basis)
+
+
+def visualize_param_space(out: Path, param_infos, params=None):
+    if params is None:
+        params = np.genfromtxt(out / "final_params.csv", delimiter=",")
+    params = np.array(params)
+    param_costs = np.genfromtxt(out / "param-costs.csv", delimiter=",")
+
+    basis = _get_orthogonal_basis_by_cost(
+        param_costs[:, :-1], params[:-1], param_costs[:, -1], params[-1]
+    )
+
+    # Plot matrix
+    fig, ax = plt.subplots()
+    names = [p[0] for p in param_infos]
+    ax.imshow(np.abs(basis.T), vmin=0, vmax=1, cmap="Grays")
+    ax.set_xticks(np.arange(len(names)))
+    ax.set_yticks(np.arange(len(names)))
+    ax.set_xticklabels([f"$v_{{{i}}}$" for i in range(len(param_infos))])
+    ax.set_yticklabels(names)
+
+    print(basis.shape)
+    print(np.linalg.matrix_rank(basis))
+    print(np.linalg.det(basis))
+
+    fig.tight_layout()
+    fig.savefig(out / "parameter_space_matrix.png")
+
+
 def plot_distributions(final_params, agents_predicted, out: Path):
     agents = [a[0] for a in agents_predicted.values()]
     growth_rates = np.array([a.growth_rate for a in agents])
@@ -367,6 +424,7 @@ if __name__ == "__main__":
     print(f"{time.time() - interval:10.4f} Rendered Masks")
     interval = time.time()
 
+    visualize_param_space(Path("out/parameter-estimation/mie"), param_infos)
     plot_distributions(final_params, agents_predicted, out)
 
     print(f"{time.time() - interval:10.4f} Visualized parameter space")
