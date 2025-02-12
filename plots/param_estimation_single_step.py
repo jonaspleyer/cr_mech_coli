@@ -88,7 +88,13 @@ def predict(
         )
         for i in range(n_agents)
     ]
-    return (growth_rates, rigidity, interaction)
+    try:
+        return crm.run_simulation_with_agents(config, agents)
+    except ValueError as e:
+        raise ValueError(f"""
+            Simulation encountered error: {e}
+            Parameters used were: {parameters}
+        """)
 
 
 def store_parameters(parameters, filename, out_path, cost=None):
