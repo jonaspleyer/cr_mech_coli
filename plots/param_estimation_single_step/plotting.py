@@ -97,7 +97,7 @@ def visualize_param_space(out: Path, param_infos, params=None):
     # Plot matrix
     fig, ax = plt.subplots()
     names = [f"${p[2]}$" for p in param_infos]
-    img = ax.imshow(np.abs(basis.T), cmap="Grays")
+    img = ax.imshow(np.abs(basis.T), cmap="Grays", vmin=0, vmax=1)
     plt.colorbar(img, ax=ax)
     ax.set_xticks(np.arange(len(names)))
     ax.set_yticks(np.arange(len(names)))
