@@ -73,7 +73,7 @@ def predict(
     n_vertices = positions.shape[1]
 
     def pos_to_spring_length(pos):
-        res = np.sum(np.linalg.norm(pos[1:] - pos[:-1], axis=1)) / n_vertices
+        res = np.sum(np.linalg.norm(pos[1:] - pos[:-1], axis=1)) / (n_vertices - 1)
         return res
 
     agents = [
