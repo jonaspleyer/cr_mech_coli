@@ -6,6 +6,7 @@ import scipy as sp
 import time
 from pathlib import Path
 import multiprocessing as mp
+import argparse
 
 from plotting import plot_profile, plot_distributions, visualize_param_space
 from predict import predict_flatten, predict, store_parameters, PotentialType
@@ -28,6 +29,29 @@ def get_out_folder(iteration: int | None, potential_type: PotentialType) -> Path
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(
+        description="Fits a single time step to parameters"
+    )
+    parser.add_argument(
+        "-i",
+        "--iteration",
+        type=int,
+        default=None,
+        help="Use existing output folder instead of creating new one",
+    )
+    parser.add_argument(
+        "-p",
+        "--potential_type",
+        type=int,
+        default=PotentialType.Mie,
+        help="The interaction potential to use. Can be 0 for Morse or 1 for Mie.",
+    )
+    args = parser.parse_args()
+    potential_type = PotentialType(args.potential_type)
+    # potential_type: PotentialType = PotentialType.Mie
+
+    out = get_out_folder(args.iteration, potential_type)
+
     interval = time.time()
     mask0 = np.loadtxt(Path(__file__).parent / "image001032-markers.csv", delimiter=",")
     img0 = imread(str(Path(__file__).parent / "image001032.png"))
