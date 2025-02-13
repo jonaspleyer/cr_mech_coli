@@ -192,7 +192,15 @@ if __name__ == "__main__":
     for n, (p, bound) in enumerate(zip(final_params, bounds)):
         f_a = None
         f_a = plot_profile(
-            n, bound, args_predict, param_infos[n], final_params, final_cost, out, pool, f_a
+            n,
+            bound,
+            args_predict[:-1],
+            param_infos[n],
+            final_params,
+            final_cost,
+            out,
+            pool,
+            f_a,
         )
         fig, _ = f_a
         plt.close(fig)
