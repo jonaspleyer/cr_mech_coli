@@ -67,6 +67,7 @@ def predict(
 
     config = crm.Configuration(
         domain_size=domain_size,
+        dt=0.02,
     )
     config.dt *= 0.25
     n_agents = positions.shape[0]
@@ -330,6 +331,7 @@ if __name__ == "__main__":
     out.mkdir(parents=True, exist_ok=True)
 
     # Fix some parameters for the simulation
+    rigidity = 8.0
     args = (
         cutoff,
         rigidity,
@@ -345,8 +347,7 @@ if __name__ == "__main__":
     # growth_rates = [0.03] * pos1.shape[0]
     damping = 1.5
     # radius = 6.0
-    strength = 0.2
-    rigidity = 1.2
+    strength = 1.0
     if potential_type is PotentialType.Morse:
         potential_stiffness = 0.4
         parameters = (damping, strength, potential_stiffness)
@@ -357,19 +358,19 @@ if __name__ == "__main__":
 
     # Optimize values
     bounds = [
-        # *[[0.01, 0.2]] * pos1.shape[0],  # Growth Rates
+        # *[[0.01, 0.05]] * pos1.shape[0],  # Growth Rates
         [0.6, 3.0],  # Damping
-        # [0.1, 10.0],  # Rigidity
-        # [0.1, 10.0],  # Radius
-        [0.1, 3.0],  # Strength
+        # [0.01, 1.5],  # Rigidity
+        # [4, 10.0],  # Radius
+        [0.5, 3.5],  # Strength
     ]
     if potential_type is PotentialType.Morse:
         bounds.append([0.25, 0.55])  # Potential Stiffness
         A = np.zeros((len(bounds),) * 2)
         constraints = sp.optimize.LinearConstraint(A, lb=-np.inf, ub=np.inf)
     elif potential_type is PotentialType.Mie:
-        bounds.append([0.2, 10.0])  # en
-        bounds.append([0.2, 10.0])  # em
+        bounds.append([0.2, 25.0])  # en
+        bounds.append([0.2, 25.0])  # em
         A = np.zeros((len(bounds),) * 2)
         A[0][len(bounds) - 2] = -1
         A[0][len(bounds) - 1] = 1
@@ -392,12 +393,12 @@ if __name__ == "__main__":
             args=args,
             workers=-1,
             updating="deferred",
-            maxiter=300,
+            maxiter=20,
             constraints=constraints,
             disp=True,
             tol=1e-4,
             recombination=0.3,
-            popsize=200,
+            popsize=50,
             polish=False,
         )
         final_cost = res.fun
