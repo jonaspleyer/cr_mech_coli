@@ -11,6 +11,22 @@ from plotting import plot_profile, plot_distributions, visualize_param_space
 from predict import predict_flatten, predict, store_parameters, PotentialType
 
 
+# Create folder to store output
+def get_out_folder(iteration: int | None, potential_type: PotentialType) -> Path:
+    base = Path(f"{Path(__file__).parent}/out/{potential_type.to_string()}")
+    if iteration is not None:
+        out = base / f"{iteration:04}"
+    else:
+        for i in range(9999):
+            out = base / f"{i:04}"
+            if not out.exists():
+                break
+        else:
+            raise ValueError("Every possible path already occupied")
+    out.mkdir(parents=True, exist_ok=True)
+    return out
+
+
 if __name__ == "__main__":
     interval = time.time()
     mask0 = np.loadtxt(Path(__file__).parent / "image001032-markers.csv", delimiter=",")
@@ -43,21 +59,6 @@ if __name__ == "__main__":
 
     domain_size = np.max(mask1.shape)
     cutoff = 20.0
-    potential_type: PotentialType = PotentialType.Mie
-
-    # Create folder to store output
-    def create_out_folder() -> Path:
-        base = Path(f"{Path(__file__).parent}/out/{potential_type.to_string()}")
-        for i in range(9999):
-            out = base / f"{i:04}"
-            print(out)
-            if not out.exists():
-                out.mkdir(parents=True, exist_ok=True)
-                return out
-        else:
-            raise ValueError("Every possible path already occupied")
-
-    out = create_out_folder()
 
     # Fix some parameters for the simulation
     rigidity = 8.0
