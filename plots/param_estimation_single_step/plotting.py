@@ -135,16 +135,16 @@ def plot_distributions(agents_predicted, out: Path):
     ax.set_xlabel("Growth Rate [$\\mu\\text{min}^{-1}$]")
     ax.set_ylabel("Count")
 
-    lengths = np.array([np.linalg.norm(a.pos[1:] - a.pos[:-1]) for a in agents])
+    radii = np.array([a.radius for a in agents])
     ax2.hist(
-        lengths,
+        radii,
         edgecolor="gray",
         linestyle="-",
         facecolor="gray",
         alpha=0.5,
-        label="Rod Lengths",
+        label="Radii",
     )
-    ax2.set_xlabel("Rod Length [$\\mu m$]")
+    ax2.set_xlabel("Interaction Thickness [$\\mu m$]")
     fig.legend(loc="upper right", bbox_to_anchor=(1, 1), bbox_transform=ax.transAxes)
     fig.savefig(out / "growth_rates_lengths_distribution.png")
     fig.clf()
