@@ -7,7 +7,16 @@ from predict import predict_flatten
 
 
 def plot_profile(
-    n, bound, args, param_info, final_params, final_cost, out, pool, fig_ax=None
+    n: int,
+    bound,
+    args: tuple,
+    param_info: tuple,
+    final_params,
+    final_cost: float,
+    out: Path,
+    pool,
+    fig_ax=None,
+    steps: int = 20,
 ):
     if pool is None:
         pool = mp.Pool()
@@ -18,7 +27,7 @@ def plot_profile(
         fig, ax = fig_ax
         fig.clf()
 
-    x = np.linspace(bound[0], bound[1], 20)
+    x = np.linspace(bound[0], bound[1], steps)
     ps = [[pi if n != i else xi for i, pi in enumerate(final_params)] for xi in x]
 
     pool_args = [(p, *args) for p in ps]
