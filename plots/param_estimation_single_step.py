@@ -330,8 +330,9 @@ if __name__ == "__main__":
         out,
     )
 
-    growth_rates = [0.03] * pos1.shape[0]
-    radius = 6.0
+    # growth_rates = [0.03] * pos1.shape[0]
+    damping = 1.5
+    # radius = 6.0
     strength = 0.2
     rigidity = 1.2
     if potential_type is PotentialType.Morse:
@@ -396,10 +397,14 @@ if __name__ == "__main__":
     interval = time.time()
 
     param_infos = [
-        *[(f"Growth Rate {i}", "\\mu m\\text{min}^{-1}") for i in range(pos1.shape[0])],
-        ("Rigidity", "\\mu m\\text{min}^{-1}"),
-        ("Radius", "\\mu m"),
-        ("Strength", "\\mu m^2\text{min}^{-2}"),
+        # *[
+        #     (f"Growth Rate {i}", "\\mu m\\text{min}^{-1}")
+        #     for i in range(pos1.shape[0])
+        # ],
+        # ("Rigidity", "\\mu m\\text{min}^{-1}"),
+        ("Damping", "\\text{min}^{-1}"),
+        # ("Radius", "\\mu m"),
+        ("Strength", "\\mu m^2\\text{min}^{-2}"),
     ]
     if potential_type is PotentialType.Morse:
         param_infos.append(("Potential Stiffness", "\\mu m"))
