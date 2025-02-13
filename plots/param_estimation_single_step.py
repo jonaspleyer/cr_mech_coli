@@ -208,17 +208,20 @@ def _get_orthogonal_basis_by_cost(parameters, p0, costs, c0):
     dcs_dps = dcs / dps
     ind = np.argmax(dcs_dps)
     basis = [ps[ind] / np.linalg.norm(ps[ind])]
+    contribs = [dcs_dps[ind]]
 
-    for i in range(len(p0) - 1):
-        b = basis[-1]
-
-        # Calculate orthogonal projection towards previous basis vector
-        ortho = ps - np.outer(np.sum(ps * b, axis=1) / np.sum(b**2), b)
+    for _ in range(len(p0) - 1):
+        # Calculate orthogonal projection along every already obtained basis vector
+        ortho = ps
+        for b in basis:
+            ortho = ortho - np.outer(np.sum(ortho * b, axis=1) / np.sum(b**2), b)
         factors = np.linalg.norm(ortho, axis=1) / np.linalg.norm(ps, axis=1)
         dcs *= factors
-        ind = np.argmax(dcs)
+        dcs_dps = dcs / dps
+        ind = np.argmax(dcs_dps)
         basis.append(ortho[ind] / np.linalg.norm(ortho[ind]))
-    return np.array(basis)
+        contribs.append(dcs_dps[ind])
+    return np.array(basis), np.array(contribs) / np.sum(contribs)
 
 
 def visualize_param_space(out: Path, param_infos, params=None):
@@ -227,7 +230,7 @@ def visualize_param_space(out: Path, param_infos, params=None):
     params = np.array(params)
     param_costs = np.genfromtxt(out / "param-costs.csv", delimiter=",")
 
-    basis = _get_orthogonal_basis_by_cost(
+    basis, contribs = _get_orthogonal_basis_by_cost(
         param_costs[:, :-1], params[:-1], param_costs[:, -1], params[-1]
     )
 
