@@ -326,8 +326,18 @@ if __name__ == "__main__":
     potential_type: PotentialType = PotentialType.Mie
 
     # Create folder to store output
-    out = Path(f"out/parameter-estimation/{potential_type.to_string()}")
-    out.mkdir(parents=True, exist_ok=True)
+    def create_out_folder() -> Path:
+        base = Path(f"{Path(__file__).parent}/out/{potential_type.to_string()}")
+        for i in range(9999):
+            out = base / f"{i:04}"
+            print(out)
+            if not out.exists():
+                out.mkdir(parents=True, exist_ok=True)
+                return out
+        else:
+            raise ValueError("Every possible path already occupied")
+
+    out = create_out_folder()
 
     # Fix some parameters for the simulation
     rigidity = 8.0
