@@ -20,45 +20,50 @@ class PotentialType(enum.Enum):
             return "mie"
 
 
-def reconstruct_morse_potential(parameters, cutoff):
-    (*growth_rates, rigidity, radius, strength, potential_stiffness) = parameters
-    interaction = crm.MorsePotentialF32(
-        radius=radius,
-        potential_stiffness=potential_stiffness,
-        cutoff=cutoff,
-        strength=strength,
-    )
-    return (growth_rates, rigidity, interaction)
+def reconstruct_morse_potential(parameters, radii, cutoff):
+    (damping, strength, potential_stiffness) = parameters
+    interactions = [
+        crm.MorsePotentialF32(
+            radius=r,
+            potential_stiffness=potential_stiffness,
+            cutoff=cutoff,
+            strength=strength,
+        )
+        for r in radii
+    ]
+    return (damping, interactions)
 
 
-def reconstruct_mie_potential(parameters, cutoff):
-    (*growth_rates, rigidity, radius, strength, en, em) = parameters
-    interaction = crm.MiePotentialF32(
-        radius=radius,
-        strength=strength,
-        bound=4 * strength,
-        cutoff=cutoff,
-        en=en,
-        em=em,
-    )
-    return (growth_rates, rigidity, interaction)
+def reconstruct_mie_potential(parameters, radii, cutoff):
+    (damping, strength, en, em) = parameters
+    interactions = [
+        crm.MiePotentialF32(
+            radius=r,
+            strength=strength,
+            bound=2 * strength,
+            cutoff=cutoff,
+            en=en,
+            em=em,
+        )
+        for r in radii
+    ]
+    return (damping, interactions)
 
 
 def predict(
     parameters,
     cutoff,
+    rigidity,
+    rod_length_diffs,
+    radii,
     positions: np.ndarray,  # Shape (N, n_vertices, 3)
     domain_size: float,
     potential_type: PotentialType,
 ):
     if potential_type is PotentialType.Morse:
-        growth_rates, rigidity, interaction = reconstruct_morse_potential(
-            parameters, cutoff
-        )
+        damping, interactions = reconstruct_morse_potential(parameters, radii, cutoff)
     elif potential_type is PotentialType.Mie:
-        growth_rates, rigidity, interaction = reconstruct_mie_potential(
-            parameters, cutoff
-        )
+        damping, interactions = reconstruct_mie_potential(parameters, radii, cutoff)
 
     config = crm.Configuration(
         domain_size=domain_size,
@@ -111,6 +116,9 @@ def store_parameters(parameters, filename, out_path, cost=None):
 def predict_flatten(
     parameters: tuple | list,
     cutoff,
+    rigidity,
+    rod_length_diffs,
+    radii,
     domain_size,
     pos_initial,
     pos_final,
@@ -120,6 +128,9 @@ def predict_flatten(
     cell_container = predict(
         parameters,
         cutoff,
+        rigidity,
+        rod_length_diffs,
+        radii,
         pos_initial,
         domain_size,
         potential_type,
@@ -277,8 +288,12 @@ if __name__ == "__main__":
     img2 = imread("data/growth-2/image001052.png")
     n_vertices = 8
     # pos0 = np.array(crm.extract_positions(mask0, n_vertices))
-    pos1 = np.array(crm.extract_positions(mask1, n_vertices))
-    pos2 = np.array(crm.extract_positions(mask2, n_vertices))
+    pos1, lengths1, radii1 = crm.extract_positions(mask1, n_vertices)
+    pos2, lengths2, radii2 = crm.extract_positions(mask2, n_vertices)
+
+    # Claculate Rod lengths which is later used to determine growth rates.
+    rod_length_diffs = lengths2 - lengths1
+    radii = (radii1 + radii2) / 2
 
     figs_axs = [plt.subplots() for _ in range(4)]
     figs_axs[0][1].imshow(img1)
@@ -301,7 +316,18 @@ if __name__ == "__main__":
     out = Path(f"out/parameter-estimation/{potential_type.to_string()}")
     out.mkdir(parents=True, exist_ok=True)
 
-    args = (cutoff, domain_size, pos1, pos2, potential_type, out)
+    # Fix some parameters for the simulation
+    args = (
+        cutoff,
+        rigidity,
+        rod_length_diffs,
+        radii,
+        domain_size,
+        pos1,
+        pos2,
+        potential_type,
+        out,
+    )
 
     growth_rates = [0.03] * pos1.shape[0]
     radius = 6.0
@@ -309,17 +335,18 @@ if __name__ == "__main__":
     rigidity = 1.2
     if potential_type is PotentialType.Morse:
         potential_stiffness = 0.4
-        parameters = (*growth_rates, rigidity, radius, strength, potential_stiffness)
+        parameters = (damping, strength, potential_stiffness)
     elif potential_type is PotentialType.Mie:
         en = 6.0
         em = 5.5
-        parameters = (*growth_rates, rigidity, radius, strength, en, em)
+        parameters = (damping, strength, en, em)
 
     # Optimize values
     bounds = [
-        *[[0.00, 0.2]] * pos1.shape[0],  # Growth Rates
-        [0.1, 10.0],  # Rigidity
-        [0.1, 10.0],  # Radius
+        # *[[0.01, 0.2]] * pos1.shape[0],  # Growth Rates
+        [0.6, 3.0],  # Damping
+        # [0.1, 10.0],  # Rigidity
+        # [0.1, 10.0],  # Radius
         [0.1, 3.0],  # Strength
     ]
     if potential_type is PotentialType.Morse:
@@ -395,6 +422,9 @@ if __name__ == "__main__":
     cell_container = predict(
         final_params,
         cutoff,
+        rigidity,
+        rod_length_diffs,
+        radii,
         pos1,
         domain_size,
         potential_type,
