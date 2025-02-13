@@ -259,7 +259,7 @@ def visualize_param_space(out: Path, param_infos, params=None):
     fig.savefig(out / "parameter_space_matrix.png")
 
 
-def plot_distributions(final_params, agents_predicted, out: Path):
+def plot_distributions(agents_predicted, out: Path):
     agents = [a[0] for a in agents_predicted.values()]
     growth_rates = np.array([a.growth_rate for a in agents])
     fig, ax = plt.subplots()
@@ -280,9 +280,9 @@ def plot_distributions(final_params, agents_predicted, out: Path):
         lengths,
         edgecolor="gray",
         linestyle="-",
-        fill=None,
-        label="Lengths",
-        hatch="X",
+        facecolor="gray",
+        alpha=0.5,
+        label="Rod Lengths",
     )
     ax2.set_xlabel("Rod Length [$\\mu m$]")
     fig.legend(loc="upper right", bbox_to_anchor=(1, 1), bbox_transform=ax.transAxes)
@@ -477,6 +477,6 @@ if __name__ == "__main__":
     interval = time.time()
 
     visualize_param_space(Path("out/parameter-estimation/mie"), param_infos)
-    plot_distributions(final_params, agents_predicted, out)
+    plot_distributions(agents_predicted, out)
 
     print(f"{time.time() - interval:10.4f} Visualized parameter space")
