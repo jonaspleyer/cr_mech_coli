@@ -69,6 +69,9 @@ if __name__ == "__main__":
     rod_length_diffs = lengths2 - lengths1
     radii = (radii1 + radii2) / 2
 
+    print(f"{time.time() - interval:10.4f}s Generated initial plots")
+    interval = time.time()
+
     figs_axs = [plt.subplots() for _ in range(4)]
     figs_axs[0][1].imshow(img1)
     figs_axs[0][1].set_axis_off()
