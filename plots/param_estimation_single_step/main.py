@@ -60,11 +60,12 @@ if __name__ == "__main__":
     mask2 = np.loadtxt(Path(__file__).parent / "image001052-markers.csv", delimiter=",")
     img2 = imread(Path(__file__).parent / "image001052.png")
     n_vertices = 8
+
     # pos0 = np.array(crm.extract_positions(mask0, n_vertices))
     pos1, lengths1, radii1 = crm.extract_positions(mask1, n_vertices)
     pos2, lengths2, radii2 = crm.extract_positions(mask2, n_vertices)
 
-    # Claculate Rod lengths which is later used to determine growth rates.
+    # Calculate Rod lengths which is later used to determine growth rates.
     rod_length_diffs = lengths2 - lengths1
     radii = (radii1 + radii2) / 2
 
@@ -174,7 +175,7 @@ if __name__ == "__main__":
         ("Strength", "\\mu m^2\\text{min}^{-2}", "C"),
     ]
     if potential_type is PotentialType.Morse:
-        param_infos.append(("Potential Stiffness", "\\mu m"))
+        param_infos.append(("Potential Stiffness", "\\mu m", "\\lambda"))
     elif potential_type is PotentialType.Mie:
         param_infos.append(("Exponent n", "1", "n"))
         param_infos.append(("Exponent m", "1", "m"))
