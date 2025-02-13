@@ -180,7 +180,7 @@ def plot_profile(
     y = pool.starmap(predict_flatten, pool_args)
     # y = [predict_flatten(*pa) for pa in pool_args]
 
-    (name, units) = param_info
+    (name, units, _) = param_info
     ax.set_title(name)
     ax.set_ylabel("Cost function $L$")
     ax.set_xlabel(f"Parameter Value [${units}$]")
@@ -236,18 +236,26 @@ def visualize_param_space(out: Path, param_infos, params=None):
 
     # Plot matrix
     fig, ax = plt.subplots()
-    names = [p[0] for p in param_infos]
-    ax.imshow(np.abs(basis.T), vmin=0, vmax=1, cmap="Grays")
+    names = [f"${p[2]}$" for p in param_infos]
+    img = ax.imshow(np.abs(basis.T), cmap="Grays")
+    plt.colorbar(img, ax=ax)
     ax.set_xticks(np.arange(len(names)))
     ax.set_yticks(np.arange(len(names)))
-    ax.set_xticklabels([f"$v_{{{i}}}$" for i in range(len(param_infos))])
+    ax.set_xticklabels(
+        [
+            f"$\\vec{{v}}_{{{i}}}~{contribs[i] * 100:5.1f}\\%$"
+            for i in range(len(param_infos))
+        ]
+    )
     ax.set_yticklabels(names)
+    ax.set_ylabel("Parameters")
+    ax.set_xlabel("Basis Vectors")
 
     print(basis.shape)
-    print(np.linalg.matrix_rank(basis))
-    print(np.linalg.det(basis))
-
-    fig.tight_layout()
+    try:
+        print("Rank:", np.linalg.matrix_rank(basis))
+    except:
+        print("Calculation of rank failed.")
     fig.savefig(out / "parameter_space_matrix.png")
 
 
@@ -402,19 +410,19 @@ if __name__ == "__main__":
 
     param_infos = [
         # *[
-        #     (f"Growth Rate {i}", "\\mu m\\text{min}^{-1}")
+        #     (f"Growth Rate {i}", "\\mu m\\text{min}^{-1}", f"\\mu_{{{i}}}")
         #     for i in range(pos1.shape[0])
         # ],
         # ("Rigidity", "\\mu m\\text{min}^{-1}"),
-        ("Damping", "\\text{min}^{-1}"),
-        # ("Radius", "\\mu m"),
-        ("Strength", "\\mu m^2\\text{min}^{-2}"),
+        ("Damping", "\\text{min}^{-1}", "\\lambda"),
+        # ("Radius", "\\mu m", "r"),
+        ("Strength", "\\mu m^2\\text{min}^{-2}", "C"),
     ]
     if potential_type is PotentialType.Morse:
         param_infos.append(("Potential Stiffness", "\\mu m"))
     elif potential_type is PotentialType.Mie:
-        param_infos.append(("Exponent n", "1"))
-        param_infos.append(("Exponent m", "1"))
+        param_infos.append(("Exponent n", "1", "n"))
+        param_infos.append(("Exponent m", "1", "m"))
 
     # Plot Cost function against varying parameters
     pool = mp.Pool()
