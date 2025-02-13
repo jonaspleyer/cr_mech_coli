@@ -54,11 +54,11 @@ if __name__ == "__main__":
 
     interval = time.time()
     mask0 = np.loadtxt(Path(__file__).parent / "image001032-markers.csv", delimiter=",")
-    img0 = imread(Path(__file__).parent / "image001032.png")
+    img0 = imread(str(Path(__file__).parent / "image001032.png"))
     mask1 = np.loadtxt(Path(__file__).parent / "image001042-markers.csv", delimiter=",")
-    img1 = imread(Path(__file__).parent / "image001042.png")
+    img1 = imread(str(Path(__file__).parent / "image001042.png"))
     mask2 = np.loadtxt(Path(__file__).parent / "image001052-markers.csv", delimiter=",")
-    img2 = imread(Path(__file__).parent / "image001052.png")
+    img2 = imread(str(Path(__file__).parent / "image001052.png"))
     n_vertices = 8
 
     # pos0 = np.array(crm.extract_positions(mask0, n_vertices))
