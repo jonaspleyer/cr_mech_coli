@@ -85,11 +85,12 @@ def predict(
             vel=np.zeros(
                 (positions.shape[1], positions.shape[2] + 1), dtype=np.float32
             ),
-            interaction=interaction,
-            growth_rate=growth_rates[i],
+            interaction=interactions[i],
+            growth_rate=rod_length_diffs[i] / config.t_max / (n_vertices - 1),
             spring_length=pos_to_spring_length(positions[i]),
             spring_length_threshold=1000,
             rigidity=rigidity,
+            damping=damping,
         )
         for i in range(n_agents)
     ]
