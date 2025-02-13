@@ -46,11 +46,11 @@ if __name__ == "__main__":
         default=PotentialType.Mie,
         help="The interaction potential to use. Can be 0 for Morse or 1 for Mie.",
     )
-    args = parser.parse_args()
-    potential_type = PotentialType(args.potential_type)
+    pyargs = parser.parse_args()
+    potential_type = PotentialType(pyargs.potential_type)
     # potential_type: PotentialType = PotentialType.Mie
 
-    out = get_out_folder(args.iteration, potential_type)
+    out = get_out_folder(pyargs.iteration, potential_type)
 
     interval = time.time()
     mask0 = np.loadtxt(Path(__file__).parent / "image001032-markers.csv", delimiter=",")
@@ -91,7 +91,7 @@ if __name__ == "__main__":
     rigidity = 8.0
 
     # Fix some parameters for the simulation
-    args = (
+    args_predict = (
         cutoff,
         rigidity,
         rod_length_diffs,
@@ -152,7 +152,7 @@ if __name__ == "__main__":
             predict_flatten,
             bounds=bounds,
             x0=parameters,
-            args=args,
+            args=args_predict,
             workers=-1,
             updating="deferred",
             maxiter=20,
@@ -192,7 +192,7 @@ if __name__ == "__main__":
     for n, (p, bound) in enumerate(zip(final_params, bounds)):
         f_a = None
         f_a = plot_profile(
-            n, bound, args, param_infos[n], final_params, final_cost, out, pool, f_a
+            n, bound, args_predict, param_infos[n], final_params, final_cost, out, pool, f_a
         )
         fig, _ = f_a
         plt.close(fig)
