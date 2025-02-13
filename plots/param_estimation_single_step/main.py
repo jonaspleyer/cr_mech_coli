@@ -46,6 +46,12 @@ if __name__ == "__main__":
         default=PotentialType.Mie,
         help="The interaction potential to use. Can be 0 for Morse or 1 for Mie.",
     )
+    parser.add_argument(
+        "--skip-profiles",
+        default=False,
+        help="Skips Plotting of profiles for parameters",
+        action="store_true",
+    )
     pyargs = parser.parse_args()
     potential_type = PotentialType(pyargs.potential_type)
     # potential_type: PotentialType = PotentialType.Mie
@@ -188,25 +194,26 @@ if __name__ == "__main__":
         param_infos.append(("Exponent m", "1", "m"))
 
     # Plot Cost function against varying parameters
-    pool = mp.Pool()
-    for n, (p, bound) in enumerate(zip(final_params, bounds)):
-        f_a = None
-        f_a = plot_profile(
-            n,
-            bound,
-            args_predict[:-1],
-            param_infos[n],
-            final_params,
-            final_cost,
-            out,
-            pool,
-            f_a,
-        )
-        fig, _ = f_a
-        plt.close(fig)
+    if not pyargs.skip_profiles:
+        pool = mp.Pool()
+        for n, (p, bound) in enumerate(zip(final_params, bounds)):
+            f_a = None
+            f_a = plot_profile(
+                n,
+                bound,
+                args_predict[:-1],
+                param_infos[n],
+                final_params,
+                final_cost,
+                out,
+                pool,
+                f_a,
+            )
+            fig, _ = f_a
+            plt.close(fig)
 
-    print(f"{time.time() - interval:10.4f} Plotted Profiles")
-    interval = time.time()
+        print(f"{time.time() - interval:10.4f} Plotted Profiles")
+        interval = time.time()
 
     cell_container = predict(
         final_params,
