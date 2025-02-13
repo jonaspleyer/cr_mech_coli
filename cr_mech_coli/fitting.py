@@ -68,7 +68,11 @@ def points_along_polygon(
     return np.array(points, dtype=np.float32)
 
 
-def extract_positions(mask: np.ndarray, n_vertices: int = 8) -> list[np.ndarray]:
+def extract_positions(
+    mask: np.ndarray,
+    n_vertices: int = 8,
+    skel_method="lee",
+) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     """
     Extracts positions from a mask for each sub-mask associated to a single cell.
     To read more about the used methods, visit the :ref:`Fitting-Methods` page.
@@ -100,11 +104,18 @@ def extract_positions(mask: np.ndarray, n_vertices: int = 8) -> list[np.ndarray]
     else:
         cell_masks = [mask == c for c in colors]
     skeleton_points = [
-        _sort_points(sk.morphology.skeletonize(m, method="lee")) for m in cell_masks
+        _sort_points(sk.morphology.skeletonize(m, method=skel_method))
+        for m in cell_masks
     ]
     polys = [sk.measure.approximate_polygon(sp, 1) for sp in skeleton_points]
-    points = [np.roll(points_along_polygon(p, n_vertices), 1, axis=1) for p in polys]
-    return points
+    points = np.array(
+        [np.roll(points_along_polygon(p, n_vertices), 1, axis=1) for p in polys]
+    )
+
+    lengths = np.sum(np.linalg.norm(points[:, 1:] - points[:, :-1], axis=2), axis=1)
+    areas = np.array([np.sum(c) for c in cell_masks])
+    radii = lengths / np.pi * (np.sqrt(1 + np.pi * areas / lengths**2) - 1)
+    return points, lengths, radii
 
 
 def area_diff_mask(mask1, mask2) -> np.ndarray:
