@@ -102,31 +102,32 @@ if __name__ == "__main__":
         out,
     )
 
-    # growth_rates = [0.03] * pos1.shape[0]
+    # Parameters
     damping = 1.5
-    # radius = 6.0
     strength = 1.0
-    if potential_type is PotentialType.Morse:
-        potential_stiffness = 0.4
-        parameters = (damping, strength, potential_stiffness)
-    elif potential_type is PotentialType.Mie:
-        en = 6.0
-        em = 5.5
-        parameters = (damping, strength, en, em)
 
-    # Optimize values
+    # Bounds
     bounds = [
-        # *[[0.01, 0.05]] * pos1.shape[0],  # Growth Rates
         [0.6, 3.0],  # Damping
-        # [0.01, 1.5],  # Rigidity
-        # [4, 10.0],  # Radius
         [0.5, 3.5],  # Strength
     ]
+
     if potential_type is PotentialType.Morse:
+        # Parameter Values
+        potential_stiffness = 0.4
+        parameters = (damping, strength, potential_stiffness)
+
+        # Constraints
         bounds.append([0.25, 0.55])  # Potential Stiffness
         A = np.zeros((len(bounds),) * 2)
         constraints = sp.optimize.LinearConstraint(A, lb=-np.inf, ub=np.inf)
     elif potential_type is PotentialType.Mie:
+        # Parameter Values
+        en = 6.0
+        em = 5.5
+        parameters = (damping, strength, en, em)
+
+        # Constraints
         bounds.append([0.2, 25.0])  # en
         bounds.append([0.2, 25.0])  # em
         A = np.zeros((len(bounds),) * 2)
@@ -136,6 +137,8 @@ if __name__ == "__main__":
         ub = np.full(len(bounds), np.inf)
         ub[0] = -1
         constraints = sp.optimize.LinearConstraint(A, lb=lb, ub=ub)
+    else:
+        raise ValueError("potential type needs to be variant of PotentialType enum")
 
     filename = "final_params.csv"
     if (out / filename).exists():
