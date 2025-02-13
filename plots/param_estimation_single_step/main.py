@@ -85,11 +85,12 @@ if __name__ == "__main__":
     print(f"{time.time() - interval:10.4f}s Generated initial plots")
     interval = time.time()
 
+    # Fix some parameters
     domain_size = np.max(mask1.shape)
     cutoff = 20.0
+    rigidity = 8.0
 
     # Fix some parameters for the simulation
-    rigidity = 8.0
     args = (
         cutoff,
         rigidity,
