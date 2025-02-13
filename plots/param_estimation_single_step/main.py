@@ -293,13 +293,12 @@ def plot_distributions(agents_predicted, out: Path):
 
 if __name__ == "__main__":
     interval = time.time()
-    # markers = np.fromfile("./data/growth-2-marked/image001042-markers.tif").reshape(576, 768)
-    # mask0 = np.loadtxt("data/growth-2-marked/image001032-markers.csv", delimiter=",")
-    # img0 = imread("data/growth-2/image001032.png")
-    mask1 = np.loadtxt("data/growth-2-marked/image001042-markers.csv", delimiter=",")
-    img1 = imread("data/growth-2/image001042.png")
-    mask2 = np.loadtxt("data/growth-2-marked/image001052-markers.csv", delimiter=",")
-    img2 = imread("data/growth-2/image001052.png")
+    mask0 = np.loadtxt(Path(__file__).parent / "image001032-markers.csv", delimiter=",")
+    img0 = imread(Path(__file__).parent/"image001032.png")
+    mask1 = np.loadtxt(Path(__file__).parent / "image001042-markers.csv", delimiter=",")
+    img1 = imread(Path(__file__).parent / "image001042.png")
+    mask2 = np.loadtxt(Path(__file__).parent / "image001052-markers.csv", delimiter=",")
+    img2 = imread(Path(__file__).parent / "image001052.png")
     n_vertices = 8
     # pos0 = np.array(crm.extract_positions(mask0, n_vertices))
     pos1, lengths1, radii1 = crm.extract_positions(mask1, n_vertices)
