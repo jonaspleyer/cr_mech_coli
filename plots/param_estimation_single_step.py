@@ -97,10 +97,8 @@ def predict(
     try:
         return crm.run_simulation_with_agents(config, agents)
     except ValueError as e:
-        raise ValueError(f"""
-            Simulation encountered error: {e}
-            Parameters used were: {parameters}
-        """)
+        print(f"{e}\nParameters used were:\n{parameters}")
+        return None
 
 
 def store_parameters(parameters, filename, out_path, cost=None):
@@ -137,22 +135,25 @@ def predict_flatten(
         potential_type,
     )
 
-    final_iter = cell_container.get_all_iterations()[-1]
-    final_cells = cell_container.get_cells_at_iteration(final_iter)
-    final_cells = [(k, final_cells[k]) for k in final_cells]
-    final_cells.sort(key=lambda x: x[0][1])
-    pos_predicted = np.array([(kv[1][0]).pos for kv in final_cells])
+    if cell_container is None:
+        cost = np.inf
+    else:
+        final_iter = cell_container.get_all_iterations()[-1]
+        final_cells = cell_container.get_cells_at_iteration(final_iter)
+        final_cells = [(k, final_cells[k]) for k in final_cells]
+        final_cells.sort(key=lambda x: x[0][1])
+        pos_predicted = np.array([(kv[1][0]).pos for kv in final_cells])
 
-    # TODO
-    # This is currently very inefficient.
-    # We could probably better match the
-    # positions to each other
-    cost = np.sum(
-        [
-            (pos_predicted[i][:, :2] - pos_final[i]) ** 2
-            for i in range(len(pos_predicted))
-        ]
-    )
+        # TODO
+        # This is currently very inefficient.
+        # We could probably better match the
+        # positions to each other
+        cost = np.sum(
+            [
+                (pos_predicted[i][:, :2] - pos_final[i]) ** 2
+                for i in range(len(pos_predicted))
+            ]
+        )
 
     if out_path is not None:
         store_parameters(parameters, "param-costs.csv", out_path, cost)
@@ -435,6 +436,10 @@ if __name__ == "__main__":
         domain_size,
         potential_type,
     )
+
+    if cell_container is None:
+        print("Best fit does not produce valid result.")
+        exit()
 
     iterations = cell_container.get_all_iterations()
     agents_initial = cell_container.get_cells_at_iteration(iterations[0])
