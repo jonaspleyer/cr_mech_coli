@@ -160,7 +160,7 @@ if __name__ == "__main__":
             disp=True,
             tol=1e-4,
             recombination=0.3,
-            popsize=50,
+            popsize=200,
             polish=False,
         )
         final_cost = res.fun
