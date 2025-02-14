@@ -1,6 +1,16 @@
 Changelog
 #########
 
+cr_mech_coli 0.5.0 `(14.02.2025) <_static/changelog/0.5.0.diff>`_
+-----------------------------------------------------------------
+
+- Include `presentation <_static/presentation/index.html>`_ from Jeti Seminar 02.02.2025
+- Generalize Interaction to use either Morse or Mie Potential
+- First attempt at estimating parameters
+  `ref~692b7899 <https://github.com/jonaspleyer/cr_mech_coli/commit/692b78993b4738fc041ae15fa073e55d6e990b59>`_
+- Enhance scripts for fitting model to data
+- Extend `extract_positions` function
+
 cr_mech_coli 0.4.3 `(31.01.2025) <_static/changelog/0.4.3.diff>`_
 -----------------------------------------------------------------
 

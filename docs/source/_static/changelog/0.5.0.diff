@@ -1,0 +1,65 @@
+ .gitignore                                         |    2 +
+ Cargo.toml                                         |    2 +-
+ README.md                                          |    3 +-
+ cr_mech_coli/cr_mech_coli.pyi                      |   20 +
+ cr_mech_coli/fitting.py                            |   77 +-
+ .../09395645494836445480/images/000000200.png      |  Bin 3922048 -> 3922203 bytes
+ .../09395645494836445480/images/000000400.png      |  Bin 3922491 -> 3921990 bytes
+ .../09395645494836445480/images/000000600.png      |  Bin 3922712 -> 3922168 bytes
+ .../09395645494836445480/images/000000800.png      |  Bin 3921895 -> 3923663 bytes
+ .../09395645494836445480/images/000001000.png      |  Bin 3922893 -> 3922612 bytes
+ .../fitting-methods/extract_positions-000600.png   |  Bin 30867 -> 0 bytes
+ .../fitting-methods/extract_positions-001880.png   |  Bin 75784 -> 0 bytes
+ docs/source/_static/mechanics.png                  |  Bin 54642 -> 54859 bytes
+ .../presentation/Bacterial_morphology_diagram.svg  | 5120 ++++++++++++++++++++
+ .../_static/presentation/amir-et-al-2014.webp      |  Bin 0 -> 74854 bytes
+ .../growth-2-marked/image001042-marked.png         |  Bin 0 -> 149489 bytes
+ .../growth-2-marked/image001062-marked.png         |  Bin 0 -> 159601 bytes
+ .../growth-2-marked/image001082-marked.png         |  Bin 0 -> 206698 bytes
+ docs/source/_static/presentation/growth-2.mp4      |  Bin 0 -> 3151842 bytes
+ .../_static/presentation/growth-2/image001042.png  |  Bin 0 -> 105141 bytes
+ .../_static/presentation/growth-2/image001062.png  |  Bin 0 -> 110099 bytes
+ .../_static/presentation/growth-2/image001082.png  |  Bin 0 -> 143569 bytes
+ .../_static/presentation/growth-2/image001102.png  |  Bin 0 -> 151345 bytes
+ .../_static/presentation/growth-2/image001122.png  |  Bin 0 -> 190602 bytes
+ .../_static/presentation/growth-2/image001142.png  |  Bin 0 -> 215084 bytes
+ docs/source/_static/presentation/index.html        |  785 ++-
+ .../out-simple-script/images/000000100.png         |  Bin 0 -> 3921993 bytes
+ .../out-simple-script/images/000000200.png         |  Bin 0 -> 3921646 bytes
+ .../out-simple-script/images/000000300.png         |  Bin 0 -> 3921715 bytes
+ .../out-simple-script/images/000000400.png         |  Bin 0 -> 3922601 bytes
+ .../out-simple-script/images/000000500.png         |  Bin 0 -> 3922108 bytes
+ .../out-simple-script/images/000000600.png         |  Bin 0 -> 3922575 bytes
+ .../out-simple-script/images/000000700.png         |  Bin 0 -> 3921552 bytes
+ .../out-simple-script/images/000000800.png         |  Bin 0 -> 3921347 bytes
+ .../out-simple-script/images/000000900.png         |  Bin 0 -> 3922922 bytes
+ .../out-simple-script/images/000001000.png         |  Bin 0 -> 3923241 bytes
+ .../out-simple-script/masks/000000100.png          |  Bin 0 -> 10219 bytes
+ .../out-simple-script/masks/000000200.png          |  Bin 0 -> 10617 bytes
+ .../out-simple-script/masks/000000300.png          |  Bin 0 -> 11663 bytes
+ .../out-simple-script/masks/000000400.png          |  Bin 0 -> 11956 bytes
+ .../out-simple-script/masks/000000500.png          |  Bin 0 -> 12570 bytes
+ .../out-simple-script/masks/000000600.png          |  Bin 0 -> 13897 bytes
+ .../out-simple-script/masks/000000700.png          |  Bin 0 -> 16358 bytes
+ .../out-simple-script/masks/000000800.png          |  Bin 0 -> 18098 bytes
+ .../out-simple-script/masks/000000900.png          |  Bin 0 -> 20131 bytes
+ .../out-simple-script/masks/000001000.png          |  Bin 0 -> 23936 bytes
+ docs/source/conf.py                                |   52 +-
+ docs/source/fitting-methods.rst                    |    4 +-
+ plots/fitting_extract_positions.py                 |  227 +-
+ plots/param_estim_single_step.py                   |  229 -
+ plots/param_estimation_single_step/__init__.py     |    2 +
+ .../image001032-markers.csv                        |  576 +++
+ plots/param_estimation_single_step/image001032.png |  Bin 0 -> 100520 bytes
+ .../image001042-markers.csv                        |  576 +++
+ plots/param_estimation_single_step/image001042.png |  Bin 0 -> 105141 bytes
+ .../image001052-markers.csv                        |  576 +++
+ plots/param_estimation_single_step/image001052.png |  Bin 0 -> 108943 bytes
+ plots/param_estimation_single_step/main.py         |  299 ++
+ plots/param_estimation_single_step/plotting.py     |  162 +
+ plots/param_estimation_single_step/predict.py      |  160 +
+ plots/position_extraction_algorithm.py             |  106 +
+ src/fitting.rs                                     |  136 +
+ src/lib.rs                                         |    2 +
+ tests/test_create_potentials.py                    |   33 +
+ 64 files changed, 8622 insertions(+), 527 deletions(-)
