@@ -32,7 +32,6 @@ def plot_profile(
 
     pool_args = [(p, *args) for p in ps]
     y = pool.starmap(predict_flatten, pool_args)
-    # y = [predict_flatten(*pa) for pa in pool_args]
 
     (name, units, _) = param_info
     ax.set_title(name)

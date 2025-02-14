@@ -96,8 +96,8 @@ if __name__ == "__main__":
     img1 = imread(str(Path(__file__).parent / "image001042.png"))
     mask2 = np.loadtxt(Path(__file__).parent / "image001052-markers.csv", delimiter=",")
     img2 = imread(str(Path(__file__).parent / "image001052.png"))
-    n_vertices = 8
 
+    n_vertices = 8
     # pos0 = np.array(crm.extract_positions(mask0, n_vertices))
     pos1, lengths1, radii1 = crm.extract_positions(mask1, n_vertices)
     pos2, lengths2, radii2 = crm.extract_positions(mask2, n_vertices)
