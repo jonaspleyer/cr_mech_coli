@@ -8,9 +8,11 @@ import argparse
 
 
 def calculate_lengths_distances(args) -> tuple[list, list, list]:
-    cells_at_iteration, cell_container, colors, config = args
+    cells_at_iteration, cell_container, colors, config, skel_method = args
     mask = crm.render_mask(cells_at_iteration, colors, config.domain_size)
-    positions = np.array(crm.extract_positions(mask, n_vertices=n_vertices)[0])
+    positions = np.array(
+        crm.extract_positions(mask, n_vertices=n_vertices)[0], skel_method
+    )
 
     distances_i = []
     lengths_i_1 = []
@@ -42,9 +44,14 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "-n",
-        "-n-vertices",
+        "--n-vertices",
         type=int,
         default=8,
+    )
+    parser.add_argument(
+        "--skel-method",
+        default="lee",
+        help='Skeletonization method. Can be "lee" or "zhang"',
     )
     parser.add_argument("--skip-masks", action="store_true", default=False)
     parser.add_argument("--skip-graph", action="store_true", default=False)
@@ -99,7 +106,9 @@ if __name__ == "__main__":
             ),
         ]
         for iteration, mask in tqdm(iter_masks):
-            positions = crm.extract_positions(mask, n_vertices=n_vertices)[0]
+            positions = crm.extract_positions(
+                mask, n_vertices=n_vertices, skel_method=pyargs.skel_method
+            )[0]
             positions = np.round(np.array(positions))
             positions = np.array(positions, dtype=int).reshape(
                 (len(positions), -1, 1, 2)
@@ -140,7 +149,8 @@ if __name__ == "__main__":
             )
 
     arglist = [
-        (all_cells[n_iter], cell_container, colors, config) for n_iter in iterations
+        (all_cells[n_iter], cell_container, colors, config, pyargs.skel_method)
+        for n_iter in iterations
     ]
     results = [calculate_lengths_distances(a) for a in tqdm(arglist)]
     distances = [r[0] for r in results]
