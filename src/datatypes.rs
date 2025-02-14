@@ -248,7 +248,7 @@ impl CellContainer {
                 "Cannot assign CellIdentifier to counter {}",
                 counter
             )))?
-            .clone())
+            .copy())
     }
 
     /// Get the :class:`CellIdentifier` associated to the given counter.
