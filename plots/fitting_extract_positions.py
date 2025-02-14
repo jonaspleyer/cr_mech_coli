@@ -11,7 +11,7 @@ def calculate_lengths_distances(args) -> tuple[list, list, list]:
     cells_at_iteration, cell_container, colors, config, skel_method = args
     mask = crm.render_mask(cells_at_iteration, colors, config.domain_size)
     positions = np.array(
-        crm.extract_positions(mask, n_vertices=n_vertices)[0], skel_method
+        crm.extract_positions(mask, n_vertices=n_vertices, skel_method=skel_method)[0]
     )
 
     distances_i = []
