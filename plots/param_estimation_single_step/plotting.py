@@ -65,7 +65,7 @@ def _get_orthogonal_basis_by_cost(parameters, p0, costs, c0):
     dcs = costs - c0
 
     # Filter any values with smaller costs
-    filt = (dcs >= 0) * (dps > 0)
+    filt = (dcs >= 0) * (dps > 0) * np.isfinite(dps) * np.isfinite(dcs)
     ps = ps[filt]
     dps = dps[filt]
     dcs = dcs[filt]
