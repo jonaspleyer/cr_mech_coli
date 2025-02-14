@@ -33,7 +33,13 @@ def plot_profile(
     pool_args = [(p, *args) for p in ps]
     y = pool.starmap(predict_flatten, pool_args)
 
-    (name, units, _) = param_info
+    # Extend x and y by values from final_params and final cost
+    x = np.append(x, final_params[n])
+    y = np.append(y, final_cost)
+    sorter = np.argsort(x)
+    x = x[sorter]
+    y = y[sorter]
+
     ax.set_title(name)
     ax.set_ylabel("Cost function $L$")
     ax.set_xlabel(f"Parameter Value [${units}$]")
