@@ -52,6 +52,24 @@ if __name__ == "__main__":
         help="Skips Plotting of profiles for parameters",
         action="store_true",
     )
+    parser.add_argument(
+        "--skip-masks",
+        default=False,
+        help="Skips Plotting of masks and microscopic images",
+        action="store_true",
+    )
+    parser.add_argument(
+        "--skip-param-space",
+        default=False,
+        help="Skips visualization of parameter space",
+        action="store_true",
+    )
+    parser.add_argument(
+        "--skip-distributions",
+        default=False,
+        help="Skips plotting of distributions",
+        action="store_true",
+    )
     pyargs = parser.parse_args()
     potential_type = PotentialType(pyargs.potential_type)
     # potential_type: PotentialType = PotentialType.Mie
@@ -75,20 +93,7 @@ if __name__ == "__main__":
     rod_length_diffs = lengths2 - lengths1
     radii = (radii1 + radii2) / 2
 
-    print(f"{time.time() - interval:10.4f}s Generated initial plots")
-    interval = time.time()
-
-    figs_axs = [plt.subplots() for _ in range(4)]
-    figs_axs[0][1].imshow(img1)
-    figs_axs[0][1].set_axis_off()
-    figs_axs[1][1].imshow(img2)
-    figs_axs[1][1].set_axis_off()
-    figs_axs[2][1].imshow(mask1)
-    figs_axs[2][1].set_axis_off()
-    figs_axs[3][1].imshow(mask2)
-    figs_axs[3][1].set_axis_off()
-
-    print(f"{time.time() - interval:10.4f}s Generated initial plots")
+    print(f"{time.time() - interval:10.4f}s Loaded data and calculated initial values")
     interval = time.time()
 
     # Fix some parameters
@@ -234,27 +239,42 @@ if __name__ == "__main__":
     agents_initial = cell_container.get_cells_at_iteration(iterations[0])
     agents_predicted = cell_container.get_cells_at_iteration(iterations[-1])
 
-    mask_gen1 = crm.render_mask(
-        agents_initial, cell_container.cell_to_color, domain_size
-    )
-    mask_gen2 = crm.render_mask(
-        agents_predicted, cell_container.cell_to_color, domain_size
-    )
+    if not pyargs.skip_masks:
+        figs_axs = [plt.subplots() for _ in range(4)]
+        figs_axs[0][1].imshow(img1)
+        figs_axs[0][1].set_axis_off()
+        figs_axs[1][1].imshow(img2)
+        figs_axs[1][1].set_axis_off()
+        figs_axs[2][1].imshow(mask1)
+        figs_axs[2][1].set_axis_off()
+        figs_axs[3][1].imshow(mask2)
+        figs_axs[3][1].set_axis_off()
 
-    for p in pos1:
-        figs_axs[0][1].plot(p[:, 0], p[:, 1], color="white")
-    for agent, _ in agents_predicted.values():
-        p = agent.pos
-        figs_axs[1][1].plot(p[:, 0], p[:, 1], color="white")
+        for p in pos1:
+            figs_axs[0][1].plot(p[:, 0], p[:, 1], color="white")
+        for agent, _ in agents_predicted.values():
+            p = agent.pos
+            figs_axs[1][1].plot(p[:, 0], p[:, 1], color="white")
 
-    for i, (fig, _) in enumerate(figs_axs):
-        fig.tight_layout()
-        fig.savefig(f"{out}/microscopic-images-{i}.png")
+        for i, (fig, _) in enumerate(figs_axs):
+            fig.tight_layout()
+            fig.savefig(f"{out}/microscopic-images-{i}.png")
 
-    print(f"{time.time() - interval:10.4f} Rendered Masks")
-    interval = time.time()
+        mask_gen1 = crm.render_mask(
+            agents_initial, cell_container.cell_to_color, domain_size
+        )
+        mask_gen2 = crm.render_mask(
+            agents_predicted, cell_container.cell_to_color, domain_size
+        )
 
-    visualize_param_space(out, param_infos)
-    plot_distributions(agents_predicted, out)
+        print(f"{time.time() - interval:10.4f} Rendered Masks")
+        interval = time.time()
 
-    print(f"{time.time() - interval:10.4f} Visualized parameter space")
+    if not pyargs.skip_param_space:
+        visualize_param_space(out, param_infos, final_params, final_cost)
+        print(f"{time.time() - interval:10.4f} Visualized parameter space")
+        interval = time.time()
+
+    if not pyargs.skip_distributions:
+        plot_distributions(agents_predicted, out)
+        print(f"{time.time() - interval:10.4f} Plotted Distributions")
