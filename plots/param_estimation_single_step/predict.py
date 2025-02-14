@@ -15,8 +15,8 @@ class PotentialType(enum.Enum):
             return "mie"
 
 
-def reconstruct_morse_potential(parameters, radii, cutoff):
-    (damping, strength, potential_stiffness) = parameters
+def reconstruct_morse_potential(parameters, cutoff):
+    (*radii, damping, strength, potential_stiffness) = parameters
     interactions = [
         crm.MorsePotentialF32(
             radius=r,
@@ -29,8 +29,8 @@ def reconstruct_morse_potential(parameters, radii, cutoff):
     return (damping, interactions)
 
 
-def reconstruct_mie_potential(parameters, radii, cutoff):
-    (damping, strength, en, em) = parameters
+def reconstruct_mie_potential(parameters, cutoff):
+    (*radii, damping, strength, en, em) = parameters
     interactions = [
         crm.MiePotentialF32(
             radius=r,
@@ -50,15 +50,14 @@ def predict(
     cutoff,
     rigidity,
     rod_length_diffs,
-    radii,
     positions: np.ndarray,  # Shape (N, n_vertices, 3)
     domain_size: float,
     potential_type: PotentialType,
 ):
     if potential_type is PotentialType.Morse:
-        damping, interactions = reconstruct_morse_potential(parameters, radii, cutoff)
+        damping, interactions = reconstruct_morse_potential(parameters, cutoff)
     elif potential_type is PotentialType.Mie:
-        damping, interactions = reconstruct_mie_potential(parameters, radii, cutoff)
+        damping, interactions = reconstruct_mie_potential(parameters, cutoff)
 
     config = crm.Configuration(
         domain_size=domain_size,
@@ -113,7 +112,6 @@ def predict_flatten(
     cutoff,
     rigidity,
     rod_length_diffs,
-    radii,
     domain_size,
     pos_initial,
     pos_final,
@@ -125,7 +123,6 @@ def predict_flatten(
         cutoff,
         rigidity,
         rod_length_diffs,
-        radii,
         pos_initial,
         domain_size,
         potential_type,

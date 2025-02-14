@@ -119,7 +119,6 @@ if __name__ == "__main__":
         cutoff,
         rigidity,
         rod_length_diffs,
-        radii,
         domain_size,
         pos1,
         pos2,
@@ -135,12 +134,13 @@ if __name__ == "__main__":
     bounds = [
         [0.6, 3.0],  # Damping
         [0.5, 3.5],  # Strength
+        *[[4.0, 12.0]] * len(radii),  # Radii
     ]
 
     if potential_type is PotentialType.Morse:
         # Parameter Values
         potential_stiffness = 0.4
-        parameters = (damping, strength, potential_stiffness)
+        parameters = (*radii, damping, strength, potential_stiffness)
 
         # Constraints
         bounds.append([0.25, 0.55])  # Potential Stiffness
@@ -150,7 +150,7 @@ if __name__ == "__main__":
         # Parameter Values
         en = 6.0
         em = 5.5
-        parameters = (damping, strength, en, em)
+        parameters = (*radii, damping, strength, en, em)
 
         # Constraints
         bounds.append([0.2, 25.0])  # en
@@ -180,22 +180,27 @@ if __name__ == "__main__":
             workers=-1,
             updating="deferred",
             maxiter=20,
-            constraints=constraints,
+            # constraints=constraints,
             disp=True,
             tol=1e-4,
             recombination=0.3,
-            popsize=200,
+            popsize=50,
             polish=False,
+            rng=0,
         )
         final_cost = res.fun
         final_params = res.x
-        print(f"{time.time() - interval:10.4f}s Finished Parameter Optimization")
         # Store information in file
         store_parameters(final_params, filename, out, final_cost)
+        print(f"{time.time() - interval:10.4f}s Finished Parameter Optimization")
 
     interval = time.time()
 
     param_infos = [
+        *[
+            (f"Radius {i}", "\\SI{}{\\micro\\metre}", f"r_{{{i}}}")
+            for i in range(len(radii))
+        ],
         ("Damping", "\\SI{}{\\per\\min}", "\\lambda"),
         ("Strength", "\\SI{}{\\micro\\metre^2\\per\\min^2}", "C"),
     ]
@@ -234,7 +239,6 @@ if __name__ == "__main__":
         cutoff,
         rigidity,
         rod_length_diffs,
-        radii,
         pos1,
         domain_size,
         potential_type,
