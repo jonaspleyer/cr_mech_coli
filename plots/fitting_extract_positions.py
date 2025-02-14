@@ -4,8 +4,7 @@ import cv2 as cv
 from pathlib import Path
 import matplotlib.pyplot as plt
 from tqdm import tqdm
-
-N_VERTICES = 8
+import argparse
 
 
 def calculate_lengths_distances(args) -> tuple[list, list, list]:
@@ -38,6 +37,19 @@ def calculate_lengths_distances(args) -> tuple[list, list, list]:
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(
+        description="Plot comparison between exact and extracted positions",
+    )
+    parser.add_argument(
+        "-n",
+        "-n-vertices",
+        type=int,
+        default=8,
+    )
+    pyargs = parser.parse_args()
+
+    n_vertices = pyargs.n_vertices
+
     config = crm.Configuration(
         t0=0.0,
         dt=0.1,
@@ -48,7 +60,7 @@ if __name__ == "__main__":
     )
     agent_settings = crm.AgentSettings(
         growth_rate=0.05,
-        n_vertices=N_VERTICES,
+        n_vertices=n_vertices,
     )
     agent_settings.mechanics.rigidity = 2.0
     config.domain_height = 0.2
@@ -83,7 +95,7 @@ if __name__ == "__main__":
         ),
     ]
     for iteration, mask in tqdm(iter_masks):
-        positions = crm.extract_positions(mask, n_vertices=N_VERTICES)
+        positions = crm.extract_positions(mask, n_vertices=n_vertices)
         positions = np.round(np.array(positions))
         positions = np.array(positions, dtype=int).reshape((len(positions), -1, 1, 2))
 
