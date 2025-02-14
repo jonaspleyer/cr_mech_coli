@@ -53,7 +53,7 @@ def predict(
     positions: np.ndarray,  # Shape (N, n_vertices, 3)
     domain_size: float,
     potential_type: PotentialType,
-    out_path: Path | None,
+    out_path: Path | None = None,
 ):
     if potential_type is PotentialType.Morse:
         damping, interactions = reconstruct_morse_potential(parameters, cutoff)
