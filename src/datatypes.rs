@@ -10,7 +10,7 @@ use crate::counter_to_color;
 pub struct CellContainer {
     /// Contains snapshots of all cells at each saved step
     #[pyo3(get)]
-    pub cells: HashMap<u64, HashMap<CellIdentifier, (PyObject, Option<CellIdentifier>)>>,
+    pub cells: HashMap<u64, HashMap<CellIdentifier, (crate::RodAgent, Option<CellIdentifier>)>>,
     /// Maps each cell to its parent if existent
     #[pyo3(get)]
     pub parent_map: HashMap<CellIdentifier, Option<CellIdentifier>>,
@@ -30,7 +30,7 @@ impl CellContainer {
     /// Constructs a new :class:`CellContainer` from the history of objects.
     #[new]
     pub fn new(
-        all_cells: HashMap<u64, HashMap<CellIdentifier, (PyObject, Option<CellIdentifier>)>>,
+        all_cells: HashMap<u64, HashMap<CellIdentifier, (crate::RodAgent, Option<CellIdentifier>)>>,
     ) -> pyo3::PyResult<Self> {
         let cells = all_cells;
         let cell_container = Self {
@@ -87,7 +87,7 @@ impl CellContainer {
     ///     every iteration.
     pub fn get_cells(
         &self,
-    ) -> HashMap<u64, HashMap<CellIdentifier, (PyObject, Option<CellIdentifier>)>> {
+    ) -> HashMap<u64, HashMap<CellIdentifier, (crate::RodAgent, Option<CellIdentifier>)>> {
         self.cells.clone()
     }
 
@@ -103,7 +103,7 @@ impl CellContainer {
     pub fn get_cells_at_iteration(
         &self,
         iteration: u64,
-    ) -> HashMap<CellIdentifier, (PyObject, Option<CellIdentifier>)> {
+    ) -> HashMap<CellIdentifier, (crate::RodAgent, Option<CellIdentifier>)> {
         self.cells
             .get(&iteration)
             .cloned()
@@ -121,7 +121,7 @@ impl CellContainer {
     pub fn get_cell_history(
         &self,
         identifier: CellIdentifier,
-    ) -> (HashMap<u64, PyObject>, Option<CellIdentifier>) {
+    ) -> (HashMap<u64, crate::RodAgent>, Option<CellIdentifier>) {
         let mut parent = None;
         let hist = self
             .cells

@@ -339,64 +339,62 @@ pub fn run_simulation_with_agents(
     config: &Configuration,
     agents: Vec<RodAgent>,
 ) -> pyo3::PyResult<CellContainer> {
-    Python::with_gil(|py| {
-        // TODO after initializing this state, we need to check that it is actually valid
-        let t0 = config.t0;
-        let dt = config.dt;
-        let t_max = config.t_max;
-        let save_interval = config.save_interval;
-        let time = FixedStepsize::from_partial_save_interval(t0, dt, t_max, save_interval)
-            .map_err(SimulationError::from)?;
-        let storage = StorageBuilder::new().priority([StorageOption::Memory]);
-        let settings = Settings {
-            n_threads: config.n_threads,
-            time,
-            storage,
-            show_progressbar: config.show_progressbar,
-        };
-
-        let mut domain = CartesianCuboid::from_boundaries_and_n_voxels(
-            [0.0; 3],
-            [config.domain_size, config.domain_size, config.domain_height],
-            [config.n_voxels, config.n_voxels, 1],
-        )
+    // TODO after initializing this state, we need to check that it is actually valid
+    let t0 = config.t0;
+    let dt = config.dt;
+    let t_max = config.t_max;
+    let save_interval = config.save_interval;
+    let time = FixedStepsize::from_partial_save_interval(t0, dt, t_max, save_interval)
         .map_err(SimulationError::from)?;
-        domain.rng_seed = config.rng_seed;
-        let domain = CartesianCuboidRods { domain };
+    let storage = StorageBuilder::new().priority([StorageOption::Memory]);
+    let settings = Settings {
+        n_threads: config.n_threads,
+        time,
+        storage,
+        show_progressbar: config.show_progressbar,
+    };
 
-        test_compatibility!(
-            aspects: [Mechanics, Interaction, Cycle],
-            domain: domain,
-            agents: agents,
-            settings: settings,
-        );
-        let storage = run_main!(
-            agents: agents,
-            domain: domain,
-            settings: settings,
-            aspects: [Mechanics, Interaction, Cycle],
-            zero_force_default: |c: &RodAgent| {
-                nalgebra::MatrixXx3::zeros(c.mechanics.pos().nrows())
-            },
-        )?;
-        let cells = storage
-            .cells
-            .load_all_elements()
-            .unwrap()
-            .into_iter()
-            .map(|(iteration, cells)| {
-                (
-                    iteration,
-                    cells
-                        .into_iter()
-                        .map(|(ident, (cbox, _))| (ident, (cbox.cell.into_py(py), cbox.parent)))
-                        .collect(),
-                )
-            })
-            .collect();
+    let mut domain = CartesianCuboid::from_boundaries_and_n_voxels(
+        [0.0; 3],
+        [config.domain_size, config.domain_size, config.domain_height],
+        [config.n_voxels, config.n_voxels, 1],
+    )
+    .map_err(SimulationError::from)?;
+    domain.rng_seed = config.rng_seed;
+    let domain = CartesianCuboidRods { domain };
 
-        CellContainer::new(cells)
-    })
+    test_compatibility!(
+        aspects: [Mechanics, Interaction, Cycle],
+        domain: domain,
+        agents: agents,
+        settings: settings,
+    );
+    let storage = run_main!(
+        agents: agents,
+        domain: domain,
+        settings: settings,
+        aspects: [Mechanics, Interaction, Cycle],
+        zero_force_default: |c: &RodAgent| {
+            nalgebra::MatrixXx3::zeros(c.mechanics.pos().nrows())
+        },
+    )?;
+    let cells = storage
+        .cells
+        .load_all_elements()
+        .unwrap()
+        .into_iter()
+        .map(|(iteration, cells)| {
+            (
+                iteration,
+                cells
+                    .into_iter()
+                    .map(|(ident, (cbox, _))| (ident, (cbox.cell, cbox.parent)))
+                    .collect(),
+            )
+        })
+        .collect();
+
+    CellContainer::new(cells)
 }
 
 /// Use the :func:`run_simulation_with_agents`
