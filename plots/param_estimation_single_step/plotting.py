@@ -40,9 +40,10 @@ def plot_profile(
     x = x[sorter]
     y = y[sorter]
 
+    (name, units, short) = param_info
     ax.set_title(name)
     ax.set_ylabel("Cost function $L$")
-    ax.set_xlabel(f"Parameter Value [${units}$]")
+    ax.set_xlabel(f"${short}$ $[{units}]$")
     ax.scatter(
         final_params[n],
         final_cost,
