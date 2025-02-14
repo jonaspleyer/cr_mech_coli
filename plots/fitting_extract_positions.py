@@ -10,7 +10,7 @@ import argparse
 def calculate_lengths_distances(args) -> tuple[list, list, list]:
     cells_at_iteration, cell_container, colors, config = args
     mask = crm.render_mask(cells_at_iteration, colors, config.domain_size)
-    positions = np.array(crm.extract_positions(mask, n_vertices=N_VERTICES))
+    positions = np.array(crm.extract_positions(mask, n_vertices=n_vertices)[0])
 
     distances_i = []
     lengths_i_1 = []
@@ -99,7 +99,7 @@ if __name__ == "__main__":
             ),
         ]
         for iteration, mask in tqdm(iter_masks):
-            positions = crm.extract_positions(mask, n_vertices=n_vertices)
+            positions = crm.extract_positions(mask, n_vertices=n_vertices)[0]
             positions = np.round(np.array(positions))
             positions = np.array(positions, dtype=int).reshape(
                 (len(positions), -1, 1, 2)
