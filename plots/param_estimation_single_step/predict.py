@@ -53,6 +53,7 @@ def predict(
     positions: np.ndarray,  # Shape (N, n_vertices, 3)
     domain_size: float,
     potential_type: PotentialType,
+    out_path: Path | None,
 ):
     if potential_type is PotentialType.Morse:
         damping, interactions = reconstruct_morse_potential(parameters, cutoff)
@@ -92,7 +93,10 @@ def predict(
     try:
         return crm.run_simulation_with_agents(config, agents)
     except ValueError as e:
-        print(f"{e}\nParameters used were:\n{parameters}")
+        if out_path is not None:
+            with open(out_path / "logs.txt", "a+") as f:
+                message = f"Error DURING SIMULATION\n{e}\nPARAMETERS:\n[{','.join(parameters)}]\n"
+                f.write(message)
         return None
 
 
@@ -126,6 +130,7 @@ def predict_flatten(
         pos_initial,
         domain_size,
         potential_type,
+        out_path,
     )
 
     if cell_container is None:
