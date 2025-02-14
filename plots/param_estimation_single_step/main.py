@@ -2,6 +2,10 @@ from cv2 import imread
 import cr_mech_coli as crm
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib as mpl
+
+mpl.use("pgf")
+
 import scipy as sp
 import time
 from pathlib import Path
@@ -10,6 +14,15 @@ import argparse
 
 from plotting import plot_profile, plot_distributions, visualize_param_space
 from predict import predict_flatten, predict, store_parameters, PotentialType
+
+plt.rcParams.update(
+    {
+        "font.family": "serif",  # use serif/main font for text elements
+        "text.usetex": True,  # use inline math for ticks
+        "pgf.rcfonts": False,  # don't setup fonts from rc parameters
+        "pgf.preamble": "\\usepackage{siunitx}",  # load additional packages
+    }
+)
 
 
 # Create folder to store output
@@ -183,17 +196,13 @@ if __name__ == "__main__":
     interval = time.time()
 
     param_infos = [
-        # *[
-        #     (f"Growth Rate {i}", "\\mu m\\text{min}^{-1}", f"\\mu_{{{i}}}")
-        #     for i in range(pos1.shape[0])
-        # ],
-        # ("Rigidity", "\\mu m\\text{min}^{-1}"),
-        ("Damping", "\\text{min}^{-1}", "\\lambda"),
-        # ("Radius", "\\mu m", "r"),
-        ("Strength", "\\mu m^2\\text{min}^{-2}", "C"),
+        ("Damping", "\\SI{}{\\per\\min}", "\\lambda"),
+        ("Strength", "\\SI{}{\\micro\\metre^2\\per\\min^2}", "C"),
     ]
     if potential_type is PotentialType.Morse:
-        param_infos.append(("Potential Stiffness", "\\mu m", "\\lambda"))
+        param_infos.append(
+            ("Potential Stiffness", "\\SI{}{\\micro\\metre}", "\\lambda")
+        )
     elif potential_type is PotentialType.Mie:
         param_infos.append(("Exponent n", "1", "n"))
         param_infos.append(("Exponent m", "1", "m"))

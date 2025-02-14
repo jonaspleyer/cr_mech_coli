@@ -132,7 +132,7 @@ def plot_distributions(agents_predicted, out: Path):
         label="Growth Rates",
         hatch=".",
     )
-    ax.set_xlabel("Growth Rate [$\\mu\\text{min}^{-1}$]")
+    ax.set_xlabel("Growth Rate [$\\SI{}{\\micro\\metre\\per\\min}$]")
     ax.set_ylabel("Count")
 
     radii = np.array([a.radius for a in agents])
@@ -144,7 +144,7 @@ def plot_distributions(agents_predicted, out: Path):
         alpha=0.5,
         label="Radii",
     )
-    ax2.set_xlabel("Interaction Thickness [$\\mu m$]")
+    ax2.set_xlabel("Radius [$\\SI{}{\\micro\\metre}$]")
     fig.legend(loc="upper right", bbox_to_anchor=(1, 1), bbox_transform=ax.transAxes)
     fig.savefig(out / "growth_rates_lengths_distribution.png")
     fig.clf()
