@@ -95,7 +95,8 @@ def predict(
     except ValueError as e:
         if out_path is not None:
             with open(out_path / "logs.txt", "a+") as f:
-                message = f"Error DURING SIMULATION\n{e}\nPARAMETERS:\n[{','.join(parameters)}]\n"
+                params_fmt = ",".join([f"{p}" for p in parameters])
+                message = f"Error DURING SIMULATION\n{e}\nPARAMETERS:\n[{params_fmt}]\n"
                 f.write(message)
         return None
 
