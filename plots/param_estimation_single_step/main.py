@@ -43,7 +43,7 @@ def get_out_folder(iteration: int | None, potential_type: PotentialType) -> Path
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description="Fits a single time step to parameters"
+        description="Fits the Bacterial Rods model to a system of cells."
     )
     parser.add_argument(
         "-i",
