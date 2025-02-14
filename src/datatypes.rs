@@ -1,12 +1,13 @@
 use cellular_raza::prelude::CellIdentifier;
 use pyo3::prelude::*;
+use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
 use crate::counter_to_color;
 
 /// Manages all information resulting from an executed simulation
 #[pyclass]
-#[derive(Clone)]
+#[derive(Clone, Deserialize, Serialize)]
 pub struct CellContainer {
     /// Contains snapshots of all cells at each saved step
     #[pyo3(get)]
@@ -264,5 +265,21 @@ impl CellContainer {
             "No CellIdentifier {:?} in map",
             identifier
         )))
+    }
+
+    /// Serializes the :class:`CellContainer` into json format.
+    pub fn serialize(&self) -> pyo3::PyResult<Vec<u8>> {
+        let res: Vec<u8> = serde_pickle::to_vec(&self.cells, Default::default())
+            // let res: String = serde_json::to_string(&self)
+            .map_err(|e| pyo3::exceptions::PyValueError::new_err(format!("{e}")))?;
+        Ok(res)
+    }
+
+    /// Deserializes the :class`CellContainer` from a json string.
+    #[staticmethod]
+    pub fn deserialize(value: Vec<u8>) -> pyo3::PyResult<Self> {
+        let cells = serde_pickle::from_slice(&value, Default::default())
+            .map_err(|e| pyo3::exceptions::PyValueError::new_err(format!("serde({e})")))?;
+        CellContainer::new(cells)
     }
 }
