@@ -59,6 +59,7 @@ if __name__ == "__main__":
         default=PotentialType.Mie,
         help="The interaction potential to use. Can be 0 for Morse or 1 for Mie.",
     )
+    parser.add_argument("-w", type=int, default=-1, help="Number of threads")
     parser.add_argument(
         "--skip-profiles",
         default=False,
@@ -177,7 +178,7 @@ if __name__ == "__main__":
             bounds=bounds,
             x0=parameters,
             args=args_predict,
-            workers=-1,
+            workers=pyargs.workers,
             updating="deferred",
             maxiter=50,
             # constraints=constraints,
@@ -214,7 +215,10 @@ if __name__ == "__main__":
 
     # Plot Cost function against varying parameters
     if not pyargs.skip_profiles:
-        pool = mp.Pool()
+        if pyargs.workers < 0:
+            pool = mp.Pool()
+        else:
+            pool = mp.Pool(pyargs.workers)
         for n, (p, bound) in enumerate(zip(final_params, bounds)):
             f_a = None
             f_a = plot_profile(
