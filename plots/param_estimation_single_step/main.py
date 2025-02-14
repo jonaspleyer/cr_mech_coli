@@ -132,9 +132,9 @@ if __name__ == "__main__":
 
     # Bounds
     bounds = [
-        [0.6, 3.0],  # Damping
-        [0.5, 3.5],  # Strength
         *[[4.0, 12.0]] * len(radii),  # Radii
+        [0.6, 2.5],  # Damping
+        [1.0, 4.5],  # Strength
     ]
 
     if potential_type is PotentialType.Morse:
@@ -179,12 +179,12 @@ if __name__ == "__main__":
             args=args_predict,
             workers=-1,
             updating="deferred",
-            maxiter=20,
+            maxiter=50,
             # constraints=constraints,
             disp=True,
             tol=1e-4,
             recombination=0.3,
-            popsize=50,
+            popsize=100,
             polish=False,
             rng=0,
         )
