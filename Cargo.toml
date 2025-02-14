@@ -20,6 +20,6 @@ pyo3 = { version = "0.22", features = ["serde", "py-clone"] }
 rand = { version = "0.8.5", features = ["serde", "serde1"] }
 rand_chacha = { version = "0.3.1", features = ["serde"] }
 rayon = "1.10.0"
-serde = { version = "1.0.210", features = ["derive"] }
+serde = { version = "1.0", features = ["derive"] }
 serde-pickle = "1.2"
 serde_json = { version = "1.0.128", features = ["arbitrary_precision", "float_roundtrip", "preserve_order", "std"] }
