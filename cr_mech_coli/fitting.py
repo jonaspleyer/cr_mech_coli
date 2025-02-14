@@ -82,8 +82,10 @@ def extract_positions(
             pixel values of a mask for multiple cells.
         n_vertices(int): Number of vertices which should be extracted from each given cell-mask.
     Returns:
-        list[np.ndarray]: A list containing arrays of shape :code:`(n_vertices, 2)` containing the
-            individual positions of the cells.
+        tuple[np.ndarray]: A tuple containing
+        1. Array :code:`(n_agents, n_vertices, 2)` containing the positions of the cells
+        2. Array :code:`(n_agents)` containing the lengths of the rods
+        3. Array :code:`(n_agents)` containing rough approximate radii of the cells
     """
     from .cr_mech_coli import _sort_points
 
