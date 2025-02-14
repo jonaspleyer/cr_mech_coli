@@ -59,7 +59,9 @@ if __name__ == "__main__":
         default=PotentialType.Mie,
         help="The interaction potential to use. Can be 0 for Morse or 1 for Mie.",
     )
-    parser.add_argument("-w", type=int, default=-1, help="Number of threads")
+    parser.add_argument(
+        "-w", "--workers", type=int, default=-1, help="Number of threads"
+    )
     parser.add_argument(
         "--skip-profiles",
         default=False,
