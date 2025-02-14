@@ -58,17 +58,19 @@ def plot_profile(
 
 
 def _get_orthogonal_basis_by_cost(parameters, p0, costs, c0):
-    ps = parameters - p0
+    ps = parameters / p0 - 1
     # Calculate geometric mean of differences
     # dps = np.abs(ps).prod(axis=1) ** (1.0 / ps.shape[1])
     dps = np.linalg.norm(ps, axis=1)
     dcs = costs - c0
+    ps_norms = np.linalg.norm(ps, axis=1)
 
     # Filter any values with smaller costs
     filt = (dcs >= 0) * (dps > 0) * np.isfinite(dps) * np.isfinite(dcs)
     ps = ps[filt]
     dps = dps[filt]
     dcs = dcs[filt]
+    ps_norms = ps_norms[filt]
 
     # Calculate gradient of biggest cost
     dcs_dps = dcs / dps
@@ -81,7 +83,7 @@ def _get_orthogonal_basis_by_cost(parameters, p0, costs, c0):
         ortho = ps
         for b in basis:
             ortho = ortho - np.outer(np.sum(ortho * b, axis=1) / np.sum(b**2), b)
-        factors = np.linalg.norm(ortho, axis=1) / np.linalg.norm(ps, axis=1)
+        factors = np.linalg.norm(ortho, axis=1) / ps_norms
         dcs *= factors
         dcs_dps = dcs / dps
         ind = np.argmax(dcs_dps)
