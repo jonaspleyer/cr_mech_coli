@@ -304,14 +304,14 @@ if __name__ == "__main__":
             agents_predicted, cell_container.cell_to_color, domain_size
         )
 
-        print(f"{time.time() - interval:10.4f} Rendered Masks")
+        print(f"{time.time() - interval:10.4f}s Rendered Masks")
         interval = time.time()
 
     if not pyargs.skip_param_space:
         visualize_param_space(out, param_infos, final_params, final_cost)
-        print(f"{time.time() - interval:10.4f} Visualized parameter space")
+        print(f"{time.time() - interval:10.4f}s Visualized parameter space")
         interval = time.time()
 
     if not pyargs.skip_distributions:
         plot_distributions(agents_predicted, out)
-        print(f"{time.time() - interval:10.4f} Plotted Distributions")
+        print(f"{time.time() - interval:10.4f}s Plotted Distributions")
