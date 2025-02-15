@@ -3,6 +3,7 @@ import cr_mech_coli as crm
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib as mpl
+from glob import glob
 
 mpl.use("pgf")
 
@@ -63,6 +64,11 @@ if __name__ == "__main__":
         "-w", "--workers", type=int, default=-1, help="Number of threads"
     )
     parser.add_argument(
+        "-d",
+        "--data",
+        help="Directory containing initial and final snapshots with masks.",
+    )
+    parser.add_argument(
         "--skip-profiles",
         default=False,
         help="Skips Plotting of profiles for parameters",
@@ -93,15 +99,27 @@ if __name__ == "__main__":
     out = get_out_folder(pyargs.iteration, potential_type)
 
     interval = time.time()
-    mask0 = np.loadtxt(Path(__file__).parent / "image001032-markers.csv", delimiter=",")
-    img0 = imread(str(Path(__file__).parent / "image001032.png"))
-    mask1 = np.loadtxt(Path(__file__).parent / "image001042-markers.csv", delimiter=",")
-    img1 = imread(str(Path(__file__).parent / "image001042.png"))
-    mask2 = np.loadtxt(Path(__file__).parent / "image001052-markers.csv", delimiter=",")
-    img2 = imread(str(Path(__file__).parent / "image001052.png"))
+
+    if pyargs.data is None:
+        dirs = sorted(glob("data/*"))
+        if len(dirs) == 0:
+            raise ValueError('Could not find any directory inside "./data/"')
+        data_dir = Path(dirs[0])
+    else:
+        data_dir = Path(pyargs.data)
+    files_images = sorted(glob(str(data_dir / "images/*")))
+    files_masks = sorted(glob(str(data_dir / "masks/*.csv")))
+
+    img1 = imread(files_images[0])
+    img2 = imread(files_images[1])
+
+    mask1 = np.loadtxt(files_masks[0], delimiter=",")
+    mask2 = np.loadtxt(files_masks[1], delimiter=",")
+
+    print(f"{time.time() - interval:10.4f}s Loaded data")
+    interval = time.time()
 
     n_vertices = 8
-    # pos0 = np.array(crm.extract_positions(mask0, n_vertices))
     pos1, lengths1, radii1 = crm.extract_positions(mask1, n_vertices)
     pos2, lengths2, radii2 = crm.extract_positions(mask2, n_vertices)
 
@@ -109,7 +127,7 @@ if __name__ == "__main__":
     rod_length_diffs = lengths2 - lengths1
     radii = (radii1 + radii2) / 2
 
-    print(f"{time.time() - interval:10.4f}s Loaded data and calculated initial values")
+    print(f"{time.time() - interval:10.4f}s Calculated initial values")
     interval = time.time()
 
     # Fix some parameters
