@@ -1,6 +1,16 @@
 import cr_mech_coli as crm
 import matplotlib.pyplot as plt
 from pathlib import Path
+import multiprocessing as mp
+
+
+def render_single_mask(n_iter: int, cell_container: str, domain_size, render_settings):
+    cell_container = crm.CellContainer.deserialize(cell_container)
+    cells_at_iter = cell_container.get_cells_at_iteration(n_iter)
+    colors = cell_container.cell_to_color
+    res = crm.render_mask(cells_at_iter, colors, domain_size, render_settings)
+    return res
+
 
 if __name__ == "__main__":
     config = crm.Configuration()
@@ -13,12 +23,13 @@ if __name__ == "__main__":
     agent_settings = crm.AgentSettings(growth_rate=0.05)
     cell_container = crm.run_simulation(config, agent_settings)
 
-    all_cells = cell_container.get_cells()
     iterations = cell_container.get_all_iterations()
-    colors = cell_container.cell_to_color
+
+    pool = mp.Pool()
 
     rs = crm.RenderSettings(resolution=800)
-    masks = [crm.render_mask(config, all_cells[i], colors, render_settings=rs) for i in iterations]
+    args = [(i, cell_container.serialize(), config.domain_size, rs) for i in iterations]
+    masks = pool.starmap(render_single_mask, args)
 
     penalties_area_diff = [
         crm.penalty_area_diff(masks[i-1], masks[i]) / config.save_interval
