@@ -1,6 +1,7 @@
 import cr_mech_coli as crm
 import matplotlib.pyplot as plt
 from pathlib import Path
+import time
 import multiprocessing as mp
 
 
@@ -25,16 +26,22 @@ if __name__ == "__main__":
 
     iterations = cell_container.get_all_iterations()
 
+    interval = time.time()
     pool = mp.Pool()
 
     rs = crm.RenderSettings(resolution=800)
     args = [(i, cell_container.serialize(), config.domain_size, rs) for i in iterations]
     masks = pool.starmap(render_single_mask, args)
+    print(f"{time.time() - interval:8.4} Calculated Masks:")
+    interval = time.time()
 
     penalties_area_diff = [
         crm.penalty_area_diff(masks[i-1], masks[i]) / config.save_interval
         for i in range(1, len(iterations))
     ]
+    print(f"{time.time() - interval:8.4} Calculated Penalties without parents:")
+    interval = time.time()
+
     penalties_parents = [
         crm.penalty_area_diff_account_parents(masks[i-1], masks[i], cell_container, 0) /
             config.save_interval
@@ -45,6 +52,8 @@ if __name__ == "__main__":
         for i in iterations
     ]
     x = [i * config.save_interval for i in range(len(iterations))]
+    print(f"{time.time() - interval:8.4} Calculated Penalties with parents:")
+    interval = time.time()
 
     fig, ax1 = plt.subplots()
     ax1.plot(x[1:], penalties_area_diff, label="Area Difference", linestyle=":", color="k")
@@ -60,4 +69,5 @@ if __name__ == "__main__":
     path = Path("docs/source/_static/fitting-methods/")
     path.mkdir(parents=True, exist_ok=True)
     fig.savefig(str(path / "penalty-time-flow.png"))
+    print(f"{time.time() - interval:8.4} Plotted Results")
     plt.show()
