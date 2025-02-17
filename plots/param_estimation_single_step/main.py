@@ -265,6 +265,7 @@ and can lead to problems within the numerical solver."
                 out,
                 pool,
                 f_a,
+                steps=40,
             )
             fig, _ = f_a
             plt.close(fig)
