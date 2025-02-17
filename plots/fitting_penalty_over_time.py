@@ -7,6 +7,16 @@ import scipy as sp
 import numpy as np
 
 
+plt.rcParams.update(
+    {
+        "font.family": "serif",  # use serif/main font for text elements
+        "text.usetex": True,  # use inline math for ticks
+        "pgf.rcfonts": False,  # don't setup fonts from rc parameters
+        "pgf.preamble": "\\usepackage{siunitx}",  # load additional packages
+    }
+)
+
+
 def render_single_mask(n_iter: int, cell_container: str, domain_size, render_settings):
     cell_container = crm.CellContainer.deserialize(cell_container)
     cells_at_iter = cell_container.get_cells_at_iteration(n_iter)
@@ -64,8 +74,20 @@ if __name__ == "__main__":
     )
 
     fig, ax1 = plt.subplots()
-    ax1.plot(x[1:], penalties_area_diff, label="Area Difference", linestyle=":", color="k")
-    ax1.plot(x[1:], penalties_parents, label="Account for Parents", linestyle="-.", color="k")
+    ax1.plot(
+        x[1:],
+        penalties_area_diff,
+        label="Area Difference",
+        linestyle=(0, (6, 4)),
+        color="gray",
+    )
+    ax1.plot(
+        x[1:],
+        penalties_parents,
+        label="Account for Parents",
+        linestyle="-",
+        color="k",
+    )
     ax1.fill_between(
         x[1:],
         exponential(x[1:], *[popt[i] - pcov[i][i] ** 0.5 for i in range(len(popt))]),
@@ -77,9 +99,12 @@ if __name__ == "__main__":
     ax1.set_xlabel("Time [min]")
     ax1.set_ylabel("Penalty [1/min]")
     ax2 = ax1.twinx()
-    ax2.plot(x, n_cells, label="Number of Cells", linestyle=(0, (5, 7)), color="gray")
+    ax2.plot(x, n_cells, label="Number of Cells", linestyle=(0, (1, 1)), color="k")
     ax2.legend(loc="upper right")
     ax2.set_ylabel("Number of Cells")
+    ax2.set_ylim(1, 100)
+    ax1.set_yscale("log")
+    ax2.set_yscale("log")
     fig.tight_layout()
     path = Path("docs/source/_static/fitting-methods/")
     path.mkdir(parents=True, exist_ok=True)
