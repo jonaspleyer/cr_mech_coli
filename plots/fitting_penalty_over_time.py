@@ -3,6 +3,8 @@ import matplotlib.pyplot as plt
 from pathlib import Path
 import time
 import multiprocessing as mp
+import scipy as sp
+import numpy as np
 
 
 def render_single_mask(n_iter: int, cell_container: str, domain_size, render_settings):
@@ -51,11 +53,26 @@ if __name__ == "__main__":
     interval = time.time()
 
     n_cells = [len(cell_container.get_cells_at_iteration(i)) for i in iterations]
-    x = [i * config.save_interval for i in range(len(iterations))]
+    x = np.array([i * config.save_interval for i in range(len(iterations))])
+
+    # Fit exponential function to penalties with parents
+    def exponential(x, A, growth):
+        return A * np.exp(growth * x)
+
+    popt, pcov = sp.optimize.curve_fit(
+        exponential, x[1:], penalties_parents, p0=(0.1, agent_settings.growth_rate)
+    )
 
     fig, ax1 = plt.subplots()
     ax1.plot(x[1:], penalties_area_diff, label="Area Difference", linestyle=":", color="k")
     ax1.plot(x[1:], penalties_parents, label="Account for Parents", linestyle="-.", color="k")
+    ax1.fill_between(
+        x[1:],
+        exponential(x[1:], *[popt[i] - pcov[i][i] ** 0.5 for i in range(len(popt))]),
+        exponential(x[1:], *[popt[i] + pcov[i][i] ** 0.5 for i in range(len(popt))]),
+        label="Fit $A e^{{\\lambda t}}$",
+        color=(0.85, 0.85, 0.85),
+    )
     ax1.legend(loc="upper left")
     ax1.set_xlabel("Time [min]")
     ax1.set_ylabel("Penalty [1/min]")
