@@ -36,24 +36,22 @@ if __name__ == "__main__":
     interval = time.time()
 
     penalties_area_diff = [
-        crm.penalty_area_diff(masks[i-1], masks[i]) / config.save_interval
+        crm.penalty_area_diff(masks[i - 1], masks[i]) / config.save_interval
         for i in range(1, len(iterations))
     ]
     print(f"{time.time() - interval:8.4} Calculated Penalties without parents:")
     interval = time.time()
 
     penalties_parents = [
-        crm.penalty_area_diff_account_parents(masks[i-1], masks[i], cell_container, 0) /
-            config.save_interval
+        crm.penalty_area_diff_account_parents(masks[i - 1], masks[i], cell_container, 0)
+        / config.save_interval
         for i in range(1, len(iterations))
     ]
-    n_cells = [
-        len(cell_container.get_cells_at_iteration(i))
-        for i in iterations
-    ]
-    x = [i * config.save_interval for i in range(len(iterations))]
     print(f"{time.time() - interval:8.4} Calculated Penalties with parents:")
     interval = time.time()
+
+    n_cells = [len(cell_container.get_cells_at_iteration(i)) for i in iterations]
+    x = [i * config.save_interval for i in range(len(iterations))]
 
     fig, ax1 = plt.subplots()
     ax1.plot(x[1:], penalties_area_diff, label="Area Difference", linestyle=":", color="k")
