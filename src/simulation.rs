@@ -273,6 +273,27 @@ impl Configuration {
         hasher.write(json_string.as_bytes());
         Ok(hasher.finish())
     }
+
+    /// Parses the content of a given toml file and returns a :class:`Configuration` object which
+    /// contains the given values.
+    /// This will insert default values of not specified otherwise.
+    #[staticmethod]
+    pub fn from_toml(py: Python, toml_string: String) -> PyResult<Py<Self>> {
+        // let out = Self::new(py, None)?;
+        let out: Self = toml::from_str(&toml_string)
+            .map_err(|e| pyo3::exceptions::PyValueError::new_err(format!("{e}")))?;
+        /* for (key, value) in table.iter() {
+            use toml::Value::*;
+            match value {
+                String(string) => out.setattr(py, PyString::new_bound(py, key), string)?,
+                Integer(int) => out.setattr(py, PyString::new_bound(py, key), *int)?,
+                Float(float) => out.setattr(py, PyString::new_bound(py, key), *float)?,
+                Boolean(boolean) => out.setattr(py, PyString::new_bound(py, key), *boolean)?,
+                Datetime(_) | Array(_) | Table(_) => unimplemented!(),
+            }
+        }*/
+        Py::new(py, out)
+    }
 }
 
 mod test_config {
@@ -288,6 +309,37 @@ mod test_config {
             let h2 = c2.borrow(py).to_hash().unwrap();
             assert!(h1 != h2);
         });
+    }
+
+    #[test]
+    fn test_parse_toml() {
+        use super::*;
+        pyo3::prepare_freethreaded_python();
+        Python::with_gil(|py| {
+            let toml_string = "
+n_agents=2
+n_threads=1
+t0=0.0
+dt=0.1
+t_max=100.0
+save_interval=10.0
+show_progressbar=false
+domain_size=100.0
+domain_height=2.5
+randomize_position=0.01
+n_voxels=1
+rng_seed=0
+"
+            .to_string();
+            let config: Configuration = Configuration::from_toml(py, toml_string)
+                .unwrap()
+                .extract(py)
+                .unwrap();
+            let toml_string = toml::to_string(&config).unwrap();
+            println!("{toml_string}");
+            assert_eq!(config.dt, 0.1);
+            assert_eq!(config.t_max, 100.0);
+        })
     }
 }
 
