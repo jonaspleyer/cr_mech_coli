@@ -53,6 +53,7 @@ def predict(
     positions: np.ndarray,  # Shape (N, n_vertices, 3)
     domain_size: float,
     potential_type: PotentialType,
+    config_content: str | None = None,
     out_path: Path | None = None,
 ):
     if potential_type is PotentialType.Morse:
@@ -60,11 +61,9 @@ def predict(
     elif potential_type is PotentialType.Mie:
         damping, interactions = reconstruct_mie_potential(parameters, cutoff)
 
-    config = crm.Configuration(
-        domain_size=domain_size,
-        dt=0.02,
-    )
-    config.dt *= 0.25
+    config = crm.Configuration.from_partial_toml(config_content)
+    config.domain_size = domain_size
+
     n_agents = positions.shape[0]
     n_vertices = positions.shape[1]
 
@@ -121,6 +120,7 @@ def predict_flatten(
     pos_initial,
     pos_final,
     potential_type: PotentialType,
+    config_content: str | None = None,
     out_path: Path | None = None,
 ):
     cell_container = predict(
@@ -131,6 +131,7 @@ def predict_flatten(
         pos_initial,
         domain_size,
         potential_type,
+        config_content,
         out_path,
     )
 

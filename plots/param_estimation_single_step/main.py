@@ -4,6 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 from glob import glob
+import warnings
 
 mpl.use("pgf")
 
@@ -110,6 +111,18 @@ if __name__ == "__main__":
     files_images = sorted(glob(str(data_dir / "images/*")))
     files_masks = sorted(glob(str(data_dir / "masks/*.csv")))
 
+    # Try to read config file
+    try:
+        f = open(data_dir / "simulation_config.toml", "r")
+        config_content = f.read()
+    except FileNotFoundError:
+        print(f"Could not find 'simulation_config.toml' inside {data_dir}.")
+        warnings.warn(
+            "Missing default values. This may result in numerical values which are  unrealistic \
+and can lead to problems within the numerical solver."
+        )
+        config_content = None
+
     img1 = imread(files_images[0])
     img2 = imread(files_images[1])
 
@@ -144,6 +157,7 @@ if __name__ == "__main__":
         pos1,
         pos2,
         potential_type,
+        config_content,
         out,
     )
 
@@ -266,6 +280,7 @@ if __name__ == "__main__":
         pos1,
         domain_size,
         potential_type,
+        config_content,
     )
 
     if cell_container is None:
