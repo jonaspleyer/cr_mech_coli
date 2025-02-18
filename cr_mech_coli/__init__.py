@@ -29,3 +29,5 @@ from .datatypes import *
 from .fitting import *
 from .simulation import *
 from .imaging import *
+
+from .crm_fit import crm_fit

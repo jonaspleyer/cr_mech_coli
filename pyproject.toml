@@ -25,6 +25,8 @@ scripts = [
     "torch",
     "torchvision",
 ]
+[project.scripts]
+crm_fit = "cr_mech_coli:crm_fit"
 
 [tool.maturin]
 features = ["pyo3/extension-module"]

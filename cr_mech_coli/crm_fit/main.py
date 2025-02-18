@@ -14,8 +14,8 @@ from pathlib import Path
 import multiprocessing as mp
 import argparse
 
-from plotting import plot_profile, plot_distributions, visualize_param_space
-from predict import predict_flatten, predict, store_parameters, PotentialType
+from .plotting import plot_profile, plot_distributions, visualize_param_space
+from .predict import predict_flatten, predict, store_parameters, PotentialType
 
 plt.rcParams.update(
     {
@@ -43,7 +43,7 @@ def get_out_folder(iteration: int | None, potential_type: PotentialType) -> Path
     return out
 
 
-if __name__ == "__main__":
+def crm_fit():
     parser = argparse.ArgumentParser(
         description="Fits the Bacterial Rods model to a system of cells."
     )

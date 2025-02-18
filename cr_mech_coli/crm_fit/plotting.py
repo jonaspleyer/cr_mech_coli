@@ -3,7 +3,7 @@ import numpy as np
 import multiprocessing as mp
 from pathlib import Path
 
-from predict import predict_flatten
+from .predict import predict_flatten
 
 
 def plot_profile(
