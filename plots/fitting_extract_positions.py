@@ -3,10 +3,21 @@ import numpy as np
 import cv2 as cv
 from pathlib import Path
 import matplotlib.pyplot as plt
+import matplotlib as mpl
 from tqdm import tqdm
 import argparse
 import multiprocessing as mp
+import scipy as sp
 
+mpl.use("pgf")
+plt.rcParams.update(
+    {
+        "font.family": "serif",  # use serif/main font for text elements
+        "text.usetex": True,  # use inline math for ticks
+        "pgf.rcfonts": False,  # don't setup fonts from rc parameters
+        "pgf.preamble": "\\usepackage{siunitx}",  # load additional packages
+    }
+)
 
 
 def calculate_lengths_distances(
