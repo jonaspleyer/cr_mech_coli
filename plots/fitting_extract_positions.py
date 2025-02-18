@@ -212,7 +212,15 @@ if __name__ == "__main__":
             # yerr=[np.std(li) for li in lengths1],
             linestyle="--",
             color="k",
-            label="Average Rod Length (Fit)",
+            label="Avg. Rod Length (Extracted)",
+        )
+        ax1.plot(
+            x,
+            [np.mean(li) for li in lengths_exact],
+            # yerr=[np.std(li) for li in lengths2],
+            linestyle=":",
+            color="k",
+            label="Avg. Rod Length (Exact)",
         )
         ax1.fill_between(
             x,
@@ -226,19 +234,11 @@ if __name__ == "__main__":
             ],
             alpha=0.3,
             color="gray",
-            label="Average Vertex Difference",
-        )
-        ax1.plot(
-            x,
-            [np.mean(li) for li in lengths2],
-            # yerr=[np.std(li) for li in lengths2],
-            linestyle=":",
-            color="k",
-            label="Average Rod Length",
+            label="Avg. Vertex Distance",
         )
         ax1.legend()
         ax1.set_ylabel("Length [µm]")
         ax1.set_xlabel("Time [min]")
-        fig.tight_layout()
+        ax1.set_title("Evaluation of Position Extraction Algorithm")
         fig.savefig("docs/source/_static/fitting-methods/displacement-calculations.png")
-        plt.show()
+        plt.close(fig)
