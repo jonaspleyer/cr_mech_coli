@@ -21,9 +21,9 @@ def calculate_lengths_distances(
         crm.extract_positions(mask, n_vertices=n_vertices, skel_method=skel_method)[0]
     )
 
-    distances_i = []
-    lengths_i_1 = []
-    lengths_i_2 = []
+    distances = []
+    lengths_extracted = []
+    lengths_exact = []
     for p in positions:
         color = mask[int(p[0][1]), int(p[0][0])]
         ident = cell_container.get_cell_from_color([*color])
@@ -32,17 +32,23 @@ def calculate_lengths_distances(
         p = crm.convert_pixel_to_position(p, config.domain_size, mask.shape[:2])
 
         # Determine if we need to use the reverse order
-        d1 = np.sum(np.sum((p - q) ** 2, axis=1) ** 0.5)
-        d2 = np.sum(np.sum((p - q[::-1]) ** 2, axis=1) ** 0.5)
-        d = min(d1, d2) / len(p)
-        distances_i.append(d)
+        d1t = np.sum((p - q) ** 2, axis=1) ** 0.5
+        d2t = np.sum((p - q[::-1]) ** 2, axis=1) ** 0.5
+        d1 = np.sum(d1t)
+        d2 = np.sum(d2t)
+        # d = min(d1, d2) / len(p)
+        if d1 <= d2:
+            distances.append(d1t / len(p))
+        else:
+            distances.append(d2t / len(p))
+        # distances_i.append(d)
 
         # Compare total length
         l1 = np.sum((p[1:] - p[:-1]) ** 2) ** 0.5
         l2 = np.sum((q[1:] - q[:-1]) ** 2) ** 0.5
-        lengths_i_1.append(l1)
-        lengths_i_2.append(l2)
-    return distances_i, lengths_i_1, lengths_i_2
+        lengths_extracted.append(l1)
+        lengths_exact.append(l2)
+    return distances, lengths_extracted, lengths_exact
 
 
 if __name__ == "__main__":
@@ -163,9 +169,10 @@ if __name__ == "__main__":
     else:
         pool = mp.Pool(pyargs.workers)
     results = pool.starmap(calculate_lengths_distances, arglist)
-    distances = [r[0] for r in results]
-    lengths1 = [r[1] for r in results]
-    lengths2 = [r[2] for r in results]
+    distances = [np.sum(r[0]) / n_vertices for r in results]
+    distances_vertices = [np.array(r[0]).reshape(-1) for r in results]
+    lengths_extracted = [r[1] for r in results]
+    lengths_exact = [r[2] for r in results]
 
     if not pyargs.skip_graph:
         fig, ax1 = plt.subplots()
@@ -173,7 +180,7 @@ if __name__ == "__main__":
         x = np.arange(len(distances)) * config.save_interval
         ax1.plot(
             x,
-            [np.mean(li) for li in lengths1],
+            [np.mean(li) for li in lengths_extracted],
             # yerr=[np.std(li) for li in lengths1],
             linestyle="--",
             color="k",
@@ -182,12 +189,12 @@ if __name__ == "__main__":
         ax1.fill_between(
             x,
             y1=[
-                np.mean(lengths1[i]) - np.mean(distances[i])
-                for i in range(len(lengths1))
+                np.mean(lengths_extracted[i]) - np.mean(distances[i])
+                for i in range(len(lengths_extracted))
             ],
             y2=[
-                np.mean(lengths1[i]) + np.mean(distances[i])
-                for i in range(len(lengths1))
+                np.mean(lengths_extracted[i]) + np.mean(distances[i])
+                for i in range(len(lengths_extracted))
             ],
             alpha=0.3,
             color="gray",
