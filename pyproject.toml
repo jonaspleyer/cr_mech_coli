@@ -19,12 +19,6 @@ dependencies = [
     "scikit-image>=0.24",
     "pytest>=8.0",
 ]
-
-[project.optional-dependencies]
-scripts = [
-    "torch",
-    "torchvision",
-]
 [project.scripts]
 crm_fit = "cr_mech_coli:crm_fit"
 
