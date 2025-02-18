@@ -77,6 +77,7 @@ if __name__ == "__main__":
         default="lee",
         help='Skeletonization method. Can be "lee" or "zhang"',
     )
+    parser.add_argument("-w", "--workers", type=int, default=-1)
     parser.add_argument("--skip-masks", action="store_true", default=False)
     parser.add_argument("--skip-graph", action="store_true", default=False)
     parser.add_argument("--skip-distribution", action="store_true", default=False)
