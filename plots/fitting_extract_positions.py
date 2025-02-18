@@ -5,11 +5,18 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 from tqdm import tqdm
 import argparse
+import multiprocessing as mp
 
 
-def calculate_lengths_distances(args) -> tuple[list, list, list]:
-    cells_at_iteration, cell_container, colors, config, skel_method = args
-    mask = crm.render_mask(cells_at_iteration, colors, config.domain_size)
+
+def calculate_lengths_distances(
+    n, ccs, domain_size, skel_method
+) -> tuple[list, list, list]:
+    cell_container = crm.CellContainer.deserialize(ccs)
+    cells_at_iteration = cell_container.get_cells()[n]
+    colors = cell_container.cell_to_color
+
+    mask = crm.render_mask(cells_at_iteration, colors, domain_size)
     positions = np.array(
         crm.extract_positions(mask, n_vertices=n_vertices, skel_method=skel_method)[0]
     )
@@ -148,11 +155,14 @@ if __name__ == "__main__":
                 img=mask[200:-200, 200:-200],
             )
 
-    arglist = [
-        (all_cells[n_iter], cell_container, colors, config, pyargs.skel_method)
-        for n_iter in iterations
-    ]
-    results = [calculate_lengths_distances(a) for a in tqdm(arglist)]
+    ccs = cell_container.serialize()
+    arglist = [(n, ccs, config.domain_size, pyargs.skel_method) for n in iterations]
+
+    if pyargs.workers < 0:
+        pool = mp.Pool()
+    else:
+        pool = mp.Pool(pyargs.workers)
+    results = pool.starmap(calculate_lengths_distances, arglist)
     distances = [r[0] for r in results]
     lengths1 = [r[1] for r in results]
     lengths2 = [r[2] for r in results]
