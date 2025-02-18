@@ -174,6 +174,34 @@ if __name__ == "__main__":
     lengths_extracted = [r[1] for r in results]
     lengths_exact = [r[2] for r in results]
 
+    if not pyargs.skip_distribution:
+        fig, ax = plt.subplots()
+
+        t = 0.7
+        q = len(distances_vertices)
+        colors = [(t * i / q, t * i / q, t * i / q) for i in range(q)]
+        ax.set_title("Distribution of distances between individual vertices")
+        n_bins = 50
+        logbins = np.logspace(
+            np.log10(np.min([np.min(d) for d in distances_vertices])),
+            np.log10(np.max([np.max(d) for d in distances_vertices])),
+            n_bins + 1,
+        )
+        ax.hist(
+            distances_vertices,
+            logbins,
+            stacked=True,
+            color=colors,
+            label="Distance between vertices",
+        )
+        ax.set_xscale("log")
+        ax.set_yscale("log")
+        ax.set_xlabel("Distance [$\\SI{}{\\micro\\metre}$]")
+        ax.set_ylabel("Count")
+        ax.legend()
+        fig.savefig("docs/source/_static/fitting-methods/displacement-distribution.png")
+        plt.close(fig)
+
     if not pyargs.skip_graph:
         fig, ax1 = plt.subplots()
 
