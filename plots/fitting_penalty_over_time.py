@@ -17,7 +17,7 @@ plt.rcParams.update(
 )
 
 
-def render_single_mask(n_iter: int, cell_container: str, domain_size, render_settings):
+def render_single_mask(n_iter: int, cell_container, domain_size, render_settings):
     cell_container = crm.CellContainer.deserialize(cell_container)
     cells_at_iter = cell_container.get_cells_at_iteration(n_iter)
     colors = cell_container.cell_to_color
