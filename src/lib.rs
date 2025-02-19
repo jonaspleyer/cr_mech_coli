@@ -5,6 +5,7 @@
 //! time.
 
 mod agent;
+mod crm_fit;
 mod datatypes;
 mod fitting;
 mod imaging;
@@ -18,6 +19,7 @@ pub use datatypes::*;
 pub use fitting::*;
 pub use imaging::*;
 pub use sampling::*;
+pub use crm_fit::*;
 pub use simulation::*;
 
 use pyo3::prelude::*;
@@ -25,7 +27,10 @@ use pyo3::prelude::*;
 /// A Python module implemented in Rust.
 #[pymodule]
 #[pyo3(name = "cr_mech_coli")]
-fn cr_mech_coli(m: &Bound<'_, PyModule>) -> PyResult<()> {
+fn cr_mech_coli(py: Python, m: &Bound<'_, PyModule>) -> PyResult<()> {
+    let submodule = crm_fit::crm_fit_rs(py)?;
+    m.add_submodule(&submodule)?;
+    m.add_function(wrap_pyfunction!(generate_positions_old, m)?)?;
     m.add_function(wrap_pyfunction!(run_simulation_with_agents, m)?)?;
     m.add_function(wrap_pyfunction!(sort_cellular_identifiers, m)?)?;
     m.add_class::<CellIdentifier>()?;

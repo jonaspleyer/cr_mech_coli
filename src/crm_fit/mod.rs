@@ -1,0 +1,318 @@
+use pyo3::prelude::*;
+use serde::{Deserialize, Serialize};
+
+/// TODO
+#[pyclass(get_all, set_all)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct SampledFloat {
+    /// TODO
+    pub min: f32,
+    /// TODO
+    pub max: f32,
+    /// TODO
+    pub initial: f32,
+    /// TODO
+    pub individual: Option<bool>,
+}
+
+/// TODO
+#[pyclass(get_all, set_all)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub enum Parameter {
+    /// TODO
+    #[serde(untagged)]
+    SampledFloat(SampledFloat),
+    /// TODO
+    #[serde(untagged)]
+    Float(f32),
+}
+
+/// TODO
+#[pyclass(get_all, set_all)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct Parameters {
+    /// TODO
+    radius: Parameter,
+    /// TODO
+    rigidity: Parameter,
+    /// TODO
+    damping: Parameter,
+    /// TODO
+    strength: Parameter,
+    // TODO
+    potential_type: PotentialType,
+}
+
+/// TODO
+#[pyclass(get_all, set_all)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct Morse {
+    /// TODO
+    potential_stiffness: Parameter,
+}
+
+/// TODO
+#[pyclass(get_all, set_all)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct Mie {
+    /// TODO
+    en: Parameter,
+    /// TODO
+    em: Parameter,
+    /// TODO
+    bound: f32,
+}
+
+/// TODO
+#[pyclass(get_all, set_all)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub enum PotentialType {
+    /// TODO
+    Mie(Mie),
+    /// TODO
+    Morse(Morse),
+}
+
+#[pymethods]
+impl PotentialType {
+    // Reconstructs a interaction potential
+    // pub fn reconstruct_potential(&self, radius: f32, strength: f32, cutoff: f32) {}
+
+    /// Formats the object
+    pub fn to_short_string(&self) -> String {
+        match self {
+            PotentialType::Mie(_) => "mie".to_string(),
+            PotentialType::Morse(_) => "morse".to_string(),
+        }
+    }
+}
+
+/// TODO
+#[pyclass(get_all, set_all)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct Optimization {
+    /// Initial seed of the differential evolution algorithm
+    #[serde(default)]
+    pub seed: u64,
+    /// Tolerance of the differential evolution algorithm
+    #[serde(default = "default_tol")]
+    pub tol: f32,
+    /// Maximum iterations of the differential evolution algorithm
+    #[serde(default = "default_max_iter")]
+    pub max_iter: usize,
+    /// Population size for each iteration
+    #[serde(default = "default_pop_size")]
+    pub pop_size: usize,
+}
+
+const fn default_tol() -> f32 {
+    1e-4
+}
+
+const fn default_max_iter() -> usize {
+    50
+}
+
+const fn default_pop_size() -> usize {
+    100
+}
+
+/// Contains all constants of the numerical simulation
+#[pyclass(get_all, set_all)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct Constants {
+    /// Total time from start to finish
+    pub t_max: f32,
+    /// Time increment used to solve equations
+    pub dt: f32,
+    /// Size of the domain
+    pub domain_size: f32,
+    /// Number of voxels to dissect the domain into
+    pub n_voxels: core::num::NonZeroUsize,
+    /// Random initial seed
+    pub rng_seed: u64,
+    /// Cutoff after which the physical interaction is identically zero
+    pub cutoff: f32,
+    /// Conversion between pixels and micron.
+    pub pixel_per_micron: f32,
+}
+
+/// Contains all settings required to fit the model to images
+#[pyclass(get_all, set_all)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct Settings {
+    /// See :class:`Constants`
+    pub constants: Constants,
+    /// See :class:`Parameters`
+    pub parameters: Parameters,
+    /// See :class:`OptimizationParameters`
+    pub optimization: Optimization,
+}
+
+#[pymethods]
+impl Settings {
+    /// Creates a :class:`Settings` from a given toml string.
+    #[staticmethod]
+    pub fn from_toml(toml_string: String) -> PyResult<Self> {
+        let out: Self = toml::from_str(&toml_string)
+            .map_err(|e| pyo3::exceptions::PyValueError::new_err(format!("{e}")))?;
+        Ok(out)
+    }
+
+    /// TODO
+    pub fn to_toml(&self) -> PyResult<String> {
+        toml::to_string(&self).map_err(|e| pyo3::exceptions::PyValueError::new_err(format!("{e}")))
+    }
+
+    /// Obtains the domain height
+    #[getter]
+    pub fn domain_height(&self) -> f32 {
+        2.5
+    }
+
+    /// Converts the settings provided to a :class:`Configuration` object required to run the
+    /// simulation
+    pub fn to_config(&self, n_saves: usize) -> PyResult<crate::Configuration> {
+        #[allow(unused)]
+        let Self {
+            constants:
+                Constants {
+                    t_max,
+                    dt,
+                    domain_size,
+                    n_voxels,
+                    rng_seed,
+                    cutoff,
+                    pixel_per_micron,
+                },
+            parameters,
+            optimization,
+        } = self.clone();
+        let save_interval = t_max / n_saves as f32;
+        Ok(crate::Configuration {
+            domain_height: self.domain_height(),
+            n_threads: 1.try_into().unwrap(),
+            t0: 0.0,
+            dt,
+            t_max,
+            save_interval,
+            show_progressbar: false,
+            domain_size,
+            n_voxels: n_voxels.get(),
+            rng_seed,
+        })
+    }
+
+    /// Formats the object
+    pub fn __repr__(&self) -> String {
+        format!("{self:#?}")
+    }
+}
+
+/// A Python module implemented in Rust.
+pub fn crm_fit_rs(py: Python) -> PyResult<Bound<PyModule>> {
+    let m = PyModule::new_bound(py, "crm_fit_rs")?;
+    m.add_class::<Parameter>()?;
+    m.add_class::<Constants>()?;
+    m.add_class::<Parameters>()?;
+    m.add_class::<Optimization>()?;
+    m.add_class::<Settings>()?;
+    m.add_class::<PotentialType>()?;
+    m.add_class::<PotentialType_Morse>()?;
+    m.add_class::<PotentialType_Mie>()?;
+    Ok(m)
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+    #[test]
+    fn test_parsing_toml() {
+        let potential_type = PotentialType::Mie(Mie {
+            en: Parameter::SampledFloat(SampledFloat {
+                min: 1.0,
+                max: 2.0,
+                initial: 1.5,
+                individual: None,
+            }),
+            em: Parameter::Float(5.5),
+            bound: 0.5,
+        });
+        let settings = Settings {
+            constants: Constants {
+                t_max: 1.0,
+                dt: 0.001,
+                domain_size: 10.0,
+                n_voxels: 2.try_into().unwrap(),
+                rng_seed: 0,
+                cutoff: 20.0,
+                pixel_per_micron: 2.2,
+            },
+            parameters: Parameters {
+                radius: Parameter::Float(4.0),
+                rigidity: Parameter::Float(8.0),
+                damping: Parameter::Float(0.7),
+                strength: Parameter::Float(0.1),
+                potential_type,
+            },
+            optimization: Optimization {
+                seed: 0,
+                tol: 1e-4,
+                max_iter: 40,
+                pop_size: 150,
+            },
+        };
+        let ostring = toml::to_string_pretty(&settings).unwrap();
+        println!("{ostring}");
+        let toml_string = "
+[constants]
+t_max=100.0
+dt=0.005
+domain_size=100.0
+n_voxels=1
+rng_seed=0
+cutoff=20.0
+pixel_per_micron=2.2
+
+[parameters]
+radius = { min = 3.0, max=6.0, initial=4.5, individual=true }
+rigidity = 8.0
+damping = { min=0.6, max=2.5, initial=1.5 }
+strength = { min=1.0, max=4.5, initial=1.0 }
+
+[parameters.potential_type.Mie]
+en = { min=0.2, max=25.0, initial=6.0, individual=false}
+em = { min=0.2, max=25.0, initial=5.5}
+bound = 8.0
+
+# [parameters.potential_type.Morse]
+# potential_stiffness = 1.0
+# 
+[optimization]
+seed = 0
+tol = 1e-4
+"
+        .to_string();
+        let settings: Settings = toml::from_str(&toml_string).unwrap();
+        println!("{settings:#?}");
+        panic!();
+    }
+
+    /* #[test]
+    fn test_parsing() {
+        let settings = Settings {
+            constants: Constants { domain_size: 100.0 },
+            parameters: Parameters {
+                t_max: Parameter::SampledFloat(SampledFloat {
+                    min: 0.0,
+                    max: 10.0,
+                    initial: 5.0,
+                }),
+                domain_size: Parameter::Float(100.0),
+            },
+            optimization: Optimization { workers: None },
+        };
+        let toml_string = settings.to_toml().unwrap();
+        println!("{toml_string}");
+    }*/
+}
