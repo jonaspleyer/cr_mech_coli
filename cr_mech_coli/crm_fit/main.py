@@ -4,7 +4,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 from glob import glob
-import warnings
 
 mpl.use("pgf")
 
@@ -309,13 +308,6 @@ def crm_fit_main():
         for i, (fig, _) in enumerate(figs_axs):
             fig.tight_layout()
             fig.savefig(f"{out}/microscopic-images-{i}.png")
-
-        mask_gen1 = crm.render_mask(
-            agents_initial, cell_container.cell_to_color, domain_size
-        )
-        mask_gen2 = crm.render_mask(
-            agents_predicted, cell_container.cell_to_color, domain_size
-        )
 
         print(f"{time.time() - interval:10.4f}s Rendered Masks")
         interval = time.time()
