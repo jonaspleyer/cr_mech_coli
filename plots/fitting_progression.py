@@ -1,17 +1,12 @@
 import cr_mech_coli as crm
 import cv2 as cv
 from pathlib import Path
+import numpy as np
+
+from fitting_extract_positions import create_simulation_result
 
 if __name__ == "__main__":
-    config = crm.Configuration()
-    config.t0 = 0.0
-    config.dt = 0.1
-    config.t_max = 100.0
-    config.save_interval = 20.0
-    config.n_agents = 4
-
-    agent_settings = crm.AgentSettings(growth_rate = 0.05)
-    cell_container = crm.run_simulation(config, agent_settings)
+    config, cell_container = create_simulation_result(8)
 
     all_cells = cell_container.get_cells()
     iterations = cell_container.get_all_iterations()

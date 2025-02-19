@@ -5,6 +5,9 @@ import time
 import multiprocessing as mp
 import scipy as sp
 import numpy as np
+import argparse
+
+from fitting_extract_positions import create_simulation_result
 
 
 plt.rcParams.update(
@@ -26,16 +29,15 @@ def render_single_mask(n_iter: int, cell_container, domain_size, render_settings
 
 
 if __name__ == "__main__":
-    config = crm.Configuration()
-    config.t0 = 0.0
-    config.dt = 0.1
-    config.t_max = 200.0
-    config.save_interval = 4.0
-    config.n_agents = 4
-
-    agent_settings = crm.AgentSettings(growth_rate=0.05)
-    cell_container = crm.run_simulation(config, agent_settings)
-
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "-n",
+        "--n-vertices",
+        type=int,
+        default=8,
+    )
+    pyargs = parser.parse_args()
+    config, cell_container = create_simulation_result(pyargs.n_vertices)
     iterations = cell_container.get_all_iterations()
 
     interval = time.time()
