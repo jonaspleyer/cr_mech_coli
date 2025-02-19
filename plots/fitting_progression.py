@@ -11,14 +11,14 @@ if __name__ == "__main__":
     all_cells = cell_container.get_cells()
     iterations = cell_container.get_all_iterations()
     colors = cell_container.cell_to_color
-    i1 = iterations[1]
-    i2 = iterations[2]
+    i1 = iterations[25]
+    i2 = iterations[35]
 
     rs = crm.RenderSettings(resolution=800)
-    mask1 = crm.render_mask(all_cells[i1], colors, config.domain_size, render_settings=rs)
-    mask2 = crm.render_mask(all_cells[i2], colors, config.domain_size, render_settings=rs)
+    mask1 = crm.render_mask(all_cells[i1], colors, config.domain_size, rs)
+    mask2 = crm.render_mask(all_cells[i2], colors, config.domain_size, rs)
     mask3 = crm.area_diff_mask(mask1, mask2)
-    mask4 = crm.parents_diff_mask(mask1, mask2, cell_container)
+    mask4 = crm.parents_diff_mask(mask1, mask2, cell_container, 0.5)
 
     # Save first mask
     path = Path("docs/source/_static/fitting-methods/")
