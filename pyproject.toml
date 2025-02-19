@@ -20,7 +20,7 @@ dependencies = [
     "pytest>=8.0",
 ]
 [project.scripts]
-crm_fit = "cr_mech_coli:crm_fit"
+crm_fit = "cr_mech_coli:crm_fit_main"
 
 [tool.maturin]
 features = ["pyo3/extension-module"]
