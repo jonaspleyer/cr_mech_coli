@@ -169,9 +169,6 @@ impl AgentSettings {
 #[pyclass(set_all, get_all)]
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct Configuration {
-    /// Number of agents to put into the simulation. Depending on the size specified, this number
-    /// may be lowered artificially to account for the required space.
-    pub n_agents: usize,
     /// Number of threads used for solving the system.
     pub n_threads: NonZeroUsize,
     /// Starting time
@@ -189,9 +186,6 @@ pub struct Configuration {
     pub domain_size: f32,
     /// We assume that the domain is a thin 3D slice. This specifies the height of the domain.
     pub domain_height: f32,
-    /// Determines the amount with which positions should be randomized. Should be a value between
-    /// `0.0` and `1.0`.
-    pub randomize_position: f32,
     /// Number of voxels used to solve the system. This may yield performance improvements but
     /// specifying a too high number will yield incorrect results.
     /// See also https://cellular-raza.com/internals/concepts/domain/decomposition/.
@@ -215,7 +209,6 @@ impl Configuration {
         let res_new = Py::new(
             py,
             Self {
-                n_agents: 2,
                 n_threads: 1.try_into().unwrap(),
                 t0: 0.0,             // MIN
                 dt: 0.1,             // MIN
@@ -224,7 +217,6 @@ impl Configuration {
                 show_progressbar: false,
                 domain_size: 100.0, // MICROMETRE
                 domain_height: 2.5, // MICROMETRE
-                randomize_position: 0.01,
                 n_voxels: 1,
                 rng_seed: 0,
             },
@@ -314,7 +306,6 @@ mod test_config {
         pyo3::prepare_freethreaded_python();
         Python::with_gil(|py| {
             let toml_string = "
-n_agents=2
 n_threads=1
 t0=0.0
 dt=0.1
@@ -323,7 +314,6 @@ save_interval=10.0
 show_progressbar=false
 domain_size=100.0
 domain_height=2.5
-randomize_position=0.01
 n_voxels=1
 rng_seed=0
 "
