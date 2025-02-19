@@ -89,7 +89,7 @@ if __name__ == "__main__":
     )
     plt.close(fig)
 
-    pos = crm.extract_positions(mask)
+    pos, _, _ = crm.extract_positions(mask)
     submask = np.copy(mask[xmin:xmax, ymin:ymax, :])
 
     fig, ax = plt.subplots()
