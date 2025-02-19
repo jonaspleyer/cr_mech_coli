@@ -163,6 +163,38 @@ impl AgentSettings {
     pub fn __repr__(&self) -> String {
         format!("{:#?}", self)
     }
+
+    /// Converts the class to a dictionary
+    pub fn to_rod_agent_dict<'py>(
+        &self,
+        py: Python<'py>,
+    ) -> PyResult<Bound<'py, pyo3::types::PyDict>> {
+        let Self {
+            mechanics,
+            interaction,
+            growth_rate,
+            spring_length_threshold,
+        } = self;
+        use pyo3::types::IntoPyDict;
+        let res = [
+            (
+                "diffusion_constant",
+                mechanics.getattr(py, "diffusion_constant")?,
+            ),
+            ("spring_tension", mechanics.getattr(py, "spring_tension")?),
+            ("rigidity", mechanics.getattr(py, "rigidity")?),
+            ("spring_length", mechanics.getattr(py, "spring_length")?),
+            ("damping", mechanics.getattr(py, "damping")?),
+            ("interaction", interaction.into_py(py)),
+            ("growth_rate", growth_rate.into_py(py)),
+            (
+                "spring_length_threshold",
+                spring_length_threshold.into_py(py),
+            ),
+        ]
+        .into_py_dict_bound(py);
+        Ok(res)
+    }
 }
 
 /// Contains all settings needed to configure the simulation
