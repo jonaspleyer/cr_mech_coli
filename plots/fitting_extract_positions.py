@@ -177,7 +177,7 @@ if __name__ == "__main__":
             path = Path("docs/source/_static/fitting-methods/")
             cv.imwrite(
                 filename=str(path / "extract_positions-{:06}.png".format(iteration)),
-                img=mask[200:-200, 200:-200],
+                img=mask,  # [200:-200, 200:-200],
             )
 
     ccs = cell_container.serialize()
