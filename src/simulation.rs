@@ -95,7 +95,7 @@ impl Default for RodMechanicsSettings {
 }
 
 /// Contains settings needed to specify properties of the :class:`RodAgent`
-#[pyclass(get_all, set_all)]
+#[pyclass(get_all, set_all, mapping)]
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct AgentSettings {
     /// Settings for the mechanics part of :class:`RodAgent`. See also :class:`RodMechanicsSettings`.
