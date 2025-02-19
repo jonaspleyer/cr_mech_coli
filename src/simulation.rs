@@ -2,7 +2,7 @@ use std::{hash::Hasher, num::NonZeroUsize};
 
 use backend::chili::SimulationError;
 use cellular_raza::prelude::*;
-use numpy::PyUntypedArrayMethods;
+use numpy::{PyArrayMethods, PyUntypedArrayMethods, ToPyArray};
 use pyo3::{prelude::*, types::PyString};
 use serde::{Deserialize, Serialize};
 use time::FixedStepsize;
@@ -345,40 +345,75 @@ prepare_types!(
 );
 
 /// Creates positions for multiple :class`RodAgent`s which can be used for simulation purposes.
-fn _generate_positions_old(
-    py: Python,
+#[pyfunction]
+#[pyo3(signature = (
+    n_agents,
+    agent_settings,
+    config,
+    rng_seed = 0,
+    dx = 0.0,
+    randomize_positions = 0.0,
     n_vertices = 8,
+))]
+pub fn generate_positions_old<'py>(
+    py: Python<'py>,
     n_agents: usize,
     agent_settings: &AgentSettings,
-    rng: &mut rand_chacha::ChaChaRng,
-    dx: f32,
     config: &Configuration,
-) -> PyResult<Vec<nalgebra::MatrixXx3<f32>>> {
+    rng_seed: u64,
+    dx: f32,
+    randomize_positions: f32,
+    n_vertices: usize,
+) -> PyResult<Vec<Bound<'py, numpy::PyArray2<f32>>>> {
+    // numpy::nalgebra::DMatrix<f32>
+    use rand::seq::IteratorRandom;
     use rand::Rng;
+    use rand_chacha::rand_core::SeedableRng;
+    let mut rng = rand_chacha::ChaCha8Rng::seed_from_u64(rng_seed);
     let mechanics: RodMechanicsSettings = agent_settings.mechanics.extract(py)?;
     let spring_length = mechanics.spring_length;
-    let s = config.randomize_position;
-    Ok((0..n_agents)
-        .map(|_| {
-            let p1 = [
-                rng.gen_range(dx..config.domain_size - dx),
-                rng.gen_range(dx..config.domain_size - dx),
+    let s = randomize_positions.clamp(0.0, 1.0);
+
+    // Split the domain into chunks
+    let n_chunk_sides = (n_agents as f32).sqrt().ceil() as usize;
+    let dchunk = (config.domain_size - 2.0 * dx) / n_chunk_sides as f32;
+    let all_indices = itertools::iproduct!(0..n_chunk_sides, 0..n_chunk_sides);
+    let picked_indices = all_indices.choose_multiple(&mut rng, n_agents);
+    let drod_length_half = (n_vertices as f32) * spring_length / 2.0;
+
+    Ok(picked_indices
+        .into_iter()
+        .map(|index| {
+            let xlow = dx + index.0 as f32 * dchunk;
+            let ylow = dx + index.1 as f32 * dchunk;
+            let middle = numpy::array![
+                rng.gen_range(xlow + drod_length_half..xlow + dchunk - drod_length_half),
+                rng.gen_range(ylow + drod_length_half..ylow + dchunk - drod_length_half),
                 rng.gen_range(0.4 * config.domain_height..0.6 * config.domain_height),
             ];
             let angle: f32 = rng.gen_range(0.0..2.0 * std::f32::consts::PI);
-            nalgebra::MatrixXx3::<f32>::from_fn(n_vertices, |r, c| {
+            let p1 = middle - drod_length_half * numpy::array![angle.cos(), angle.sin(), 0.0];
+            fn s_gen(x: f32, rng: &mut rand_chacha::ChaCha8Rng) -> f32 {
+                if x == 0.0 {
+                    1.0
+                } else {
+                    rng.gen_range(1.0 - x..1.0 + x)
+                }
+            }
+            numpy::nalgebra::DMatrix::<f32>::from_fn(n_vertices, 3, |r, c| {
                 p1[c]
                     + r as f32
                         * spring_length
-                        * rng.gen_range(1.0 - s..1.0 + s)
+                        * s_gen(s, &mut rng)
                         * if c == 0 {
-                            (angle * rng.gen_range(1.0 - s..1.0 + s)).cos()
+                            (angle * s_gen(s, &mut rng)).cos()
                         } else if c == 1 {
-                            (angle * rng.gen_range(1.0 - s..1.0 + s)).sin()
+                            (angle * s_gen(s, &mut rng)).sin()
                         } else {
                             0.0
                         }
             })
+            .to_pyarray_bound(py)
         })
         .collect())
 }
