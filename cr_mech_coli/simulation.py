@@ -20,12 +20,12 @@ This module contains functionality to configure and run simulations.
 
     * - :class:`Configuration`
       - Bundles all information required for a simulation.
-    * - :func:`run_simulation`
+    * - :func:`run_simulation_with_agents`
       - Executes the simulation and returns a :class:`CellContainer`.
 """
 
 from .cr_mech_coli import (
-    run_simulation,
+    generate_positions_old,
     run_simulation_with_agents,
     AgentSettings,
     RodAgent,
