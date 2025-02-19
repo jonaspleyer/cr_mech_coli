@@ -6,7 +6,6 @@ import matplotlib.pyplot as plt
 import matplotlib as mpl
 from tqdm import tqdm
 import argparse
-import multiprocessing as mp
 
 mpl.use("pgf")
 plt.rcParams.update(
@@ -187,15 +186,25 @@ if __name__ == "__main__":
         for n in iterations
     ]
 
-    if pyargs.workers < 0:
-        pool = mp.Pool()
+    if not pyargs.skip_graph or not pyargs.skip_distribution:
+        if pyargs.workers < 0:
+            import multiprocessing as mp
+
+            pool = mp.Pool()
+            results = pool.starmap(calculate_lengths_distances, arglist)
+        elif pyargs.workers == 1:
+            results = [calculate_lengths_distances(*a) for a in arglist]
+        else:
+            import multiprocessing as mp
+
+            pool = mp.Pool(pyargs.workers)
+            results = pool.starmap(calculate_lengths_distances, arglist)
+        distances = [np.sum(r[0]) / pyargs.n_vertices for r in results]
+        distances_vertices = [np.array(r[0]).reshape(-1) for r in results]
+        lengths_extracted = [r[1] for r in results]
+        lengths_exact = [r[2] for r in results]
     else:
-        pool = mp.Pool(pyargs.workers)
-    results = pool.starmap(calculate_lengths_distances, arglist)
-    distances = [np.sum(r[0]) / n_vertices for r in results]
-    distances_vertices = [np.array(r[0]).reshape(-1) for r in results]
-    lengths_extracted = [r[1] for r in results]
-    lengths_exact = [r[2] for r in results]
+        exit()
 
     if not pyargs.skip_distribution:
         fig, ax = plt.subplots()
