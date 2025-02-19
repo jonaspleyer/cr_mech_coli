@@ -26,7 +26,6 @@ use pyo3::prelude::*;
 #[pymodule]
 #[pyo3(name = "cr_mech_coli")]
 fn cr_mech_coli(m: &Bound<'_, PyModule>) -> PyResult<()> {
-    m.add_function(wrap_pyfunction!(run_simulation, m)?)?;
     m.add_function(wrap_pyfunction!(run_simulation_with_agents, m)?)?;
     m.add_function(wrap_pyfunction!(sort_cellular_identifiers, m)?)?;
     m.add_class::<CellIdentifier>()?;

@@ -449,69 +449,6 @@ pub fn run_simulation_with_agents(
     CellContainer::new(cells)
 }
 
-/// Use the :func:`run_simulation_with_agents`
-///
-/// Executes the simulation with the given :class:`Configuration`
-///
-/// .. deprecated:: 0.4
-///     Use the :func:`run_simulation_with_agents` function instead.
-#[pyfunction]
-#[deprecated(
-    note = "This function automatically generates positions which is deprecated now.\
-    please use the `` functions."
-)]
-pub fn run_simulation(
-    config: Configuration,
-    agent_settings: AgentSettings,
-) -> pyo3::PyResult<CellContainer> {
-    use rand::Rng;
-    use rand_chacha::rand_core::SeedableRng;
-    Python::with_gil(|py| {
-        let mut rng = rand_chacha::ChaCha8Rng::seed_from_u64(config.rng_seed);
-        let mechanics: RodMechanicsSettings = agent_settings.mechanics.extract(py)?;
-        let interaction: PhysicalInteraction = agent_settings.interaction.extract(py)?;
-        let s = config.randomize_position;
-        let spring_length = mechanics.spring_length;
-        let dx = spring_length * mechanics.pos.nrows() as f32;
-        let bacteria = (0..config.n_agents).map(|_| {
-            // TODO make these positions much more spaced
-            let p1 = [
-                rng.gen_range(dx..config.domain_size - dx),
-                rng.gen_range(dx..config.domain_size - dx),
-                rng.gen_range(0.4 * config.domain_height..0.6 * config.domain_height),
-            ];
-            let angle: f32 = rng.gen_range(0.0..2.0 * std::f32::consts::PI);
-            RodAgent {
-                mechanics: RodMechanics {
-                    pos: nalgebra::MatrixXx3::<f32>::from_fn(agent_settings.n_vertices, |r, c| {
-                        p1[c]
-                            + r as f32
-                                * spring_length
-                                * rng.gen_range(1.0 - s..1.0 + s)
-                                * if c == 0 {
-                                    (angle * rng.gen_range(1.0 - s..1.0 + s)).cos()
-                                } else if c == 1 {
-                                    (angle * rng.gen_range(1.0 - s..1.0 + s)).sin()
-                                } else {
-                                    0.0
-                                }
-                    }),
-                    vel: nalgebra::MatrixXx3::<f32>::from_fn(agent_settings.n_vertices, |_, _| 0.0),
-                    diffusion_constant: mechanics.diffusion_constant,
-                    spring_tension: mechanics.spring_tension,
-                    rigidity: mechanics.rigidity,
-                    spring_length: mechanics.spring_length,
-                    damping: mechanics.damping,
-                },
-                interaction: RodInteraction(interaction.clone()),
-                growth_rate: agent_settings.growth_rate,
-                spring_length_threshold: agent_settings.spring_length_threshold,
-            }
-        });
-        run_simulation_with_agents(&config, bacteria.collect())
-    })
-}
-
 /// Sorts an iterator of :class:`CellIdentifier` deterministically.
 ///
 /// This function is usefull for generating identical masks every simulation run.
