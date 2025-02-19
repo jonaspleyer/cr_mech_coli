@@ -1,7 +1,6 @@
 import cr_mech_coli as crm
 import cv2 as cv
 from pathlib import Path
-import numpy as np
 
 from fitting_extract_positions import create_simulation_result
 
