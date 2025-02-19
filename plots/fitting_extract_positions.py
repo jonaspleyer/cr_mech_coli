@@ -20,7 +20,7 @@ plt.rcParams.update(
 
 
 def calculate_lengths_distances(
-    n, ccs, domain_size, skel_method
+    n, ccs, domain_size, skel_method, n_vertices
 ) -> tuple[list, list, list]:
     cell_container = crm.CellContainer.deserialize(ccs)
     cells_at_iteration = cell_container.get_cells()[n]
@@ -140,7 +140,7 @@ if __name__ == "__main__":
         ]
         for iteration, mask in tqdm(iter_masks):
             positions = crm.extract_positions(
-                mask, n_vertices=n_vertices, skel_method=pyargs.skel_method
+                mask, n_vertices=pyargs.n_vertices, skel_method=pyargs.skel_method
             )[0]
             positions = np.round(np.array(positions))
             positions = np.array(positions, dtype=int).reshape(
@@ -182,7 +182,10 @@ if __name__ == "__main__":
             )
 
     ccs = cell_container.serialize()
-    arglist = [(n, ccs, config.domain_size, pyargs.skel_method) for n in iterations]
+    arglist = [
+        (n, ccs, config.domain_size, pyargs.skel_method, pyargs.n_vertices)
+        for n in iterations
+    ]
 
     if pyargs.workers < 0:
         pool = mp.Pool()
