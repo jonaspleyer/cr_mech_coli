@@ -41,6 +41,7 @@ class AgentSettings:
 
     @staticmethod
     def __new__(cls, **kwargs) -> AgentSettings: ...
+    def to_rod_agent_dict(self) -> dict: ...
 
 class CellIdentifier:
     """
