@@ -53,16 +53,17 @@ def predict(
     positions: np.ndarray,  # Shape (N, n_vertices, 3)
     domain_size: float,
     potential_type: PotentialType,
-    config_content: str | None = None,
+    settings,
     out_path: Path | None = None,
 ):
-    if potential_type is PotentialType.Morse:
+    if type(potential_type) is crm.crm_fit_rs.PotentialType_Morse:
         damping, interactions = reconstruct_morse_potential(parameters, cutoff)
-    elif potential_type is PotentialType.Mie:
+    elif type(potential_type) is crm.crm_fit_rs.PotentialType_Mie:
         damping, interactions = reconstruct_mie_potential(parameters, cutoff)
 
-    config = crm.Configuration.from_partial_toml(config_content)
-    config.domain_size = domain_size
+    config = settings.to_config()
+    # config = crm.Configuration.from_partial_toml(config_content)
+    # settings.constants.domain_size = domain_size
 
     n_agents = positions.shape[0]
     n_vertices = positions.shape[1]
@@ -74,14 +75,16 @@ def predict(
     agents = [
         crm.RodAgent(
             pos=np.array(
-                [*positions[i].T, [config.domain_height / 2] * positions.shape[1]],
+                [*positions[i].T, [settings.domain_height / 2] * positions.shape[1]],
                 dtype=np.float32,
             ).T,
             vel=np.zeros(
                 (positions.shape[1], positions.shape[2] + 1), dtype=np.float32
             ),
             interaction=interactions[i],
-            growth_rate=rod_length_diffs[i] / config.t_max / (n_vertices - 1),
+            growth_rate=rod_length_diffs[i]
+            / settings.constants.t_max
+            / (n_vertices - 1),
             spring_length=pos_to_spring_length(positions[i]),
             spring_length_threshold=1000,
             rigidity=rigidity,

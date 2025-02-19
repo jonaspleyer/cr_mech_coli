@@ -15,7 +15,7 @@ import multiprocessing as mp
 import argparse
 
 from .plotting import plot_profile, plot_distributions, visualize_param_space
-from .predict import predict_flatten, predict, store_parameters, PotentialType
+from .predict import predict_flatten, predict, store_parameters
 
 plt.rcParams.update(
     {
@@ -28,22 +28,22 @@ plt.rcParams.update(
 
 
 # Create folder to store output
-def get_out_folder(iteration: int | None, potential_type: PotentialType) -> Path:
-    base = Path(f"{Path(__file__).parent}/out/{potential_type.to_string()}")
+def get_out_folder(iteration: int | None, potential_type) -> Path:
+    base = Path(f"./out/crm_fit/{potential_type.to_short_string()}")
     if iteration is not None:
         out = base / f"{iteration:04}"
     else:
-        for i in range(9999):
-            out = base / f"{i:04}"
-            if not out.exists():
-                break
+        folders = sorted(glob(str(base / "*")))
+        if len(folders) > 0:
+            n = int(folders[-1].split("/")[-1]) + 1
         else:
-            raise ValueError("Every possible path already occupied")
+            n = 0
+        out = base / f"{n:04}"
     out.mkdir(parents=True, exist_ok=True)
     return out
 
 
-def crm_fit():
+def crm_fit_main():
     parser = argparse.ArgumentParser(
         description="Fits the Bacterial Rods model to a system of cells."
     )
@@ -55,19 +55,20 @@ def crm_fit():
         help="Use existing output folder instead of creating new one",
     )
     parser.add_argument(
-        "-p",
-        "--potential_type",
-        type=int,
-        default=PotentialType.Mie,
-        help="The interaction potential to use. Can be 0 for Morse or 1 for Mie.",
-    )
-    parser.add_argument(
         "-w", "--workers", type=int, default=-1, help="Number of threads"
     )
     parser.add_argument(
         "-d",
         "--data",
         help="Directory containing initial and final snapshots with masks.",
+    )
+    parser.add_argument(
+        "-o",
+        "--output-folder",
+        help="Folder to store all output in. If left unspecified, the output folder will be\
+            generated via OUTPUT_FOLDER='./out/crm_fit/POTENTIAL_TYPE/ITERATION/' where ITERATION\
+            is the next number larger than any already existing one and POTENTIAL_TYPE is obtained\
+            from the settings.toml file",
     )
     parser.add_argument(
         "--skip-profiles",
@@ -94,12 +95,8 @@ def crm_fit():
         action="store_true",
     )
     pyargs = parser.parse_args()
-    potential_type = PotentialType(pyargs.potential_type)
+    # potential_type = PotentialType(pyargs.potential_type)
     # potential_type: PotentialType = PotentialType.Mie
-
-    out = get_out_folder(pyargs.iteration, potential_type)
-
-    interval = time.time()
 
     if pyargs.data is None:
         dirs = sorted(glob("data/*"))
@@ -112,16 +109,16 @@ def crm_fit():
     files_masks = sorted(glob(str(data_dir / "masks/*.csv")))
 
     # Try to read config file
-    try:
-        f = open(data_dir / "simulation_config.toml", "r")
-        config_content = f.read()
-    except FileNotFoundError:
-        print(f"Could not find 'simulation_config.toml' inside {data_dir}.")
-        warnings.warn(
-            "Missing default values. This may result in numerical values which are  unrealistic \
-and can lead to problems within the numerical solver."
-        )
-        config_content = None
+    f = open(data_dir / "settings.toml", "r")
+    settings_content = f.read()
+    settings = crm.crm_fit_rs.Settings.from_toml(settings_content)
+    potential_type = settings.parameters.potential_type
+
+    out = get_out_folder(pyargs.iteration, potential_type)
+    if pyargs.output_folder is not None:
+        out = Path(pyargs.output_folder)
+
+    interval = time.time()
 
     img1 = imread(files_images[0])
     img2 = imread(files_images[1])
@@ -157,7 +154,7 @@ and can lead to problems within the numerical solver."
         pos1,
         pos2,
         potential_type,
-        config_content,
+        settings,
         out,
     )
 
@@ -172,7 +169,7 @@ and can lead to problems within the numerical solver."
         [1.0, 4.5],  # Strength
     ]
 
-    if potential_type is PotentialType.Morse:
+    if type(potential_type) is crm.crm_fit_rs.PotentialType_Morse:
         # Parameter Values
         potential_stiffness = 0.4
         parameters = (*radii, damping, strength, potential_stiffness)
@@ -181,7 +178,7 @@ and can lead to problems within the numerical solver."
         bounds.append([0.25, 0.55])  # Potential Stiffness
         A = np.zeros((len(bounds),) * 2)
         constraints = sp.optimize.LinearConstraint(A, lb=-np.inf, ub=np.inf)
-    elif potential_type is PotentialType.Mie:
+    elif type(potential_type) is crm.crm_fit_rs.PotentialType_Mie:
         # Parameter Values
         en = 6.0
         em = 5.5
@@ -207,6 +204,7 @@ and can lead to problems within the numerical solver."
         final_cost = params[-1]
         print(f"{time.time() - interval:10.4f}s Found previous results")
     else:
+        predict_flatten(parameters, *args_predict)
         res = sp.optimize.differential_evolution(
             predict_flatten,
             bounds=bounds,
@@ -281,7 +279,7 @@ and can lead to problems within the numerical solver."
         pos1,
         domain_size,
         potential_type,
-        config_content,
+        settings,
     )
 
     if cell_container is None:
@@ -289,7 +287,6 @@ and can lead to problems within the numerical solver."
         exit()
 
     iterations = cell_container.get_all_iterations()
-    agents_initial = cell_container.get_cells_at_iteration(iterations[0])
     agents_predicted = cell_container.get_cells_at_iteration(iterations[-1])
 
     if not pyargs.skip_masks:
