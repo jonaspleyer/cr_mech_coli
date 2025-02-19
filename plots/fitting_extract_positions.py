@@ -7,7 +7,6 @@ import matplotlib as mpl
 from tqdm import tqdm
 import argparse
 import multiprocessing as mp
-import scipy as sp
 
 mpl.use("pgf")
 plt.rcParams.update(
@@ -62,6 +61,33 @@ def calculate_lengths_distances(
     return distances, lengths_extracted, lengths_exact
 
 
+def create_simulation_result(n_vertices: int):
+    n_agents = 4
+    config = crm.Configuration(
+        t0=0.0,
+        dt=0.02,
+        t_max=200.0,
+        save_interval=4.0,
+        domain_size=100,
+    )
+    agent_settings = crm.AgentSettings(growth_rate=0.05)
+    agent_settings.mechanics.rigidity = 2.0
+    config.domain_height = 0.2
+
+    positions = crm.generate_positions_old(
+        n_agents,
+        agent_settings,
+        config,
+        1,
+        dx=config.domain_size / 10.0,
+        randomize_positions=0.0,
+        n_vertices=n_vertices,
+    )
+    rod_args = agent_settings.to_rod_agent_dict()
+    agents = [crm.RodAgent(pos=p, vel=p * 0.0, **rod_args) for p in positions]
+    return config, crm.run_simulation_with_agents(config, agents)
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="Plot comparison between exact and extracted positions",
@@ -83,25 +109,7 @@ if __name__ == "__main__":
     parser.add_argument("--skip-distribution", action="store_true", default=False)
     pyargs = parser.parse_args()
 
-    n_vertices = pyargs.n_vertices
-
-    config = crm.Configuration(
-        t0=0.0,
-        dt=0.1,
-        t_max=200.0,
-        save_interval=4.0,
-        n_agents=4,
-        domain_size=100,
-    )
-    agent_settings = crm.AgentSettings(
-        growth_rate=0.05,
-        n_vertices=n_vertices,
-    )
-    agent_settings.mechanics.rigidity = 2.0
-    config.domain_height = 0.2
-
-    cell_container = crm.run_simulation(config, agent_settings)
-
+    config, cell_container = create_simulation_result(pyargs.n_vertices)
     all_cells = cell_container.get_cells()
     iterations = cell_container.get_all_iterations()
     colors = cell_container.cell_to_color
