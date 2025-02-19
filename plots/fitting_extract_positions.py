@@ -61,7 +61,7 @@ def calculate_lengths_distances(
     return distances, lengths_extracted, lengths_exact
 
 
-def create_simulation_result(n_vertices: int):
+def create_simulation_result(n_vertices: int, rng_seed: int = 1):
     n_agents = 4
     config = crm.Configuration(
         t0=0.0,
@@ -78,7 +78,7 @@ def create_simulation_result(n_vertices: int):
         n_agents,
         agent_settings,
         config,
-        1,
+        rng_seed=rng_seed,
         dx=config.domain_size / 10.0,
         randomize_positions=0.0,
         n_vertices=n_vertices,
