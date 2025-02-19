@@ -106,8 +106,6 @@ pub struct AgentSettings {
     pub growth_rate: f32,
     /// Threshold when the bacterium divides
     pub spring_length_threshold: f32,
-    /// Number of vertices to use for this agent
-    pub n_vertices: usize,
 }
 
 #[pymethods]
@@ -137,7 +135,6 @@ impl AgentSettings {
                 )?,
                 growth_rate: 0.1,
                 spring_length_threshold: 6.0,
-                n_vertices: 8,
             },
         )?;
         if let Some(kwds) = kwds {
@@ -350,6 +347,7 @@ prepare_types!(
 /// Creates positions for multiple :class`RodAgent`s which can be used for simulation purposes.
 fn _generate_positions_old(
     py: Python,
+    n_vertices = 8,
     n_agents: usize,
     agent_settings: &AgentSettings,
     rng: &mut rand_chacha::ChaChaRng,
@@ -368,7 +366,7 @@ fn _generate_positions_old(
                 rng.gen_range(0.4 * config.domain_height..0.6 * config.domain_height),
             ];
             let angle: f32 = rng.gen_range(0.0..2.0 * std::f32::consts::PI);
-            nalgebra::MatrixXx3::<f32>::from_fn(agent_settings.n_vertices, |r, c| {
+            nalgebra::MatrixXx3::<f32>::from_fn(n_vertices, |r, c| {
                 p1[c]
                     + r as f32
                         * spring_length
