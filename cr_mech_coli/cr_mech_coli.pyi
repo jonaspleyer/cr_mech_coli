@@ -164,17 +164,24 @@ class CellContainer:
     @staticmethod
     def deserialize(bytes: list[int]) -> CellContainer: ...
 
-def run_simulation(
-    config: Configuration, agent_settings: AgentSettings
-) -> CellContainer:
-    """\
-    Use the :func:`run_simulation_with_agents`
+def generate_positions_old(
+    n_agents: int,
+    agent_settings: AgentSettings,
+    config: Configuration,
+    rng_seed: int = 0,
+    dx: float = 0.0,
+    randomize_positions: float = 0.0,
+    n_vertices: int = 8,
+):
+    """
+    Creates positions for multiple :class`RodAgent`s which can be used for simulation purposes.
 
-    Executes the simulation with the given :class:`Configuration`
-
-    .. deprecated:: 0.4
-        This function is deprecated and should not be used.
-        Use the :func:`run_simulation_with_agents` function instead.
+    Args:
+        n_agents(int): Number of positions to create
+        agent_settings(AgentSettings): See :class:`AgentSettings`
+        config(Configuration): See :class:`Configuration`
+        rng_seed(int): Seed for generating the random positions
+        dx(float): Spacing towards the domain boundary.
     """
     ...
 
