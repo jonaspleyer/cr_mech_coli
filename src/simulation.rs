@@ -418,6 +418,69 @@ pub fn generate_positions_old<'py>(
         .collect())
 }
 
+#[test]
+fn backwards_compat_generate_positions_old() -> PyResult<()> {
+    pyo3::prepare_freethreaded_python();
+    let generated_pos = Python::with_gil(|py| {
+        let agent_settings = AgentSettings::new(py, None)?.extract(py)?;
+        let config = Configuration::new(py, None)?.extract(py)?;
+        let old_positions =
+            generate_positions_old(py, 4, &agent_settings, &config, 1, 0.0, 0.1, 8)?;
+        PyResult::Ok(
+            old_positions
+                .into_iter()
+                .map(|pos| pos.to_owned_array())
+                .collect::<Vec<_>>(),
+        )
+    })?;
+    let old_pos = vec![
+        numpy::array![
+            [27.468908, 20.12428, 1.4922986],
+            [30.074106, 21.726332, 1.4922986],
+            [33.135212, 22.993032, 1.4922986],
+            [35.8945, 24.686779, 1.4922986],
+            [37.985126, 25.82119, 1.4922986],
+            [41.40438, 27.021421, 1.4922986],
+            [41.46813, 28.72572, 1.4922986],
+            [44.44608, 31.503601, 1.4922986]
+        ],
+        numpy::array![
+            [8.114415, 69.866714, 1.4667264],
+            [10.9589405, 70.1071, 1.4667264],
+            [14.553812, 70.36222, 1.4667264],
+            [17.65355, 70.67615, 1.4667264],
+            [19.406654, 70.78856, 1.4667264],
+            [21.934778, 71.24877, 1.4667264],
+            [24.32788, 71.43905, 1.4667264],
+            [27.831997, 71.5903, 1.4667264]
+        ],
+        numpy::array![
+            [83.25456, 23.841858, 1.384213],
+            [86.2094, 23.719553, 1.384213],
+            [87.3836, 22.407425, 1.384213],
+            [89.15912, 19.916075, 1.384213],
+            [94.61067, 19.968637, 1.384213],
+            [98.563545, 18.060032, 1.384213],
+            [97.98949, 17.147717, 1.384213],
+            [104.652954, 12.351942, 1.384213]
+        ],
+        numpy::array![
+            [86.79208, 71.02558, 1.4164526],
+            [85.146545, 73.689835, 1.4164526],
+            [82.56933, 74.24946, 1.4164526],
+            [81.98949, 77.84386, 1.4164526],
+            [78.248146, 77.59455, 1.4164526],
+            [76.69923, 82.323654, 1.4164526],
+            [75.966194, 86.90044, 1.4164526],
+            [72.31987, 89.531456, 1.4164526]
+        ],
+    ];
+    for (p, q) in generated_pos.into_iter().zip(old_pos.into_iter()) {
+        assert_eq!(p, q);
+    }
+    Ok(())
+}
+
 /// Executes a simulation given a :class:`Configuration` and a list of :class:`RodAgent`.
 #[pyfunction]
 pub fn run_simulation_with_agents(
