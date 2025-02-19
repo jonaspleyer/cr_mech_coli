@@ -10,7 +10,7 @@ def get_skeleton(submask, color):
 
 
 if __name__ == "__main__":
-    mask = np.loadtxt("data/growth-2-marked/image001042-markers.csv", delimiter=",")
+    mask = np.loadtxt("data/crm_fit/0001/masks/image001042-markers.csv", delimiter=",")
 
     # Create new colors for mask
     new_colors = {int(i): crm.counter_to_color(int(i)) for i in np.unique(mask)}
