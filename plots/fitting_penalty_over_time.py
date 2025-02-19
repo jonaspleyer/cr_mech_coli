@@ -72,7 +72,10 @@ if __name__ == "__main__":
         return A * np.exp(growth * x)
 
     popt, pcov = sp.optimize.curve_fit(
-        exponential, x[1:], penalties_parents, p0=(0.1, agent_settings.growth_rate)
+        exponential,
+        x[1:],
+        penalties_parents,
+        p0=(0.1, np.log(penalties_parents[-1] / penalties_parents[0]) / (x[-1] - x[0])),
     )
 
     fig, ax1 = plt.subplots()
