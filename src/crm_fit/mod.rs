@@ -1,9 +1,11 @@
+use approx_derive::AbsDiffEq;
 use pyo3::prelude::*;
 use serde::{Deserialize, Serialize};
 
 /// TODO
 #[pyclass(get_all, set_all)]
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, AbsDiffEq, PartialEq)]
+#[approx(epsilon_type = f32)]
 pub struct SampledFloat {
     /// TODO
     pub min: f32,
@@ -12,12 +14,14 @@ pub struct SampledFloat {
     /// TODO
     pub initial: f32,
     /// TODO
+    #[approx(equal)]
     pub individual: Option<bool>,
 }
 
 /// TODO
 #[pyclass(get_all, set_all)]
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, AbsDiffEq, PartialEq)]
+#[approx(epsilon_type = f32)]
 pub enum Parameter {
     /// TODO
     #[serde(untagged)]
@@ -29,7 +33,7 @@ pub enum Parameter {
 
 /// TODO
 #[pyclass(get_all, set_all)]
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, AbsDiffEq, PartialEq)]
 pub struct Parameters {
     /// TODO
     radius: Parameter,
@@ -45,7 +49,8 @@ pub struct Parameters {
 
 /// TODO
 #[pyclass(get_all, set_all)]
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, AbsDiffEq, PartialEq)]
+#[approx(epsilon_type = f32)]
 pub struct Morse {
     /// TODO
     potential_stiffness: Parameter,
@@ -53,7 +58,8 @@ pub struct Morse {
 
 /// TODO
 #[pyclass(get_all, set_all)]
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, AbsDiffEq, PartialEq)]
+#[approx(epsilon_type = f32)]
 pub struct Mie {
     /// TODO
     en: Parameter,
@@ -65,7 +71,7 @@ pub struct Mie {
 
 /// TODO
 #[pyclass(get_all, set_all)]
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, AbsDiffEq, PartialEq)]
 pub enum PotentialType {
     /// TODO
     Mie(Mie),
@@ -89,19 +95,23 @@ impl PotentialType {
 
 /// TODO
 #[pyclass(get_all, set_all)]
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, AbsDiffEq, PartialEq)]
+#[approx(epsilon_type = f32)]
 pub struct Optimization {
     /// Initial seed of the differential evolution algorithm
     #[serde(default)]
+    #[approx(equal)]
     pub seed: u64,
     /// Tolerance of the differential evolution algorithm
     #[serde(default = "default_tol")]
     pub tol: f32,
     /// Maximum iterations of the differential evolution algorithm
     #[serde(default = "default_max_iter")]
+    #[approx(equal)]
     pub max_iter: usize,
     /// Population size for each iteration
     #[serde(default = "default_pop_size")]
+    #[approx(equal)]
     pub pop_size: usize,
 }
 
@@ -119,7 +129,7 @@ const fn default_pop_size() -> usize {
 
 /// Contains all constants of the numerical simulation
 #[pyclass(get_all, set_all)]
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, AbsDiffEq, PartialEq)]
 pub struct Constants {
     /// Total time from start to finish
     pub t_max: f32,
@@ -128,8 +138,10 @@ pub struct Constants {
     /// Size of the domain
     pub domain_size: f32,
     /// Number of voxels to dissect the domain into
+    #[approx(equal)]
     pub n_voxels: core::num::NonZeroUsize,
     /// Random initial seed
+    #[approx(equal)]
     pub rng_seed: u64,
     /// Cutoff after which the physical interaction is identically zero
     pub cutoff: f32,
@@ -139,7 +151,8 @@ pub struct Constants {
 
 /// Contains all settings required to fit the model to images
 #[pyclass(get_all, set_all)]
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, AbsDiffEq, PartialEq)]
+#[approx(epsilon_type = f32)]
 pub struct Settings {
     /// See :class:`Constants`
     pub constants: Constants,
