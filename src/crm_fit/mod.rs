@@ -244,40 +244,58 @@ mod test {
     fn test_parsing_toml() {
         let potential_type = PotentialType::Mie(Mie {
             en: Parameter::SampledFloat(SampledFloat {
-                min: 1.0,
-                max: 2.0,
-                initial: 1.5,
+                min: 0.2,
+                max: 25.0,
+                initial: 6.0,
+                individual: Some(false),
+            }),
+            em: Parameter::SampledFloat(SampledFloat {
+                min: 0.2,
+                max: 25.0,
+                initial: 5.5,
                 individual: None,
             }),
-            em: Parameter::Float(5.5),
-            bound: 0.5,
+            bound: 8.0,
         });
-        let settings = Settings {
+        let settings1 = Settings {
             constants: Constants {
-                t_max: 1.0,
-                dt: 0.001,
-                domain_size: 10.0,
-                n_voxels: 2.try_into().unwrap(),
+                t_max: 100.0,
+                dt: 0.005,
+                domain_size: 100.0,
+                n_voxels: 1.try_into().unwrap(),
                 rng_seed: 0,
                 cutoff: 20.0,
                 pixel_per_micron: 2.2,
             },
             parameters: Parameters {
-                radius: Parameter::Float(4.0),
+                radius: Parameter::SampledFloat(SampledFloat {
+                    min: 3.0,
+                    max: 6.0,
+                    initial: 4.5,
+                    individual: Some(true),
+                }),
                 rigidity: Parameter::Float(8.0),
-                damping: Parameter::Float(0.7),
-                strength: Parameter::Float(0.1),
+                damping: Parameter::SampledFloat(SampledFloat {
+                    min: 0.6,
+                    max: 2.5,
+                    initial: 1.5,
+                    individual: None,
+                }),
+                strength: Parameter::SampledFloat(SampledFloat {
+                    min: 1.0,
+                    max: 4.5,
+                    initial: 1.0,
+                    individual: None,
+                }),
                 potential_type,
             },
             optimization: Optimization {
                 seed: 0,
                 tol: 1e-4,
-                max_iter: 40,
-                pop_size: 150,
+                max_iter: default_max_iter(),
+                pop_size: default_pop_size(),
             },
         };
-        let ostring = toml::to_string_pretty(&settings).unwrap();
-        println!("{ostring}");
         let toml_string = "
 [constants]
 t_max=100.0
@@ -299,17 +317,13 @@ en = { min=0.2, max=25.0, initial=6.0, individual=false}
 em = { min=0.2, max=25.0, initial=5.5}
 bound = 8.0
 
-# [parameters.potential_type.Morse]
-# potential_stiffness = 1.0
-# 
 [optimization]
 seed = 0
 tol = 1e-4
 "
         .to_string();
         let settings: Settings = toml::from_str(&toml_string).unwrap();
-        println!("{settings:#?}");
-        panic!();
+        approx::assert_abs_diff_eq!(settings1, settings);
     }
 
     /* #[test]
