@@ -82,3 +82,5 @@ out
 data
 
 uv.lock
+
+tests/test_image_gen_basic/
