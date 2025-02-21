@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 import matplotlib as mpl
 from tqdm import tqdm
 import argparse
+import time
 
 mpl.use("pgf")
 plt.rcParams.update(
@@ -61,6 +62,7 @@ def calculate_lengths_distances(
 
 
 def create_simulation_result(n_vertices: int, rng_seed: int = 1):
+    interval = time.time()
     n_agents = 4
     config = crm.Configuration(
         t0=0.0,
@@ -84,7 +86,9 @@ def create_simulation_result(n_vertices: int, rng_seed: int = 1):
     )
     rod_args = agent_settings.to_rod_agent_dict()
     agents = [crm.RodAgent(pos=p, vel=p * 0.0, **rod_args) for p in positions]
-    return config, crm.run_simulation_with_agents(config, agents)
+    res = crm.run_simulation_with_agents(config, agents)
+    print(f"{time.time() - interval:8.4} Created Simulation Result:")
+    return config, res
 
 
 if __name__ == "__main__":
