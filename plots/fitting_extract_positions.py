@@ -115,27 +115,13 @@ if __name__ == "__main__":
 
     if not pyargs.skip_masks:
         # Pick one iteration to plot results
+        indices = [9, 19, 29, 39, 49]
         iter_masks = [
             (
-                iterations[9],
-                crm.render_mask(all_cells[iterations[9]], colors, config.domain_size),
-            ),
-            (
-                iterations[19],
-                crm.render_mask(all_cells[iterations[18]], colors, config.domain_size),
-            ),
-            (
-                iterations[29],
-                crm.render_mask(all_cells[iterations[29]], colors, config.domain_size),
-            ),
-            (
-                iterations[39],
-                crm.render_mask(all_cells[iterations[39]], colors, config.domain_size),
-            ),
-            (
-                iterations[49],
-                crm.render_mask(all_cells[iterations[49]], colors, config.domain_size),
-            ),
+                iterations[ind],
+                crm.render_mask(all_cells[iterations[ind]], colors, config.domain_size),
+            )
+            for ind in indices
         ]
         for iteration, mask in tqdm(iter_masks):
             positions = crm.extract_positions(
