@@ -8,6 +8,7 @@
 
 # cr_mech_coli
 [![License: GPL 2.0](https://img.shields.io/github/license/jonaspleyer/cr_mech_coli?style=flat-square)](https://opensource.org/license/gpl-2-0/)
+[![Test](https://img.shields.io/github/actions/workflow/status/jonaspleyer/cr_mech_coli/test.yml?label=Test&style=flat-square)](https://github.com/jonaspleyer/cr_mech_coli/actions)
 [![CI](https://img.shields.io/github/actions/workflow/status/jonaspleyer/cr_mech_coli/CI.yml?label=CI&style=flat-square)](https://github.com/jonaspleyer/cr_mech_coli/actions)
 [![Docs](https://img.shields.io/github/actions/workflow/status/jonaspleyer/cr_mech_coli/sphinx_doc.yml?label=Docs&style=flat-square)](https://github.com/jonaspleyer/cr_mech_coli/actions)
 ![PyPI - Version](https://img.shields.io/pypi/v/cr_mech_coli?style=flat-square)
