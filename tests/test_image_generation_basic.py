@@ -8,12 +8,17 @@ def test_store_iamges():
     config.dt = 0.1
     config.t_max = 40.0
     config.save_interval = 20.0
-    config.n_agents = 5
 
     agent_settings = crm.AgentSettings()
-    agent_settings.growth_rate = 0.02
+    agent_settings.growth_rate = 0.1
 
-    cell_container = crm.run_simulation(config, agent_settings)
+    positions = crm.generate_positions_old(8, agent_settings, config, rng_seed=1031)
+    agents = [
+        crm.RodAgent(pos=p, vel=0 * p, **agent_settings.to_rod_agent_dict())
+        for p in positions
+    ]
+
+    cell_container = crm.run_simulation_with_agents(config, agents)
     render_settings = crm.RenderSettings()
     render_settings.noise = 50
     render_settings.kernel_size = 30

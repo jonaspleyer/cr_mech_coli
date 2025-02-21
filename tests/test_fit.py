@@ -8,10 +8,19 @@ def produce_masks():
     config.dt = 0.1
     config.t_max = 100.0
     config.save_interval = 20.0
-    config.n_agents = 4
     agent_settings = crm.AgentSettings(growth_rate=0.05)
+    positions = crm.generate_positions_old(
+        4,
+        agent_settings,
+        config,
+        rng_seed=11,
+    )
+    agents = [
+        crm.RodAgent(pos=p, vel=0 * p, **agent_settings.to_rod_agent_dict())
+        for p in positions
+    ]
 
-    cell_container = crm.run_simulation(config, agent_settings)
+    cell_container = crm.run_simulation_with_agents(config, agents)
 
     all_cells = cell_container.get_cells()
     iterations = cell_container.get_all_iterations()
