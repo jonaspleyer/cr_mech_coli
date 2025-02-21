@@ -115,4 +115,3 @@ if __name__ == "__main__":
     path.mkdir(parents=True, exist_ok=True)
     fig.savefig(str(path / "penalty-time-flow.png"))
     print(f"{time.time() - interval:8.4} Plotted Results")
-    plt.show()
