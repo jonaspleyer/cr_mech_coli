@@ -61,7 +61,7 @@ def calculate_lengths_distances(
     return distances, lengths_extracted, lengths_exact
 
 
-def create_simulation_result(n_vertices: int, rng_seed: int = 1):
+def create_simulation_result(n_vertices: int, rng_seed: int = 3):
     interval = time.time()
     n_agents = 4
     config = crm.Configuration(
@@ -72,7 +72,7 @@ def create_simulation_result(n_vertices: int, rng_seed: int = 1):
         domain_size=100,
     )
     agent_settings = crm.AgentSettings(growth_rate=0.05)
-    agent_settings.mechanics.rigidity = 2.0
+    agent_settings.mechanics.rigidity = 8.0
     config.domain_height = 0.2
 
     positions = crm.generate_positions_old(
