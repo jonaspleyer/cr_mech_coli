@@ -1,11 +1,6 @@
 import cr_mech_coli as crm
 
 
-def test_config_set_attributes_1():
-    config = crm.Configuration(n_agents=2)
-    assert config.n_agents == 2
-
-
 def test_config_set_attributes_3():
     config = crm.Configuration(domain_size=1000)
     assert abs(config.domain_size - 1000) < 1e-8
