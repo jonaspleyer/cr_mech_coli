@@ -55,7 +55,7 @@ jobs:
           set -e
           python3 -m venv .venv
           source .venv/bin/activate
-          pip install cr_mech_coli --find-links dist --force-reinstall
+          pip install . --find-links dist --force-reinstall --no-index
           pip install pytest
           .venv/bin/python3 .venv/bin/pytest tests
       - name: pytest
@@ -71,7 +71,7 @@ jobs:
             pip3 install -U pip pytest
           run: |
             set -e
-            pip3 install cr_mech_coli --find-links dist --force-reinstall
+            pip3 install . --find-links dist --force-reinstall --no-index
             .venv/bin/python3 .venv/bin/pytest tests
 
   windows:
@@ -110,7 +110,7 @@ jobs:
           set -e
           python3 -m venv .venv
           source .venv/Scripts/activate
-          pip install cr_mech_coli --find-links dist --force-reinstall
+          pip install . --find-links dist --force-reinstall --no-index
           pip install pytest
           pytest
 
@@ -147,7 +147,7 @@ jobs:
           set -e
           python3 -m venv .venv
           source .venv/bin/activate
-          pip install cr_mech_coli --find-links dist --force-reinstall
+          pip install . --find-links dist --force-reinstall --no-index
           pip install pytest
           .venv/bin/python3 .venv/bin/pytest tests
 
