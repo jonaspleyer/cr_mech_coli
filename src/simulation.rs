@@ -227,6 +227,23 @@ pub struct Configuration {
     pub rng_seed: u64,
 }
 
+impl Default for Configuration {
+    fn default() -> Self {
+        Self {
+            n_threads: 1.try_into().unwrap(),
+            t0: 0.0,             // MIN
+            dt: 0.1,             // MIN
+            t_max: 100.0,        // MIN
+            save_interval: 10.0, // MIN
+            show_progressbar: false,
+            domain_size: 100.0, // MICROMETRE
+            domain_height: 2.5, // MICROMETRE
+            n_voxels: 1,
+            rng_seed: 0,
+        }
+    }
+}
+
 #[pymethods]
 impl Configuration {
     /// Constructs a new :class:`Configuration` class
@@ -238,21 +255,7 @@ impl Configuration {
     #[new]
     #[pyo3(signature = (**kwds))]
     pub fn new(py: Python, kwds: Option<&Bound<pyo3::types::PyDict>>) -> pyo3::PyResult<Py<Self>> {
-        let res_new = Py::new(
-            py,
-            Self {
-                n_threads: 1.try_into().unwrap(),
-                t0: 0.0,             // MIN
-                dt: 0.1,             // MIN
-                t_max: 100.0,        // MIN
-                save_interval: 10.0, // MIN
-                show_progressbar: false,
-                domain_size: 100.0, // MICROMETRE
-                domain_height: 2.5, // MICROMETRE
-                n_voxels: 1,
-                rng_seed: 0,
-            },
-        )?;
+        let res_new = Py::new(py, Self::default())?;
         if let Some(kwds) = kwds {
             for (key, value) in kwds.iter() {
                 let key: Py<PyString> = key.extract()?;
