@@ -391,12 +391,36 @@ pub fn generate_positions_old<'py>(
     randomize_positions: f32,
     n_vertices: usize,
 ) -> PyResult<Vec<Bound<'py, numpy::PyArray2<f32>>>> {
+    let mechanics: RodMechanicsSettings = agent_settings.mechanics.extract(py)?;
+    Ok(_generate_positions_old(
+        n_agents,
+        &mechanics,
+        config,
+        rng_seed,
+        dx,
+        randomize_positions,
+        n_vertices,
+    )
+    .into_iter()
+    .map(|x| x.to_pyarray_bound(py))
+    .collect())
+}
+
+/// Backend functionality to use within rust-specific code for [generate_positions_old]
+fn _generate_positions_old(
+    n_agents: usize,
+    mechanics: &RodMechanicsSettings,
+    config: &Configuration,
+    rng_seed: u64,
+    dx: f32,
+    randomize_positions: f32,
+    n_vertices: usize,
+) -> Vec<numpy::nalgebra::DMatrix<f32>> {
     // numpy::nalgebra::DMatrix<f32>
     use rand::seq::IteratorRandom;
     use rand::Rng;
     use rand_chacha::rand_core::SeedableRng;
     let mut rng = rand_chacha::ChaCha8Rng::seed_from_u64(rng_seed);
-    let mechanics: RodMechanicsSettings = agent_settings.mechanics.extract(py)?;
     let spring_length = mechanics.spring_length;
     let s = randomize_positions.clamp(0.0, 1.0);
 
@@ -407,7 +431,7 @@ pub fn generate_positions_old<'py>(
     let picked_indices = all_indices.choose_multiple(&mut rng, n_agents);
     let drod_length_half = (n_vertices as f32) * spring_length / 2.0;
 
-    Ok(picked_indices
+    picked_indices
         .into_iter()
         .map(|index| {
             let xlow = dx + index.0 as f32 * dchunk;
@@ -439,9 +463,8 @@ pub fn generate_positions_old<'py>(
                             0.0
                         }
             })
-            .to_pyarray_bound(py)
         })
-        .collect())
+        .collect()
 }
 
 #[test]
