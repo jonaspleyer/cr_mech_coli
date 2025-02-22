@@ -371,6 +371,7 @@ prepare_types!(
 
 /// Creates positions for multiple :class`RodAgent`s which can be used for simulation purposes.
 #[pyfunction]
+#[allow(clippy::too_many_arguments)]
 #[pyo3(signature = (
     n_agents,
     agent_settings,
