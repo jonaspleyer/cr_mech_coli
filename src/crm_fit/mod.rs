@@ -91,6 +91,31 @@ impl PotentialType {
             PotentialType::Morse(_) => "morse".to_string(),
         }
     }
+
+    /// Helper method for :func:`~PotentialType.__reduce__`
+    #[staticmethod]
+    fn deserialize(data: Vec<u8>) -> Self {
+        serde_pickle::from_slice(&data, Default::default()).unwrap()
+    }
+
+    /// Used to pickle the :class:`PotentialType`
+    fn __reduce__(&self) -> (PyObject, PyObject) {
+        Python::with_gil(|py| {
+            py.run_bound(
+                "from cr_mech_coli.crm_fit.crm_fit_rs import PotentialType",
+                None,
+                None,
+            )
+            .unwrap();
+            // py.run_bound("from crm_fit import deserialize_potential_type", None, None)
+            //     .unwrap();
+            let deserialize = py
+                .eval_bound("PotentialType.deserialize", None, None)
+                .unwrap();
+            let data = serde_pickle::to_vec(&self, Default::default()).unwrap();
+            (deserialize.to_object(py), (data,).to_object(py))
+        })
+    }
 }
 
 /// TODO
@@ -182,6 +207,29 @@ impl Settings {
     #[getter]
     pub fn domain_height(&self) -> f32 {
         2.5
+    }
+
+    /// Helper method for :func:`~PotentialType.__reduce__`
+    #[staticmethod]
+    fn deserialize(data: Vec<u8>) -> Self {
+        serde_pickle::from_slice(&data, Default::default()).unwrap()
+    }
+
+    /// Implements the `__reduce__` method used by pythons pickle protocol.
+    pub fn __reduce__(&self) -> (PyObject, PyObject) {
+        Python::with_gil(|py| {
+            py.run_bound(
+                "from cr_mech_coli.crm_fit.crm_fit_rs import Settings",
+                None,
+                None,
+            )
+            .unwrap();
+            // py.run_bound("from crm_fit import deserialize_potential_type", None, None)
+            //     .unwrap();
+            let deserialize = py.eval_bound("Settings.deserialize", None, None).unwrap();
+            let data = serde_pickle::to_vec(&self, Default::default()).unwrap();
+            (deserialize.to_object(py), (data,).to_object(py))
+        })
     }
 
     /// Converts the settings provided to a :class:`Configuration` object required to run the
