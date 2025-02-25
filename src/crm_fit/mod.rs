@@ -163,7 +163,8 @@ pub struct Constants {
     /// Time increment used to solve equations
     pub dt: f32,
     /// Size of the domain
-    pub domain_size: f32,
+    #[approx(into_iter)]
+    pub domain_size: [f32; 2],
     /// Number of voxels to dissect the domain into
     #[approx(equal)]
     pub n_voxels: core::num::NonZeroUsize,
@@ -326,8 +327,8 @@ mod test {
             constants: Constants {
                 t_max: 100.0,
                 dt: 0.005,
-                domain_size: 100.0,
                 n_voxels: 1.try_into().unwrap(),
+                domain_size: [100.0; 2],
                 rng_seed: 0,
                 cutoff: 20.0,
                 pixel_per_micron: 2.2,
@@ -366,7 +367,7 @@ mod test {
 [constants]
 t_max=100.0
 dt=0.005
-domain_size=100.0
+domain_size=[100, 100]
 n_voxels=1
 rng_seed=0
 cutoff=20.0

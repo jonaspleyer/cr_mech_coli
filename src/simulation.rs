@@ -213,7 +213,7 @@ pub struct Configuration {
     pub show_progressbar: bool,
     /// Overall domain size of the simulation. This may determine an upper bound on the number of
     /// agents which can be put into the simulation.
-    pub domain_size: f32,
+    pub domain_size: [f32; 2],
     /// We assume that the domain is a thin 3D slice. This specifies the height of the domain.
     pub domain_height: f32,
     /// Number of voxels used to solve the system. This may yield performance improvements but
@@ -234,8 +234,8 @@ impl Default for Configuration {
             t_max: 100.0, // MIN
             n_saves: 10,  // N_Samples
             show_progressbar: false,
-            domain_size: 100.0, // MICROMETRE
-            domain_height: 2.5, // MICROMETRE
+            domain_size: [100.0; 2], // MICROMETRE
+            domain_height: 2.5,      // MICROMETRE
             n_voxels: 1,
             rng_seed: 0,
         }
@@ -352,7 +352,7 @@ dt=0.1
 t_max=100.0
 n_saves=10
 show_progressbar=false
-domain_size=100.0
+domain_size=[100.0, 100.0]
 domain_height=2.5
 n_voxels=1
 rng_seed=0
@@ -431,7 +431,8 @@ fn _generate_positions_old(
 
     // Split the domain into chunks
     let n_chunk_sides = (n_agents as f32).sqrt().ceil() as usize;
-    let dchunk = (config.domain_size - 2.0 * dx) / n_chunk_sides as f32;
+    let dchunk1 = (config.domain_size[0] - 2.0 * dx) / n_chunk_sides as f32;
+    let dchunk2 = (config.domain_size[1] - 2.0 * dx) / n_chunk_sides as f32;
     let all_indices = itertools::iproduct!(0..n_chunk_sides, 0..n_chunk_sides);
     let picked_indices = all_indices.choose_multiple(&mut rng, n_agents);
     let drod_length_half = (n_vertices as f32) * spring_length / 2.0;
@@ -439,11 +440,11 @@ fn _generate_positions_old(
     picked_indices
         .into_iter()
         .map(|index| {
-            let xlow = dx + index.0 as f32 * dchunk;
-            let ylow = dx + index.1 as f32 * dchunk;
+            let xlow = dx + index.0 as f32 * dchunk1;
+            let ylow = dx + index.1 as f32 * dchunk2;
             let middle = numpy::array![
-                rng.gen_range(xlow + drod_length_half..xlow + dchunk - drod_length_half),
-                rng.gen_range(ylow + drod_length_half..ylow + dchunk - drod_length_half),
+                rng.gen_range(xlow + drod_length_half..xlow + dchunk1 - drod_length_half),
+                rng.gen_range(ylow + drod_length_half..ylow + dchunk2 - drod_length_half),
                 rng.gen_range(0.4 * config.domain_height..0.6 * config.domain_height),
             ];
             let angle: f32 = rng.gen_range(0.0..2.0 * std::f32::consts::PI);
@@ -551,10 +552,15 @@ pub fn run_simulation_with_agents(
         show_progressbar: config.show_progressbar,
     };
 
+    let domain_size = [
+        config.domain_size[0],
+        config.domain_size[1],
+        config.domain_height,
+    ];
     let mut domain = CartesianCuboid::from_boundaries_and_n_voxels(
         [0.0; 3],
-        [config.domain_size, config.domain_size, config.domain_height],
-        [config.n_voxels, config.n_voxels, 1],
+        domain_size,
+        [config.n_voxels[0], config.n_voxels[1], 1],
     )
     .map_err(SimulationError::from)?;
     domain.rng_seed = config.rng_seed;
