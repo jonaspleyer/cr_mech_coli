@@ -2,7 +2,7 @@ use std::{hash::Hasher, num::NonZeroUsize};
 
 use backend::chili::SimulationError;
 use cellular_raza::prelude::*;
-use numpy::{PyArrayMethods, PyUntypedArrayMethods, ToPyArray};
+use numpy::{PyUntypedArrayMethods, ToPyArray};
 use pyo3::{prelude::*, types::PyString};
 use serde::{Deserialize, Serialize};
 use time::FixedStepsize;
@@ -47,7 +47,7 @@ impl RodMechanicsSettings {
         use numpy::ToPyArray;
         let nrows = self.pos.nrows();
         let new_array =
-            numpy::nalgebra::MatrixXx3::from_iterator(nrows, self.pos.iter().map(|&x| x));
+            numpy::nalgebra::MatrixXx3::from_iterator(nrows, self.pos.iter().map(Clone::clone));
         new_array.to_pyarray_bound(py)
     }
 
@@ -55,8 +55,7 @@ impl RodMechanicsSettings {
     fn set_pos<'a>(&'a mut self, pos: Bound<'a, numpy::PyArray2<f32>>) -> pyo3::PyResult<()> {
         use numpy::PyArrayMethods;
         let nrows = pos.shape()[0];
-        let iter: Vec<f32> = pos.to_vec()?;
-        self.pos = nalgebra::MatrixXx3::<f32>::from_iterator(nrows, iter.into_iter());
+        self.pos = nalgebra::MatrixXx3::<f32>::from_iterator(nrows, pos.to_vec()?);
         Ok(())
     }
 
@@ -65,7 +64,7 @@ impl RodMechanicsSettings {
         use numpy::ToPyArray;
         let new_array = numpy::nalgebra::MatrixXx3::<f32>::from_iterator(
             self.vel.nrows(),
-            self.vel.iter().map(|&x| x),
+            self.vel.iter().map(Clone::clone),
         );
         new_array.to_pyarray_bound(py)
     }
@@ -74,8 +73,7 @@ impl RodMechanicsSettings {
     fn set_vel<'a>(&'a mut self, pos: Bound<'a, numpy::PyArray2<f32>>) -> pyo3::PyResult<()> {
         use numpy::PyArrayMethods;
         let nrows = pos.shape()[0];
-        let iter: Vec<f32> = pos.to_vec()?;
-        self.vel = nalgebra::MatrixXx3::<f32>::from_iterator(nrows, iter.into_iter());
+        self.vel = nalgebra::MatrixXx3::<f32>::from_iterator(nrows, pos.to_vec()?);
         Ok(())
     }
 }
