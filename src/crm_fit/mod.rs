@@ -297,8 +297,8 @@ pub fn crm_fit_rs(py: Python) -> PyResult<Bound<PyModule>> {
 #[cfg(test)]
 mod test {
     use super::*;
-    #[test]
-    fn test_parsing_toml() {
+
+    fn generate_test_settings() -> (Settings, String) {
         let potential_type = PotentialType::Mie(Mie {
             en: Parameter::SampledFloat(SampledFloat {
                 min: 0.2,
@@ -379,25 +379,24 @@ seed = 0
 tol = 1e-4
 "
         .to_string();
-        let settings: Settings = toml::from_str(&toml_string).unwrap();
+        (settings1, toml_string)
+    }
+
+    #[test]
+    fn test_parsing_toml() {
+        let (settings1, toml_string) = generate_test_settings();
+        let settings = Settings::from_toml_string(&toml_string).unwrap();
         approx::assert_abs_diff_eq!(settings1, settings);
     }
 
-    /* #[test]
-    fn test_parsing() {
-        let settings = Settings {
-            constants: Constants { domain_size: 100.0 },
-            parameters: Parameters {
-                t_max: Parameter::SampledFloat(SampledFloat {
-                    min: 0.0,
-                    max: 10.0,
-                    initial: 5.0,
-                }),
-                domain_size: Parameter::Float(100.0),
-            },
-            optimization: Optimization { workers: None },
-        };
-        let toml_string = settings.to_toml().unwrap();
-        println!("{toml_string}");
-    }*/
+    #[test]
+    fn test_bound_generation() {
+        let (settings, _) = generate_test_settings();
+
+        for n_agents in 1..10 {
+            let (lower, upper, _, _, _, _) = settings.generate_optimization_infos(n_agents);
+            assert_eq!(lower.len(), n_agents + 4);
+            assert_eq!(upper.len(), n_agents + 4);
+        }
+    }
 }
