@@ -303,6 +303,16 @@ impl Configuration {
     pub fn from_toml(py: Python, toml_string: String) -> PyResult<Py<Self>> {
         // let out = Self::new(py, None)?;
         let out: Self = toml::from_str(&toml_string)
+    pub fn from_toml(filename: String) -> PyResult<Self> {
+        let content = std::fs::read_to_string(filename)?;
+        Self::from_toml_string(&content)
+    }
+
+    /// Parses the contents of a given string and returns a :class:`Configuration`.
+    /// See also :func:`~Configuration.from_toml_string`.
+    #[staticmethod]
+    pub fn from_toml_string(toml_string: &str) -> PyResult<Self> {
+        toml::from_str(toml_string)
             .map_err(|e| pyo3::exceptions::PyValueError::new_err(format!("{e}")))?;
         /* for (key, value) in table.iter() {
             use toml::Value::*;
