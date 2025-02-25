@@ -208,7 +208,7 @@ pub struct Configuration {
     /// Maximum solving time
     pub t_max: f32,
     /// Interval in which results will be saved
-    pub save_interval: f32,
+    pub n_saves: usize,
     /// Specifies if a progress bar should be shown during the solving process.
     pub show_progressbar: bool,
     /// Overall domain size of the simulation. This may determine an upper bound on the number of
@@ -229,10 +229,10 @@ impl Default for Configuration {
     fn default() -> Self {
         Self {
             n_threads: 1.try_into().unwrap(),
-            t0: 0.0,             // MIN
-            dt: 0.1,             // MIN
-            t_max: 100.0,        // MIN
-            save_interval: 10.0, // MIN
+            t0: 0.0,      // MIN
+            dt: 0.1,      // MIN
+            t_max: 100.0, // MIN
+            n_saves: 10,  // N_Samples
             show_progressbar: false,
             domain_size: 100.0, // MICROMETRE
             domain_height: 2.5, // MICROMETRE
@@ -333,7 +333,7 @@ mod test_config {
         Python::with_gil(|py| {
             let c1 = Configuration::new(py, None).unwrap();
             let c2 = Configuration::new(py, None).unwrap();
-            c2.setattr(py, "save_interval", 100.0).unwrap();
+            c2.setattr(py, "n_saves", 100).unwrap();
             let h1 = c1.borrow(py).to_hash().unwrap();
             let h2 = c2.borrow(py).to_hash().unwrap();
             assert!(h1 != h2);
@@ -350,7 +350,7 @@ n_threads=1
 t0=0.0
 dt=0.1
 t_max=100.0
-save_interval=10.0
+n_saves=10
 show_progressbar=false
 domain_size=100.0
 domain_height=2.5
@@ -535,8 +535,13 @@ pub fn run_simulation_with_agents(
     let t0 = config.t0;
     let dt = config.dt;
     let t_max = config.t_max;
-    let save_interval = config.save_interval;
-    let time = FixedStepsize::from_partial_save_interval(t0, dt, t_max, save_interval)
+    let mut save_steps = vec![t0];
+    if config.n_saves > 0 {
+        let dtsave = (t_max - t0) / (config.n_saves + 1) as f32;
+        save_steps.extend((1..config.n_saves + 1).map(|n| t0 + n as f32 * dtsave));
+    }
+    save_steps.push(t_max);
+    let time = FixedStepsize::from_partial_save_points(t0, dt, save_steps)
         .map_err(SimulationError::from)?;
     let storage = StorageBuilder::new().priority([StorageOption::Memory]);
     let settings = Settings {

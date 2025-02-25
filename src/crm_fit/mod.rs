@@ -174,6 +174,14 @@ pub struct Constants {
     pub cutoff: f32,
     /// Conversion between pixels and micron.
     pub pixel_per_micron: f32,
+    /// Number of save points which are not initial and final time point
+    #[approx(equal)]
+    #[serde(default = "default_n_saves")]
+    pub n_saves: usize,
+}
+
+const fn default_n_saves() -> usize {
+    0
 }
 
 /// Contains all settings required to fit the model to images
@@ -243,7 +251,7 @@ impl Settings {
 
     /// Converts the settings provided to a :class:`Configuration` object required to run the
     /// simulation
-    pub fn to_config(&self, n_saves: usize) -> PyResult<crate::Configuration> {
+    pub fn to_config(&self) -> PyResult<crate::Configuration> {
         #[allow(unused)]
         let Self {
             constants:
@@ -255,18 +263,18 @@ impl Settings {
                     rng_seed,
                     cutoff,
                     pixel_per_micron,
+                    n_saves,
                 },
             parameters,
             optimization,
         } = self.clone();
-        let save_interval = t_max / n_saves as f32;
         Ok(crate::Configuration {
             domain_height: self.domain_height(),
             n_threads: 1.try_into().unwrap(),
             t0: 0.0,
             dt,
             t_max,
-            save_interval,
+            n_saves,
             show_progressbar: false,
             domain_size,
             n_voxels: n_voxels.get(),
@@ -323,6 +331,7 @@ mod test {
                 rng_seed: 0,
                 cutoff: 20.0,
                 pixel_per_micron: 2.2,
+                n_saves: 0,
             },
             parameters: Parameters {
                 radius: Parameter::SampledFloat(SampledFloat {
