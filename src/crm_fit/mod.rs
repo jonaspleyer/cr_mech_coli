@@ -167,7 +167,8 @@ pub struct Constants {
     pub domain_size: [f32; 2],
     /// Number of voxels to dissect the domain into
     #[approx(equal)]
-    pub n_voxels: core::num::NonZeroUsize,
+    #[serde(default = "default_n_voxels")]
+    pub n_voxels: [core::num::NonZeroUsize; 2],
     /// Random initial seed
     #[approx(equal)]
     pub rng_seed: u64,
@@ -179,6 +180,10 @@ pub struct Constants {
     #[approx(equal)]
     #[serde(default = "default_n_saves")]
     pub n_saves: usize,
+}
+
+const fn default_n_voxels() -> [core::num::NonZeroUsize; 2] {
+    [unsafe { core::num::NonZeroUsize::new_unchecked(1) }; 2]
 }
 
 const fn default_n_saves() -> usize {
@@ -278,7 +283,7 @@ impl Settings {
             n_saves,
             show_progressbar: false,
             domain_size,
-            n_voxels: n_voxels.get(),
+            n_voxels: [n_voxels[0].get(), n_voxels[1].get()],
             rng_seed,
         })
     }
@@ -327,8 +332,8 @@ mod test {
             constants: Constants {
                 t_max: 100.0,
                 dt: 0.005,
-                n_voxels: 1.try_into().unwrap(),
                 domain_size: [100.0; 2],
+                n_voxels: [1.try_into().unwrap(); 2],
                 rng_seed: 0,
                 cutoff: 20.0,
                 pixel_per_micron: 2.2,
@@ -368,7 +373,7 @@ mod test {
 t_max=100.0
 dt=0.005
 domain_size=[100, 100]
-n_voxels=1
+n_voxels=[1, 1]
 rng_seed=0
 cutoff=20.0
 pixel_per_micron=2.2

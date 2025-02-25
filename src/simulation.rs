@@ -219,7 +219,7 @@ pub struct Configuration {
     /// Number of voxels used to solve the system. This may yield performance improvements but
     /// specifying a too high number will yield incorrect results.
     /// See also https://cellular-raza.com/internals/concepts/domain/decomposition/.
-    pub n_voxels: usize,
+    pub n_voxels: [usize; 2],
     /// Initial seed for randomizations. This can be useful to run multiple simulations with
     /// identical parameters but slightly varying initial conditions.
     pub rng_seed: u64,
@@ -236,7 +236,7 @@ impl Default for Configuration {
             show_progressbar: false,
             domain_size: [100.0; 2], // MICROMETRE
             domain_height: 2.5,      // MICROMETRE
-            n_voxels: 1,
+            n_voxels: [1; 2],
             rng_seed: 0,
         }
     }
@@ -354,7 +354,7 @@ n_saves=10
 show_progressbar=false
 domain_size=[100.0, 100.0]
 domain_height=2.5
-n_voxels=1
+n_voxels=[1, 1]
 rng_seed=0
 "
             .to_string();
