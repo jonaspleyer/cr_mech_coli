@@ -40,6 +40,8 @@ pub struct Parameters {
     /// TODO
     rigidity: Parameter,
     /// TODO
+    spring_tension: Parameter,
+    /// TODO
     damping: Parameter,
     /// TODO
     strength: Parameter,
