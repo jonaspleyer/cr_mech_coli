@@ -62,11 +62,11 @@ pub struct Morse {
 #[approx(epsilon_type = f32)]
 pub struct Mie {
     /// TODO
-    en: Parameter,
+    pub en: Parameter,
     /// TODO
-    em: Parameter,
+    pub em: Parameter,
     /// TODO
-    bound: f32,
+    pub bound: f32,
 }
 
 /// TODO
