@@ -190,15 +190,22 @@ pub struct Settings {
 #[pymethods]
 impl Settings {
     /// Creates a :class:`Settings` from a given toml string.
+    /// See also :func:`~Settings.from_toml_string`.
     #[staticmethod]
     pub fn from_toml(toml_filename: std::path::PathBuf) -> PyResult<Self> {
         let content = std::fs::read_to_string(toml_filename)?;
-        let out: Self = toml::from_str(&content)
-            .map_err(|e| pyo3::exceptions::PyValueError::new_err(format!("{e}")))?;
-        Ok(out)
+        Self::from_toml_string(&content)
     }
 
-    /// TODO
+    /// Parses the contents of the given string and returns a :class:`Settings` object.
+    /// See also :func:`~Settings.from_toml`.
+    #[staticmethod]
+    pub fn from_toml_string(toml_string: &str) -> PyResult<Self> {
+        toml::from_str(toml_string)
+            .map_err(|e| pyo3::exceptions::PyValueError::new_err(format!("{e}")))
+    }
+
+    /// Creates a toml string from the configuration file
     pub fn to_toml(&self) -> PyResult<String> {
         toml::to_string(&self).map_err(|e| pyo3::exceptions::PyValueError::new_err(format!("{e}")))
     }
