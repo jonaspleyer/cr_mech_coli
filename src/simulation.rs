@@ -196,7 +196,7 @@ impl AgentSettings {
 }
 
 /// Contains all settings needed to configure the simulation
-#[pyclass(set_all, get_all)]
+#[pyclass(set_all, get_all, module = "cr_mech_coli")]
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct Configuration {
     /// Number of threads used for solving the system.
