@@ -45,7 +45,7 @@ pub struct Parameters {
     damping: Parameter,
     /// TODO
     strength: Parameter,
-    // TODO
+    /// TODO
     potential_type: PotentialType,
 }
 
