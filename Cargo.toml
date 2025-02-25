@@ -11,11 +11,8 @@ crate-type = ["cdylib", "rlib"]
 # Due to python docstrings
 doctest = false
 
-[patch.crates-io]
-cellular_raza = { git = "https://github.com/jonaspleyer/cellular_raza" }
-
 [dependencies]
-cellular_raza = { version = "0.1.6", features = ["pyo3"] }
+cellular_raza = { version = "0.2", features = ["pyo3"] }
 approx = "0.5.1"
 approx-derive = "0.2.1"
 itertools = "0.14.0"
