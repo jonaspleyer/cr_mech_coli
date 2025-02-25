@@ -298,11 +298,8 @@ impl Configuration {
 
     /// Parses the content of a given toml file and returns a :class:`Configuration` object which
     /// contains the given values.
-    /// This will insert default values of not specified otherwise.
+    /// See also :func:`~Configuration.from_toml_string`.
     #[staticmethod]
-    pub fn from_toml(py: Python, toml_string: String) -> PyResult<Py<Self>> {
-        // let out = Self::new(py, None)?;
-        let out: Self = toml::from_str(&toml_string)
     pub fn from_toml(filename: String) -> PyResult<Self> {
         let content = std::fs::read_to_string(filename)?;
         Self::from_toml_string(&content)
