@@ -3,7 +3,7 @@ use pyo3::prelude::*;
 use serde::{Deserialize, Serialize};
 
 /// TODO
-#[pyclass(get_all, set_all)]
+#[pyclass(get_all, set_all, module = "cr_mech_coli.crm_fit")]
 #[derive(Clone, Debug, Serialize, Deserialize, AbsDiffEq, PartialEq)]
 #[approx(epsilon_type = f32)]
 pub struct SampledFloat {
@@ -19,7 +19,7 @@ pub struct SampledFloat {
 }
 
 /// TODO
-#[pyclass(get_all, set_all)]
+#[pyclass(get_all, set_all, module = "cr_mech_coli.crm_fit")]
 #[derive(Clone, Debug, Serialize, Deserialize, AbsDiffEq, PartialEq)]
 #[approx(epsilon_type = f32)]
 pub enum Parameter {
@@ -32,7 +32,7 @@ pub enum Parameter {
 }
 
 /// TODO
-#[pyclass(get_all, set_all)]
+#[pyclass(get_all, set_all, module = "cr_mech_coli.crm_fit")]
 #[derive(Clone, Debug, Serialize, Deserialize, AbsDiffEq, PartialEq)]
 pub struct Parameters {
     /// TODO
@@ -48,7 +48,7 @@ pub struct Parameters {
 }
 
 /// TODO
-#[pyclass(get_all, set_all)]
+#[pyclass(get_all, set_all, module = "cr_mech_coli.crm_fit")]
 #[derive(Clone, Debug, Serialize, Deserialize, AbsDiffEq, PartialEq)]
 #[approx(epsilon_type = f32)]
 pub struct Morse {
@@ -57,7 +57,7 @@ pub struct Morse {
 }
 
 /// TODO
-#[pyclass(get_all, set_all)]
+#[pyclass(get_all, set_all, module = "cr_mech_coli.crm_fit")]
 #[derive(Clone, Debug, Serialize, Deserialize, AbsDiffEq, PartialEq)]
 #[approx(epsilon_type = f32)]
 pub struct Mie {
@@ -70,7 +70,7 @@ pub struct Mie {
 }
 
 /// TODO
-#[pyclass(get_all, set_all)]
+#[pyclass(get_all, set_all, module = "cr_mech_coli.crm_fit")]
 #[derive(Clone, Debug, Serialize, Deserialize, AbsDiffEq, PartialEq)]
 pub enum PotentialType {
     /// TODO
@@ -94,7 +94,7 @@ impl PotentialType {
 }
 
 /// TODO
-#[pyclass(get_all, set_all)]
+#[pyclass(get_all, set_all, module = "cr_mech_coli.crm_fit")]
 #[derive(Clone, Debug, Serialize, Deserialize, AbsDiffEq, PartialEq)]
 #[approx(epsilon_type = f32)]
 pub struct Optimization {
@@ -128,7 +128,7 @@ const fn default_pop_size() -> usize {
 }
 
 /// Contains all constants of the numerical simulation
-#[pyclass(get_all, set_all)]
+#[pyclass(get_all, set_all, module = "cr_mech_coli.crm_fit")]
 #[derive(Clone, Debug, Serialize, Deserialize, AbsDiffEq, PartialEq)]
 pub struct Constants {
     /// Total time from start to finish
@@ -150,7 +150,7 @@ pub struct Constants {
 }
 
 /// Contains all settings required to fit the model to images
-#[pyclass(get_all, set_all)]
+#[pyclass(get_all, set_all, module = "cr_mech_coli.crm_fit")]
 #[derive(Clone, Debug, Serialize, Deserialize, AbsDiffEq, PartialEq)]
 #[approx(epsilon_type = f32)]
 pub struct Settings {
