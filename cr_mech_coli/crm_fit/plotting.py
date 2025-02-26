@@ -53,7 +53,7 @@ def plot_profile(
     )
     ax.plot(x, y, color="k", linestyle="--")
     fig.tight_layout()
-    plt.savefig(f"{out}/{name}.png")
+    plt.savefig(f"{out}/{name}.png".lower().replace(" ", "-"))
     return (fig, ax)
 
 
