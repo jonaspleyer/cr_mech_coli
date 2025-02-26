@@ -192,7 +192,6 @@ def crm_fit_main():
 
     interval = time.time()
 
-
     # Plot Cost function against varying parameters
     if not pyargs.skip_profiles:
         if pyargs.workers < 0:
