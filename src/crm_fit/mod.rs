@@ -294,6 +294,280 @@ impl Settings {
         })
     }
 
+    /// Creates a list of lower and upper bounds for the sampled parameters
+    #[allow(unused)]
+    pub fn generate_optimization_infos(
+        &self,
+        n_agents: usize,
+    ) -> (
+        Vec<f32>,
+        Vec<f32>,
+        Vec<f32>,
+        Vec<(String, String, String)>,
+        Vec<f32>,
+        Vec<(String, String, String)>,
+    ) {
+        let mut param_space_dim = 0;
+
+        #[allow(unused)]
+        let Parameters {
+            radius,
+            rigidity,
+            spring_tension,
+            damping,
+            strength,
+            potential_type,
+        } = &self.parameters;
+
+        let mut bounds_lower = Vec::new();
+        let mut bounds_upper = Vec::new();
+        let mut initial_values = Vec::new();
+        let mut infos = Vec::new();
+        let mut constants = Vec::new();
+        let mut constant_infos = Vec::new();
+        macro_rules! append_infos_bounds(
+            ($var:expr, $var_name:expr, $units:expr, $symbol:expr) => {
+                match &$var {
+                    Parameter::SampledFloat(SampledFloat {
+                        min,
+                        max,
+                        initial,
+                        individual,
+                    }) => {
+                        if individual.is_none() || individual == &Some(false) {
+                            bounds_lower.push(min.clone());
+                            bounds_upper.push(max.clone());
+                            param_space_dim += 1;
+                            infos.push((
+                                stringify!($var_name).to_string(),
+                                $units.to_string(),
+                                format!($symbol)
+                            ));
+                            initial_values.push(initial.clone());
+                        } else {
+                            bounds_lower.extend(vec![min.clone(); n_agents]);
+                            bounds_upper.extend(vec![max.clone(); n_agents]);
+                            param_space_dim += n_agents;
+                            infos.extend(
+                                (0..n_agents)
+                                    .map(|i| (
+                                        format!("{} {}", stringify!($var_name), i),
+                                        $units.to_string(),
+                                        format!("{}_{{{}}}", $symbol, i),
+                                    ))
+                            );
+                            initial_values.extend(vec![initial.clone(); n_agents]);
+                        }
+                    },
+                    Parameter::Float(c) => {
+                        constants.push(*c);
+                        constant_infos.push((
+                            stringify!($var_name).to_string(),
+                            $units.to_string(),
+                            format!($symbol),
+                        ));
+                    },
+                }
+            }
+        );
+        append_infos_bounds!(radius, "Radius", "\\SI{}{\\micro\\metre}", "r");
+        append_infos_bounds!(
+            rigidity,
+            "Rigidity",
+            "\\SI{}{\\micro\\metre\\per\\min}",
+            "\\kappa"
+        );
+        append_infos_bounds!(
+            spring_tension,
+            "Spring Tension",
+            "\\SI{}{\\per\\min^2}",
+            "\\gamma"
+        );
+        append_infos_bounds!(damping, "Damping", "\\SI{}{\\per\\min}", "\\lambda");
+        append_infos_bounds!(
+            strength,
+            "Strength",
+            "\\SI{}{\\micro\\metre^2\\per\\min^2}",
+            "C"
+        );
+        match potential_type {
+            PotentialType::Mie(mie) => {
+                let en = mie.en.clone();
+                let em = mie.em.clone();
+                append_infos_bounds!(en, "Exponent n", "1", "n");
+                append_infos_bounds!(em, "Exponent m", "1", "m");
+            }
+            PotentialType::Morse(morse) => append_infos_bounds!(
+                &morse.potential_stiffness,
+                "Potential Stiffness",
+                "\\SI{}{\\micro\\metre}",
+                "\\lambda"
+            ),
+        }
+
+        (
+            bounds_lower,
+            bounds_upper,
+            initial_values,
+            infos,
+            constants,
+            constant_infos,
+        )
+    }
+
+    /// TODO
+    pub fn predict(
+        &self,
+        parameters: Vec<f32>,
+        positions: numpy::PyReadonlyArray3<f32>,
+    ) -> PyResult<crate::CellContainer> {
+        let config = self.to_config()?;
+        let mut positions = positions.as_array().to_owned();
+
+        // If the positions do not have dimension (?,?,3), we bring them to this dimension
+        if positions.shape()[2] != 3 {
+            let mut new_positions = numpy::ndarray::Array3::<f32>::zeros((
+                positions.shape()[0],
+                positions.shape()[1],
+                3,
+            ));
+            new_positions
+                .slice_mut(numpy::ndarray::s![.., .., ..2])
+                .assign(&positions.slice(numpy::ndarray::s![.., .., ..2]));
+            use core::ops::AddAssign;
+            new_positions
+                .slice_mut(numpy::ndarray::s![.., .., 2])
+                .add_assign(self.domain_height() / 2.0);
+            positions = new_positions;
+        }
+        let n_agents = positions.shape()[0];
+
+        let Parameters {
+            radius,
+            rigidity,
+            spring_tension,
+            damping,
+            strength,
+            potential_type,
+        } = &self.parameters;
+
+        let mut param_counter = 0;
+        macro_rules! check_parameter(
+            ($var:expr) => {
+                match $var {
+                    // Fixed
+                    Parameter::Float(value) => {
+                        vec![value.clone(); n_agents]
+                    },
+                    #[allow(unused)]
+                    Parameter::SampledFloat(SampledFloat {
+                        min,
+                        max,
+                        initial: _,
+                        individual,
+                    }) => {
+                        // Sampled-Individual
+                        if individual == &Some(true) {
+                            let res = parameters[param_counter..param_counter+n_agents]
+                                .to_vec();
+                            param_counter += n_agents;
+                            res
+                        // Sampled-Single
+                        } else {
+                            let res = vec![parameters[param_counter]; n_agents];
+                            param_counter += 1;
+                            res
+                        }
+                    },
+                }
+            };
+        );
+
+        let (radius, rigidity, spring_tension, damping, strength) = (
+            check_parameter!(radius),
+            check_parameter!(rigidity),
+            check_parameter!(spring_tension),
+            check_parameter!(damping),
+            check_parameter!(strength),
+        );
+
+        // Now configure potential type
+        let interaction: Vec<_> = match potential_type {
+            PotentialType::Mie(Mie { en, em, bound }) => {
+                let en = check_parameter!(en);
+                let em = check_parameter!(em);
+                en.into_iter()
+                    .zip(em)
+                    .enumerate()
+                    .map(|(n, (en, em))| {
+                        RodInteraction(PhysicalInteraction::MiePotentialF32(MiePotentialF32 {
+                            en,
+                            em,
+                            strength: strength[n],
+                            radius: radius[n],
+                            bound: *bound,
+                            cutoff: self.constants.cutoff,
+                        }))
+                    })
+                    .collect()
+            }
+            PotentialType::Morse(Morse {
+                potential_stiffness,
+            }) => {
+                let potential_stiffness = check_parameter!(potential_stiffness);
+                potential_stiffness
+                    .into_iter()
+                    .enumerate()
+                    .map(|(n, potential_stiffness)| {
+                        RodInteraction(PhysicalInteraction::MorsePotentialF32(MorsePotentialF32 {
+                            strength: strength[n],
+                            radius: radius[n],
+                            potential_stiffness,
+                            cutoff: self.constants.cutoff,
+                        }))
+                    })
+                    .collect()
+            }
+        };
+
+        let pos_to_spring_length = |pos: &nalgebra::MatrixXx3<f32>| -> f32 {
+            let mut res = 0.0;
+            for i in 0..pos.nrows() - 1 {
+                res += ((pos[(i + 1, 0)] - pos[(i, 0)]).powf(2.0)
+                    + (pos[(i + 1, 1)] - pos[(i, 1)]).powf(2.0))
+                .sqrt();
+            }
+            res / (self.constants.n_vertices.get() - 1) as f32
+        };
+
+        let agents = positions
+            .axis_iter(numpy::ndarray::Axis(0))
+            .enumerate()
+            .map(|(n, pos)| {
+                let pos = nalgebra::Matrix3xX::<f32>::from_iterator(
+                    self.constants.n_vertices.get(),
+                    pos.iter().copied(),
+                );
+                let spring_length = pos_to_spring_length(&pos.transpose());
+                crate::RodAgent {
+                    mechanics: cellular_raza::prelude::RodMechanics {
+                        pos: pos.transpose(),
+                        vel: nalgebra::MatrixXx3::zeros(self.constants.n_vertices.get()),
+                        diffusion_constant: 0.0,
+                        spring_tension: spring_tension[n],
+                        rigidity: rigidity[n],
+                        spring_length,
+                        damping: damping[n],
+                    },
+                    interaction: interaction[n].clone(),
+                    growth_rate: spring_length / self.constants.t_max,
+                    spring_length_threshold: f32::INFINITY,
+                }
+            })
+            .collect();
+        crate::run_simulation_with_agents(&config, agents)
+    }
+
     /// Formats the object
     pub fn __repr__(&self) -> String {
         format!("{self:#?}")
