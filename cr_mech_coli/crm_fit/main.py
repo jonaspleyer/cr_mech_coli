@@ -238,9 +238,9 @@ def crm_fit_main():
         figs_axs[0][1].set_axis_off()
         figs_axs[1][1].imshow(img2)
         figs_axs[1][1].set_axis_off()
-        figs_axs[2][1].imshow(mask1)
+        figs_axs[2][1].imshow(mask1.T)
         figs_axs[2][1].set_axis_off()
-        figs_axs[3][1].imshow(mask2)
+        figs_axs[3][1].imshow(mask2.T)
         figs_axs[3][1].set_axis_off()
 
         for p in pos1:
