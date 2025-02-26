@@ -122,7 +122,7 @@ def __create_cell_surfaces(
 def render_pv_image(
     cells: dict[CellIdentifier, tuple[RodAgent, CellIdentifier | None]],
     render_settings: RenderSettings,
-    domain_size: float,
+    domain_size: tuple[float, float] | float,
     colors: dict[CellIdentifier, list[int]] | None = None,
     filename: str | Path | None = None,
 ) -> np.ndarray:
@@ -171,7 +171,10 @@ def render_pv_image(
     else:
         plotter.disable_anti_aliasing()
 
-    pv.Plotter.view_xy(plotter, bounds=(0, domain_size, 0, domain_size, 0, 0))
+    if type(domain_size) is float:
+        pv.Plotter.view_xy(plotter, bounds=(0, domain_size, 0, domain_size, 0, 0))
+    elif type(domain_size) is tuple:
+        pv.Plotter.view_xy(plotter, bounds=(0, domain_size[0], 0, domain_size[1], 0, 0))
 
     img = np.array(plotter.screenshot())
     plotter.close()
