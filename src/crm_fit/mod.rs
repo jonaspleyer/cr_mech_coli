@@ -179,8 +179,9 @@ pub struct Constants {
     pub rng_seed: u64,
     /// Cutoff after which the physical interaction is identically zero
     pub cutoff: f32,
-    /// Conversion between pixels and micron.
-    pub pixel_per_micron: f32,
+    /// Number of vertices to use for discretization of agents
+    #[approx(equal)]
+    pub n_vertices: core::num::NonZeroUsize,
     /// Number of save points which are not initial and final time point
     #[approx(equal)]
     #[serde(default = "default_n_saves")]
@@ -273,7 +274,7 @@ impl Settings {
                     n_voxels,
                     rng_seed,
                     cutoff,
-                    pixel_per_micron,
+                    n_vertices,
                     n_saves,
                 },
             parameters,
@@ -341,7 +342,7 @@ mod test {
                 n_voxels: [1.try_into().unwrap(); 2],
                 rng_seed: 0,
                 cutoff: 20.0,
-                pixel_per_micron: 2.2,
+                n_vertices: 8.try_into().unwrap(),
                 n_saves: 0,
             },
             parameters: Parameters {
@@ -381,7 +382,7 @@ domain_size=[100, 100]
 n_voxels=[1, 1]
 rng_seed=0
 cutoff=20.0
-pixel_per_micron=2.2
+n_vertices=8
 
 [parameters]
 radius = { min = 3.0, max=6.0, initial=4.5, individual=true }
