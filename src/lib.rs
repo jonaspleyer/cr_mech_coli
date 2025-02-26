@@ -15,11 +15,11 @@ mod simulation;
 pub use agent::*;
 pub use cellular_raza::prelude::{CellIdentifier, VoxelPlainIndex};
 use cellular_raza::prelude::{MiePotentialF32, MorsePotentialF32};
+pub use crm_fit::*;
 pub use datatypes::*;
 pub use fitting::*;
 pub use imaging::*;
 pub use sampling::*;
-pub use crm_fit::*;
 pub use simulation::*;
 
 use pyo3::prelude::*;
@@ -30,6 +30,10 @@ use pyo3::prelude::*;
 fn cr_mech_coli(py: Python, m: &Bound<'_, PyModule>) -> PyResult<()> {
     let submodule = crm_fit::crm_fit_rs(py)?;
     m.add_submodule(&submodule)?;
+    py.import_bound("sys")?
+        .getattr("modules")?
+        .set_item("cr_mech_coli.crm_fit.crm_fit_rs", submodule)?;
+
     m.add_function(wrap_pyfunction!(generate_positions_old, m)?)?;
     m.add_function(wrap_pyfunction!(run_simulation_with_agents, m)?)?;
     m.add_function(wrap_pyfunction!(sort_cellular_identifiers, m)?)?;
