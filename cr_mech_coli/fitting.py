@@ -222,19 +222,17 @@ def convert_cell_pos_to_pixels(
         domain_size = np.array([domain_size] * 2, dtype=float)
     domain_size = np.array(domain_size)
 
-    dl = 2**0.5 * domain_size
     domain_pixels = np.array(image_resolution, dtype=float)
-    pixel_per_length = domain_pixels / dl
+    pixel_per_length = domain_pixels / domain_size
 
-    # Shift coordinates to center
-    p = 0.5 * domain_size - cell_pos[:, :2]
-    # Scale with conversion between pixels and length
-    p *= np.array([-1, 1]) * pixel_per_length
-    # Shift coordinate system again
-    p += 0.5 * domain_pixels
-    # Round to plot in image
-    p = np.array(np.round(p), dtype=int)
-    return p
+    # 1. Shift coordinates to center
+    # 2. Scale with conversion between pixels and length
+    # 3. Shift coordinate system again
+    # 4. Round to plot in image
+    pnew = (
+        cell_pos[:, :2] - 0.5 * domain_size
+    ) * pixel_per_length + 0.5 * domain_pixels
+    return np.array(np.round(pnew), dtype=int)
 
 
 def convert_pixel_to_position(
@@ -257,15 +255,11 @@ def convert_pixel_to_position(
     """
     # Convert to numpy array
     if type(domain_size) is float:
-        domain_size = np.array([domain_size] * 2, dtype=float)
-    domain_size = np.array(domain_size, dtype=float)
+        domain_size = np.array([domain_size] * 2, dtype=np.float32)
+    domain_size = np.array(domain_size, dtype=np.float32)
+    domain_pixels = np.array(image_resolution, dtype=np.float32)
+    pixel_per_length = domain_pixels / domain_size
 
-    dl = 2**0.5 * domain_size
-    domain_pixels = np.array(image_resolution, dtype=float)
-    pixel_per_length = domain_pixels / dl
-
-    p = np.array(pos_pixel, dtype=float)
-    p -= 0.5 * domain_pixels
-    p = p * np.array([-1, 1]) / pixel_per_length
-    p = 0.5 * domain_size - p
-    return p
+    p = np.array(pos_pixel, dtype=np.float32)
+    pnew = (p - 0.5 * domain_pixels) / pixel_per_length + 0.5 * domain_size
+    return pnew
