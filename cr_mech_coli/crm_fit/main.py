@@ -127,9 +127,14 @@ def crm_fit_main():
     print(f"{time.time() - interval:10.4f}s Loaded data")
     interval = time.time()
 
-    n_vertices = 8
-    pos1, lengths1, radii1 = crm.extract_positions(mask1, n_vertices)
-    pos2, lengths2, radii2 = crm.extract_positions(mask2, n_vertices)
+    n_vertices = settings.constants.n_vertices
+    domain_size = settings.constants.domain_size
+    pos1, lengths1, radii1 = crm.extract_positions(
+        mask1, n_vertices, domain_size=domain_size
+    )
+    pos2, lengths2, radii2 = crm.extract_positions(
+        mask2, n_vertices, domain_size=domain_size
+    )
 
     # Calculate Rod lengths which is later used to determine growth rates.
     rod_length_diffs = lengths2 - lengths1
