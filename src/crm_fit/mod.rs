@@ -339,9 +339,9 @@ impl Settings {
                             bounds_upper.push(max.clone());
                             param_space_dim += 1;
                             infos.push((
-                                stringify!($var_name).to_string(),
+                                $var_name.to_string(),
                                 $units.to_string(),
-                                format!($symbol)
+                                $symbol.to_string(),
                             ));
                             initial_values.push(initial.clone());
                         } else {
@@ -351,7 +351,7 @@ impl Settings {
                             infos.extend(
                                 (0..n_agents)
                                     .map(|i| (
-                                        format!("{} {}", stringify!($var_name), i),
+                                        format!("{} {}", $var_name, i),
                                         $units.to_string(),
                                         format!("{}_{{{}}}", $symbol, i),
                                     ))
@@ -362,9 +362,9 @@ impl Settings {
                     Parameter::Float(c) => {
                         constants.push(*c);
                         constant_infos.push((
-                            stringify!($var_name).to_string(),
+                            $var_name.to_string(),
                             $units.to_string(),
-                            format!($symbol),
+                            $symbol.to_string(),
                         ));
                     },
                 }
