@@ -7,7 +7,7 @@ def test_store_iamges():
     config.t0 = 0.0
     config.dt = 0.1
     config.t_max = 40.0
-    config.save_interval = 20.0
+    config.n_saves = 1
 
     agent_settings = crm.AgentSettings()
     agent_settings.growth_rate = 0.1

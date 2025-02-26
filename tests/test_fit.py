@@ -7,7 +7,7 @@ def produce_masks():
     config.t0 = 0.0
     config.dt = 0.1
     config.t_max = 100.0
-    config.save_interval = 20.0
+    config.n_saves = 4
     agent_settings = crm.AgentSettings(growth_rate=0.05)
     positions = crm.generate_positions_old(
         4,
