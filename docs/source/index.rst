@@ -96,6 +96,7 @@ The images below show the steps outlined above.
    :hidden:
 
     Documentation <documentation/index>
+    Scripts <scripts/index>
     Model <model>
     Fitting Methods <fitting-methods>
     Imaging Generation <image-generation>

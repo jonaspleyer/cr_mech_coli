@@ -9,5 +9,6 @@ Documentation
     crm.datatypes <datatypes>
     crm.imaging <imaging>
     crm.fitting <fitting>
+    crm_fit <crm_fit>
 
 .. automodule:: cr_mech_coli.__init__
