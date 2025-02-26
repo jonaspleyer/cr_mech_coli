@@ -627,6 +627,7 @@ mod test {
                     individual: Some(true),
                 }),
                 rigidity: Parameter::Float(8.0),
+                spring_tension: Parameter::Float(1.0),
                 damping: Parameter::SampledFloat(SampledFloat {
                     min: 0.6,
                     max: 2.5,
@@ -661,6 +662,7 @@ n_vertices=8
 [parameters]
 radius = { min = 3.0, max=6.0, initial=4.5, individual=true }
 rigidity = 8.0
+spring_tension = 1.0
 damping = { min=0.6, max=2.5, initial=1.5 }
 strength = { min=1.0, max=4.5, initial=1.0 }
 
