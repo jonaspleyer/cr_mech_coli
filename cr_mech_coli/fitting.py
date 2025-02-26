@@ -47,7 +47,7 @@ def points_along_polygon(
     Returns:
         np.ndarray: Array containing all extracted points (along the 0th axis).
     """
-    polygon = np.array(polygon, dtype=float)
+    polygon = np.array(polygon, dtype=np.float32)
 
     # Calculate the total length
     length_segments = np.sqrt(np.sum((polygon[1:] - polygon[:-1]) ** 2, axis=1))
@@ -112,10 +112,11 @@ def extract_positions(
     polys = [sk.measure.approximate_polygon(sp, 1) for sp in skeleton_points]
     points = np.array(
         [np.roll(points_along_polygon(p, n_vertices), 1, axis=1) for p in polys]
+        dtype=np.float32,
     )
 
     lengths = np.sum(np.linalg.norm(points[:, 1:] - points[:, :-1], axis=2), axis=1)
-    areas = np.array([np.sum(c) for c in cell_masks])
+    areas = np.array([np.sum(c) for c in cell_masks], dtype=np.float32)
     radii = lengths / np.pi * (np.sqrt(1 + np.pi * areas / lengths**2) - 1)
     return points, lengths, radii
 
