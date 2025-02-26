@@ -72,6 +72,7 @@ def extract_positions(
     mask: np.ndarray,
     n_vertices: int = 8,
     skel_method="lee",
+    domain_size: np.ndarray | tuple[float, float] | float | None = None,
 ) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     """
     Extracts positions from a mask for each sub-mask associated to a single cell.
@@ -114,6 +115,16 @@ def extract_positions(
         [np.roll(points_along_polygon(p, n_vertices), 1, axis=1) for p in polys]
         dtype=np.float32,
     )
+
+    if domain_size is not None:
+        image_resolution = mask.shape
+        points = np.array(
+            [
+                convert_pixel_to_position(p, domain_size, image_resolution)
+                for p in points
+            ],
+            dtype=np.float32,
+        )
 
     lengths = np.sum(np.linalg.norm(points[:, 1:] - points[:, :-1], axis=2), axis=1)
     areas = np.array([np.sum(c) for c in cell_masks], dtype=np.float32)
