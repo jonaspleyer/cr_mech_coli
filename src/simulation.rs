@@ -349,8 +349,7 @@ mod test_config {
     fn test_parse_toml() {
         use super::*;
         pyo3::prepare_freethreaded_python();
-        Python::with_gil(|py| {
-            let toml_string = "
+        let toml_string = "
 n_threads=1
 t0=0.0
 dt=0.1
@@ -362,16 +361,10 @@ domain_height=2.5
 n_voxels=[1, 1]
 rng_seed=0
 "
-            .to_string();
-            let config: Configuration = Configuration::from_toml(py, toml_string)
-                .unwrap()
-                .extract(py)
-                .unwrap();
-            let toml_string = toml::to_string(&config).unwrap();
-            println!("{toml_string}");
-            assert_eq!(config.dt, 0.1);
-            assert_eq!(config.t_max, 100.0);
-        })
+        .to_string();
+        let config: Configuration = Configuration::from_toml_string(&toml_string).unwrap();
+        assert_eq!(config.dt, 0.1);
+        assert_eq!(config.t_max, 100.0);
     }
 }
 
