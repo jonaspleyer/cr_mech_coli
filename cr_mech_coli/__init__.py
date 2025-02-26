@@ -30,5 +30,4 @@ from .fitting import *
 from .simulation import *
 from .imaging import *
 
-from .crm_fit import crm_fit_main
-from .cr_mech_coli import crm_fit_rs
+from .crm_fit import *
