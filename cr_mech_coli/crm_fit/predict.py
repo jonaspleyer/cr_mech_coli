@@ -1,18 +1,6 @@
-import enum
 import numpy as np
 import cr_mech_coli as crm
 from pathlib import Path
-
-
-class PotentialType(enum.Enum):
-    Morse = 0
-    Mie = 1
-
-    def to_string(self):
-        if self is PotentialType.Morse:
-            return "morse"
-        elif self is PotentialType.Mie:
-            return "mie"
 
 
 def reconstruct_morse_potential(parameters, cutoff):
@@ -47,53 +35,12 @@ def reconstruct_mie_potential(parameters, cutoff):
 
 def predict(
     parameters,
-    cutoff,
-    rigidity,
-    rod_length_diffs,
     positions: np.ndarray,  # Shape (N, n_vertices, 3)
-    domain_size: float,
-    potential_type: PotentialType,
     settings,
     out_path: Path | None = None,
 ):
-    if type(potential_type) is crm.crm_fit_rs.PotentialType_Morse:
-        damping, interactions = reconstruct_morse_potential(parameters, cutoff)
-    elif type(potential_type) is crm.crm_fit_rs.PotentialType_Mie:
-        damping, interactions = reconstruct_mie_potential(parameters, cutoff)
-
-    config = settings.to_config()
-    # config = crm.Configuration.from_partial_toml(config_content)
-    # settings.constants.domain_size = domain_size
-
-    n_agents = positions.shape[0]
-    n_vertices = positions.shape[1]
-
-    def pos_to_spring_length(pos):
-        res = np.sum(np.linalg.norm(pos[1:] - pos[:-1], axis=1)) / (n_vertices - 1)
-        return res
-
-    agents = [
-        crm.RodAgent(
-            pos=np.array(
-                [*positions[i].T, [settings.domain_height / 2] * positions.shape[1]],
-                dtype=np.float32,
-            ).T,
-            vel=np.zeros(
-                (positions.shape[1], positions.shape[2] + 1), dtype=np.float32
-            ),
-            interaction=interactions[i],
-            growth_rate=rod_length_diffs[i]
-            / settings.constants.t_max
-            / (n_vertices - 1),
-            spring_length=pos_to_spring_length(positions[i]),
-            spring_length_threshold=1000,
-            rigidity=rigidity,
-            damping=damping,
-        )
-        for i in range(n_agents)
-    ]
     try:
-        return crm.run_simulation_with_agents(config, agents)
+        return settings.predict(parameters, positions)
     except ValueError as e:
         if out_path is not None:
             with open(out_path / "logs.txt", "a+") as f:
@@ -116,25 +63,15 @@ def store_parameters(parameters, filename, out_path, cost=None):
 
 def predict_flatten(
     parameters: tuple | list,
-    cutoff,
-    rigidity,
-    rod_length_diffs,
-    domain_size,
     pos_initial,
     pos_final,
-    potential_type: PotentialType,
-    config_content: str | None = None,
+    settings,
     out_path: Path | None = None,
 ):
     cell_container = predict(
         parameters,
-        cutoff,
-        rigidity,
-        rod_length_diffs,
         pos_initial,
-        domain_size,
-        potential_type,
-        config_content,
+        settings,
         out_path,
     )
 
