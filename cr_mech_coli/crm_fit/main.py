@@ -108,9 +108,8 @@ def crm_fit_main():
     files_masks = sorted(glob(str(data_dir / "masks/*.csv")))
 
     # Try to read config file
-    f = open(data_dir / "settings.toml", "r")
-    settings_content = f.read()
-    settings = crm.crm_fit_rs.Settings.from_toml(settings_content)
+    filename = data_dir / "settings.toml"
+    settings = crm.crm_fit.Settings.from_toml(filename)
     potential_type = settings.parameters.potential_type
 
     out = get_out_folder(pyargs.iteration, potential_type)
