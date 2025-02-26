@@ -310,18 +310,23 @@ impl Configuration {
     #[staticmethod]
     pub fn from_toml_string(toml_string: &str) -> PyResult<Self> {
         toml::from_str(toml_string)
+            .map_err(|e| pyo3::exceptions::PyValueError::new_err(format!("{e}")))
+    }
+
+    /// TODO
+    #[staticmethod]
+    pub fn deserialize(data: Vec<u8>) -> PyResult<Self> {
+        serde_pickle::from_slice(&data, Default::default())
+            .map_err(|e| pyo3::exceptions::PyValueError::new_err(format!("{e}")))
+    }
+
+    /// TODO
+    pub fn __reduce__(&self, py: Python) -> PyResult<(PyObject, PyObject)> {
+        py.run_bound("from cr_mech_coli import Configuration", None, None)?;
+        let deserialize = py.eval_bound("Configuration.deserialize", None, None)?;
+        let data = serde_pickle::to_vec(&self, Default::default())
             .map_err(|e| pyo3::exceptions::PyValueError::new_err(format!("{e}")))?;
-        /* for (key, value) in table.iter() {
-            use toml::Value::*;
-            match value {
-                String(string) => out.setattr(py, PyString::new_bound(py, key), string)?,
-                Integer(int) => out.setattr(py, PyString::new_bound(py, key), *int)?,
-                Float(float) => out.setattr(py, PyString::new_bound(py, key), *float)?,
-                Boolean(boolean) => out.setattr(py, PyString::new_bound(py, key), *boolean)?,
-                Datetime(_) | Array(_) | Table(_) => unimplemented!(),
-            }
-        }*/
-        Py::new(py, out)
+        Ok((deserialize.to_object(py), (data,).to_object(py)))
     }
 }
 
