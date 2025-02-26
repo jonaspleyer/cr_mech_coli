@@ -137,68 +137,28 @@ def crm_fit_main():
     )
 
     # Calculate Rod lengths which is later used to determine growth rates.
-    rod_length_diffs = lengths2 - lengths1
     radii = (radii1 + radii2) / 2
 
     print(f"{time.time() - interval:10.4f}s Calculated initial values")
     interval = time.time()
 
     # Fix some parameters
-    domain_size = np.max(mask1.shape)
     cutoff = 20.0
     rigidity = 8.0
 
+    n_agents = pos1.shape[0]
+    lower, upper, x0, param_infos, constants, constant_infos = (
+        settings.generate_optimization_infos(n_agents)
+    )
+    bounds = np.array([lower, upper]).T
+
     # Fix some parameters for the simulation
     args_predict = (
-        cutoff,
-        rigidity,
-        rod_length_diffs,
-        domain_size,
         pos1,
         pos2,
-        potential_type,
         settings,
         out,
     )
-
-    # Parameters
-    damping = 1.5
-    strength = 1.0
-
-    # Bounds
-    bounds = [
-        *[[4.0, 12.0]] * len(radii),  # Radii
-        [0.6, 2.5],  # Damping
-        [1.0, 4.5],  # Strength
-    ]
-
-    if type(potential_type) is crm.crm_fit_rs.PotentialType_Morse:
-        # Parameter Values
-        potential_stiffness = 0.4
-        parameters = (*radii, damping, strength, potential_stiffness)
-
-        # Constraints
-        bounds.append([0.25, 0.55])  # Potential Stiffness
-        A = np.zeros((len(bounds),) * 2)
-        constraints = sp.optimize.LinearConstraint(A, lb=-np.inf, ub=np.inf)
-    elif type(potential_type) is crm.crm_fit_rs.PotentialType_Mie:
-        # Parameter Values
-        en = 6.0
-        em = 5.5
-        parameters = (*radii, damping, strength, en, em)
-
-        # Constraints
-        bounds.append([0.2, 25.0])  # en
-        bounds.append([0.2, 25.0])  # em
-        A = np.zeros((len(bounds),) * 2)
-        A[0][len(bounds) - 2] = -1
-        A[0][len(bounds) - 1] = 1
-        lb = -np.inf
-        ub = np.full(len(bounds), np.inf)
-        ub[0] = -1
-        constraints = sp.optimize.LinearConstraint(A, lb=lb, ub=ub)
-    else:
-        raise ValueError("potential type needs to be variant of PotentialType enum")
 
     filename = "final_params.csv"
     if (out / filename).exists():
@@ -207,11 +167,11 @@ def crm_fit_main():
         final_cost = params[-1]
         print(f"{time.time() - interval:10.4f}s Found previous results")
     else:
-        predict_flatten(parameters, *args_predict)
+        predict_flatten(x0, *args_predict)
         res = sp.optimize.differential_evolution(
             predict_flatten,
             bounds=bounds,
-            x0=parameters,
+            x0=x0,
             args=args_predict,
             workers=pyargs.workers,
             updating="deferred",
@@ -232,21 +192,6 @@ def crm_fit_main():
 
     interval = time.time()
 
-    param_infos = [
-        *[
-            (f"Radius {i}", "\\SI{}{\\micro\\metre}", f"r_{{{i}}}")
-            for i in range(len(radii))
-        ],
-        ("Damping", "\\SI{}{\\per\\min}", "\\lambda"),
-        ("Strength", "\\SI{}{\\micro\\metre^2\\per\\min^2}", "C"),
-    ]
-    if potential_type is PotentialType.Morse:
-        param_infos.append(
-            ("Potential Stiffness", "\\SI{}{\\micro\\metre}", "\\lambda")
-        )
-    elif potential_type is PotentialType.Mie:
-        param_infos.append(("Exponent n", "1", "n"))
-        param_infos.append(("Exponent m", "1", "m"))
 
     # Plot Cost function against varying parameters
     if not pyargs.skip_profiles:
@@ -276,12 +221,7 @@ def crm_fit_main():
 
     cell_container = predict(
         final_params,
-        cutoff,
-        rigidity,
-        rod_length_diffs,
         pos1,
-        domain_size,
-        potential_type,
         settings,
     )
 
