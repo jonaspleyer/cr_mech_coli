@@ -112,7 +112,7 @@ def extract_positions(
     ]
     polys = [sk.measure.approximate_polygon(sp, 1) for sp in skeleton_points]
     points = np.array(
-        [np.roll(points_along_polygon(p, n_vertices), 1, axis=1) for p in polys]
+        [points_along_polygon(p, n_vertices) for p in polys],
         dtype=np.float32,
     )
 
