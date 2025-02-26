@@ -1,5 +1,4 @@
 #![deny(missing_docs)]
-#![warn(clippy::missing_docs_in_private_items)]
 //! This crate solves a system containing bacterial rods in 2D.
 //! The bacteria grow and divide thus resulting in a packed environment after short periods of
 //! time.
