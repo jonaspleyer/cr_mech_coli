@@ -29,7 +29,7 @@ def produce_masks():
     i2 = iterations[2]
 
     domain_size = config.domain_size
-    rs = crm.RenderSettings(resolution=800)
+    rs = crm.RenderSettings()
     mask1 = crm.render_mask(all_cells[i1], colors, domain_size, render_settings=rs)
     mask2 = crm.render_mask(all_cells[i2], colors, domain_size, render_settings=rs)
     return mask1, mask2, cell_container
