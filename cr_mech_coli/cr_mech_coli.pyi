@@ -73,7 +73,7 @@ class Configuration:
     t_max: float
     save_interval: float
     show_progressbar: bool
-    domain_size: float
+    domain_size: tuple[float, float]
     domain_height: float
     randomize_position: float
     n_voxels: int
