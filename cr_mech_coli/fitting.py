@@ -106,15 +106,19 @@ def extract_positions(
         cell_masks = [np.all(mask == c, axis=2) for c in colors]
     else:
         cell_masks = [mask == c for c in colors]
-    skeleton_points = [
-        _sort_points(sk.morphology.skeletonize(m, method=skel_method))
-        for m in cell_masks
-    ]
-    polys = [sk.measure.approximate_polygon(sp, 1) for sp in skeleton_points]
-    points = np.array(
-        [points_along_polygon(p, n_vertices) for p in polys],
-        dtype=np.float32,
-    )
+
+    if len(cell_masks) == 0:
+        points = np.zeros((0, n_vertices, 2))
+    else:
+        skeleton_points = [
+            _sort_points(sk.morphology.skeletonize(m, method=skel_method))
+            for m in cell_masks
+        ]
+        polys = [sk.measure.approximate_polygon(sp, 1) for sp in skeleton_points]
+        points = np.array(
+            [points_along_polygon(p, n_vertices) for p in polys],
+            dtype=np.float32,
+        )
 
     if domain_size is not None:
         image_resolution = mask.shape
