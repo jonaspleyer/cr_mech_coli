@@ -97,17 +97,17 @@ def __create_cell_surfaces(
     cell_surfaces = []
     for ident in cells.keys():
         meshes = []
-        p = cells[ident][0].pos.T
+        p = cells[ident][0].pos
         r = cells[ident][0].radius
 
-        meshes.append(pv.Sphere(center=p[:, 0], radius=r))
-        for j in range(max(p.shape[1] - 1, 0)):
+        meshes.append(pv.Sphere(center=p[0], radius=r))
+        for j in range(max(p.shape[0] - 1, 0)):
             # Add sphere at junction
-            meshes.append(pv.Sphere(center=p[:, j + 1], radius=r))
+            meshes.append(pv.Sphere(center=p[j + 1], radius=r))
 
             # Otherwise add cylinders
-            pos1 = p[:, j]
-            pos2 = p[:, j + 1]
+            pos1 = p[j]
+            pos2 = p[j + 1]
             center = 0.5 * (pos1 + pos2)
             direction = pos2 - center
             height = float(np.linalg.norm(pos1 - pos2))
