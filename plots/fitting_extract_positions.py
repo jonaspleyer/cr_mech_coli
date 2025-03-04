@@ -72,8 +72,8 @@ def create_simulation_result(n_vertices: int, rng_seed: int = 3):
         t0=0.0,
         dt=0.02,
         t_max=200.0,
-        save_interval=4.0,
-        domain_size=100,
+        n_saves=49,
+        domain_size=np.array([150, 150]),
     )
     agent_settings = crm.AgentSettings(growth_rate=0.05)
     agent_settings.mechanics.rigidity = 8.0
@@ -84,7 +84,7 @@ def create_simulation_result(n_vertices: int, rng_seed: int = 3):
         agent_settings,
         config,
         rng_seed=rng_seed,
-        dx=config.domain_size / 10.0,
+        dx=np.array(config.domain_size) * 0.2,
         randomize_positions=0.0,
         n_vertices=n_vertices,
     )
@@ -133,42 +133,46 @@ if __name__ == "__main__":
         ]
 
         for iteration, mask in tqdm(iter_masks):
+            # This generates extracted positions in pixel units
+            cv.imwrite("temp.png", mask)
             positions = crm.extract_positions(
-                mask, n_vertices=pyargs.n_vertices, skel_method=pyargs.skel_method
+                mask,
+                n_vertices=pyargs.n_vertices,
+                skel_method=pyargs.skel_method,
+                # domain_size=config.domain_size,
             )[0]
-            positions = np.round(np.array(positions))
-            positions = np.array(positions, dtype=int).reshape(
-                (len(positions), -1, 1, 2)
-            )
-
-            dl = 2**0.5 * config.domain_size
-            domain_pixels = np.array(mask.shape[:2], dtype=float)
-            pixel_per_length = domain_pixels / dl
+            positions = np.array(np.round(positions), dtype=int)
 
             # Calculate differences in positions
             pos_exact = []
-            for p1 in positions:
+            for n, p0 in enumerate(positions):
                 # Get color
-                color = mask[p1[0][0][1], p1[0][0][0]]
+                color = mask[p0[0][0], p0[0][1]]
                 ident = cell_container.get_cell_from_color([*color])
                 cell = all_cells[iteration][ident][0]
-                p1 = np.array(p1[:, 0, :], dtype=float)
-                p2 = crm.convert_cell_pos_to_pixels(
-                    cell.pos, config.domain_size, mask.shape[:2]
+                p1 = crm.convert_cell_pos_to_pixels(
+                    cell.pos[:, :2], config.domain_size, mask.shape[:2]
                 )
-                pos_exact.append(p2)
+                p2 = crm.convert_pixel_to_position(
+                    p0, config.domain_size, mask.shape[:2]
+                )
+                mask = cv.polylines(
+                    mask,
+                    [p0[:, ::-1]],
+                    isClosed=False,
+                    color=(250, 250, 250),
+                    thickness=1,
+                )
+                for pi in p1[:, ::-1]:
+                    mask = cv.drawMarker(
+                        mask,
+                        pi,
+                        (50, 50, 50),
+                        cv.MARKER_TILTED_CROSS,
+                        14,
+                        2,
+                    )
 
-            pos_exact = np.round(np.array(pos_exact)).reshape(
-                (len(pos_exact), -1, 1, 2)
-            )
-            pos_exact = np.array(pos_exact, dtype=int)
-            # mask = cv.polylines(mask, positions, False, (50, 50, 50), 2)
-            mask = cv.polylines(mask, pos_exact, False, (150, 150, 150), 2)
-            mask = cv.polylines(mask, pos_exact, False, (250, 250, 250), 1)
-            for p in positions.reshape((-1, 2)):
-                mask = cv.drawMarker(
-                    mask, p, (50, 50, 50), cv.MARKER_TILTED_CROSS, 14, 2
-                )
             path = Path("docs/source/_static/fitting-methods/")
             cv.imwrite(
                 filename=str(path / "extract_positions-{:06}.png".format(iteration)),
@@ -232,7 +236,7 @@ if __name__ == "__main__":
     if not pyargs.skip_graph:
         fig, ax1 = plt.subplots()
 
-        x = np.arange(len(distances)) * config.save_interval
+        x = np.arange(len(distances)) * config.t_max / (config.n_saves + 1)
         ax1.plot(
             x,
             [np.mean(li) for li in lengths_extracted],
