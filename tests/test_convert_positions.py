@@ -7,7 +7,7 @@ def check_diff_float(p, r, domain_size, image_resolution):
         domain_size = [domain_size] * 2
     domain_size = np.array(domain_size)
     diffs = np.abs(p - r)
-    assert np.all(diffs <= domain_size / image_resolution)
+    assert np.all(diffs <= domain_size / image_resolution[::-1])
 
 
 def check_diff_pixel(p, r):
@@ -34,7 +34,7 @@ def test_convert_length_to_pixel_and_back():
 
 def test_convert_non_square_domain_length_to_pixel_and_back():
     domain_size = (100.0, 50.0)
-    image_resolution = (600, 100)
+    image_resolution = (100, 600)
     p = np.linspace([88.3, 45.0], [63.7, 23.1], 20)
     q = crm.convert_cell_pos_to_pixels(p, domain_size, image_resolution)
     r = crm.convert_pixel_to_position(q, domain_size, image_resolution)
@@ -52,18 +52,20 @@ def test_convert_non_square_domain_pixel_to_length_and_back():
 
 def test_convert_non_square_domain_domain_identity():
     domain_size = (100, 200)
-    image_resolution = (100, 200)
+    image_resolution = (200, 100)
     p = np.linspace([10.0, 10.0], [40.0, 40.0])
     q = crm.convert_cell_pos_to_pixels(p, domain_size, image_resolution)
-    check_diff_float(p, q, domain_size, image_resolution)
+    q[:, 0] = image_resolution[0] - q[:, 0]
+    check_diff_float(p, q[:, ::-1], domain_size, image_resolution)
 
 
 def test_convert_non_square_pixel_domain_identity():
     domain_size = (450.0, 150.0)
-    image_resolution = (450, 150)
-    p = np.array(np.round(np.linspace([10, 15], [350, 200])), dtype=int)
+    image_resolution = (150, 450)
+    p = np.array(np.round(np.linspace([15, 10], [100, 350])), dtype=int)
     q = crm.convert_pixel_to_position(p, domain_size, image_resolution)
-    check_diff_pixel(p, q)
+    q[:, 1] = domain_size[1] - q[:, 1]
+    check_diff_pixel(p, q[:, ::-1])
 
 
 def test_convert_domain_pixel_slope():
@@ -76,7 +78,8 @@ def test_convert_domain_pixel_slope():
 
     # Calculate ratios of domain and image_resolution
     ratio_domain = p / np.array(domain_size)
-    ratio_image = q / np.array(image_resolution)
+    q[:, 1] = image_resolution[1] - q[:, 1]
+    ratio_image = q[::-1] / np.array(image_resolution)
     check_diff_float(ratio_domain, ratio_image, domain_size, image_resolution)
 
 
@@ -89,5 +92,6 @@ def test_convert_pixel_domain_slope():
     p = crm.convert_pixel_to_position(q, domain_size, image_resolution)
 
     ratio_domain = p / np.array(domain_size)
+    q[:, 1] = image_resolution[1] - q[:, 1]
     ratio_image = q / np.array(image_resolution)
     check_diff_float(ratio_domain, ratio_image, domain_size, image_resolution)
