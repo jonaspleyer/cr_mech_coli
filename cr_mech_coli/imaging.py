@@ -122,7 +122,7 @@ def __create_cell_surfaces(
 def render_pv_image(
     cells: dict[CellIdentifier, tuple[RodAgent, CellIdentifier | None]],
     render_settings: RenderSettings,
-    domain_size: tuple[float, float] | float,
+    domain_size: tuple[float, float],
     colors: dict[CellIdentifier, list[int]] | None = None,
     filename: str | Path | None = None,
 ) -> np.ndarray:
@@ -132,7 +132,7 @@ def render_pv_image(
     Args:
         cells: A iterable which contains all cells at a specific iteration.
         render_settings (RenderSettings): Contains all settings to specify how to render image.
-        domain_size (float): The domain size as specified in :class:`Configuration`.
+        domain_size (tuple[float, float]): The domain size as specified in :class:`Configuration`.
         colors (dict): A dictionary mapping a :class:`CellIdentifier` to a color.
             If not given use color from `render_settings`.
         filename: Name of the file in which to save the image. If not specified, do
@@ -142,7 +142,13 @@ def render_pv_image(
         np.ndarray: An array of shape `(resolution, resolution, 3)` which contains the rendered
             pixels.
     """
-    plotter = pv.Plotter(off_screen=True, window_size=[render_settings.resolution] * 2)
+    plotter = pv.Plotter(
+        off_screen=True,
+        window_size=[
+            int(np.round(domain_size[0] * render_settings.pixel_per_micron)),
+            int(np.round(domain_size[1] * render_settings.pixel_per_micron)),
+        ],
+    )
     pv.Plotter.enable_parallel_projection(plotter)
     pv.Plotter.set_background(plotter, [render_settings.bg_brightness] * 3)
 
@@ -171,11 +177,6 @@ def render_pv_image(
     else:
         plotter.disable_anti_aliasing()
 
-    if type(domain_size) is float:
-        pv.Plotter.view_xy(plotter, bounds=(0, domain_size, 0, domain_size, 0, 0))
-    elif type(domain_size) is tuple:
-        pv.Plotter.view_xy(plotter, bounds=(0, domain_size[0], 0, domain_size[1], 0, 0))
-
     img = np.array(plotter.screenshot())
     plotter.close()
 
@@ -191,7 +192,7 @@ def render_pv_image(
 def render_mask(
     cells: dict[CellIdentifier, tuple[RodAgent, CellIdentifier | None]],
     colors: dict[CellIdentifier, list[int]],
-    domain_size: float,
+    domain_size: tuple[float, float],
     render_settings: RenderSettings | None = None,
     filename: str | Path | None = None,
 ) -> np.ndarray:
@@ -203,7 +204,7 @@ def render_mask(
     Args:
         cells: See :func:`render_pv_image`.
         render_settings (RenderSettings): See :func:`render_pv_image`.
-        domain_size (float): See :func:`render_pv_image`.
+        domain_size (tuple[float, float]): See :func:`render_pv_image`.
         colors (dict[CellIdentifier, tuple[int, int, int]]): See :func:`render_pv_image`.
         filename: See :func:`render_pv_image`.
 
@@ -219,7 +220,7 @@ def render_mask(
 
 def render_image(
     cells: dict[CellIdentifier, tuple[RodAgent, CellIdentifier | None]],
-    domain_size: float,
+    domain_size: tuple[float, float],
     render_settings: RenderSettings | None = None,
     filename: str | Path | None = None,
 ) -> np.ndarray:
@@ -229,7 +230,7 @@ def render_image(
 
     Args:
         cells: See :func:`render_pv_image`.
-        domain_size (float): See :func:`render_pv_image`.
+        domain_size (tuple[float, float]): See :func:`render_pv_image`.
         render_settings (RenderSettings): See :func:`render_pv_image`.
         colors (dict): See :func:`render_pv_image`.
         filename: See :func:`render_pv_image`.
@@ -267,7 +268,7 @@ def render_image(
 
 def store_all_images(
     cell_container: CellContainer,
-    domain_size: float,
+    domain_size: tuple[float, float],
     render_settings: RenderSettings | None = None,
     save_dir: str | Path = "out",
     render_raw_pv: bool = False,
@@ -282,7 +283,7 @@ def store_all_images(
 
     Args:
         cell_container: See :func:`cr_mech_coli.simulation.run_simulation`.
-        domain_size (float): See :func:`render_pv_image`.
+        domain_size (tuple[float, float]): See :func:`render_pv_image`.
         render_settings (RenderSettings): See :func:`render_pv_image`.
         save_dir: Path of the directory where to save all images.
         render_raw_pv (bool): Additionaly render the intermediate image before applying effects
