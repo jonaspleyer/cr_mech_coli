@@ -54,7 +54,7 @@ class RenderSettings:
     Others are used by :mod:`cv2`.
     """
 
-    resolution: int = 1280  #: Resolution of the generated image
+    pixel_per_micron: float = 12.8  #: Determines Resolution of the generated image
     diffuse: float = 0.5  #: Value Between 0 and 1.
     ambient: float = 0.5  #: Value between 0 and 1.
     specular: float = 0.5  #: Value between 0 and 1.
