@@ -71,7 +71,7 @@ class Configuration:
     t0: float
     dt: float
     t_max: float
-    save_interval: float
+    n_saves: int
     show_progressbar: bool
     domain_size: tuple[float, float]
     domain_height: float
