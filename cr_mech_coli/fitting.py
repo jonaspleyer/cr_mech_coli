@@ -121,7 +121,7 @@ def extract_positions(
         )
 
     if domain_size is not None:
-        image_resolution = mask.shape
+        image_resolution = mask.shape[:2]
         points = np.array(
             [
                 convert_pixel_to_position(p, domain_size, image_resolution)
