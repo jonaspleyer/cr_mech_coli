@@ -149,7 +149,22 @@ def render_pv_image(
             int(np.round(domain_size[1] * render_settings.pixel_per_micron)),
         ],
     )
+
+    # Get camera info
+    p1 = np.array([0, 0, 0])
+    p2 = np.array([domain_size[0], domain_size[1], 0])
+    p3 = np.array([0, domain_size[1], 0])
+    rect = pv.Rectangle([p1, p2, p3])
+    plotter.add_mesh(rect)
+    bounds = (0.0, domain_size[0], 0.0, domain_size[1], 0.0, 0)
+    pv.Plotter.view_xy(plotter, bounds=bounds)
     pv.Plotter.enable_parallel_projection(plotter)
+    plotter.camera.tight(padding=0)
+    plotter.camera.position = (*plotter.camera.position[:2], max(domain_size))
+    plotter.camera.cliping_range = (0, np.inf)
+    camera = plotter.camera.copy()
+    plotter.clear_actors()
+
     pv.Plotter.set_background(plotter, [render_settings.bg_brightness] * 3)
 
     cell_surfaces = __create_cell_surfaces(cells)
@@ -158,7 +173,7 @@ def render_pv_image(
         color = [render_settings.cell_brightness] * 3
         if colors is not None:
             color = colors[ident]
-        plotter.add_mesh(
+        actor = plotter.add_mesh(
             cell,
             show_edges=False,
             color=color,
@@ -170,6 +185,7 @@ def render_pv_image(
             pbr=render_settings.pbr,
             lighting=render_settings.lighting,
         )
+        actor.UseBoundsOff()
 
     if not render_settings.render_mask:
         pv.Plotter.enable_ssao(plotter, radius=render_settings.ssao_radius)
@@ -177,6 +193,7 @@ def render_pv_image(
     else:
         plotter.disable_anti_aliasing()
 
+    plotter.camera = camera
     img = np.array(plotter.screenshot())
     plotter.close()
 
