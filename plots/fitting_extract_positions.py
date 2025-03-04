@@ -28,7 +28,11 @@ def calculate_lengths_distances(
 
     mask = crm.render_mask(cells_at_iteration, colors, domain_size)
     positions = np.array(
-        crm.extract_positions(mask, n_vertices=n_vertices, skel_method=skel_method)[0]
+        crm.extract_positions(
+            mask,
+            n_vertices=n_vertices,
+            skel_method=skel_method,
+        )[0]
     )
 
     distances = []
@@ -46,7 +50,7 @@ def calculate_lengths_distances(
         d2t = np.sum((p - q[::-1]) ** 2, axis=1) ** 0.5
         d1 = np.sum(d1t)
         d2 = np.sum(d2t)
-        # d = min(d1, d2) / len(p)
+
         if d1 <= d2:
             distances.append(d1t / len(p))
         else:
@@ -127,6 +131,7 @@ if __name__ == "__main__":
             )
             for ind in indices
         ]
+
         for iteration, mask in tqdm(iter_masks):
             positions = crm.extract_positions(
                 mask, n_vertices=pyargs.n_vertices, skel_method=pyargs.skel_method
@@ -167,7 +172,7 @@ if __name__ == "__main__":
             path = Path("docs/source/_static/fitting-methods/")
             cv.imwrite(
                 filename=str(path / "extract_positions-{:06}.png".format(iteration)),
-                img=mask,  # [200:-200, 200:-200],
+                img=mask,
             )
 
     ccs = cell_container.serialize()
