@@ -39,7 +39,7 @@ def calculate_lengths_distances(
     lengths_extracted = []
     lengths_exact = []
     for p in positions:
-        color = mask[int(p[0][1]), int(p[0][0])]
+        color = mask[int(np.round(p[0][0])), int(np.round(p[0][1]))]
         ident = cell_container.get_cell_from_color([*color])
         cell = cells_at_iteration[ident][0]
         q = cell.pos[:, :2]
