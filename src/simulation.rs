@@ -380,7 +380,7 @@ prepare_types!(
     agent_settings,
     config,
     rng_seed = 0,
-    dx = 0.0,
+    dx = [0.0, 0.0],
     randomize_positions = 0.0,
     n_vertices = 8,
 ))]
@@ -390,7 +390,7 @@ pub fn generate_positions_old<'py>(
     agent_settings: &AgentSettings,
     config: &Configuration,
     rng_seed: u64,
-    dx: f32,
+    dx: [f32; 2],
     randomize_positions: f32,
     n_vertices: usize,
 ) -> PyResult<Vec<Bound<'py, numpy::PyArray2<f32>>>> {
@@ -415,7 +415,7 @@ fn _generate_positions_old(
     mechanics: &RodMechanicsSettings,
     config: &Configuration,
     rng_seed: u64,
-    dx: f32,
+    dx: [f32; 2],
     randomize_positions: f32,
     n_vertices: usize,
 ) -> Vec<numpy::nalgebra::DMatrix<f32>> {
@@ -429,8 +429,8 @@ fn _generate_positions_old(
 
     // Split the domain into chunks
     let n_chunk_sides = (n_agents as f32).sqrt().ceil() as usize;
-    let dchunk1 = (config.domain_size[0] - 2.0 * dx) / n_chunk_sides as f32;
-    let dchunk2 = (config.domain_size[1] - 2.0 * dx) / n_chunk_sides as f32;
+    let dchunk1 = (config.domain_size[0] - 2.0 * dx[0]) / n_chunk_sides as f32;
+    let dchunk2 = (config.domain_size[1] - 2.0 * dx[1]) / n_chunk_sides as f32;
     let all_indices = itertools::iproduct!(0..n_chunk_sides, 0..n_chunk_sides);
     let picked_indices = all_indices.choose_multiple(&mut rng, n_agents);
     let drod_length_half = (n_vertices as f32) * spring_length / 2.0;
@@ -438,8 +438,8 @@ fn _generate_positions_old(
     picked_indices
         .into_iter()
         .map(|index| {
-            let xlow = dx + index.0 as f32 * dchunk1;
-            let ylow = dx + index.1 as f32 * dchunk2;
+            let xlow = dx[0] + index.0 as f32 * dchunk1;
+            let ylow = dx[1] + index.1 as f32 * dchunk2;
             let middle = numpy::array![
                 rng.gen_range(xlow + drod_length_half..xlow + dchunk1 - drod_length_half),
                 rng.gen_range(ylow + drod_length_half..ylow + dchunk2 - drod_length_half),
@@ -475,7 +475,7 @@ fn _generate_positions_old(
 fn backwards_compat_generate_positions_old() -> PyResult<()> {
     let mechanics = RodMechanicsSettings::default();
     let config = Configuration::default();
-    let generated_pos = _generate_positions_old(4, &mechanics, &config, 1, 0.0, 0.1, 8);
+    let generated_pos = _generate_positions_old(4, &mechanics, &config, 1, [0.0; 2], 0.1, 8);
     let old_pos = vec![
         numpy::nalgebra::dmatrix![
             15.782119,  16.658249,  1.4922986;
