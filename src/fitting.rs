@@ -56,8 +56,8 @@ pub fn parents_diff_mask<'py>(
             .zip(m2.outer_iter())
             .map(|(c1, c2)| {
                 if c1 != c2 && c1.sum() != 0 && c2.sum() != 0 {
-                    let c1 = [c1[0], c1[1], c1[2]];
-                    let c2 = [c2[0], c2[1], c2[2]];
+                    let c1 = (c1[0], c1[1], c1[2]);
+                    let c2 = (c2[0], c2[1], c2[2]);
 
                     let i1 = cell_container.color_to_cell.get(&c1).ok_or(new_error!(
                         PyKeyError,

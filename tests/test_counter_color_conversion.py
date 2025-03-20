@@ -13,7 +13,7 @@ def test_color_counter_conversion():
     for i in range(1, 251, 2):
         for j in range(1, 251, 3):
             for k in range(1, 251, 5):
-                color = [i, j, k]
+                color = (i, j, k)
                 counter = crm.color_to_counter(color)
                 color_new = crm.counter_to_color(counter)
                 assert color == color_new

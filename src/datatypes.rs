@@ -20,10 +20,10 @@ pub struct CellContainer {
     pub child_map: HashMap<CellIdentifier, Vec<CellIdentifier>>,
     /// Maps each cell to its color
     #[pyo3(get)]
-    pub cell_to_color: HashMap<CellIdentifier, [u8; 3]>,
+    pub cell_to_color: HashMap<CellIdentifier, (u8, u8, u8)>,
     /// Maps each color back to its cell
     #[pyo3(get)]
-    pub color_to_cell: HashMap<[u8; 3], CellIdentifier>,
+    pub color_to_cell: HashMap<(u8, u8, u8), CellIdentifier>,
 }
 
 #[pymethods]
@@ -186,7 +186,7 @@ impl CellContainer {
     ///     identifier(CellIdentifier): The cells unique identifier
     /// Returns:
     ///     tuple[int, int, int] | None: The assigned color
-    pub fn get_color(&self, identifier: &CellIdentifier) -> Option<[u8; 3]> {
+    pub fn get_color(&self, identifier: &CellIdentifier) -> Option<(u8, u8, u8)> {
         self.cell_to_color.get(identifier).copied()
     }
 
@@ -196,7 +196,7 @@ impl CellContainer {
     ///     color(tuple[int, int, int]): A tuple (or list) with 3 8bit values
     /// Returns:
     ///     CellIdentifier | None: The identifier of the cell
-    pub fn get_cell_from_color(&self, color: [u8; 3]) -> Option<CellIdentifier> {
+    pub fn get_cell_from_color(&self, color: (u8, u8, u8)) -> Option<CellIdentifier> {
         self.color_to_cell.get(&color).copied()
     }
 

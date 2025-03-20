@@ -25,15 +25,15 @@ use pyo3::prelude::*;
 /// Returns:
 ///     list[int]: A list with exactly 3 entries containing the calculated color.
 #[pyfunction]
-pub fn counter_to_color(counter: u32) -> [u8; 3] {
+pub fn counter_to_color(counter: u32) -> (u8, u8, u8) {
     let mut counter: u128 = counter as u128;
     counter = (counter * 157 * 163 * 173) % 251u128.pow(3);
-    let mut color = [0; 3];
+    let mut color = (0, 0, 0);
     let (q, m) = num::Integer::div_mod_floor(&counter, &251u128.pow(2));
-    color[0] = q as u8;
+    color.0 = q as u8;
     let (q, m) = num::Integer::div_mod_floor(&m, &251);
-    color[1] = q as u8;
-    color[2] = m as u8;
+    color.1 = q as u8;
+    color.2 = m as u8;
     color
 }
 
@@ -55,9 +55,9 @@ pub fn counter_to_color(counter: u32) -> [u8; 3] {
 /// >>> counter = (counter * 13775961) % 251**3
 /// >>> counter = (counter * 12157008) % 251**3
 #[pyfunction]
-pub fn color_to_counter(color: [u8; 3]) -> u32 {
+pub fn color_to_counter(color: (u8, u8, u8)) -> u32 {
     let mut counter: u128 =
-        color[0] as u128 * 251u128.pow(2) + color[1] as u128 * 251u128.pow(1) + color[2] as u128;
+        color.0 as u128 * 251u128.pow(2) + color.1 as u128 * 251u128.pow(1) + color.2 as u128;
     counter = (counter * 12590168) % 251u128.pow(3);
     counter = (counter * 13775961) % 251u128.pow(3);
     counter = (counter * 12157008) % 251u128.pow(3);
@@ -81,7 +81,7 @@ mod test {
         for i in 1..251u8 {
             for j in 1..251u8 {
                 for k in 1..251u8 {
-                    let color = [i, j, k];
+                    let color = (i, j, k);
                     let counter = color_to_counter(color);
                     let color_back = counter_to_color(counter);
                     assert_eq!(color, color_back);
