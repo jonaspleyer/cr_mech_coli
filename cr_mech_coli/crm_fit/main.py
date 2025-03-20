@@ -216,24 +216,24 @@ def crm_fit_main():
 
     if not pyargs.skip_masks:
         figs_axs = [plt.subplots() for _ in range(4)]
-        figs_axs[0][1].imshow(img1)
-        figs_axs[0][1].set_axis_off()
-        figs_axs[1][1].imshow(img2)
-        figs_axs[1][1].set_axis_off()
-        figs_axs[2][1].imshow(mask1.T)
-        figs_axs[2][1].set_axis_off()
-        figs_axs[3][1].imshow(mask2.T)
-        figs_axs[3][1].set_axis_off()
 
-        for p in pos1:
-            figs_axs[0][1].plot(p[:, 0], p[:, 1], color="white")
-        for agent, _ in agents_predicted.values():
-            p = agent.pos
-            figs_axs[1][1].plot(p[:, 0], p[:, 1], color="white")
+        def plot_snapshot(pos, img, name):
+            for p in pos:
+                p = crm.convert_cell_pos_to_pixels(p, domain_size, img1.shape[:2][::-1])
+                img = cv.polylines(
+                    np.array(img),
+                    [np.round(p).astype(int)],
+                    isClosed=False,
+                    color=(250, 250, 250),
+                    thickness=1,
+                )
+            cv.imwrite(f"{out}/{name}.png", img)
 
-        for i, (fig, _) in enumerate(figs_axs):
-            fig.tight_layout()
-            fig.savefig(f"{out}/microscopic-images-{i}.png")
+        plot_snapshot(pos1, img1, "snapshot-initial")
+        plot_snapshot(pos2, img2, "snapshot-final")
+
+        pos_final = np.array([c[0].pos for c in agents_predicted.values()])
+        plot_snapshot(pos_final, img2, "snapshot-final-predicted")
 
         print(f"{time.time() - interval:10.4f}s Rendered Masks")
         interval = time.time()
