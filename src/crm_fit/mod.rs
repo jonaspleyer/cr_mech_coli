@@ -34,6 +34,10 @@ pub enum Parameter {
     /// TODO
     #[serde(untagged)]
     Float(f32),
+    /// TODO
+    #[serde(untagged)]
+    #[approx(into_iter)]
+    List(Vec<f32>),
 }
 
 /// TODO
@@ -376,6 +380,14 @@ impl Settings {
                             $symbol.to_string(),
                         ));
                     },
+                    Parameter::List(list) => {
+                        constants.extend(list);
+                        constant_infos.push((
+                            $var_name.to_string(),
+                            $units.to_string(),
+                            $symbol.to_string(),
+                        ));
+                    },
                 }
             }
         );
@@ -488,6 +500,7 @@ impl Settings {
                             res
                         }
                     },
+                    Parameter::List(list) => list.clone(),
                 }
             };
         );
