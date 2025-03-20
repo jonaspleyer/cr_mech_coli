@@ -467,17 +467,17 @@ fn _generate_positions_old(
             let xlow = dx[0] + index.0 as f32 * dchunk1;
             let ylow = dx[1] + index.1 as f32 * dchunk2;
             let middle = numpy::array![
-                rng.gen_range(xlow + drod_length_half..xlow + dchunk1 - drod_length_half),
-                rng.gen_range(ylow + drod_length_half..ylow + dchunk2 - drod_length_half),
-                rng.gen_range(0.4 * config.domain_height..0.6 * config.domain_height),
+                rng.random_range(xlow + drod_length_half..xlow + dchunk1 - drod_length_half),
+                rng.random_range(ylow + drod_length_half..ylow + dchunk2 - drod_length_half),
+                rng.random_range(0.4 * config.domain_height..0.6 * config.domain_height),
             ];
-            let angle: f32 = rng.gen_range(0.0..2.0 * std::f32::consts::PI);
+            let angle: f32 = rng.random_range(0.0..2.0 * std::f32::consts::PI);
             let p1 = middle - drod_length_half * numpy::array![angle.cos(), angle.sin(), 0.0];
             fn s_gen(x: f32, rng: &mut rand_chacha::ChaCha8Rng) -> f32 {
                 if x == 0.0 {
                     1.0
                 } else {
-                    rng.gen_range(1.0 - x..1.0 + x)
+                    rng.random_range(1.0 - x..1.0 + x)
                 }
             }
             numpy::nalgebra::DMatrix::<f32>::from_fn(n_vertices, 3, |r, c| {
