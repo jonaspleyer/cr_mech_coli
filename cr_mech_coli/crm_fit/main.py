@@ -164,14 +164,14 @@ def crm_fit_main():
             args=args_predict,
             workers=pyargs.workers,
             updating="deferred",
-            maxiter=50,
+            maxiter=settings.optimization.max_iter,
             # constraints=constraints,
             disp=True,
-            tol=1e-4,
+            tol=settings.optimization.tol,
             recombination=settings.optimization.recombination,
-            popsize=100,
+            popsize=settings.optimization.pop_size,
             polish=False,
-            rng=0,
+            rng=settings.optimization.seed,
         )
         final_cost = res.fun
         final_params = res.x
