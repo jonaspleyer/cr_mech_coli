@@ -178,7 +178,7 @@ impl RodAgent {
     #[getter]
     pub fn pos<'a>(&'a self, py: Python<'a>) -> Bound<'a, numpy::PyArray2<f32>> {
         use numpy::ToPyArray;
-        self.mechanics.pos.clone().to_pyarray_bound(py)
+        self.mechanics.pos.clone().to_pyarray(py)
     }
 
     /// Position of the agent given by a matrix containing all vertices in order.
@@ -196,7 +196,7 @@ impl RodAgent {
     #[getter]
     pub fn vel<'a>(&'a self, py: Python<'a>) -> Bound<'a, numpy::PyArray2<f32>> {
         use numpy::ToPyArray;
-        numpy::nalgebra::MatrixXx3::from(self.mechanics.vel.clone()).to_pyarray_bound(py)
+        numpy::nalgebra::MatrixXx3::from(self.mechanics.vel.clone()).to_pyarray(py)
     }
 
     /// Velocity of the agent given by a matrix containing all velocities at vertices in order.

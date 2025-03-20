@@ -97,7 +97,7 @@ pub fn parents_diff_mask<'py>(
     let diff_mask = diff_mask
         .to_shape([s[0], s[1]])
         .map_err(|e| pyo3::exceptions::PyValueError::new_err(format!("{e}")))?;
-    Ok(diff_mask.to_pyarray_bound(py))
+    Ok(diff_mask.to_pyarray(py))
 }
 
 /// Helper function to sort points from a skeletonization in order.
@@ -228,7 +228,7 @@ pub fn _sort_points<'py>(
             points_sorted.row_mut(i).assign(&total_q);
             remaining.remove(total_index);
         }
-        Ok(points_sorted.to_pyarray_bound(py))
+        Ok(points_sorted.to_pyarray(py))
     } else {
         Err(pyo3::exceptions::PyValueError::new_err(
             "Detected less than 2 endpoints after skeletonization",

@@ -3,6 +3,7 @@ use std::{hash::Hasher, num::NonZeroUsize};
 use backend::chili::SimulationError;
 use cellular_raza::prelude::*;
 use numpy::{PyUntypedArrayMethods, ToPyArray};
+use pyo3::IntoPyObjectExt;
 use pyo3::{prelude::*, types::PyString};
 use serde::{Deserialize, Serialize};
 use time::FixedStepsize;
@@ -48,7 +49,7 @@ impl RodMechanicsSettings {
         let nrows = self.pos.nrows();
         let new_array =
             numpy::nalgebra::MatrixXx3::from_iterator(nrows, self.pos.iter().map(Clone::clone));
-        new_array.to_pyarray_bound(py)
+        new_array.to_pyarray(py)
     }
 
     #[setter]
@@ -66,7 +67,7 @@ impl RodMechanicsSettings {
             self.vel.nrows(),
             self.vel.iter().map(Clone::clone),
         );
-        new_array.to_pyarray_bound(py)
+        new_array.to_pyarray(py)
     }
 
     #[setter]
@@ -183,14 +184,28 @@ impl AgentSettings {
             ("rigidity", mechanics.getattr(py, "rigidity")?),
             ("spring_length", mechanics.getattr(py, "spring_length")?),
             ("damping", mechanics.getattr(py, "damping")?),
-            ("interaction", interaction.into_py(py)),
-            ("growth_rate", growth_rate.into_py(py)),
+            (
+                "interaction",
+                interaction
+                    .clone()
+                    .into_pyobject_or_pyerr(py)?
+                    .into_any()
+                    .unbind(),
+            ),
+            (
+                "growth_rate",
+                pyo3::types::PyFloat::new(py, *growth_rate as f64)
+                    .into_any()
+                    .unbind(),
+            ),
             (
                 "spring_length_threshold",
-                spring_length_threshold.into_py(py),
+                pyo3::types::PyFloat::new(py, *spring_length_threshold as f64)
+                    .into_any()
+                    .unbind(),
             ),
         ]
-        .into_py_dict_bound(py);
+        .into_py_dict(py)?;
         Ok(res)
     }
 }
@@ -321,12 +336,23 @@ impl Configuration {
     }
 
     /// TODO
-    pub fn __reduce__(&self, py: Python) -> PyResult<(PyObject, PyObject)> {
-        py.run_bound("from cr_mech_coli import Configuration", None, None)?;
-        let deserialize = py.eval_bound("Configuration.deserialize", None, None)?;
+    pub fn __reduce__<'py>(
+        &'py self,
+        py: Python<'py>,
+    ) -> PyResult<(Bound<'py, PyAny>, Bound<'py, PyAny>)> {
+        use std::ffi::CString;
+        py.run(
+            &CString::new("from cr_mech_coli import Configuration")?,
+            None,
+            None,
+        )?;
+        let deserialize = py.eval(&CString::new("Configuration.deserialize")?, None, None)?;
         let data = serde_pickle::to_vec(&self, Default::default())
             .map_err(|e| pyo3::exceptions::PyValueError::new_err(format!("{e}")))?;
-        Ok((deserialize.to_object(py), (data,).to_object(py)))
+        Ok((
+            deserialize.into_pyobject_or_pyerr(py)?.into_any(),
+            (data,).into_pyobject_or_pyerr(py)?.into_any(),
+        ))
     }
 }
 
@@ -405,7 +431,7 @@ pub fn generate_positions_old<'py>(
         n_vertices,
     )
     .into_iter()
-    .map(|x| x.to_pyarray_bound(py))
+    .map(|x| x.to_pyarray(py))
     .collect())
 }
 

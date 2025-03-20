@@ -29,7 +29,7 @@ use pyo3::prelude::*;
 fn cr_mech_coli(py: Python, m: &Bound<'_, PyModule>) -> PyResult<()> {
     let submodule = crm_fit::crm_fit_rs(py)?;
     m.add_submodule(&submodule)?;
-    py.import_bound("sys")?
+    py.import("sys")?
         .getattr("modules")?
         .set_item("cr_mech_coli.crm_fit.crm_fit_rs", submodule)?;
 

@@ -2,7 +2,7 @@ use core::f32;
 
 use approx::AbsDiffEq;
 use cellular_raza::prelude::{MiePotentialF32, MorsePotentialF32, RodInteraction};
-use pyo3::prelude::*;
+use pyo3::{prelude::*, IntoPyObjectExt};
 use serde::{Deserialize, Serialize};
 
 use crate::PhysicalInteraction;
@@ -106,22 +106,28 @@ impl PotentialType {
     }
 
     /// Used to pickle the :class:`PotentialType`
-    fn __reduce__(&self) -> (PyObject, PyObject) {
-        Python::with_gil(|py| {
-            py.run_bound(
-                "from cr_mech_coli.crm_fit.crm_fit_rs import PotentialType",
-                None,
-                None,
-            )
-            .unwrap();
-            // py.run_bound("from crm_fit import deserialize_potential_type", None, None)
-            //     .unwrap();
-            let deserialize = py
-                .eval_bound("PotentialType.deserialize", None, None)
-                .unwrap();
-            let data = serde_pickle::to_vec(&self, Default::default()).unwrap();
-            (deserialize.to_object(py), (data,).to_object(py))
-        })
+    fn __reduce__<'py>(
+        &'py self,
+        py: Python<'py>,
+    ) -> PyResult<(Bound<'py, PyAny>, Bound<'py, PyAny>)> {
+        py.run(
+            &std::ffi::CString::new("from cr_mech_coli.crm_fit.crm_fit_rs import PotentialType")?,
+            None,
+            None,
+        )
+        .unwrap();
+        // py.run_bound("from crm_fit import deserialize_potential_type", None, None)
+        //     .unwrap();
+        let deserialize = py.eval(
+            &std::ffi::CString::new("PotentialType.deserialize")?,
+            None,
+            None,
+        )?;
+        let data = serde_pickle::to_vec(&self, Default::default()).unwrap();
+        Ok((
+            deserialize.into_pyobject_or_pyerr(py)?.into_any(),
+            (data,).into_pyobject_or_pyerr(py)?.into_any(),
+        ))
     }
 }
 
@@ -245,20 +251,23 @@ impl Settings {
     }
 
     /// Implements the `__reduce__` method used by pythons pickle protocol.
-    pub fn __reduce__(&self) -> (PyObject, PyObject) {
-        Python::with_gil(|py| {
-            py.run_bound(
-                "from cr_mech_coli.crm_fit.crm_fit_rs import Settings",
-                None,
-                None,
-            )
-            .unwrap();
-            // py.run_bound("from crm_fit import deserialize_potential_type", None, None)
-            //     .unwrap();
-            let deserialize = py.eval_bound("Settings.deserialize", None, None).unwrap();
-            let data = serde_pickle::to_vec(&self, Default::default()).unwrap();
-            (deserialize.to_object(py), (data,).to_object(py))
-        })
+    pub fn __reduce__<'py>(
+        &'py self,
+        py: Python<'py>,
+    ) -> PyResult<(Bound<'py, PyAny>, Bound<'py, PyAny>)> {
+        py.run(
+            &std::ffi::CString::new("from cr_mech_coli.crm_fit.crm_fit_rs import Settings")?,
+            None,
+            None,
+        )?;
+        // py.run_bound("from crm_fit import deserialize_potential_type", None, None)
+        //     .unwrap();
+        let deserialize = py.eval(&std::ffi::CString::new("Settings.deserialize")?, None, None)?;
+        let data = serde_pickle::to_vec(&self, Default::default()).unwrap();
+        Ok((
+            deserialize.into_pyobject_or_pyerr(py)?.into_any(),
+            (data,).into_pyobject_or_pyerr(py)?.into_any(),
+        ))
     }
 
     /// Converts the settings provided to a :class:`Configuration` object required to run the
@@ -576,7 +585,7 @@ impl Settings {
 
 /// A Python module implemented in Rust.
 pub fn crm_fit_rs(py: Python) -> PyResult<Bound<PyModule>> {
-    let m = PyModule::new_bound(py, "crm_fit_rs")?;
+    let m = PyModule::new(py, "crm_fit_rs")?;
     m.add_class::<Parameter>()?;
     m.add_class::<Constants>()?;
     m.add_class::<Parameters>()?;
