@@ -38,7 +38,7 @@ def predict(
     positions: np.ndarray,  # Shape (N, n_vertices, 3)
     settings,
     out_path: Path | None = None,
-):
+) -> crm.CellContainer | None:
     try:
         return settings.predict(parameters, positions)
     except ValueError as e:
@@ -51,6 +51,8 @@ def predict(
 
 
 def store_parameters(parameters, filename, out_path, cost=None):
+    # TODO we should probably replace this by some method which is more efficient computationally
+    # Reference to global buffer which is being emptied iteratively.
     out_path.mkdir(parents=True, exist_ok=True)
     out = ""
     for p in parameters:
@@ -86,10 +88,6 @@ def predict_flatten(
             [(kv[1][0]).pos for kv in final_cells], dtype=np.float32
         )
 
-        # TODO
-        # This is currently very inefficient.
-        # We could probably better match the
-        # positions to each other
         cost = np.sum(
             [
                 (pos_predicted[i][:, :2] - pos_final[i]) ** 2
