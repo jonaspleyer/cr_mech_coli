@@ -2,8 +2,13 @@ import matplotlib.pyplot as plt
 import numpy as np
 import multiprocessing as mp
 from pathlib import Path
+from tqdm.contrib.concurrent import process_map
 
 from .predict import predict_flatten
+
+
+def pred_flatten_wrapper(args):
+    return predict_flatten(*args)
 
 
 def plot_profile(
@@ -14,12 +19,10 @@ def plot_profile(
     final_params,
     final_cost: float,
     out: Path,
-    pool,
+    n_workers,
     fig_ax=None,
     steps: int = 20,
 ):
-    if pool is None:
-        pool = mp.Pool()
     if fig_ax is None:
         fig_ax = plt.subplots()
         fig, ax = fig_ax
@@ -30,8 +33,12 @@ def plot_profile(
     x = np.linspace(bound[0], bound[1], steps)
     ps = [[pi if n != i else xi for i, pi in enumerate(final_params)] for xi in x]
 
+    (name, units, short) = param_info
+
     pool_args = [(p, *args) for p in ps]
-    y = pool.starmap(predict_flatten, pool_args)
+    y = process_map(
+        pred_flatten_wrapper, pool_args, desc=f"Profile: {name}", max_workers=n_workers
+    )
 
     # Extend x and y by values from final_params and final cost
     x = np.append(x, final_params[n])
@@ -40,7 +47,6 @@ def plot_profile(
     x = x[sorter]
     y = y[sorter]
 
-    (name, units, short) = param_info
     ax.set_title(name)
     ax.set_ylabel("Cost function $L$")
     ax.set_xlabel(f"${short}$ $[{units}]$")

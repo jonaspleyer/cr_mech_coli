@@ -81,7 +81,7 @@ def predict_flatten(
         final_iter = cell_container.get_all_iterations()[-1]
         final_cells = cell_container.get_cells_at_iteration(final_iter)
         final_cells = [(k, final_cells[k]) for k in final_cells]
-        final_cells.sort(key=lambda x: x[0][1])
+        final_cells.sort(key=lambda x: x[0])
         pos_predicted = np.array(
             [(kv[1][0]).pos for kv in final_cells], dtype=np.float32
         )
