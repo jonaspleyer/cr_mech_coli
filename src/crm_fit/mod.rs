@@ -685,7 +685,7 @@ mod test {
             },
             optimization: Optimization {
                 seed: 0,
-                tol: 1e-4,
+                tol: 1e-3,
                 max_iter: default_max_iter(),
                 pop_size: default_pop_size(),
                 recombination: default_recombination(),
