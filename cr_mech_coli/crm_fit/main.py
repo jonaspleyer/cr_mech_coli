@@ -93,8 +93,8 @@ def crm_fit_main():
         action="store_true",
     )
     pyargs = parser.parse_args()
-    # potential_type = PotentialType(pyargs.potential_type)
-    # potential_type: PotentialType = PotentialType.Mie
+    if pyargs.workers == -1:
+        pyargs.workers = mp.cpu_count()
 
     if pyargs.data is None:
         dirs = sorted(glob("data/*"))
@@ -182,13 +182,9 @@ def crm_fit_main():
 
     # Plot Cost function against varying parameters
     if not pyargs.skip_profiles:
-        if pyargs.workers < 0:
-            pool = mp.Pool()
-        else:
-            pool = mp.Pool(pyargs.workers)
         for n, (p, bound) in enumerate(zip(final_params, bounds)):
-            f_a = None
-            f_a = plot_profile(
+            fig_ax = None
+            fig_ax = plot_profile(
                 n,
                 bound,
                 args_predict[:-1],
@@ -196,11 +192,11 @@ def crm_fit_main():
                 final_params,
                 final_cost,
                 out,
-                pool,
-                f_a,
+                pyargs.workers,
+                fig_ax,
                 steps=40,
             )
-            fig, _ = f_a
+            fig, _ = fig_ax
             plt.close(fig)
 
         print(f"{time.time() - interval:10.4f} Plotted Profiles")
