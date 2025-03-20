@@ -57,8 +57,7 @@ def crm_fit_main():
         "-w", "--workers", type=int, default=-1, help="Number of threads"
     )
     parser.add_argument(
-        "-d",
-        "--data",
+        "data",
         help="Directory containing initial and final snapshots with masks.",
     )
     parser.add_argument(
