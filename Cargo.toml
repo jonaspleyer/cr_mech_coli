@@ -11,16 +11,20 @@ crate-type = ["cdylib", "rlib"]
 # Due to python docstrings
 doctest = false
 
+[patch.crates-io]
+nalgebra = { git = "https://github.com/dimforge/nalgebra" }
+cellular_raza = { git = "https://github.com/jonaspleyer/cellular_raza" }
+
 [dependencies]
-cellular_raza = { version = "0.2", features = ["pyo3"] }
+cellular_raza = { version = "0.2.3", features = ["pyo3"] }
 approx = { package = "approxim", version = "0.6" }
 itertools = "0.14.0"
 nalgebra = { version = "0.33", features = ["serde", "serde-serialize"] }
 num = { version = "0.4.3", features = ["rand", "serde"] }
-numpy = { git="https://github.com/jonaspleyer/rust-numpy", features = ["half", "nalgebra"] }
-pyo3 = { version = "0.22", features = ["serde", "py-clone"] }
-rand = { version = "0.8.5", features = ["serde", "serde1"] }
-rand_chacha = { version = "0.3.1", features = ["serde"] }
+numpy = { version = "0.24.0", features = ["half", "nalgebra"] }
+pyo3 = { version = "0.24", features = ["serde", "py-clone"] }
+rand = { version = "0.9", features = ["serde"] }
+rand_chacha = { version = "0.9", features = ["serde"] }
 rayon = "1.10.0"
 serde = { version = "1.0", features = ["derive"] }
 serde-pickle = "1.2"
