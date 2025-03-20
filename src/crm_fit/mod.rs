@@ -1,6 +1,6 @@
 use core::f32;
 
-use approx_derive::AbsDiffEq;
+use approx::AbsDiffEq;
 use cellular_raza::prelude::{MiePotentialF32, MorsePotentialF32, RodInteraction};
 use pyo3::prelude::*;
 use serde::{Deserialize, Serialize};
