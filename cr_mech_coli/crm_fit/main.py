@@ -155,7 +155,6 @@ def crm_fit_main():
         final_cost = params[-1]
         print(f"{time.time() - interval:10.4f}s Found previous results")
     else:
-        predict_flatten(x0, *args_predict)
         res = sp.optimize.differential_evolution(
             predict_flatten,
             bounds=bounds,
