@@ -1,4 +1,4 @@
-from cv2 import imread
+import cv2 as cv
 import cr_mech_coli as crm
 import numpy as np
 import matplotlib.pyplot as plt
@@ -118,8 +118,8 @@ def crm_fit_main():
 
     interval = time.time()
 
-    img1 = imread(files_images[0])
-    img2 = imread(files_images[1])
+    img1 = cv.imread(files_images[0])
+    img2 = cv.imread(files_images[1])
 
     mask1 = np.loadtxt(files_masks[0], delimiter=",").T
     mask2 = np.loadtxt(files_masks[1], delimiter=",").T
