@@ -47,6 +47,7 @@ class Optimization:
     tol: float
     max_iter: int
     pop_size: int
+    recombination: float
 
 class Settings:
     parameters: Parameters

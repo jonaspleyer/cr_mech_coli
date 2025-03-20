@@ -157,6 +157,9 @@ pub struct Optimization {
     #[serde(default = "default_pop_size")]
     #[approx(equal)]
     pub pop_size: usize,
+    /// Recombination value of the differential evolution algorithm
+    #[serde(default = "default_recombination")]
+    pub recombination: f32,
 }
 
 const fn default_tol() -> f32 {
@@ -169,6 +172,10 @@ const fn default_max_iter() -> usize {
 
 const fn default_pop_size() -> usize {
     100
+}
+
+const fn default_recombination() -> f32 {
+    0.3
 }
 
 /// Contains all constants of the numerical simulation
@@ -681,6 +688,7 @@ mod test {
                 tol: 1e-4,
                 max_iter: default_max_iter(),
                 pop_size: default_pop_size(),
+                recombination: default_recombination(),
             },
         };
         let toml_string = "

@@ -168,7 +168,7 @@ def crm_fit_main():
             # constraints=constraints,
             disp=True,
             tol=1e-4,
-            recombination=0.3,
+            recombination=settings.optimization.recombination,
             popsize=100,
             polish=False,
             rng=0,
