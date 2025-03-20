@@ -56,6 +56,8 @@ pub struct Parameters {
     strength: Parameter,
     /// TODO
     potential_type: PotentialType,
+    /// TODO
+    growth_rate: Parameter,
 }
 
 /// TODO
@@ -330,6 +332,7 @@ impl Settings {
             damping,
             strength,
             potential_type,
+            growth_rate,
         } = &self.parameters;
 
         let mut bounds_lower = Vec::new();
@@ -411,6 +414,7 @@ impl Settings {
             "\\SI{}{\\micro\\metre^2\\per\\min^2}",
             "C"
         );
+        append_infos_bounds!(growth_rate, "Growth Rate", "\\SI{}{\\per\\min}", "\\mu");
         match potential_type {
             PotentialType::Mie(mie) => {
                 let en = mie.en.clone();
@@ -470,6 +474,7 @@ impl Settings {
             damping,
             strength,
             potential_type,
+            growth_rate,
         } = &self.parameters;
 
         let mut param_counter = 0;
@@ -505,12 +510,13 @@ impl Settings {
             };
         );
 
-        let (radius, rigidity, spring_tension, damping, strength) = (
+        let (radius, rigidity, spring_tension, damping, strength, growth_rate) = (
             check_parameter!(radius),
             check_parameter!(rigidity),
             check_parameter!(spring_tension),
             check_parameter!(damping),
             check_parameter!(strength),
+            check_parameter!(growth_rate),
         );
 
         // Now configure potential type
@@ -582,7 +588,7 @@ impl Settings {
                         damping: damping[n],
                     },
                     interaction: interaction[n].clone(),
-                    growth_rate: spring_length / self.constants.t_max,
+                    growth_rate: growth_rate[n],
                     spring_length_threshold: f32::INFINITY,
                 }
             })
@@ -663,6 +669,12 @@ mod test {
                     individual: None,
                 }),
                 potential_type,
+                growth_rate: Parameter::SampledFloat(SampledFloat {
+                    min: 0.0,
+                    max: 10.0,
+                    initial: 1.0,
+                    individual: None,
+                }),
             },
             optimization: Optimization {
                 seed: 0,
@@ -687,6 +699,7 @@ rigidity = 8.0
 spring_tension = 1.0
 damping = { min=0.6, max=2.5, initial=1.5 }
 strength = { min=1.0, max=4.5, initial=1.0 }
+growth_rate = { min=0.0, max=10.0, initial=1.0 }
 
 [parameters.potential_type.Mie]
 en = { min=0.2, max=25.0, initial=6.0, individual=false}
@@ -695,7 +708,7 @@ bound = 8.0
 
 [optimization]
 seed = 0
-tol = 1e-4
+tol = 1e-3
 "
         .to_string();
         (settings1, toml_string)
@@ -714,8 +727,8 @@ tol = 1e-4
 
         for n_agents in 1..10 {
             let (lower, upper, _, _, _, _) = settings.generate_optimization_infos(n_agents);
-            assert_eq!(lower.len(), n_agents + 4);
-            assert_eq!(upper.len(), n_agents + 4);
+            assert_eq!(lower.len(), n_agents + 5);
+            assert_eq!(upper.len(), n_agents + 5);
         }
     }
 }
