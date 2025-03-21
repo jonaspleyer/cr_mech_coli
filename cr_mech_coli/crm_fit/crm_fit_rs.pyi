@@ -22,8 +22,9 @@ class SampledFloat:
     individual: bool | None
 
 class Parameter(enum.Enum):
-    SampledFloat
+    SampledFloat = dict
     Float = float
+    List = list
 
 class Parameters:
     radius: Parameter
@@ -57,3 +58,4 @@ class Settings:
     @staticmethod
     def from_toml(filename: str) -> Settings: ...
     def to_config(self, n_saves: int) -> crm.Configuration: ...
+    def generate_optimization_infos(self, n_agents: int) -> list: ...
