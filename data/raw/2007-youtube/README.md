@@ -4,7 +4,7 @@
 
 | | |
 |:---|---|
-| Link | [https://www.youtube.com/watch?v=gEwzDydciWc] |
+| Link | [www.youtube.com/watch?v=gEwzDydciWc](https://www.youtube.com/watch?v=gEwzDydciWc) |
 | License | [Youtube standard license](https://www.youtube.com/static?template=terms) |
 
 ## Obtaining the Data

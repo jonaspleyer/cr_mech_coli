@@ -8,7 +8,7 @@ Time-lapse.
 
 | | |
 |:---|---|
-| Link | [https://av.tib.eu/media/11301](https://av.tib.eu/media/11301) |
+| Link | [av.tib.eu/media/11301](https://av.tib.eu/media/11301) |
 | DOI | [10.3203/IWF/K-129](https://doi.org/10.3203/IWF/K-129) |
 | License | [CC BY-NC-ND 3.0 DE](https://creativecommons.org/licenses/by-nc-nd/3.0/de/deed.en) |
 

@@ -18,7 +18,7 @@ Models reconcile theory with the measurements
 
 | | |
 |:---|---|
-| Link | [https://www.youtube.com/watch?v=4grQSLmWXQk] |
+| Link | [www.youtube.com/watch?v=4grQSLmWXQk](https://www.youtube.com/watch?v=4grQSLmWXQk) |
 | License | [Youtube standard license](https://www.youtube.com/static?template=terms) |
 
 ## Obtaining the Data

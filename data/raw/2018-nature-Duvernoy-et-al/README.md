@@ -17,7 +17,7 @@ adhesive factors on the cell envelope.
 
 | | |
 |:---|---|
-| Link | [Paper](https://www.nature.com/articles/s41467-018-03446-y) |
+| Link | https://www.nature.com/articles/s41467-018-03446-y |
 | DOI | [10.1038/s41467-018-03446-y](http://dx.doi.org/10.1038/s41467-018-03446-y) |
 | License | [CC BY-NC-ND 4.0 DE](https://creativecommons.org/licenses/by/4.0/deed.en) |
 
