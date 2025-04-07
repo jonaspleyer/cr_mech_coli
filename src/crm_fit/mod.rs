@@ -600,7 +600,7 @@ impl Settings {
                 }
             })
             .collect();
-        crate::run_simulation_with_agents(&config, agents)
+        Ok(crate::run_simulation_with_agents(&config, agents)?)
     }
 
     /// Formats the object

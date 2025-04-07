@@ -555,7 +555,7 @@ fn backwards_compat_generate_positions_old() -> PyResult<()> {
 pub fn run_simulation_with_agents(
     config: &Configuration,
     agents: Vec<RodAgent>,
-) -> pyo3::PyResult<CellContainer> {
+) -> Result<CellContainer, cellular_raza::prelude::SimulationError> {
     // TODO after initializing this state, we need to check that it is actually valid
     let t0 = config.t0;
     let dt = config.dt;
@@ -621,7 +621,7 @@ pub fn run_simulation_with_agents(
         })
         .collect();
 
-    CellContainer::new(cells)
+    Ok(CellContainer::new(cells).unwrap())
 }
 
 /// Sorts an iterator of :class:`CellIdentifier` deterministically.
