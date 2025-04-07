@@ -1,7 +1,7 @@
 use cellular_raza::prelude::CellIdentifier;
 use pyo3::prelude::*;
 use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
+use std::collections::BTreeMap;
 
 use crate::counter_to_color;
 
@@ -11,19 +11,19 @@ use crate::counter_to_color;
 pub struct CellContainer {
     /// Contains snapshots of all cells at each saved step
     #[pyo3(get)]
-    pub cells: HashMap<u64, HashMap<CellIdentifier, (crate::RodAgent, Option<CellIdentifier>)>>,
+    pub cells: BTreeMap<u64, BTreeMap<CellIdentifier, (crate::RodAgent, Option<CellIdentifier>)>>,
     /// Maps each cell to its parent if existent
     #[pyo3(get)]
-    pub parent_map: HashMap<CellIdentifier, Option<CellIdentifier>>,
+    pub parent_map: BTreeMap<CellIdentifier, Option<CellIdentifier>>,
     /// Maps each cell to its children
     #[pyo3(get)]
-    pub child_map: HashMap<CellIdentifier, Vec<CellIdentifier>>,
+    pub child_map: BTreeMap<CellIdentifier, Vec<CellIdentifier>>,
     /// Maps each cell to its color
     #[pyo3(get)]
-    pub cell_to_color: HashMap<CellIdentifier, (u8, u8, u8)>,
+    pub cell_to_color: BTreeMap<CellIdentifier, (u8, u8, u8)>,
     /// Maps each color back to its cell
     #[pyo3(get)]
-    pub color_to_cell: HashMap<(u8, u8, u8), CellIdentifier>,
+    pub color_to_cell: BTreeMap<(u8, u8, u8), CellIdentifier>,
 }
 
 #[pymethods]
@@ -31,30 +31,33 @@ impl CellContainer {
     /// Constructs a new :class:`CellContainer` from the history of objects.
     #[new]
     pub fn new(
-        all_cells: HashMap<u64, HashMap<CellIdentifier, (crate::RodAgent, Option<CellIdentifier>)>>,
+        all_cells: BTreeMap<
+            u64,
+            BTreeMap<CellIdentifier, (crate::RodAgent, Option<CellIdentifier>)>,
+        >,
     ) -> pyo3::PyResult<Self> {
         let cells = all_cells;
         let cell_container = Self {
             cells,
-            parent_map: HashMap::new(),
-            child_map: HashMap::new(),
-            cell_to_color: HashMap::new(),
-            color_to_cell: HashMap::new(),
+            parent_map: BTreeMap::new(),
+            child_map: BTreeMap::new(),
+            cell_to_color: BTreeMap::new(),
+            color_to_cell: BTreeMap::new(),
         };
         let all_cells = cell_container.get_cells();
-        let parent_map: HashMap<CellIdentifier, Option<CellIdentifier>> = all_cells
+        let parent_map: BTreeMap<CellIdentifier, Option<CellIdentifier>> = all_cells
             .into_iter()
             .flat_map(|(_, cells)| cells.into_iter())
             .map(|(ident, (_, parent))| (ident, parent))
             .collect();
         let mut identifiers: Vec<_> = parent_map.clone().into_keys().collect();
         identifiers.sort();
-        let cell_to_color: HashMap<_, _> = identifiers
+        let cell_to_color: BTreeMap<_, _> = identifiers
             .into_iter()
             .enumerate()
             .map(|(n, ident)| (ident, counter_to_color(n as u32 + 1)))
             .collect();
-        let color_to_cell: HashMap<_, _> = cell_to_color
+        let color_to_cell: BTreeMap<_, _> = cell_to_color
             .clone()
             .into_iter()
             .map(|(x, y)| (y, x))
@@ -62,7 +65,7 @@ impl CellContainer {
         let child_map = parent_map
             .iter()
             .filter_map(|(child, parent)| parent.map(|x| (x, child)))
-            .fold(HashMap::new(), |mut acc, (parent, &child)| {
+            .fold(BTreeMap::new(), |mut acc, (parent, &child)| {
                 acc.entry(parent).or_insert(vec![child]).push(child);
                 acc
             });
@@ -88,7 +91,7 @@ impl CellContainer {
     ///     every iteration.
     pub fn get_cells(
         &self,
-    ) -> HashMap<u64, HashMap<CellIdentifier, (crate::RodAgent, Option<CellIdentifier>)>> {
+    ) -> BTreeMap<u64, BTreeMap<CellIdentifier, (crate::RodAgent, Option<CellIdentifier>)>> {
         self.cells.clone()
     }
 
@@ -104,11 +107,11 @@ impl CellContainer {
     pub fn get_cells_at_iteration(
         &self,
         iteration: u64,
-    ) -> HashMap<CellIdentifier, (crate::RodAgent, Option<CellIdentifier>)> {
+    ) -> BTreeMap<CellIdentifier, (crate::RodAgent, Option<CellIdentifier>)> {
         self.cells
             .get(&iteration)
             .cloned()
-            .unwrap_or(HashMap::new())
+            .unwrap_or(BTreeMap::new())
     }
 
     /// Load the history of a single cell
@@ -122,7 +125,7 @@ impl CellContainer {
     pub fn get_cell_history(
         &self,
         identifier: CellIdentifier,
-    ) -> (HashMap<u64, crate::RodAgent>, Option<CellIdentifier>) {
+    ) -> (BTreeMap<u64, crate::RodAgent>, Option<CellIdentifier>) {
         let mut parent = None;
         let hist = self
             .cells
@@ -212,12 +215,12 @@ impl CellContainer {
     }
 
     /// A dictionary mapping each cell to its parent
-    pub fn get_parent_map(&self) -> HashMap<CellIdentifier, Option<CellIdentifier>> {
+    pub fn get_parent_map(&self) -> BTreeMap<CellIdentifier, Option<CellIdentifier>> {
         self.parent_map.clone()
     }
 
     /// A dictionary mapping each cell to its children
-    pub fn get_child_map(&self) -> HashMap<CellIdentifier, Vec<CellIdentifier>> {
+    pub fn get_child_map(&self) -> BTreeMap<CellIdentifier, Vec<CellIdentifier>> {
         self.child_map.clone()
     }
 
