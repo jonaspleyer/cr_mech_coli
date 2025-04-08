@@ -14,7 +14,6 @@ doctest = false
 
 [patch.crates-io]
 nalgebra = { git = "https://github.com/dimforge/nalgebra" }
-ron = { git = "https://github.com/ron-rs/ron/" }
 cellular_raza = { git = "https://github.com/jonaspleyer/cellular_raza" }
 
 [dependencies]
