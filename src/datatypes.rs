@@ -37,15 +37,8 @@ impl CellContainer {
         >,
     ) -> pyo3::PyResult<Self> {
         let cells = all_cells;
-        let cell_container = Self {
-            cells,
-            parent_map: BTreeMap::new(),
-            child_map: BTreeMap::new(),
-            cell_to_color: BTreeMap::new(),
-            color_to_cell: BTreeMap::new(),
-        };
-        let all_cells = cell_container.get_cells();
-        let parent_map: BTreeMap<CellIdentifier, Option<CellIdentifier>> = all_cells
+        let parent_map: BTreeMap<CellIdentifier, Option<CellIdentifier>> = cells
+            .clone()
             .into_iter()
             .flat_map(|(_, cells)| cells.into_iter())
             .map(|(ident, (_, parent))| (ident, parent))
@@ -70,11 +63,11 @@ impl CellContainer {
                 acc
             });
         Ok(Self {
+            cells,
             parent_map,
             child_map,
             cell_to_color,
             color_to_cell,
-            ..cell_container
         })
     }
 
