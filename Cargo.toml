@@ -11,9 +11,6 @@ crate-type = ["cdylib", "rlib"]
 # Due to python docstrings
 doctest = false
 
-[[bin]]
-name = "crm_bench"
-bench = true
 
 [patch.crates-io]
 nalgebra = { git = "https://github.com/dimforge/nalgebra" }
