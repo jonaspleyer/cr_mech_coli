@@ -313,6 +313,7 @@ impl Settings {
             domain_size,
             n_voxels: [n_voxels[0].get(), n_voxels[1].get()],
             rng_seed,
+            gravity: 0.,
         })
     }
 

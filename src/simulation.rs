@@ -238,6 +238,8 @@ pub struct Configuration {
     /// Initial seed for randomizations. This can be useful to run multiple simulations with
     /// identical parameters but slightly varying initial conditions.
     pub rng_seed: u64,
+    /// See [cellular_raza-building_blocks::CartesianSubDomainRods]
+    pub gravity: f32,
 }
 
 impl Default for Configuration {
@@ -253,6 +255,7 @@ impl Default for Configuration {
             domain_height: 2.5,      // MICROMETRE
             n_voxels: [1; 2],
             rng_seed: 0,
+            gravity: 0.,
         }
     }
 }
@@ -588,7 +591,10 @@ pub fn run_simulation_with_agents(
     )
     .map_err(SimulationError::from)?;
     domain.rng_seed = config.rng_seed;
-    let domain = CartesianCuboidRods { domain };
+    let domain = CartesianCuboidRods {
+        domain,
+        gravity: config.gravity,
+    };
 
     test_compatibility!(
         aspects: [Mechanics, Interaction, Cycle],
