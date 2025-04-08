@@ -11,6 +11,10 @@ crate-type = ["cdylib", "rlib"]
 # Due to python docstrings
 doctest = false
 
+[[bin]]
+name = "crm_bench"
+bench = true
+
 [patch.crates-io]
 nalgebra = { git = "https://github.com/dimforge/nalgebra" }
 ron = { git = "https://github.com/ron-rs/ron/" }
@@ -31,3 +35,4 @@ serde = { version = "1.0", features = ["derive"] }
 serde-pickle = "1.2"
 serde_json = { version = "1.0.128", features = ["arbitrary_precision", "float_roundtrip", "preserve_order", "std"] }
 toml = "0.8"
+clap = { version = "4.5.35", features = ["derive"] }
