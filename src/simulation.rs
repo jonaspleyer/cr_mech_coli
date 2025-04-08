@@ -600,15 +600,14 @@ pub fn run_simulation_with_agents(
         agents: agents,
         domain: domain,
         settings: settings,
-        aspects: [Mechanics, Interaction, Cycle],
+        aspects: [Mechanics, Interaction, Cycle, DomainForce],
         zero_force_default: |c: &RodAgent| {
             nalgebra::MatrixXx3::zeros(c.mechanics.pos().nrows())
         },
     )?;
     let cells = storage
         .cells
-        .load_all_elements()
-        .unwrap()
+        .load_all_elements()?
         .into_iter()
         .map(|(iteration, cells)| {
             (
