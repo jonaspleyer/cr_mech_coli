@@ -389,6 +389,7 @@ domain_size=[100.0, 100.0]
 domain_height=2.5
 n_voxels=[1, 1]
 rng_seed=0
+gravity=0
 "
         .to_string();
         let config: Configuration = Configuration::from_toml_string(&toml_string).unwrap();
