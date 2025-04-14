@@ -25,7 +25,10 @@ pub struct RodAgent {
 /// Describes all possible interaction variants
 #[derive(Clone, Debug, Deserialize, Serialize)]
 #[pyclass]
-pub enum PhysicalInteraction {
+pub struct PhysicalInteraction(pub(crate) PhysInt);
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub(crate) enum PhysInt {
     /// Wraps the :class:`MiePotentialF32`
     MiePotentialF32(MiePotentialF32),
     /// Wraps the :class:`MorsePotentialF32`
@@ -39,11 +42,11 @@ impl PhysicalInteraction {
     pub fn new(pyobject: Bound<PyAny>) -> PyResult<Self> {
         let mie_pot: Result<MiePotentialF32, _> = pyobject.extract();
         if let Ok(mie_pot) = mie_pot {
-            return Ok(Self::MiePotentialF32(mie_pot));
+            return Ok(Self(PhysInt::MiePotentialF32(mie_pot)));
         };
         let morse_pot: Result<MorsePotentialF32, _> = pyobject.extract();
         if let Ok(morse_pot) = morse_pot {
-            return Ok(Self::MorsePotentialF32(morse_pot));
+            return Ok(Self(PhysInt::MorsePotentialF32(morse_pot)));
         }
         let pi: Result<PhysicalInteraction, _> = pyobject.extract();
         if let Ok(pi) = pi {
@@ -58,13 +61,46 @@ impl PhysicalInteraction {
 
     /// Extracts a copy of the inner value
     pub fn inner<'a>(&self, py: Python<'a>) -> PyResult<Bound<'a, PyAny>> {
-        let res = match self {
-            PhysicalInteraction::MiePotentialF32(mie) => Bound::new(py, mie.clone())?.into_any(),
-            PhysicalInteraction::MorsePotentialF32(morse) => {
-                Bound::new(py, morse.clone())?.into_any()
-            }
+        let res = match &self.0 {
+            PhysInt::MiePotentialF32(mie) => Bound::new(py, mie.clone())?.into_any(),
+            PhysInt::MorsePotentialF32(morse) => Bound::new(py, morse.clone())?.into_any(),
         };
         Ok(res)
+    }
+
+    /// Obtains the radius of the interaction
+    #[getter]
+    pub fn radius(&self) -> f32 {
+        match &self.0 {
+            PhysInt::MorsePotentialF32(m) => m.radius,
+            PhysInt::MiePotentialF32(m) => m.radius,
+        }
+    }
+
+    /// Getter for the strength of the interaction
+    #[getter]
+    pub fn strength(&self) -> f32 {
+        match &self.0 {
+            PhysInt::MorsePotentialF32(m) => m.strength,
+            PhysInt::MiePotentialF32(m) => m.strength,
+        }
+    }
+
+    /// Setter for the strength of the interaction
+    #[setter]
+    pub fn set_strength(&mut self, strength: f32) {
+        match &mut self.0 {
+            PhysInt::MorsePotentialF32(m) => m.strength = strength,
+            PhysInt::MiePotentialF32(m) => m.strength = strength,
+        }
+    }
+
+    /// Formats the [PhysicalInteraction]
+    pub fn __repr__(&self) -> String {
+        match &self.0 {
+            PhysInt::MiePotentialF32(m) => format!("{:#?}", m),
+            PhysInt::MorsePotentialF32(m) => format!("{:#?}", m),
+        }
     }
 }
 
@@ -81,8 +117,8 @@ where
         ext_vel: &T,
         ext_info: &f32,
     ) -> Result<(T, T), CalcError> {
-        use PhysicalInteraction::*;
-        match self {
+        use PhysInt::*;
+        match &self.0 {
             MiePotentialF32(pot) => {
                 pot.calculate_force_between(own_pos, own_vel, ext_pos, ext_vel, ext_info)
             }
@@ -93,23 +129,19 @@ where
     }
 
     fn get_interaction_information(&self) -> f32 {
-        match self {
-            PhysicalInteraction::MiePotentialF32(pot) => <MiePotentialF32 as Interaction<
+        match &self.0 {
+            PhysInt::MiePotentialF32(pot) => <MiePotentialF32 as Interaction<
                 nalgebra::Vector2<f32>,
                 _,
                 _,
                 f32,
-            >>::get_interaction_information(
-                pot
-            ),
-            PhysicalInteraction::MorsePotentialF32(pot) => <MorsePotentialF32 as Interaction<
+            >>::get_interaction_information(pot),
+            PhysInt::MorsePotentialF32(pot) => <MorsePotentialF32 as Interaction<
                 nalgebra::Vector2<f32>,
                 _,
                 _,
                 f32,
-            >>::get_interaction_information(
-                pot
-            ),
+            >>::get_interaction_information(pot),
         }
     }
 }
@@ -167,7 +199,7 @@ impl RodAgent {
     }
 
     fn __repr__(&self) -> String {
-        format!("{:?}", self)
+        format!("{:#?}", self)
     }
 
     fn __deepcopy__(&self, _memo: pyo3::Bound<pyo3::types::PyDict>) -> Self {
@@ -211,9 +243,9 @@ impl RodAgent {
     /// The interaction radius as given by the [MorsePotentialF32] interaction struct.
     #[getter]
     pub fn radius(&self) -> f32 {
-        match &self.interaction.0 {
-            PhysicalInteraction::MorsePotentialF32(pot) => pot.radius,
-            PhysicalInteraction::MiePotentialF32(pot) => pot.radius,
+        match &self.interaction.0 .0 {
+            PhysInt::MorsePotentialF32(pot) => pot.radius,
+            PhysInt::MiePotentialF32(pot) => pot.radius,
         }
     }
 }
