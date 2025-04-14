@@ -76,7 +76,7 @@ class Configuration:
     domain_size: tuple[float, float]
     domain_height: float
     randomize_position: float
-    n_voxels: int
+    n_voxels: tuple[int, int]
     rng_seed: int
     gravity: float
 
@@ -171,10 +171,10 @@ def generate_positions_old(
     agent_settings: AgentSettings,
     config: Configuration,
     rng_seed: int = 0,
-    dx: float = 0.0,
+    dx: tuple[float, float] = (0.0, 0.0),
     randomize_positions: float = 0.0,
     n_vertices: int = 8,
-):
+) -> list[np.ndarray]:
     """
     Creates positions for multiple :class`RodAgent`s which can be used for simulation purposes.
 
