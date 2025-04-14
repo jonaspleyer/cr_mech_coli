@@ -78,6 +78,7 @@ class Configuration:
     randomize_position: float
     n_voxels: int
     rng_seed: int
+    gravity: float
 
     @staticmethod
     def __new__(cls, **kwargs) -> Configuration: ...
