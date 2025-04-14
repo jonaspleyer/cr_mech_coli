@@ -40,7 +40,7 @@ pub struct RodMechanicsSettings {
 #[pymethods]
 impl RodMechanicsSettings {
     fn __repr__(&self) -> String {
-        format!("{:?}", self)
+        format!("{:#?}", self)
     }
 
     #[getter]
@@ -159,8 +159,20 @@ impl AgentSettings {
     }
 
     /// Formats and prints the :class:`AgentSettings`
-    pub fn __repr__(&self) -> String {
-        format!("{:#?}", self)
+    pub fn __repr__(&self, py: Python) -> PyResult<String> {
+        use std::io::Write;
+        let mut out = Vec::new();
+        writeln!(out, "AgentSettings {{")?;
+        writeln!(out, "{}", self.mechanics.call_method0(py, "__repr__")?,)?;
+        writeln!(out, "{}", self.interaction.call_method0(py, "__repr__")?)?;
+        writeln!(out, "growth_rate: {}", self.growth_rate)?;
+        writeln!(
+            out,
+            "spring_length_threshold: {}",
+            self.spring_length_threshold
+        )?;
+        writeln!(out, "}}")?;
+        Ok(String::from_utf8(out)?)
     }
 
     /// Converts the class to a dictionary
