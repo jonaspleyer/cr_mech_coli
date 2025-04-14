@@ -5,7 +5,7 @@ use cellular_raza::prelude::{MiePotentialF32, MorsePotentialF32, RodInteraction}
 use pyo3::{prelude::*, IntoPyObjectExt};
 use serde::{Deserialize, Serialize};
 
-use crate::PhysicalInteraction;
+use crate::{PhysInt, PhysicalInteraction};
 
 /// TODO
 #[pyclass(get_all, set_all, module = "cr_mech_coli.crm_fit")]
@@ -536,14 +536,16 @@ impl Settings {
                     .zip(em)
                     .enumerate()
                     .map(|(n, (en, em))| {
-                        RodInteraction(PhysicalInteraction::MiePotentialF32(MiePotentialF32 {
-                            en,
-                            em,
-                            strength: strength[n],
-                            radius: radius[n],
-                            bound: *bound,
-                            cutoff: self.constants.cutoff,
-                        }))
+                        RodInteraction(PhysicalInteraction(PhysInt::MiePotentialF32(
+                            MiePotentialF32 {
+                                en,
+                                em,
+                                strength: strength[n],
+                                radius: radius[n],
+                                bound: *bound,
+                                cutoff: self.constants.cutoff,
+                            },
+                        )))
                     })
                     .collect()
             }
@@ -555,12 +557,14 @@ impl Settings {
                     .into_iter()
                     .enumerate()
                     .map(|(n, potential_stiffness)| {
-                        RodInteraction(PhysicalInteraction::MorsePotentialF32(MorsePotentialF32 {
-                            strength: strength[n],
-                            radius: radius[n],
-                            potential_stiffness,
-                            cutoff: self.constants.cutoff,
-                        }))
+                        RodInteraction(PhysicalInteraction(PhysInt::MorsePotentialF32(
+                            MorsePotentialF32 {
+                                strength: strength[n],
+                                radius: radius[n],
+                                potential_stiffness,
+                                cutoff: self.constants.cutoff,
+                            },
+                        )))
                     })
                     .collect()
             }

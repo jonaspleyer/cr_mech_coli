@@ -125,12 +125,12 @@ impl AgentSettings {
                 mechanics: Py::new(py, RodMechanicsSettings::default())?,
                 interaction: Py::new(
                     py,
-                    PhysicalInteraction::MorsePotentialF32(MorsePotentialF32 {
+                    PhysicalInteraction(PhysInt::MorsePotentialF32(MorsePotentialF32 {
                         radius: 3.0,              // MICROMETRE
                         potential_stiffness: 0.5, // 1/MICROMETRE
                         cutoff: 10.0,             // MICROMETRE
                         strength: 0.1,            // MICROMETRE^2 / MIN^2
-                    }),
+                    })),
                 )?,
                 growth_rate: 0.1,
                 spring_length_threshold: 6.0,
