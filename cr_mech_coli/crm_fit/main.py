@@ -4,9 +4,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 from glob import glob
-
-mpl.use("pgf")
-
 import scipy as sp
 import time
 from pathlib import Path
@@ -15,15 +12,6 @@ import argparse
 
 from .plotting import plot_profile, plot_distributions, visualize_param_space
 from .predict import predict_flatten, predict, store_parameters
-
-plt.rcParams.update(
-    {
-        "font.family": "serif",  # use serif/main font for text elements
-        "text.usetex": True,  # use inline math for ticks
-        "pgf.rcfonts": False,  # don't setup fonts from rc parameters
-        "pgf.preamble": "\\usepackage{siunitx}",  # load additional packages
-    }
-)
 
 
 # Create folder to store output
@@ -106,9 +94,19 @@ def crm_fit_main():
     files_images = sorted(glob(str(data_dir / "images/*")))
     files_masks = sorted(glob(str(data_dir / "masks/*.csv")))
 
+    mpl.use("pgf")
+    plt.rcParams.update(
+        {
+            "font.family": "serif",  # use serif/main font for text elements
+            "text.usetex": True,  # use inline math for ticks
+            "pgf.rcfonts": False,  # don't setup fonts from rc parameters
+            "pgf.preamble": "\\usepackage{siunitx}",  # load additional packages
+        }
+    )
+
     # Try to read config file
     filename = data_dir / "settings.toml"
-    settings = crm.crm_fit.Settings.from_toml(filename)
+    settings = crm.crm_fit.Settings.from_toml(str(filename))
     potential_type = settings.parameters.potential_type
 
     out = get_out_folder(pyargs.iteration, potential_type)
