@@ -31,3 +31,4 @@ from .simulation import *
 from .imaging import *
 
 from .crm_fit import *
+from .crm_multilayer import *
