@@ -1,4 +1,6 @@
 import numpy as np
+from pathlib import Path
+from .simulation import StorageOption
 
 class MiePotentialF32:
     """\
@@ -38,6 +40,7 @@ class AgentSettings:
     interaction: MorsePotentialF32
     growth_rate: float
     spring_length_threshold: float
+    neighbor_reduction: tuple[int, float] | None
 
     @staticmethod
     def __new__(cls, **kwargs) -> AgentSettings: ...
@@ -79,6 +82,10 @@ class Configuration:
     n_voxels: tuple[int, int]
     rng_seed: int
     gravity: float
+    surface_friction: float
+    surface_friction_distance: float
+    storage_options: list[StorageOption]
+    storage_location: Path | str
 
     @staticmethod
     def __new__(cls, **kwargs) -> Configuration: ...
@@ -165,6 +172,8 @@ class CellContainer:
     def serialize(self) -> list[int]: ...
     @staticmethod
     def deserialize(bytes: list[int]) -> CellContainer: ...
+    @staticmethod
+    def load_from_storage(config: Configuration, date: Path | str) -> CellContainer: ...
 
 def generate_positions_old(
     n_agents: int,
