@@ -14,12 +14,12 @@ mod simulation;
 
 pub use agent::*;
 pub use cellular_raza::prelude::{CellIdentifier, VoxelPlainIndex};
-use cellular_raza::prelude::{MiePotentialF32, MorsePotentialF32};
+use cellular_raza::prelude::{MiePotentialF32, MorsePotentialF32, StorageOption};
 pub use crm_fit::*;
 pub use datatypes::*;
 pub use fitting::*;
 pub use imaging::*;
-pub use sampling::*;
+// pub use sampling::*;
 pub use crm_multilayer::*;
 pub use simulation::*;
 
@@ -61,5 +61,6 @@ fn cr_mech_coli(py: Python, m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<RodAgent>()?;
     m.add_class::<CellContainer>()?;
     m.add_class::<CellIdentifier>()?;
+    m.add_class::<StorageOption>()?;
     Ok(())
 }

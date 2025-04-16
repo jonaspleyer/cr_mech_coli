@@ -235,7 +235,7 @@ impl AgentSettings {
 
 /// Contains all settings needed to configure the simulation
 #[pyclass(set_all, get_all, module = "cr_mech_coli")]
-#[derive(Clone, Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, Serialize, PartialEq)]
 pub struct Configuration {
     /// Number of threads used for solving the system.
     pub n_threads: NonZeroUsize,
@@ -267,6 +267,11 @@ pub struct Configuration {
     pub surface_friction: f32,
     /// See [cellular_raza-building_blocks::CartesianCuboidRods]
     pub surface_friction_distance: f32,
+    /// Define in which format to store results. Only uses memory by default
+    pub storage_options: Vec<StorageOption>,
+    /// Store results in this given path. Only takes effect if more StorageOptions than memory are
+    /// utilized.
+    pub storage_location: std::path::PathBuf,
 }
 
 impl Default for Configuration {
@@ -285,6 +290,8 @@ impl Default for Configuration {
             gravity: 0.,
             surface_friction: 0.,
             surface_friction_distance: 1.,
+            storage_options: vec![StorageOption::Memory],
+            storage_location: std::path::PathBuf::from("out"),
         }
     }
 }
@@ -421,6 +428,8 @@ rng_seed=0
 gravity=0
 surface_friction=0
 surface_friction_distance=1
+storage_options=['Memory']
+storage_location='out'
 "
         .to_string();
         let config: Configuration = Configuration::from_toml_string(&toml_string).unwrap();
@@ -585,6 +594,12 @@ fn backwards_compat_generate_positions_old() -> PyResult<()> {
     Ok(())
 }
 
+pub(crate) fn new_storage_builder(config: &Configuration) -> StorageBuilder {
+    StorageBuilder::new()
+        .priority(config.storage_options.clone())
+        .location(&config.storage_location)
+}
+
 /// Executes a simulation given a :class:`Configuration` and a list of :class:`RodAgent`.
 #[pyfunction]
 pub fn run_simulation_with_agents(
@@ -603,7 +618,7 @@ pub fn run_simulation_with_agents(
     save_steps.push(t_max);
     let time = FixedStepsize::from_partial_save_points(t0, dt, save_steps)
         .map_err(SimulationError::from)?;
-    let storage = StorageBuilder::new().priority([StorageOption::Memory]);
+    let storage = new_storage_builder(config);
     let settings = Settings {
         n_threads: config.n_threads,
         time,

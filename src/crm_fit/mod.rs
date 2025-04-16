@@ -1,7 +1,7 @@
 use core::f32;
 
 use approx::AbsDiffEq;
-use cellular_raza::prelude::{MiePotentialF32, MorsePotentialF32, RodInteraction};
+use cellular_raza::prelude::{MiePotentialF32, MorsePotentialF32, RodInteraction, StorageOption};
 use pyo3::{prelude::*, IntoPyObjectExt};
 use serde::{Deserialize, Serialize};
 
@@ -316,6 +316,8 @@ impl Settings {
             gravity: 0.,
             surface_friction: 0.,
             surface_friction_distance: 1.,
+            storage_options: vec![StorageOption::Memory],
+            storage_location: std::path::PathBuf::new(),
         })
     }
 

@@ -1,9 +1,9 @@
-use cellular_raza::prelude::CellIdentifier;
+use cellular_raza::prelude::{CellBox, CellIdentifier, StorageInterfaceLoad};
 use pyo3::prelude::*;
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
 
-use crate::counter_to_color;
+use crate::{counter_to_color, Configuration, RodAgent, _CrAuxStorage};
 
 /// Manages all information resulting from an executed simulation
 #[pyclass]
@@ -277,5 +277,43 @@ impl CellContainer {
         let cells = serde_pickle::from_slice(&value, Default::default())
             .map_err(|e| pyo3::exceptions::PyValueError::new_err(format!("serde({e})")))?;
         CellContainer::new(cells)
+    }
+
+    /// Loads a saved result as a :class:`CellContainer`.
+    #[staticmethod]
+    pub fn load_from_storage(
+        config: Configuration,
+        date: std::path::PathBuf,
+    ) -> Result<Self, cellular_raza::prelude::SimulationError> {
+        type T = nalgebra::MatrixXx3<f32>;
+        let mut new_config = config.clone();
+        new_config.storage_options = config
+            .storage_options
+            .clone()
+            .into_iter()
+            .filter(|x| x != &cellular_raza::prelude::StorageOption::Memory)
+            .collect();
+        let builder = crate::simulation::new_storage_builder(&new_config)
+            .suffix(std::path::PathBuf::from("cells"))
+            .init_with_date(&date);
+        let cells_storage = cellular_raza::prelude::StorageManager::<
+            CellIdentifier,
+            (CellBox<RodAgent>, _CrAuxStorage<T, T, T, 2>),
+        >::open_or_create(builder, 0)
+        .unwrap();
+        let cells = cells_storage
+            .load_all_elements()?
+            .into_iter()
+            .map(|(iteration, cells)| {
+                (
+                    iteration,
+                    cells
+                        .into_iter()
+                        .map(|(ident, (cbox, _))| (ident, (cbox.cell, cbox.parent)))
+                        .collect(),
+                )
+            })
+            .collect();
+        Ok(CellContainer::new(cells).unwrap())
     }
 }
