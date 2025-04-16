@@ -20,12 +20,14 @@ pub struct RodAgent {
     /// Threshold at which the cell will divide in units `MICROMETRE`.
     #[pyo3(set, get)]
     pub spring_length_threshold: f32,
+    /// Reduces the growth rate with multiplier $((max - N)/max)^q $
+    pub neighbor_reduction: Option<(usize, f32)>,
 }
 
 /// Describes all possible interaction variants
 #[derive(Clone, Debug, Deserialize, Serialize)]
 #[pyclass]
-pub struct PhysicalInteraction(pub(crate) PhysInt);
+pub struct PhysicalInteraction(pub(crate) PhysInt, pub(crate) usize);
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub(crate) enum PhysInt {
@@ -42,11 +44,11 @@ impl PhysicalInteraction {
     pub fn new(pyobject: Bound<PyAny>) -> PyResult<Self> {
         let mie_pot: Result<MiePotentialF32, _> = pyobject.extract();
         if let Ok(mie_pot) = mie_pot {
-            return Ok(Self(PhysInt::MiePotentialF32(mie_pot)));
+            return Ok(Self(PhysInt::MiePotentialF32(mie_pot), 0));
         };
         let morse_pot: Result<MorsePotentialF32, _> = pyobject.extract();
         if let Ok(morse_pot) = morse_pot {
-            return Ok(Self(PhysInt::MorsePotentialF32(morse_pot)));
+            return Ok(Self(PhysInt::MorsePotentialF32(morse_pot), 0));
         }
         let pi: Result<PhysicalInteraction, _> = pyobject.extract();
         if let Ok(pi) = pi {
@@ -104,7 +106,9 @@ impl PhysicalInteraction {
     }
 }
 
-impl<T> Interaction<T, T, T, f32> for PhysicalInteraction
+type T = nalgebra::Vector3<f32>;
+
+impl Interaction<T, T, T, f32> for PhysicalInteraction
 where
     MorsePotentialF32: Interaction<T, T, T, f32>,
     MiePotentialF32: Interaction<T, T, T, f32>,
@@ -144,6 +148,22 @@ where
             >>::get_interaction_information(pot),
         }
     }
+
+    fn is_neighbor(&self, own_pos: &T, ext_pos: &T, ext_radius: &f32) -> Result<bool, CalcError> {
+        for p in own_pos.row_iter() {
+            for q in ext_pos.row_iter() {
+                if (p - q).norm() < (self.radius() + ext_radius) / SQRT_2 {
+                    return Ok(true);
+                }
+            }
+        }
+        Ok(false)
+    }
+
+    fn react_to_neighbors(&mut self, neighbors: usize) -> Result<(), CalcError> {
+        self.1 = neighbors;
+        Ok(())
+    }
 }
 
 #[pymethods]
@@ -161,6 +181,7 @@ impl RodAgent {
         damping=1.0,
         growth_rate=0.1,
         spring_length_threshold=6.0,
+        neighbor_reduction=None,
     ))]
     #[allow(clippy::too_many_arguments)]
     pub fn new<'py>(
@@ -175,6 +196,7 @@ impl RodAgent {
         damping: f32,
         growth_rate: f32,
         spring_length_threshold: f32,
+        neighbor_reduction: Option<(usize, f32)>,
     ) -> pyo3::PyResult<Self> {
         let pos = pos.as_array();
         let vel = vel.as_array();
@@ -195,6 +217,7 @@ impl RodAgent {
             interaction: RodInteraction(interaction),
             growth_rate,
             spring_length_threshold,
+            neighbor_reduction,
         })
     }
 
@@ -256,7 +279,14 @@ impl Cycle<RodAgent, f32> for RodAgent {
         dt: &f32,
         cell: &mut Self,
     ) -> Option<CycleEvent> {
-        cell.mechanics.spring_length += cell.growth_rate * dt;
+        let rate = if let Some((max, exp)) = cell.neighbor_reduction {
+            let m = max as f32;
+            let n = cell.interaction.0 .1 as f32;
+            cell.growth_rate * ((m - n) / m).max(0.).powf(exp)
+        } else {
+            cell.growth_rate
+        };
+        cell.mechanics.spring_length += rate * dt;
         if cell.mechanics.spring_length > cell.spring_length_threshold {
             Some(CycleEvent::Division)
         } else {

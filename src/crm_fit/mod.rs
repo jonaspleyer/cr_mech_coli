@@ -536,16 +536,17 @@ impl Settings {
                     .zip(em)
                     .enumerate()
                     .map(|(n, (en, em))| {
-                        RodInteraction(PhysicalInteraction(PhysInt::MiePotentialF32(
-                            MiePotentialF32 {
+                        RodInteraction(PhysicalInteraction(
+                            PhysInt::MiePotentialF32(MiePotentialF32 {
                                 en,
                                 em,
                                 strength: strength[n],
                                 radius: radius[n],
                                 bound: *bound,
                                 cutoff: self.constants.cutoff,
-                            },
-                        )))
+                            }),
+                            0,
+                        ))
                     })
                     .collect()
             }
@@ -557,14 +558,15 @@ impl Settings {
                     .into_iter()
                     .enumerate()
                     .map(|(n, potential_stiffness)| {
-                        RodInteraction(PhysicalInteraction(PhysInt::MorsePotentialF32(
-                            MorsePotentialF32 {
+                        RodInteraction(PhysicalInteraction(
+                            PhysInt::MorsePotentialF32(MorsePotentialF32 {
                                 strength: strength[n],
                                 radius: radius[n],
                                 potential_stiffness,
                                 cutoff: self.constants.cutoff,
-                            },
-                        )))
+                            }),
+                            0,
+                        ))
                     })
                     .collect()
             }
@@ -602,6 +604,7 @@ impl Settings {
                     interaction: interaction[n].clone(),
                     growth_rate: growth_rate[n],
                     spring_length_threshold: f32::INFINITY,
+                    neighbor_reduction: None,
                 }
             })
             .collect();

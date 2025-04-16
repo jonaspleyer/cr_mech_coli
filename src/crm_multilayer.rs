@@ -67,15 +67,19 @@ impl MultilayerConfig {
                         )?,
                         interaction: Py::new(
                             py,
-                            PhysicalInteraction(PhysInt::MorsePotentialF32(MorsePotentialF32 {
-                                radius: 3.0 * MICRO_METRE,
-                                potential_stiffness: 0.5 / MICRO_METRE,
-                                cutoff: 8.0 * MICRO_METRE,
-                                strength: 0.1 * MICRO_METRE.powf(2.0) / MINUTE.powf(2.0),
-                            })),
+                            PhysicalInteraction(
+                                PhysInt::MorsePotentialF32(MorsePotentialF32 {
+                                    radius: 3.0 * MICRO_METRE,
+                                    potential_stiffness: 0.5 / MICRO_METRE,
+                                    cutoff: 8.0 * MICRO_METRE,
+                                    strength: 0.1 * MICRO_METRE.powf(2.0) / MINUTE.powf(2.0),
+                                }),
+                                0,
+                            ),
                         )?,
                         growth_rate: 0.1 * MICRO_METRE / MINUTE,
                         spring_length_threshold: 6. * MICRO_METRE,
+                        neighbor_reduction: Some((16, 1.)),
                     },
                 )?,
                 rng_seed: 0,

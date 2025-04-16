@@ -105,6 +105,8 @@ pub struct AgentSettings {
     pub growth_rate: f32,
     /// Threshold when the bacterium divides
     pub spring_length_threshold: f32,
+    /// Reduces the growth rate with multiplier $((max - N)/max)^q $
+    pub neighbor_reduction: Option<(usize, f32)>,
 }
 
 #[pymethods]
@@ -125,15 +127,19 @@ impl AgentSettings {
                 mechanics: Py::new(py, RodMechanicsSettings::default())?,
                 interaction: Py::new(
                     py,
-                    PhysicalInteraction(PhysInt::MorsePotentialF32(MorsePotentialF32 {
-                        radius: 3.0,              // MICROMETRE
-                        potential_stiffness: 0.5, // 1/MICROMETRE
-                        cutoff: 10.0,             // MICROMETRE
-                        strength: 0.1,            // MICROMETRE^2 / MIN^2
-                    })),
+                    PhysicalInteraction(
+                        PhysInt::MorsePotentialF32(MorsePotentialF32 {
+                            radius: 3.0,              // MICROMETRE
+                            potential_stiffness: 0.5, // 1/MICROMETRE
+                            cutoff: 10.0,             // MICROMETRE
+                            strength: 0.1,            // MICROMETRE^2 / MIN^2
+                        }),
+                        0,
+                    ),
                 )?,
                 growth_rate: 0.1,
                 spring_length_threshold: 6.0,
+                neighbor_reduction: None,
             },
         )?;
         if let Some(kwds) = kwds {
@@ -185,6 +191,7 @@ impl AgentSettings {
             interaction,
             growth_rate,
             spring_length_threshold,
+            neighbor_reduction,
         } = self;
         use pyo3::types::IntoPyDict;
         let res = [
@@ -215,6 +222,10 @@ impl AgentSettings {
                 pyo3::types::PyFloat::new(py, *spring_length_threshold as f64)
                     .into_any()
                     .unbind(),
+            ),
+            (
+                "neighbor_reduction",
+                neighbor_reduction.into_pyobject(py)?.into_any().unbind(),
             ),
         ]
         .into_py_dict(py)?;
