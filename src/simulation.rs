@@ -263,6 +263,10 @@ pub struct Configuration {
     pub rng_seed: u64,
     /// See [cellular_raza-building_blocks::CartesianSubDomainRods]
     pub gravity: f32,
+    /// See [cellular_raza-building_blocks::CartesianCuboidRods]
+    pub surface_friction: f32,
+    /// See [cellular_raza-building_blocks::CartesianCuboidRods]
+    pub surface_friction_distance: f32,
 }
 
 impl Default for Configuration {
@@ -279,6 +283,8 @@ impl Default for Configuration {
             n_voxels: [1; 2],
             rng_seed: 0,
             gravity: 0.,
+            surface_friction: 0.,
+            surface_friction_distance: 1.,
         }
     }
 }
@@ -413,6 +419,8 @@ domain_height=2.5
 n_voxels=[1, 1]
 rng_seed=0
 gravity=0
+surface_friction=0
+surface_friction_distance=1
 "
         .to_string();
         let config: Configuration = Configuration::from_toml_string(&toml_string).unwrap();
@@ -618,6 +626,8 @@ pub fn run_simulation_with_agents(
     let domain = CartesianCuboidRods {
         domain,
         gravity: config.gravity,
+        surface_friction: config.surface_friction,
+        surface_friction_distance: config.surface_friction_distance,
     };
 
     test_compatibility!(

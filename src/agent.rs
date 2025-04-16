@@ -1,3 +1,5 @@
+use std::f32::consts::SQRT_2;
+
 use cellular_raza::prelude::*;
 use pyo3::prelude::*;
 use serde::{Deserialize, Serialize};
