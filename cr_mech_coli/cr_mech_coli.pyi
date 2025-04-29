@@ -184,8 +184,8 @@ def generate_positions_old(
     randomize_positions: float = 0.0,
     n_vertices: int = 8,
 ) -> list[np.ndarray]:
-    """
-    Creates positions for multiple :class`RodAgent`s which can be used for simulation purposes.
+    """\
+    Creates positions for multiple :class:`RodAgent` which can be used for simulation purposes.
 
     Args:
         n_agents(int): Number of positions to create
@@ -209,14 +209,14 @@ def sort_cellular_identifiers(
 ) -> list[CellIdentifier]:
     """\
     Sorts an iterator of :class:`CellIdentifier` deterministically.
-    
+
     This function is usefull for generating identical masks every simulation run.
     This function is implemented as standalone since sorting of a :class:`CellIdentifier` is
     typically not supported.
-    
+
     Args:
         identifiers(list): A list of :class:`CellIdentifier`
-    
+
     Returns:
         list: The sorted list.
     """

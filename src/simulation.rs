@@ -442,7 +442,7 @@ prepare_types!(
     aspects: [Mechanics, Interaction, Cycle],
 );
 
-/// Creates positions for multiple :class`RodAgent`s which can be used for simulation purposes.
+/// Creates positions for multiple :class:`RodAgent` which can be used for simulation purposes.
 #[pyfunction]
 #[allow(clippy::too_many_arguments)]
 #[pyo3(signature = (

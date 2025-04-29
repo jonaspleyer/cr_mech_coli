@@ -1,5 +1,5 @@
 """
-.. code-block:: [bash]
+.. code-block:: text
     :caption: Usage of the `crm_fit` script
 
     crm_fit -h

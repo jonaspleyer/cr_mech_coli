@@ -12,17 +12,28 @@ pub const MINUTE: f32 = 1.0;
 /// Hour derived from [MINUTE]
 pub const HOUR: f32 = 60. * MINUTE;
 
+/// Contain s all parameters and configuration valuese of the crm_multilayer script
 #[pyclass(get_all, set_all)]
 #[derive(Clone, Debug, Deserialize, Serialize)]
-struct MultilayerConfig {
-    config: Py<Configuration>,
-    agent_settings: Py<AgentSettings>,
-    rng_seed: u64,
-    dx: [f32; 2],
+pub struct MultilayerConfig {
+    /// Contains base configuration. See :class:`Configuration`
+    pub config: Py<Configuration>,
+    /// Contains settings for the Agents of the simulation. See :class:`AgentSettings`
+    pub agent_settings: Py<AgentSettings>,
+    /// Random seed for position generation
+    pub rng_seed: u64,
+    /// Padding of the domain for the position generation algorithm
+    pub dx: [f32; 2],
 }
 
 #[pymethods]
 impl MultilayerConfig {
+    /// Clones the current MultilayerConfig with new optional keyword arguments
+    ///
+    /// Args:
+    ///     self (MultilayerConfig): Reference to the object itself.
+    ///     kwds (dict): Keyword arguments for the new :class:`MultilayerConfig`.
+    ///
     #[pyo3(signature = (**kwds))]
     pub fn clone_with_args(&self, py: Python, kwds: Option<&Bound<PyDict>>) -> PyResult<Py<Self>> {
         let new_me: Py<Self> = Py::new(py, self.clone())?;
@@ -35,6 +46,7 @@ impl MultilayerConfig {
         Ok(new_me)
     }
 
+    /// Creates a new :class:`MultilayerConfig`
     #[new]
     #[pyo3(signature = (**kwds))]
     pub fn new(py: Python, kwds: Option<&Bound<PyDict>>) -> PyResult<Py<Self>> {
