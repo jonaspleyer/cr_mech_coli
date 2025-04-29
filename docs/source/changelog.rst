@@ -11,18 +11,18 @@ cr_mech_coli 0.5.0 `(14.02.2025) <_static/changelog/0.5.0.diff>`_
 - Enhance scripts for fitting model to data
 - Extend `extract_positions` function
 
-cr_mech_coli 0.4.3 `(31.01.2025) <_static/changelog/0.4.3.diff>`_
------------------------------------------------------------------
+cr_mech_coli 0.4.3 `(31.01.2025 19:42) <_static/changelog/0.4.3.diff>`_
+-----------------------------------------------------------------------
 
 - Release first version to pypi
 
-cr_mech_coli 0.4.2 `(31.01.2025) <_static/changelog/0.4.2.diff>`_
------------------------------------------------------------------
+cr_mech_coli 0.4.2 `(31.01.2025 19:08) <_static/changelog/0.4.2.diff>`_
+-----------------------------------------------------------------------
 
 - Get Github actions testing to work
 
-cr_mech_coli 0.4.1 `(31.01.2025) <_static/changelog/0.4.1.diff>`_
------------------------------------------------------------------
+cr_mech_coli 0.4.1 `(31.01.2025 11:17) <_static/changelog/0.4.1.diff>`_
+-----------------------------------------------------------------------
 
 - Short intermediate release to publish initial version to pypi
   See release `0.5.0` for more in-depth notes.
