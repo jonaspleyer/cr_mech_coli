@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+        <title>A Mechanical Model of Rod-Shaped Bacteria</title>
+
+        <link rel="stylesheet" href="../2025-02-03-presentation-jeti-seminar/reveal.js/dist/reset.css">
+        <link rel="stylesheet" href="../2025-02-03-presentation-jeti-seminar/reveal.js/dist/reveal.css">
+        <link rel="stylesheet" href="../2025-02-03-presentation-jeti-seminar/black.css">
+
+        <!-- Theme used for syntax highlighted code -->
+        <!-- <link rel="stylesheet" href="plugin/highlight/pojoaque.css"> -->
+        <!-- <link rel="stylesheet" href="plugin/highlight/shadows-of-purple.css"> -->
+        <link rel="stylesheet" href="../2025-02-03-presentation-jeti-seminar/stackoverflow-dark.css">
+
+        <style>
+        .n-slides {
+            display: inline;
+            color: #555;
+        }
+        </style>
+    </head>
+    <body>
+<div class="reveal">
+<div class="slides">
+<section data-markdown data-separator="^\n---\n$" data-separator-vertical="^\n----\n$">
+<textarea data-template>
+
+## A Mechanical Model of
+## Rod-Shaped Bacteria
+#### Jonas Pleyer
+##### 30.04.2025
+
+---
+
+## Goal: Model this System
+
+<video height=800px controls preload src="../2025-02-03-presentation-jeti-seminar/growth-2.mp4"></video>
+
+---
+
+### Rod-like bacterial shape is maintained by feedback
+### between cell curvature and cytoskeletal localization
+#### (Ursell et al. 2014)
+
+<img width=1600 src="figures/proposal/pnas.1317174111fig01-cut.jpeg">
+
+---
+
+### Bending forces plastically
+### deform growing bacterial cell walls
+#### (Amir et al. 2014)
+
+<img width=1400 src="figures/proposal/pnas2-cut.png">
+
+
+---
+
+### Controlling the Shape of Filamentous
+### Cells ofEscherichia coli.
+#### (Takeuchi et al. 2005) *E.Coli*
+
+<div style="grid-template-columns: 1fr 1fr; display: grid; column-gap: 50px;">
+<div style="background: white;"><img width=800 src="figures/proposal/images_medium_nl0507360f00002.png"></div>
+<div style="background: white;"><img width=800 src="figures/proposal/images_medium_nl0507360f00003.png"></div>
+</div>
+
+---
+
+### From Cell Differentiation to Cell Collectives:
+### Bacillus subtilis Uses Division of Labor to Migrate
+#### (Gestel et al. 2015)
+
+<div style="grid-template-columns: 1fr 1fr; display: grid; column-gap: 50px;">
+<img width=800 src="figures/proposal/pbio.1002141.g004-cut2.png">
+<img width=800 src="figures/proposal/pbio.1002141.g008.png">
+</div>
+
+---
+
+### (C) Cellular Aspects
+
+| Aspect | Description |
+| --- | --- |
+| (1) Rod-Shaped Mechanics | Rod-shaped bacteria are (flexible)  (Takeuchi et al. 2005, Ursell et al. 2014, Amir et al. 2014) |
+| (2) Growth | Cells grow exponentially (Takeuchi et al. 2005, Robert et al. 2014). |
+| (3) Differentiation | B.subtilis differentiates into matrix-producing and surfactin- producing cells (López and Kolter 2010, Gestel et al. 2015). |
+| (4) Division | Formation of van Gogh bundles is driven by cell division (Gestel et al. 2015). Bacteria can form multilayers during their growth phase (Duvernoy et al. 2018). |
+| (5) Variable Parameters | Parameters for individual cells are taken from a distribution (Koutsoumanis and Lianou 2013). |
+
+---
+
+### (CC) Cell-Cell Interactions
+
+| Aspect | Description |
+| --- | --- |
+| (6) Adhesion (polar) | Bacteria adhere to each other and attach when in close contact (Verwey 1947, Trejo et al. 2013). The interaction can be polarized (Duvernoy et al. 2018). |
+| (7) Friction | Friction between cells (Grant et al. 2014) can be asymmetrical (Doumic et al. 2020). |
+
+<br>
+
+### (DC) Domain-Cell Interactions
+
+| Aspect | Description |
+| --- | --- |
+| (8) External Forces | Bacteria stick to surfaces (Loosdrecht et al. 1989) and interact with the extracellular (Grant et al. 2014). |
+| (9) Extracellular Reactions | Bacteria can take up nutrients or possible secrete/take up signalling molecules (Li et al. 2025). |
+
+---
+
+### Our Current State
+
+<video
+    height=800px
+    preload controls
+    src="https://cellular-raza.com/showcase/bacterial-rods/movie.mp4"
+/>
+
+---
+
+### Parameter Estimation
+### With Microscopic Time Series
+
+<div style="grid-template-columns: 1fr 1fr 1fr; display: grid; column-gap: 50px;">
+<p>Initial</p>
+<p>Final</p>
+<p>Prediction</p>
+<img width=600 src="figures/crm_fit/0012/snapshot-initial.png">
+<img width=600 src="figures/crm_fit/0012/snapshot-final.png">
+<img width=600 src="figures/crm_fit/0012/snapshot-final-predicted.png">
+</div>
+
+$\rightarrow$ Comparing predicted and actual positions allows us to calibrate the model parameters.
+
+---
+
+### Parameter Estimation
+### With Microscopic Time Series
+
+<div style="grid-template-columns: 1fr 1fr 1fr; display: grid; column-gap: 50px;">
+<img width=600 src="figures/crm_fit/0012/damping.png">
+<img width=600 src="figures/crm_fit/0012/strength.png">
+<img width=600 src="figures/crm_fit/0012/exponent-m.png">
+</div>
+
+---
+
+### Image Generation
+
+<div style="grid-template-columns: 1fr 1fr 1fr; display: grid; column-gap: 0px;">
+<p>Raw Format</p>
+<p>Generate Microscopic Image</p>
+<p>Generate Masks</p>
+<img width=600 src="figures/generated/raw_pv/000000600.png">
+<img width=600 src="figures/generated/images/000000600.png">
+<img width=600 src="figures/generated/masks/000000600.png">
+</div>
+
+$\rightarrow$ Use dataset to train machine learning models
+
+- cell-segmentation
+- cell-tracking.
+
+---
+
+<div style="
+    width:100%;
+    display: grid;
+    grid-template-columns: 50% 50%;
+">
+<div>
+
+### Python Package
+
+<pre class="stretch"><code data-trim data-noescape class="language-python">
+import cr_mech_coli as crm
+
+# Define Settings
+config = crm.Configuration()
+ag_set = crm.AgentSettings()
+
+# Generate positions and agents
+positions = crm.generate_positions_old(4, ag_set,config)
+agents = [crm.RodAgent(
+        pos=p,
+        vel=p*0.0,
+        **ag_set.to_rod_agent_dict()
+    ) for p in positions
+]
+
+# Run simulation and plot individual results
+cells = crm.run_simulation_with_agents(agents, config)
+crm.store_all_images(cells, config.domain_size)
+</code></pre>
+
+<div style="display: grid; grid-template-columns: 1fr 1fr;">
+    <img style="margin:0;" src="figures/out-simple-script/images/000000500.png" width=100%>
+    <img style="margin:0;" src="figures/out-simple-script/masks/000000500.png" width=100%>
+</div>
+
+</div>
+<div>
+<h3>Documentation</h3>
+<iframe
+    src="https://jonaspleyer.github.io/cr_mech_coli/"
+    style="width: 1100px; height: 980px; max-width: 100%; max-height: 100%;"
+></iframe></div>
+</div>
+
+</textarea></section></div></div>
+
+        <script src="../2025-02-03-presentation-jeti-seminar/reveal.js/dist/reveal.js"></script>
+        <script src="../2025-02-03-presentation-jeti-seminar/reveal.js/plugin/notes/notes.js"></script>
+        <script src="../2025-02-03-presentation-jeti-seminar/reveal.js/plugin/markdown/markdown.js"></script>
+        <script src="../2025-02-03-presentation-jeti-seminar/reveal.js/plugin/highlight/highlight.js"></script>
+        <script src="../2025-02-03-presentation-jeti-seminar/reveal.js/plugin/math/math.js"></script>
+        <script>
+            // More info about initialization & config:
+            // - https://revealjs.com/initialization/
+            // - https://revealjs.com/config/
+            Reveal.initialize({
+                hash: true,
+                width: 1920,
+                height: 1080,
+                margin: 0.04,
+                slideNumber: 'c/t',
+                katex: {
+                    version: 'latest',
+                    delimiters: [
+                        {left: "$$", right: "$$", display: true},
+                        {left: "\\(", right: "\\)", display: false},
+                        {left: "\\begin{equation}", right: "\\end{equation}", display: true},
+                        {left: "\\begin{align}", right: "\\end{align}", display: true},
+                        {left: "\\begin{alignat}", right: "\\end{alignat}", display: true},
+                        {left: "\\begin{gather}", right: "\\end{gather}", display: true},
+                        {left: "\\begin{CD}", right: "\\end{CD}", display: true},
+                        {left: "\\[", right: "\\]", display: true},
+                        {left: "$", right: "$", display: false},
+                    ],
+                    ignoredTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+                },
+
+                // Learn about plugins: https://revealjs.com/plugins/
+                plugins: [ RevealMarkdown, RevealHighlight, RevealNotes, RevealMath.KaTeX ]
+            });
+            Reveal.configure({
+                keyboard: {
+                    33: 'left',
+                    34: 'right',
+                }
+            })
+        </script>
+    </body>
+</html>
