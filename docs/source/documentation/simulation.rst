@@ -18,5 +18,5 @@ Simulation
 
 .. py:class:: MiePotentialF32
 
-    See documentation at `cellular_raza-building_blocks::MorsePotentialF32
+    See documentation at `cellular_raza-building_blocks::MiePotentialF32
     <https://cellular-raza.com/docs/cellular_raza_building_blocks/struct.MiePotentialF32.html>`_.
