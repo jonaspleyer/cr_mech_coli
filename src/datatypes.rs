@@ -3,7 +3,7 @@ use pyo3::prelude::*;
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
 
-use crate::{counter_to_color, Configuration, RodAgent};
+use crate::{counter_to_color, Configuration, RodAgent, _CrAuxStorage};
 
 /// Manages all information resulting from an executed simulation
 #[pyclass]
@@ -285,6 +285,7 @@ impl CellContainer {
         config: Configuration,
         date: std::path::PathBuf,
     ) -> Result<Self, cellular_raza::prelude::SimulationError> {
+        type T = nalgebra::MatrixXx3<f32>;
         let mut new_config = config.clone();
         new_config.storage_options = config
             .storage_options
