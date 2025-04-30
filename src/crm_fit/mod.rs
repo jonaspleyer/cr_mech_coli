@@ -23,6 +23,20 @@ pub struct SampledFloat {
     pub individual: Option<bool>,
 }
 
+#[pymethods]
+impl SampledFloat {
+    #[new]
+    #[pyo3(signature = (min, max, initial, individual=false))]
+    fn new(min: f32, max: f32, initial: f32, individual: Option<bool>) -> Self {
+        Self {
+            min,
+            max,
+            initial,
+            individual,
+        }
+    }
+}
+
 /// TODO
 #[pyclass(get_all, set_all, module = "cr_mech_coli.crm_fit")]
 #[derive(Clone, Debug, Serialize, Deserialize, AbsDiffEq, PartialEq)]
@@ -40,8 +54,22 @@ pub enum Parameter {
     List(Vec<f32>),
 }
 
+fn parameter_from_obj(obj: &Bound<PyAny>) -> PyResult<Parameter> {
+    if let Ok(value) = obj.extract() {
+        Ok(Parameter::Float(value))
+    } else if let Ok(value) = obj.extract() {
+        Ok(Parameter::SampledFloat(value))
+    } else if let Ok(value) = obj.extract() {
+        Ok(Parameter::List(value))
+    } else {
+        Err(pyo3::exceptions::PyTypeError::new_err(
+            "Cannot convert object to SampledFloat",
+        ))
+    }
+}
+
 /// TODO
-#[pyclass(get_all, set_all, module = "cr_mech_coli.crm_fit")]
+#[pyclass(get_all, module = "cr_mech_coli.crm_fit")]
 #[derive(Clone, Debug, Serialize, Deserialize, AbsDiffEq, PartialEq)]
 pub struct Parameters {
     /// TODO
@@ -59,6 +87,33 @@ pub struct Parameters {
     /// TODO
     growth_rate: Parameter,
 }
+
+macro_rules! impl_setters(
+    (@single $struct_name:ident $name:ident $setter:ident) => {
+        #[pymethods]
+        impl $struct_name {
+            #[setter]
+            fn $setter (&mut self, obj: &Bound<PyAny>) -> PyResult<()> {
+                let param = parameter_from_obj(obj)?;
+                self.$name = param;
+                Ok(())
+            }
+        }
+    };
+    ($struct_name:ident; $($name:ident $setter:ident;)*) => {
+        $(impl_setters!{@single $struct_name $name $setter})*
+    };
+);
+
+impl_setters!(
+    Parameters;
+    radius set_radius;
+    rigidity set_rigidity;
+    spring_tension set_spring_tension;
+    damping set_damping;
+    strength set_strength;
+    growth_rate set_growth_rate;
+);
 
 /// TODO
 #[pyclass(get_all, set_all, module = "cr_mech_coli.crm_fit")]
@@ -624,6 +679,7 @@ impl Settings {
 /// A Python module implemented in Rust.
 pub fn crm_fit_rs(py: Python) -> PyResult<Bound<PyModule>> {
     let m = PyModule::new(py, "crm_fit_rs")?;
+    m.add_class::<SampledFloat>()?;
     m.add_class::<Parameter>()?;
     m.add_class::<Constants>()?;
     m.add_class::<Parameters>()?;
