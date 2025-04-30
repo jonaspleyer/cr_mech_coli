@@ -21,16 +21,21 @@ class SampledFloat:
     initial: float
     individual: bool | None
 
+    @staticmethod
+    def __new__(
+        cls, min: float, max: float, initial: float, individual: bool | None = None
+    ) -> SampledFloat: ...
+
 class Parameter(enum.Enum):
     SampledFloat = dict
     Float = float
     List = list
 
 class Parameters:
-    radius: Parameter
-    rigidity: Parameter
-    damping: Parameter
-    strength: Parameter
+    radius: Parameter | SampledFloat | list | float
+    rigidity: Parameter | SampledFloat | list | float
+    damping: Parameter | SampledFloat | list | float
+    strength: Parameter | SampledFloat | list | float
     potential_type: PotentialType
 
 class Constants:
@@ -57,5 +62,7 @@ class Settings:
 
     @staticmethod
     def from_toml(filename: str) -> Settings: ...
+    @staticmethod
+    def from_toml_string(toml_str: str) -> Settings: ...
     def to_config(self, n_saves: int) -> crm.Configuration: ...
     def generate_optimization_infos(self, n_agents: int) -> list: ...
