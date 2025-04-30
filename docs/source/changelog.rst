@@ -1,6 +1,18 @@
 Changelog
 #########
 
+cr_mech_coli 0.5.1 `(01.05.2025) <_static/changelog/0.5.1.diff>`_
+-----------------------------------------------------------------------
+
+- New script `crm_fit <scripts/crm_fit>`_ for fitting microscopig images
+- New script `crm_multilayer <scripts/crm_multilayer>`_ for calculating multilayer behaviour of a
+  colony.
+- Use `BTreeMap` instead of `HashMap` in `CellContainer` to preserve order in CellContainer.
+- New functions to (de)serialize and load a CellContainer from stored results
+- Implement growth rate reduction depending on neighbors
+- Rewrite main `run_simulation` function to take list of agents instead of only parameters.
+- Add new data sources for `crm_fit <scripts/crm_fit>`_ script
+
 cr_mech_coli 0.5.0 `(14.02.2025) <_static/changelog/0.5.0.diff>`_
 -----------------------------------------------------------------
 
@@ -25,7 +37,7 @@ cr_mech_coli 0.4.1 `(31.01.2025 11:17) <_static/changelog/0.4.1.diff>`_
 -----------------------------------------------------------------------
 
 - Short intermediate release to publish initial version to pypi
-  See release `0.5.0` for more in-depth notes.
+  See release ``0.5.0`` for more in-depth notes.
 
 cr_mech_coli 0.4.0 `(19.11.2024) <_static/changelog/0.4.0.diff>`_
 -----------------------------------------------------------------

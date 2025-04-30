@@ -1,0 +1,163 @@
+ .github/dependabot.yml                             |    12 +
+ .github/workflows/CI.yml                           |    26 +-
+ .github/workflows/sphinx_doc.yml                   |     1 +
+ .github/workflows/test.yml                         |    29 +
+ .gitignore                                         |     3 +-
+ .gitmodules                                        |     2 +-
+ CONTRIBUTING.md                                    |    27 +
+ Cargo.toml                                         |    24 +-
+ README.md                                          |    51 +-
+ cr_mech_coli/__init__.py                           |     3 +
+ cr_mech_coli/cr_mech_coli.pyi                      |    55 +-
+ cr_mech_coli/crm_fit/__init__.py                   |    40 +
+ cr_mech_coli/crm_fit/crm_fit_rs.pyi                |    68 +
+ cr_mech_coli/crm_fit/main.py                       |   246 +
+ .../crm_fit}/plotting.py                           |    20 +-
+ .../crm_fit}/predict.py                            |    81 +-
+ cr_mech_coli/crm_multilayer/__init__.py            |     8 +
+ cr_mech_coli/crm_multilayer/crm_multilayer_rs.pyi  |    11 +
+ cr_mech_coli/crm_multilayer/main.py                |   162 +
+ cr_mech_coli/fitting.py                            |    82 +-
+ cr_mech_coli/imaging.py                            |    59 +-
+ cr_mech_coli/simulation.py                         |     4 +-
+ .../0001/images}/image001042.png                   |   Bin
+ .../0001/images}/image001052.png                   |   Bin
+ .../0001/masks}/image001042-markers.csv            |     0
+ .../0001/masks}/image001052-markers.csv            |     0
+ data/crm_fit/0002/images/image001064.png           |   Bin 0 -> 111125 bytes
+ data/crm_fit/0002/images/image001078.png           |   Bin 0 -> 131571 bytes
+ .../crm_fit/0002/masks/image001064-markers.csv     |   430 +-
+ .../crm_fit/0002/masks/image001078-markers.csv     |   480 +-
+ data/raw/1981-IWF-Goettingen/README.md             |    22 +
+ data/raw/1981-IWF-Goettingen/obtain.sh             |    37 +
+ data/raw/2007-youtube/README.md                    |    17 +
+ data/raw/2007-youtube/obtain.sh                    |     8 +
+ data/raw/2012-youtube/README.md                    |    31 +
+ data/raw/2012-youtube/obtain.sh                    |     8 +
+ data/raw/2018-nature-Duvernoy-et-al/README.md      |    31 +
+ data/raw/2018-nature-Duvernoy-et-al/obtain.py      |    35 +
+ data/raw/2018-nature-Duvernoy-et-al/source.bib     |    17 +
+ data/raw/2018-youtube/README.md                    |    17 +
+ data/raw/2018-youtube/obtain.sh                    |     8 +
+ docs/requirements.txt                              |    10 +-
+ .../Bacterial_morphology_diagram.svg               |     0
+ .../amir-et-al-2014.webp                           |   Bin
+ .../black.css                                      |     0
+ .../growth-2-marked/image001042-marked.png         |   Bin
+ .../growth-2-marked/image001062-marked.png         |   Bin
+ .../growth-2-marked/image001082-marked.png         |   Bin
+ .../growth-2.mp4                                   |   Bin
+ .../growth-2/image001042.png                       |   Bin
+ .../growth-2/image001062.png                       |   Bin
+ .../growth-2/image001082.png                       |   Bin
+ .../growth-2/image001102.png                       |   Bin
+ .../growth-2/image001122.png                       |   Bin
+ .../growth-2/image001142.png                       |   Bin
+ .../index.html                                     |     0
+ .../mie_potential.png                              |   Bin
+ .../morse_potential.png                            |   Bin
+ .../out-simple-script/images/000000100.png         |   Bin
+ .../out-simple-script/images/000000200.png         |   Bin
+ .../out-simple-script/images/000000300.png         |   Bin
+ .../out-simple-script/images/000000400.png         |   Bin
+ .../out-simple-script/images/000000500.png         |   Bin
+ .../out-simple-script/images/000000600.png         |   Bin
+ .../out-simple-script/images/000000700.png         |   Bin
+ .../out-simple-script/images/000000800.png         |   Bin
+ .../out-simple-script/images/000000900.png         |   Bin
+ .../out-simple-script/images/000001000.png         |   Bin
+ .../out-simple-script/masks/000000100.png          |   Bin
+ .../out-simple-script/masks/000000200.png          |   Bin
+ .../out-simple-script/masks/000000300.png          |   Bin
+ .../out-simple-script/masks/000000400.png          |   Bin
+ .../out-simple-script/masks/000000500.png          |   Bin
+ .../out-simple-script/masks/000000600.png          |   Bin
+ .../out-simple-script/masks/000000700.png          |   Bin
+ .../out-simple-script/masks/000000800.png          |   Bin
+ .../out-simple-script/masks/000000900.png          |   Bin
+ .../out-simple-script/masks/000001000.png          |   Bin
+ .../plot.py                                        |     0
+ .../reveal.js                                      |     0
+ .../stackoverflow-dark.css                         |     0
+ .../figures/crm_fit/0012/damping.png               |   Bin 0 -> 21400 bytes
+ .../figures/crm_fit/0012/exponent-m.png            |   Bin 0 -> 22562 bytes
+ .../figures/crm_fit/0012/exponent-n.png            |   Bin 0 -> 22449 bytes
+ .../figures/crm_fit/0012/final_params.csv          |     1 +
+ .../0012/growth_rates_lengths_distribution.png     |   Bin 0 -> 49515 bytes
+ .../figures/crm_fit/0012/logs.txt                  |    64 +
+ .../figures/crm_fit/0012/param-costs.csv           | 14880 +++++++++++++++++++
+ .../crm_fit/0012/parameter_space_matrix.png        |   Bin 0 -> 23141 bytes
+ .../crm_fit/0012/snapshot-final-predicted.png      |   Bin 0 -> 198232 bytes
+ .../figures/crm_fit/0012/snapshot-final.png        |   Bin 0 -> 198384 bytes
+ .../figures/crm_fit/0012/snapshot-initial.png      |   Bin 0 -> 191865 bytes
+ .../figures/crm_fit/0012/strength.png              |   Bin 0 -> 21829 bytes
+ .../figures/generated/images/000000600.png         |   Bin 0 -> 3922313 bytes
+ .../figures/generated/masks/000000600.png          |   Bin 0 -> 17944 bytes
+ .../figures/generated/raw_pv/000000600.png         |   Bin 0 -> 126725 bytes
+ .../figures/out-simple-script/images/000000500.png |   Bin 0 -> 3922108 bytes
+ .../figures/out-simple-script/masks/000000500.png  |   Bin 0 -> 12570 bytes
+ .../proposal/images_medium_nl0507360f00002.png     |   Bin 0 -> 111388 bytes
+ .../proposal/images_medium_nl0507360f00003.png     |   Bin 0 -> 158596 bytes
+ .../figures/proposal/pbio.1002141.g004-cut2.png    |   Bin 0 -> 1323117 bytes
+ .../figures/proposal/pbio.1002141.g008.png         |   Bin 0 -> 1135490 bytes
+ .../figures/proposal/pnas.1317174111fig01-cut.jpeg |   Bin 0 -> 122396 bytes
+ .../figures/proposal/pnas2-cut.png                 |   Bin 0 -> 224691 bytes
+ .../figures/snapshot-code-sample.png               |   Bin 0 -> 69822 bytes
+ .../2025-04-30-presentation-short/index.html       |   256 +
+ docs/source/_static/changelog/0.5.0.diff           |    65 +
+ docs/source/_static/cr_mech_coli.svg               |    30 +-
+ docs/source/_static/cr_mech_coli_dark_mode.svg     |    30 +-
+ .../algorithm/interpolate-positions.png            |   Bin 1954 -> 2280 bytes
+ .../fitting-methods/algorithm/mask-zoom.png        |   Bin 12036 -> 13049 bytes
+ .../fitting-methods/displacement-calculations.png  |   Bin 67840 -> 61873 bytes
+ .../fitting-methods/displacement-distribution.png  |   Bin 0 -> 33650 bytes
+ .../fitting-methods/extract_positions-000400.png   |   Bin 23626 -> 0 bytes
+ .../fitting-methods/extract_positions-000800.png   |   Bin 33201 -> 0 bytes
+ .../fitting-methods/extract_positions-001200.png   |   Bin 44045 -> 0 bytes
+ .../fitting-methods/extract_positions-001600.png   |   Bin 64466 -> 0 bytes
+ .../fitting-methods/extract_positions-002000.png   |   Bin 96787 -> 31371 bytes
+ .../fitting-methods/extract_positions-004000.png   |   Bin 0 -> 41306 bytes
+ .../fitting-methods/extract_positions-006000.png   |   Bin 0 -> 57828 bytes
+ .../fitting-methods/extract_positions-008000.png   |   Bin 0 -> 79826 bytes
+ .../fitting-methods/extract_positions-010000.png   |   Bin 0 -> 121807 bytes
+ .../_static/fitting-methods/penalty-time-flow.png  |   Bin 45364 -> 43655 bytes
+ .../_static/fitting-methods/progressions-1.png     |   Bin 6422 -> 13518 bytes
+ .../_static/fitting-methods/progressions-2.png     |   Bin 7811 -> 17878 bytes
+ .../_static/fitting-methods/progressions-3.png     |   Bin 3272 -> 6468 bytes
+ .../_static/fitting-methods/progressions-4.png     |   Bin 4837 -> 9947 bytes
+ docs/source/changelog.rst                          |    20 +-
+ docs/source/documentation/simulation.rst           |     2 +-
+ docs/source/fitting-methods.rst                    |     6 +-
+ docs/source/index.rst                              |     1 +
+ docs/source/references.rst                         |     7 +-
+ docs/source/scripts/crm_fit.rst                    |     9 +
+ docs/source/scripts/crm_gen_data.rst               |     4 +
+ docs/source/scripts/crm_multilayer.rst             |    10 +
+ docs/source/scripts/index.rst                      |    10 +
+ plots/fitting_extract_positions.py                 |   284 +-
+ plots/fitting_penalty_over_time.py                 |   113 +-
+ plots/fitting_progression.py                       |    31 +-
+ plots/param_estimation_single_step/__init__.py     |     2 -
+ .../image001032-markers.csv                        |   576 -
+ plots/param_estimation_single_step/image001032.png |   Bin 100520 -> 0 bytes
+ plots/param_estimation_single_step/image001042.png |   Bin 105141 -> 0 bytes
+ plots/param_estimation_single_step/image001052.png |   Bin 108943 -> 0 bytes
+ plots/param_estimation_single_step/main.py         |   299 -
+ plots/position_extraction_algorithm.py             |     4 +-
+ pyproject.toml                                     |    11 +-
+ requirements.txt                                   |     2 +-
+ src/agent.rs                                       |   118 +-
+ src/crm_fit/mod.rs                                 |   810 +
+ src/crm_multilayer.rs                              |   119 +
+ src/datatypes.rs                                   |   114 +-
+ src/fitting.rs                                     |     8 +-
+ src/imaging.rs                                     |    16 +-
+ src/lib.rs                                         |    27 +-
+ src/simulation.rs                                  |   596 +-
+ tests/test_config.py                               |    14 +-
+ tests/test_convert_positions.py                    |    51 +-
+ tests/test_counter_color_conversion.py             |     2 +-
+ tests/test_fit.py                                  |    19 +-
+ tests/test_getting_started.py                      |    15 +
+ tests/test_image_generation_basic.py               |    13 +-
+ 162 files changed, 18809 insertions(+), 1995 deletions(-)
