@@ -1,4 +1,5 @@
 use core::f32;
+use std::ops::Deref;
 
 use approx::AbsDiffEq;
 use cellular_raza::prelude::{MiePotentialF32, MorsePotentialF32, RodInteraction, StorageOption};
@@ -217,6 +218,14 @@ pub struct Optimization {
     pub recombination: f32,
 }
 
+/// Other settings which are not related to the outcome of the simulation
+#[pyclass(get_all, set_all, module = "cr_mech_coli.crm_fit")]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
+pub struct Others {
+    /// Show/hide progressbar for solving of one single simulation
+    pub show_progressbar: bool,
+}
+
 const fn default_tol() -> f32 {
     1e-4
 }
@@ -291,6 +300,9 @@ pub struct Settings {
     /// See :class:`OptimizationParameters`
     #[approx(map = |b| Python::with_gil(|py| Some(get_inner(b, py))))]
     pub optimization: Py<Optimization>,
+    /// See :class:`Other`
+    #[approx(skip)]
+    pub others: Py<Others>,
 }
 
 impl PartialEq for Settings {
@@ -373,6 +385,7 @@ impl Settings {
             constants,
             parameters,
             optimization,
+            others,
         } = self.clone();
         let Constants {
             t_max,
@@ -384,6 +397,7 @@ impl Settings {
             n_vertices: _,
             n_saves,
         } = constants.extract(py)?;
+        let &Others { show_progressbar } = others.borrow(py).deref();
         Ok(crate::Configuration {
             domain_height: self.domain_height(),
             n_threads: 1.try_into().unwrap(),
@@ -391,7 +405,7 @@ impl Settings {
             dt,
             t_max,
             n_saves,
-            show_progressbar: false,
+            show_progressbar,
             domain_size,
             n_voxels: [n_voxels[0].get(), n_voxels[1].get()],
             rng_seed,
@@ -789,6 +803,9 @@ mod test {
                 pop_size: default_pop_size(),
                 recombination: default_recombination(),
             },
+            other: Others {
+                show_progressbar: false,
+            },
         };
         let toml_string = "
 [constants]
@@ -816,6 +833,9 @@ bound = 8.0
 [optimization]
 seed = 0
 tol = 1e-3
+
+[other]
+show_progressbar = false
 "
         .to_string();
         (settings1, toml_string)
