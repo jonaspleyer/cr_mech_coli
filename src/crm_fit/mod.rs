@@ -226,6 +226,14 @@ pub struct Others {
     pub show_progressbar: bool,
 }
 
+impl Default for Others {
+    fn default() -> Self {
+        Others {
+            show_progressbar: false,
+        }
+    }
+}
+
 const fn default_tol() -> f32 {
     1e-4
 }
@@ -302,7 +310,7 @@ pub struct Settings {
     pub optimization: Py<Optimization>,
     /// See :class:`Other`
     #[approx(skip)]
-    pub others: Py<Others>,
+    pub others: Option<Py<Others>>,
 }
 
 impl PartialEq for Settings {
@@ -317,7 +325,11 @@ impl PartialEq for Settings {
             constants.borrow(py).eq(&other.constants.borrow(py))
                 && parameters.borrow(py).eq(&other.parameters.borrow(py))
                 && optimization.borrow(py).eq(&other.optimization.borrow(py))
-                && others.borrow(py).eq(&other.others.borrow(py))
+                && if let (Some(s), Some(o)) = (&others, &other.others) {
+                    s.borrow(py).eq(&o.borrow(py))
+                } else {
+                    true
+                }
         })
     }
 }
@@ -397,7 +409,12 @@ impl Settings {
             n_vertices: _,
             n_saves,
         } = constants.extract(py)?;
-        let &Others { show_progressbar } = others.borrow(py).deref();
+        let Others { show_progressbar } = if let Some(o) = others {
+            o.borrow(py).deref().clone()
+        } else {
+            Others::default()
+        };
+        // let &Others { show_progressbar } = others.borrow(py).deref();
         Ok(crate::Configuration {
             domain_height: self.domain_height(),
             n_threads: 1.try_into().unwrap(),
@@ -740,74 +757,88 @@ pub fn crm_fit_rs(py: Python) -> PyResult<Bound<PyModule>> {
 mod test {
     use super::*;
 
-    fn generate_test_settings() -> (Settings, String) {
-        let potential_type = PotentialType::Mie(Mie {
-            en: Parameter::SampledFloat(SampledFloat {
-                min: 0.2,
-                max: 25.0,
-                initial: 6.0,
-                individual: Some(false),
-            }),
-            em: Parameter::SampledFloat(SampledFloat {
-                min: 0.2,
-                max: 25.0,
-                initial: 5.5,
-                individual: None,
-            }),
-            bound: 8.0,
-        });
-        let settings1 = Settings {
-            constants: Constants {
-                t_max: 100.0,
-                dt: 0.005,
-                domain_size: [100.0; 2],
-                n_voxels: [1.try_into().unwrap(); 2],
-                rng_seed: 0,
-                cutoff: 20.0,
-                n_vertices: 8.try_into().unwrap(),
-                n_saves: 0,
-            },
-            parameters: Parameters {
-                radius: Parameter::SampledFloat(SampledFloat {
-                    min: 3.0,
-                    max: 6.0,
-                    initial: 4.5,
-                    individual: Some(true),
+    fn generate_test_settings() -> PyResult<(Settings, String)> {
+        pyo3::prepare_freethreaded_python();
+        Python::with_gil(|py| -> PyResult<(Settings, String)> {
+            let potential_type = PotentialType::Mie(Mie {
+                en: Parameter::SampledFloat(SampledFloat {
+                    min: 0.2,
+                    max: 25.0,
+                    initial: 6.0,
+                    individual: Some(false),
                 }),
-                rigidity: Parameter::Float(8.0),
-                spring_tension: Parameter::Float(1.0),
-                damping: Parameter::SampledFloat(SampledFloat {
-                    min: 0.6,
-                    max: 2.5,
-                    initial: 1.5,
+                em: Parameter::SampledFloat(SampledFloat {
+                    min: 0.2,
+                    max: 25.0,
+                    initial: 5.5,
                     individual: None,
                 }),
-                strength: Parameter::SampledFloat(SampledFloat {
-                    min: 1.0,
-                    max: 4.5,
-                    initial: 1.0,
-                    individual: None,
-                }),
-                potential_type,
-                growth_rate: Parameter::SampledFloat(SampledFloat {
-                    min: 0.0,
-                    max: 10.0,
-                    initial: 1.0,
-                    individual: None,
-                }),
-            },
-            optimization: Optimization {
-                seed: 0,
-                tol: 1e-3,
-                max_iter: default_max_iter(),
-                pop_size: default_pop_size(),
-                recombination: default_recombination(),
-            },
-            other: Others {
-                show_progressbar: false,
-            },
-        };
-        let toml_string = "
+                bound: 8.0,
+            });
+            let settings1 = Settings {
+                constants: Py::new(
+                    py,
+                    Constants {
+                        t_max: 100.0,
+                        dt: 0.005,
+                        domain_size: [100.0; 2],
+                        n_voxels: [1.try_into().unwrap(); 2],
+                        rng_seed: 0,
+                        cutoff: 20.0,
+                        n_vertices: 8.try_into().unwrap(),
+                        n_saves: 0,
+                    },
+                )?,
+                parameters: Py::new(
+                    py,
+                    Parameters {
+                        radius: Parameter::SampledFloat(SampledFloat {
+                            min: 3.0,
+                            max: 6.0,
+                            initial: 4.5,
+                            individual: Some(true),
+                        }),
+                        rigidity: Parameter::Float(8.0),
+                        spring_tension: Parameter::Float(1.0),
+                        damping: Parameter::SampledFloat(SampledFloat {
+                            min: 0.6,
+                            max: 2.5,
+                            initial: 1.5,
+                            individual: None,
+                        }),
+                        strength: Parameter::SampledFloat(SampledFloat {
+                            min: 1.0,
+                            max: 4.5,
+                            initial: 1.0,
+                            individual: None,
+                        }),
+                        potential_type,
+                        growth_rate: Parameter::SampledFloat(SampledFloat {
+                            min: 0.0,
+                            max: 10.0,
+                            initial: 1.0,
+                            individual: None,
+                        }),
+                    },
+                )?,
+                optimization: Py::new(
+                    py,
+                    Optimization {
+                        seed: 0,
+                        tol: 1e-3,
+                        max_iter: default_max_iter(),
+                        pop_size: default_pop_size(),
+                        recombination: default_recombination(),
+                    },
+                )?,
+                others: Some(Py::new(
+                    py,
+                    Others {
+                        show_progressbar: false,
+                    },
+                )?),
+            };
+            let toml_string = "
 [constants]
 t_max=100.0
 dt=0.005
@@ -837,23 +868,26 @@ tol = 1e-3
 [other]
 show_progressbar = false
 "
-        .to_string();
-        (settings1, toml_string)
+            .to_string();
+            Ok((settings1, toml_string))
+        })
     }
 
     #[test]
     fn test_parsing_toml() {
-        let (settings1, toml_string) = generate_test_settings();
+        let (settings1, toml_string) = generate_test_settings().unwrap();
         let settings = Settings::from_toml_string(&toml_string).unwrap();
         approx::assert_abs_diff_eq!(settings1, settings);
     }
 
     #[test]
     fn test_bound_generation() {
-        let (settings, _) = generate_test_settings();
+        pyo3::prepare_freethreaded_python();
+        let (settings, _) = generate_test_settings().unwrap();
 
         for n_agents in 1..10 {
-            let (lower, upper, _, _, _, _) = settings.generate_optimization_infos(n_agents);
+            let (lower, upper, _, _, _, _) =
+                Python::with_gil(|py| settings.generate_optimization_infos(py, n_agents)).unwrap();
             assert_eq!(lower.len(), n_agents + 5);
             assert_eq!(upper.len(), n_agents + 5);
         }
