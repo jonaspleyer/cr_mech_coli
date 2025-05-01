@@ -55,14 +55,14 @@ class Optimization:
     pop_size: int
     recombination: float
 
-class Other:
+class Others:
     show_progressbar: bool
 
 class Settings:
     parameters: Parameters
     constants: Constants
     optimization: Optimization
-    other: Other
+    others: Others
 
     @staticmethod
     def from_toml(filename: str) -> Settings: ...
