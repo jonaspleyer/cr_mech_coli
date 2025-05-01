@@ -226,6 +226,15 @@ pub struct Others {
     pub show_progressbar: bool,
 }
 
+#[pymethods]
+impl Others {
+    #[new]
+    #[pyo3(signature = (show_progressbar=false))]
+    fn new(show_progressbar: bool) -> Self {
+        Others { show_progressbar }
+    }
+}
+
 impl Default for Others {
     fn default() -> Self {
         Others {
@@ -414,7 +423,6 @@ impl Settings {
         } else {
             Others::default()
         };
-        // let &Others { show_progressbar } = others.borrow(py).deref();
         Ok(crate::Configuration {
             domain_height: self.domain_height(),
             n_threads: 1.try_into().unwrap(),
@@ -747,6 +755,7 @@ pub fn crm_fit_rs(py: Python) -> PyResult<Bound<PyModule>> {
     m.add_class::<Parameters>()?;
     m.add_class::<Optimization>()?;
     m.add_class::<Settings>()?;
+    m.add_class::<Others>()?;
     m.add_class::<PotentialType>()?;
     m.add_class::<PotentialType_Morse>()?;
     m.add_class::<PotentialType_Mie>()?;
