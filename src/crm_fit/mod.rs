@@ -270,17 +270,44 @@ const fn default_n_saves() -> usize {
     0
 }
 
+fn get_inner<T>(ptp: &Py<T>, py: Python) -> T
+where
+    T: for<'a, 'py> pyo3::conversion::FromPyObjectBound<'a, 'py>,
+{
+    ptp.extract(py).unwrap()
+}
+
 /// Contains all settings required to fit the model to images
 #[pyclass(get_all, set_all, module = "cr_mech_coli.crm_fit")]
-#[derive(Clone, Debug, Serialize, Deserialize, AbsDiffEq, PartialEq)]
+#[derive(Clone, Debug, Serialize, Deserialize, AbsDiffEq)]
 #[approx(epsilon_type = f32)]
 pub struct Settings {
     /// See :class:`Constants`
-    pub constants: Constants,
+    #[approx(map = |b| Python::with_gil(|py| Some(get_inner(b, py))))]
+    pub constants: Py<Constants>,
     /// See :class:`Parameters`
-    pub parameters: Parameters,
+    #[approx(map = |b| Python::with_gil(|py| Some(get_inner(b, py))))]
+    pub parameters: Py<Parameters>,
     /// See :class:`OptimizationParameters`
-    pub optimization: Optimization,
+    #[approx(map = |b| Python::with_gil(|py| Some(get_inner(b, py))))]
+    pub optimization: Py<Optimization>,
+}
+
+impl PartialEq for Settings {
+    fn eq(&self, other: &Self) -> bool {
+        let Self {
+            constants,
+            parameters,
+            optimization,
+            others,
+        } = &self;
+        Python::with_gil(|py| {
+            constants.borrow(py).eq(&other.constants.borrow(py))
+                && parameters.borrow(py).eq(&other.parameters.borrow(py))
+                && optimization.borrow(py).eq(&other.optimization.borrow(py))
+                && others.borrow(py).eq(&other.others.borrow(py))
+        })
+    }
 }
 
 #[pymethods]
@@ -340,23 +367,23 @@ impl Settings {
 
     /// Converts the settings provided to a :class:`Configuration` object required to run the
     /// simulation
-    pub fn to_config(&self) -> PyResult<crate::Configuration> {
+    pub fn to_config(&self, py: Python) -> PyResult<crate::Configuration> {
         #[allow(unused)]
         let Self {
-            constants:
-                Constants {
-                    t_max,
-                    dt,
-                    domain_size,
-                    n_voxels,
-                    rng_seed,
-                    cutoff,
-                    n_vertices,
-                    n_saves,
-                },
+            constants,
             parameters,
             optimization,
         } = self.clone();
+        let Constants {
+            t_max,
+            dt,
+            domain_size,
+            n_voxels,
+            rng_seed,
+            cutoff: _,
+            n_vertices: _,
+            n_saves,
+        } = constants.extract(py)?;
         Ok(crate::Configuration {
             domain_height: self.domain_height(),
             n_threads: 1.try_into().unwrap(),
@@ -380,15 +407,16 @@ impl Settings {
     #[allow(unused)]
     pub fn generate_optimization_infos(
         &self,
+        py: Python,
         n_agents: usize,
-    ) -> (
+    ) -> PyResult<(
         Vec<f32>,
         Vec<f32>,
         Vec<f32>,
         Vec<(String, String, String)>,
         Vec<f32>,
         Vec<(String, String, String)>,
-    ) {
+    )> {
         let mut param_space_dim = 0;
 
         #[allow(unused)]
@@ -400,7 +428,7 @@ impl Settings {
             strength,
             potential_type,
             growth_rate,
-        } = &self.parameters;
+        } = &self.parameters.extract(py)?;
 
         let mut bounds_lower = Vec::new();
         let mut bounds_upper = Vec::new();
@@ -497,23 +525,24 @@ impl Settings {
             ),
         }
 
-        (
+        Ok((
             bounds_lower,
             bounds_upper,
             initial_values,
             infos,
             constants,
             constant_infos,
-        )
+        ))
     }
 
     /// TODO
     pub fn predict(
         &self,
+        py: Python,
         parameters: Vec<f32>,
         positions: numpy::PyReadonlyArray3<f32>,
     ) -> PyResult<crate::CellContainer> {
-        let config = self.to_config()?;
+        let config = self.to_config(py)?;
         let mut positions = positions.as_array().to_owned();
 
         // If the positions do not have dimension (?,?,3), we bring them to this dimension
@@ -542,7 +571,9 @@ impl Settings {
             strength,
             potential_type,
             growth_rate,
-        } = &self.parameters;
+        } = self.parameters.extract(py)?;
+
+        let constants: Constants = self.constants.extract(py)?;
 
         let mut param_counter = 0;
         macro_rules! check_parameter(
@@ -560,7 +591,7 @@ impl Settings {
                         individual,
                     }) => {
                         // Sampled-Individual
-                        if individual == &Some(true) {
+                        if individual == Some(true) {
                             let res = parameters[param_counter..param_counter+n_agents]
                                 .to_vec();
                             param_counter += n_agents;
@@ -601,8 +632,8 @@ impl Settings {
                                 em,
                                 strength: strength[n],
                                 radius: radius[n],
-                                bound: *bound,
-                                cutoff: self.constants.cutoff,
+                                bound,
+                                cutoff: constants.cutoff,
                             }),
                             0,
                         ))
@@ -622,7 +653,7 @@ impl Settings {
                                 strength: strength[n],
                                 radius: radius[n],
                                 potential_stiffness,
-                                cutoff: self.constants.cutoff,
+                                cutoff: constants.cutoff,
                             }),
                             0,
                         ))
@@ -638,7 +669,7 @@ impl Settings {
                     + (pos[(i + 1, 1)] - pos[(i, 1)]).powf(2.0))
                 .sqrt();
             }
-            res / (self.constants.n_vertices.get() - 1) as f32
+            res / (constants.n_vertices.get() - 1) as f32
         };
 
         let agents = positions
@@ -646,14 +677,14 @@ impl Settings {
             .enumerate()
             .map(|(n, pos)| {
                 let pos = nalgebra::Matrix3xX::<f32>::from_iterator(
-                    self.constants.n_vertices.get(),
+                    constants.n_vertices.get(),
                     pos.iter().copied(),
                 );
                 let spring_length = pos_to_spring_length(&pos.transpose());
                 crate::RodAgent {
                     mechanics: cellular_raza::prelude::RodMechanics {
                         pos: pos.transpose(),
-                        vel: nalgebra::MatrixXx3::zeros(self.constants.n_vertices.get()),
+                        vel: nalgebra::MatrixXx3::zeros(constants.n_vertices.get()),
                         diffusion_constant: 0.0,
                         spring_tension: spring_tension[n],
                         rigidity: rigidity[n],
