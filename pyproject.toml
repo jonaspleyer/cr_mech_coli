@@ -13,11 +13,12 @@ classifiers = [
 dynamic = ["version"]
 dependencies = [
     "pyvista>=0.42",
-    "numpy==2.2.5",
-    "opencv-python>=4.10.0.84",
+    "numpy==2",
+    "opencv-python",
     "tqdm>=4.60",
     "scikit-image>=0.24",
-    "pytest>=8.0",
+    "pytest>=8",
+    "matplotlib",
 ]
 [project.scripts]
 crm_fit = "cr_mech_coli:crm_fit.crm_fit_main"
