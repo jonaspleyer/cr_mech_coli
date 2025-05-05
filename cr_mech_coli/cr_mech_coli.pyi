@@ -1,6 +1,15 @@
 import numpy as np
 from pathlib import Path
-from .simulation import StorageOption
+from enum import Enum
+
+class StorageOption(Enum):
+    Sled = 0
+    SledTemp = 1
+    SerdeJson = 2
+    Ron = 3
+    Memory = 4
+
+class PhysicalInteraction: ...
 
 class MiePotentialF32:
     """\

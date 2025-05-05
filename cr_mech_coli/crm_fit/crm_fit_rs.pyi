@@ -47,6 +47,7 @@ class Constants:
     cutoff: float
     pixel_per_micron: float
     n_vertices: int
+    n_saves: int
 
 class Optimization:
     seed: int
@@ -57,6 +58,8 @@ class Optimization:
 
 class Others:
     show_progressbar: bool
+    @staticmethod
+    def __new__(cls, show_progressbar: bool = False) -> SampledFloat: ...
 
 class Settings:
     parameters: Parameters
