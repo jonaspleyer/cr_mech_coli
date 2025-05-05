@@ -36,4 +36,5 @@ from .cr_mech_coli import (
     MorsePotentialF32,
     MiePotentialF32,
     PhysicalInteraction,
+    StorageOption,
 )
