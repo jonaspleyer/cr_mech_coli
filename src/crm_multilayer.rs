@@ -135,6 +135,22 @@ impl MultilayerConfig {
         Ok(new_self)
     }
 
+    /// Converts the :class:`MultilayerConfig` into a toml string.
+    pub fn to_toml(&self) -> PyResult<String> {
+        toml::to_string_pretty(&self)
+            .map_err(|e| pyo3::exceptions::PyValueError::new_err(format!("{e}")))
+    }
+
+    /// Saves the :class:`MultilayerConfig` to the given file.
+    /// This function will fail if the file already exists.
+    pub fn to_toml_file(&self, filename: std::path::PathBuf) -> PyResult<()> {
+        use std::io::prelude::*;
+        let toml_string = self.to_toml()?;
+        let mut file = std::fs::File::create_new(filename)?;
+        file.write_all(toml_string.as_bytes())?;
+        Ok(())
+    }
+
     fn __eq__(&self, other: &Self) -> bool {
         AbsDiffEq::abs_diff_eq(self, other, f32::EPSILON)
     }
