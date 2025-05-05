@@ -134,6 +134,10 @@ impl MultilayerConfig {
         }
         Ok(new_self)
     }
+
+    fn __eq__(&self, other: &Self) -> bool {
+        AbsDiffEq::abs_diff_eq(self, other, f32::EPSILON)
+    }
 }
 
 /// A Python module implemented in Rust.
