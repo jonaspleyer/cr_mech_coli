@@ -296,7 +296,7 @@ const fn default_n_saves() -> usize {
     0
 }
 
-fn get_inner<T>(ptp: &Py<T>, py: Python) -> T
+pub(crate) fn get_inner<T>(ptp: &Py<T>, py: Python) -> T
 where
     T: for<'a, 'py> pyo3::conversion::FromPyObjectBound<'a, 'py>,
 {

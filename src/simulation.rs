@@ -1,3 +1,4 @@
+use approx::AbsDiffEq;
 use std::{hash::Hasher, num::NonZeroUsize};
 
 use backend::chili::SimulationError;
@@ -14,11 +15,14 @@ use crate::agent::*;
 
 /// Contains all settings required to construct :class:`RodMechanics`
 #[pyclass]
-#[derive(Clone, Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, Serialize, PartialEq, AbsDiffEq)]
+#[approx(epsilon_type = f32)]
 pub struct RodMechanicsSettings {
     /// The current position
+    #[approx(into_iter)]
     pub pos: nalgebra::MatrixXx3<f32>,
     /// The current velocity
+    #[approx(into_iter)]
     pub vel: nalgebra::MatrixXx3<f32>,
     /// Controls magnitude of32 stochastic motion
     #[pyo3(get, set)]
@@ -95,18 +99,42 @@ impl Default for RodMechanicsSettings {
 
 /// Contains settings needed to specify properties of the :class:`RodAgent`
 #[pyclass(get_all, set_all, mapping)]
-#[derive(Clone, Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, Serialize, AbsDiffEq)]
+#[approx(epsilon_type = f32)]
 pub struct AgentSettings {
     /// Settings for the mechanics part of :class:`RodAgent`. See also :class:`RodMechanicsSettings`.
+    #[approx(map = |b| Python::with_gil(|py| Some(crate::crm_fit::get_inner(b, py))))]
     pub mechanics: Py<RodMechanicsSettings>,
     /// Settings for the interaction part of :class:`RodAgent`. See also :class:`MorsePotentialF32`.
+    #[approx(map = |b| Python::with_gil(|py| Some(crate::crm_fit::get_inner(b, py))))]
     pub interaction: Py<PhysicalInteraction>,
     /// Rate with which the length of the bacterium grows
     pub growth_rate: f32,
     /// Threshold when the bacterium divides
     pub spring_length_threshold: f32,
     /// Reduces the growth rate with multiplier $((max - N)/max)^q $
+    #[approx(map = |x: &Option<(usize, f32)>| x.map(|(x, y)| (x as f32, y)))]
+    #[approx(epsilon_map = |x| (x, x,))]
     pub neighbor_reduction: Option<(usize, f32)>,
+}
+
+impl PartialEq for AgentSettings {
+    fn eq(&self, other: &Self) -> bool {
+        let AgentSettings {
+            mechanics,
+            interaction,
+            growth_rate,
+            spring_length_threshold,
+            neighbor_reduction,
+        } = &self;
+        Python::with_gil(|py| {
+            mechanics.borrow(py).eq(&other.mechanics.borrow(py))
+                && interaction.borrow(py).eq(&other.interaction.borrow(py))
+                && growth_rate.eq(&other.growth_rate)
+                && spring_length_threshold.eq(&other.spring_length_threshold)
+                && neighbor_reduction.eq(&other.neighbor_reduction)
+        })
+    }
 }
 
 #[pymethods]
@@ -235,9 +263,11 @@ impl AgentSettings {
 
 /// Contains all settings needed to configure the simulation
 #[pyclass(set_all, get_all, module = "cr_mech_coli")]
-#[derive(Clone, Debug, Deserialize, Serialize, PartialEq)]
+#[derive(Clone, Debug, Deserialize, Serialize, AbsDiffEq, PartialEq)]
+#[approx(epsilon_type = f32)]
 pub struct Configuration {
     /// Number of threads used for solving the system.
+    #[approx(equal)]
     pub n_threads: NonZeroUsize,
     /// Starting time
     pub t0: f32,
@@ -246,20 +276,25 @@ pub struct Configuration {
     /// Maximum solving time
     pub t_max: f32,
     /// Interval in which results will be saved
+    #[approx(equal)]
     pub n_saves: usize,
     /// Specifies if a progress bar should be shown during the solving process.
+    #[approx(skip)]
     pub show_progressbar: bool,
     /// Overall domain size of the simulation. This may determine an upper bound on the number of
     /// agents which can be put into the simulation.
+    #[approx(into_iter)]
     pub domain_size: [f32; 2],
     /// We assume that the domain is a thin 3D slice. This specifies the height of the domain.
     pub domain_height: f32,
     /// Number of voxels used to solve the system. This may yield performance improvements but
     /// specifying a too high number will yield incorrect results.
     /// See also https://cellular-raza.com/internals/concepts/domain/decomposition/.
+    #[approx(equal)]
     pub n_voxels: [usize; 2],
     /// Initial seed for randomizations. This can be useful to run multiple simulations with
     /// identical parameters but slightly varying initial conditions.
+    #[approx(equal)]
     pub rng_seed: u64,
     /// See [cellular_raza-building_blocks::CartesianSubDomainRods]
     pub gravity: f32,
@@ -268,9 +303,11 @@ pub struct Configuration {
     /// See [cellular_raza-building_blocks::CartesianCuboidRods]
     pub surface_friction_distance: f32,
     /// Define in which format to store results. Only uses memory by default
+    #[approx(skip)]
     pub storage_options: Vec<StorageOption>,
     /// Store results in this given path. Only takes effect if more StorageOptions than memory are
     /// utilized.
+    #[approx(skip)]
     pub storage_location: std::path::PathBuf,
 }
 

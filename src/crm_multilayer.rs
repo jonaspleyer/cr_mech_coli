@@ -1,4 +1,5 @@
 use crate::{AgentSettings, Configuration, PhysInt, PhysicalInteraction, RodMechanicsSettings};
+use approx::AbsDiffEq;
 use cellular_raza::prelude::MorsePotentialF32;
 use pyo3::types::PyDict;
 use pyo3::{prelude::*, types::PyString};
@@ -14,16 +15,40 @@ pub const HOUR: f32 = 60. * MINUTE;
 
 /// Contain s all parameters and configuration valuese of the crm_multilayer script
 #[pyclass(get_all, set_all)]
-#[derive(Clone, Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, Serialize, AbsDiffEq)]
+#[approx(epsilon_type = f32)]
 pub struct MultilayerConfig {
     /// Contains base configuration. See :class:`Configuration`
+    #[approx(map = |b| Python::with_gil(|py| Some(crate::crm_fit::get_inner(b, py))))]
     pub config: Py<Configuration>,
     /// Contains settings for the Agents of the simulation. See :class:`AgentSettings`
+    #[approx(map = |b| Python::with_gil(|py| Some(crate::crm_fit::get_inner(b, py))))]
     pub agent_settings: Py<AgentSettings>,
     /// Random seed for position generation
+    #[approx(equal)]
     pub rng_seed: u64,
     /// Padding of the domain for the position generation algorithm
+    #[approx(into_iter)]
     pub dx: [f32; 2],
+}
+
+impl PartialEq for MultilayerConfig {
+    fn eq(&self, other: &Self) -> bool {
+        let MultilayerConfig {
+            config,
+            agent_settings,
+            rng_seed,
+            dx,
+        } = &self;
+        Python::with_gil(|py| {
+            config.borrow(py).eq(&other.config.borrow(py))
+                && agent_settings
+                    .borrow(py)
+                    .eq(&other.agent_settings.borrow(py))
+                && rng_seed.eq(&other.rng_seed)
+                && dx.eq(&other.dx)
+        })
+    }
 }
 
 #[pymethods]

@@ -1,5 +1,6 @@
 use std::f32::consts::SQRT_2;
 
+use approx::AbsDiffEq;
 use cellular_raza::prelude::*;
 use pyo3::prelude::*;
 use serde::{Deserialize, Serialize};
@@ -27,11 +28,12 @@ pub struct RodAgent {
 }
 
 /// Describes all possible interaction variants
-#[derive(Clone, Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, Serialize, PartialEq, AbsDiffEq)]
 #[pyclass]
-pub struct PhysicalInteraction(pub(crate) PhysInt, pub(crate) usize);
+#[approx(epsilon_type = f32)]
+pub struct PhysicalInteraction(pub(crate) PhysInt, #[approx(equal)] pub(crate) usize);
 
-#[derive(Clone, Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, Serialize, PartialEq, AbsDiffEq)]
 pub(crate) enum PhysInt {
     /// Wraps the :class:`MiePotentialF32`
     MiePotentialF32(MiePotentialF32),
