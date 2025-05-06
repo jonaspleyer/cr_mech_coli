@@ -1,6 +1,5 @@
 import matplotlib.pyplot as plt
 import numpy as np
-import multiprocessing as mp
 from pathlib import Path
 from tqdm.contrib.concurrent import process_map
 
