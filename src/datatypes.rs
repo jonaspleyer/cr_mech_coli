@@ -1,4 +1,6 @@
-use cellular_raza::prelude::{CellBox, CellIdentifier, StorageInterfaceLoad};
+use cellular_raza::prelude::{
+    CellBox, CellIdentifier, SimulationError, StorageInterfaceLoad, StorageOption,
+};
 use pyo3::prelude::*;
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
@@ -7,7 +9,8 @@ use crate::{counter_to_color, Configuration, RodAgent};
 
 /// Manages all information resulting from an executed simulation
 #[pyclass]
-#[derive(Clone, Deserialize, Serialize)]
+#[derive(Clone, Serialize, Deserialize)]
+#[serde(try_from = "CellContainerSerde")]
 pub struct CellContainer {
     /// Contains snapshots of all cells at each saved step
     #[pyo3(get)]
@@ -27,6 +30,30 @@ pub struct CellContainer {
     /// Contains the path at which the results are stored of not a memory-only simulation.
     #[pyo3(get)]
     pub path: Option<std::path::PathBuf>,
+}
+
+#[derive(Serialize, Deserialize)]
+struct CellContainerSerde {
+    cells: BTreeMap<u64, BTreeMap<CellIdentifier, (crate::RodAgent, Option<CellIdentifier>)>>,
+    path: Option<std::path::PathBuf>,
+}
+
+impl TryFrom<CellContainer> for CellContainerSerde {
+    type Error = PyErr;
+
+    fn try_from(value: CellContainer) -> PyResult<Self> {
+        Ok(CellContainerSerde {
+            cells: value.cells,
+            path: value.path,
+        })
+    }
+}
+
+impl TryFrom<CellContainerSerde> for CellContainer {
+    type Error = PyErr;
+    fn try_from(value: CellContainerSerde) -> PyResult<Self> {
+        CellContainer::new(value.cells, value.path)
+    }
 }
 
 #[pymethods]
