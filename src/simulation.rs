@@ -517,7 +517,7 @@ pub fn generate_positions_old<'py>(
 }
 
 /// Backend functionality to use within rust-specific code for [generate_positions_old]
-fn _generate_positions_old(
+pub fn _generate_positions_old(
     n_agents: usize,
     mechanics: &RodMechanicsSettings,
     config: &Configuration,
@@ -525,7 +525,7 @@ fn _generate_positions_old(
     dx: [f32; 2],
     randomize_positions: f32,
     n_vertices: usize,
-) -> Vec<numpy::nalgebra::DMatrix<f32>> {
+) -> Vec<numpy::nalgebra::MatrixXx3<f32>> {
     // numpy::nalgebra::DMatrix<f32>
     use rand::seq::IteratorRandom;
     use rand::Rng;
@@ -561,7 +561,7 @@ fn _generate_positions_old(
                     rng.random_range(1.0 - x..1.0 + x)
                 }
             }
-            numpy::nalgebra::DMatrix::<f32>::from_fn(n_vertices, 3, |r, c| {
+            numpy::nalgebra::MatrixXx3::<f32>::from_fn(n_vertices, |r, c| {
                 p1[c]
                     + r as f32
                         * spring_length
