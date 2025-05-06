@@ -52,7 +52,7 @@ crm.store_all_images(cell_container, config.domain_size)
 ```
 
 The generated images will be stored (by default) in `out`.
-```bash
+```text
 out
 ├── images
 │   ├── 000000100.png
