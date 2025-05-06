@@ -736,8 +736,18 @@ pub fn run_simulation_with_agents(
             )
         })
         .collect();
+    let path = if config.storage_options.contains(&StorageOption::SerdeJson) {
+        storage
+            .cells
+            .extract_builder()
+            .get_full_path()
+            .parent()
+            .map(|x| x.to_path_buf())
+    } else {
+        None
+    };
 
-    Ok(CellContainer::new(cells).unwrap())
+    Ok(CellContainer::new(cells, path))
 }
 
 /// Sorts an iterator of :class:`CellIdentifier` deterministically.
