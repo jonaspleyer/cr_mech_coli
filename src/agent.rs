@@ -56,6 +56,7 @@ impl From<PhysicalInteractionSerde> for PhysicalInteraction {
     }
 }
 
+/// Contains all possible Intercation variants.
 #[derive(Clone, Debug, Deserialize, Serialize, PartialEq, AbsDiffEq)]
 pub enum PhysInt {
     /// Wraps the :class:`MiePotentialF32`
