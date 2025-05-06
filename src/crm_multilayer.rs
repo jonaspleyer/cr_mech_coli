@@ -30,6 +30,11 @@ pub struct MultilayerConfig {
     /// Padding of the domain for the position generation algorithm
     #[approx(into_iter)]
     pub dx: [f32; 2],
+    /// Controls how much positions are randomized in the beginning of the simulation
+    pub randomize_positions: f32,
+    /// Number of vertices to use per agent
+    #[approx(equal)]
+    pub n_vertices: usize,
 }
 
 impl PartialEq for MultilayerConfig {
@@ -39,6 +44,8 @@ impl PartialEq for MultilayerConfig {
             agent_settings,
             rng_seed,
             dx,
+            randomize_positions,
+            n_vertices,
         } = &self;
         Python::with_gil(|py| {
             config.borrow(py).eq(&other.config.borrow(py))
@@ -47,6 +54,8 @@ impl PartialEq for MultilayerConfig {
                     .eq(&other.agent_settings.borrow(py))
                 && rng_seed.eq(&other.rng_seed)
                 && dx.eq(&other.dx)
+                && randomize_positions.eq(&other.randomize_positions)
+                && n_vertices.eq(&other.n_vertices)
         })
     }
 }
@@ -124,6 +133,8 @@ impl MultilayerConfig {
                     Configuration::default().domain_size[0] / 2.2,
                     Configuration::default().domain_size[1] / 2.2,
                 ],
+                randomize_positions: 0.05,
+                n_vertices: 8,
             },
         )?;
         if let Some(kwds) = kwds {
