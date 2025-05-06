@@ -87,7 +87,6 @@ class Configuration:
     show_progressbar: bool
     domain_size: tuple[float, float]
     domain_height: float
-    randomize_position: float
     n_voxels: tuple[int, int]
     rng_seed: int
     gravity: float
@@ -156,6 +155,7 @@ class CellContainer:
     child_map: dict[CellIdentifier, list[CellIdentifier]]
     cell_to_color: dict[CellIdentifier, list[int]]
     color_to_cell: dict[list[int], CellIdentifier]
+    path: Path | None
 
     def get_cells(
         self,
