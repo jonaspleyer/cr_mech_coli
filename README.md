@@ -63,3 +63,27 @@ out
 │   ...
 │   └── 000001000.png
 ```
+
+## Installation
+Use [maturin](https://github.com/PyO3/maturin) to build the project.
+The following instructions are for nix-like operating systems.
+Please use the resources at [python.org](https://python.org/) to adjust them for your needs.
+First we create a virtual environment and activate it.
+
+```
+python3 -m venv .venv
+source .venv/bin/activate
+```
+
+If you have not yet used maturin, install it.
+We recommend that you use the [uv](https://github.com/astral-sh/uv) package manager for dependency
+management.
+
+```
+uv pip install maturin
+maturin develop -r --uv
+```
+
+Now you are ready to use `cr_mech_coli`.
+If you modify the source code, you have rerun the last command in order to install the updated
+version.
