@@ -175,6 +175,10 @@ impl MultilayerConfig {
     pub fn load_from_toml_str(input: &str) -> PyResult<Self> {
         toml::from_str(input).map_err(|e| pyo3::exceptions::PyValueError::new_err(format!("{e}")))
     }
+
+    fn approx_eq(&self, other: &Self) -> bool {
+        AbsDiffEq::abs_diff_eq(&self, &other, f32::EPSILON)
+    }
 }
 
 /// A Python module implemented in Rust.
