@@ -181,14 +181,13 @@ impl CellContainer {
     ///     CellIdentifier | None: The parents identifier or :class:`None`
     pub fn get_parent(&self, identifier: &CellIdentifier) -> PyResult<Option<CellIdentifier>> {
         // Check the first iteration
-        Ok(self
+        Ok(*self
             .parent_map
             .get(identifier)
             .ok_or(pyo3::exceptions::PyKeyError::new_err(format!(
                 "No CellIdentifier {:?} in map",
                 identifier
-            )))?
-            .clone())
+            )))?)
     }
 
     /// Obtains all children of a given cell
