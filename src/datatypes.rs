@@ -10,7 +10,7 @@ use crate::{counter_to_color, Configuration, RodAgent};
 /// Manages all information resulting from an executed simulation
 #[pyclass]
 #[derive(Clone, Serialize, Deserialize)]
-#[serde(try_from = "CellContainerSerde")]
+#[serde(from = "CellContainerSerde")]
 pub struct CellContainer {
     /// Contains snapshots of all cells at each saved step
     #[pyo3(get)]
@@ -38,20 +38,17 @@ struct CellContainerSerde {
     path: Option<std::path::PathBuf>,
 }
 
-impl TryFrom<CellContainer> for CellContainerSerde {
-    type Error = PyErr;
-
-    fn try_from(value: CellContainer) -> PyResult<Self> {
-        Ok(CellContainerSerde {
+impl From<CellContainer> for CellContainerSerde {
+    fn from(value: CellContainer) -> Self {
+        CellContainerSerde {
             cells: value.cells,
             path: value.path,
-        })
+        }
     }
 }
 
-impl TryFrom<CellContainerSerde> for CellContainer {
-    type Error = PyErr;
-    fn try_from(value: CellContainerSerde) -> PyResult<Self> {
+impl From<CellContainerSerde> for CellContainer {
+    fn from(value: CellContainerSerde) -> Self {
         CellContainer::new(value.cells, value.path)
     }
 }
@@ -66,7 +63,7 @@ impl CellContainer {
             BTreeMap<CellIdentifier, (crate::RodAgent, Option<CellIdentifier>)>,
         >,
         path: Option<std::path::PathBuf>,
-    ) -> pyo3::PyResult<Self> {
+    ) -> Self {
         let cells = all_cells;
         let parent_map: BTreeMap<CellIdentifier, Option<CellIdentifier>> = cells
             .clone()
@@ -93,14 +90,14 @@ impl CellContainer {
                 acc.entry(parent).or_insert(vec![child]).push(child);
                 acc
             });
-        Ok(Self {
+        Self {
             cells,
             parent_map,
             child_map,
             cell_to_color,
             color_to_cell,
             path,
-        })
+        }
     }
 
     /// Returns an identical clone
@@ -350,6 +347,6 @@ impl CellContainer {
         } else {
             None
         };
-        Ok(CellContainer::new(cells, path)?)
+        Ok(CellContainer::new(cells, path))
     }
 }
