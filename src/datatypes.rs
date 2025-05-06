@@ -296,8 +296,7 @@ impl CellContainer {
 
     /// Serializes the :class:`CellContainer` into json format.
     pub fn serialize(&self) -> pyo3::PyResult<Vec<u8>> {
-        let res: Vec<u8> = serde_pickle::to_vec(&self.cells, Default::default())
-            // let res: String = serde_json::to_string(&self)
+        let res: Vec<u8> = serde_pickle::to_vec(&self, Default::default())
             .map_err(|e| pyo3::exceptions::PyValueError::new_err(format!("{e}")))?;
         Ok(res)
     }
@@ -305,9 +304,8 @@ impl CellContainer {
     /// Deserializes the :class`CellContainer` from a json string.
     #[staticmethod]
     pub fn deserialize(value: Vec<u8>) -> pyo3::PyResult<Self> {
-        let cells = serde_pickle::from_slice(&value, Default::default())
-            .map_err(|e| pyo3::exceptions::PyValueError::new_err(format!("serde({e})")))?;
-        CellContainer::new(cells)
+        serde_pickle::from_slice(&value, Default::default())
+            .map_err(|e| pyo3::exceptions::PyValueError::new_err(format!("serde({e})")))
     }
 
     /// Loads a saved result as a :class:`CellContainer`.
