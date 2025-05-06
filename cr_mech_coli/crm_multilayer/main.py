@@ -249,4 +249,5 @@ def crm_multilayer_main():
         frameon=False,
     )
 
-    fig.savefig("out/crm_multilayer/tmp.pdf")
+    fig.savefig("out/crm_multilayer/multilayer-time-evolution.pdf")
+    fig.savefig("out/crm_multilayer/multilayer-time-evolution.png")
