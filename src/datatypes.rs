@@ -24,6 +24,9 @@ pub struct CellContainer {
     /// Maps each color back to its cell
     #[pyo3(get)]
     pub color_to_cell: BTreeMap<(u8, u8, u8), CellIdentifier>,
+    /// Contains the path at which the results are stored of not a memory-only simulation.
+    #[pyo3(get)]
+    pub path: Option<std::path::PathBuf>,
 }
 
 #[pymethods]
@@ -35,6 +38,7 @@ impl CellContainer {
             u64,
             BTreeMap<CellIdentifier, (crate::RodAgent, Option<CellIdentifier>)>,
         >,
+        path: Option<std::path::PathBuf>,
     ) -> pyo3::PyResult<Self> {
         let cells = all_cells;
         let parent_map: BTreeMap<CellIdentifier, Option<CellIdentifier>> = cells
@@ -68,6 +72,7 @@ impl CellContainer {
             child_map,
             cell_to_color,
             color_to_cell,
+            path,
         })
     }
 
@@ -313,6 +318,15 @@ impl CellContainer {
                 )
             })
             .collect();
-        Ok(CellContainer::new(cells).unwrap())
+        let path = if config.storage_options.contains(&StorageOption::SerdeJson) {
+            cells_storage
+                .extract_builder()
+                .get_full_path()
+                .parent()
+                .map(|x| x.to_path_buf())
+        } else {
+            None
+        };
+        Ok(CellContainer::new(cells, path)?)
     }
 }
