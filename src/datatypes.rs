@@ -313,7 +313,7 @@ impl CellContainer {
     pub fn load_from_storage(
         config: Configuration,
         date: std::path::PathBuf,
-    ) -> Result<Self, cellular_raza::prelude::SimulationError> {
+    ) -> Result<Self, SimulationError> {
         let mut new_config = config.clone();
         new_config.storage_options = config
             .storage_options
@@ -327,8 +327,7 @@ impl CellContainer {
         let cells_storage = cellular_raza::prelude::StorageManager::<
             CellIdentifier,
             (CellBox<RodAgent>, serde::de::IgnoredAny),
-        >::open_or_create(builder, 0)
-        .unwrap();
+        >::open_or_create(builder, 0)?;
         let cells = cells_storage
             .load_all_elements()?
             .into_iter()
