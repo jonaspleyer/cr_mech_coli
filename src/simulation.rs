@@ -13,6 +13,23 @@ use crate::datatypes::CellContainer;
 
 use crate::agent::*;
 
+fn serialize_matrixxx3<S>(m: &nalgebra::MatrixXx3<f32>, s: S) -> Result<S::Ok, S::Error>
+where
+    S: serde::Serializer,
+{
+    let n = nalgebra::DMatrix::<f32>::from_iterator(m.nrows(), m.ncols(), m.iter().copied());
+    serde::Serialize::serialize(&n, s)
+}
+
+fn deserialize_matrixxx3<'de, D>(de: D) -> Result<nalgebra::MatrixXx3<f32>, D::Error>
+where
+    D: serde::Deserializer<'de>,
+{
+    let n: nalgebra::DMatrix<f32> = serde::Deserialize::deserialize(de)?;
+    let m = nalgebra::MatrixXx3::from_iterator(n.nrows(), n.iter().copied());
+    Ok(m)
+}
+
 /// Contains all settings required to construct :class:`RodMechanics`
 #[pyclass]
 #[derive(Clone, Debug, Deserialize, Serialize, PartialEq, AbsDiffEq)]
@@ -20,9 +37,13 @@ use crate::agent::*;
 pub struct RodMechanicsSettings {
     /// The current position
     #[approx(into_iter)]
+    #[serde(serialize_with = "serialize_matrixxx3")]
+    #[serde(deserialize_with = "deserialize_matrixxx3")]
     pub pos: nalgebra::MatrixXx3<f32>,
     /// The current velocity
     #[approx(into_iter)]
+    #[serde(serialize_with = "serialize_matrixxx3")]
+    #[serde(deserialize_with = "deserialize_matrixxx3")]
     pub vel: nalgebra::MatrixXx3<f32>,
     /// Controls magnitude of32 stochastic motion
     #[pyo3(get, set)]

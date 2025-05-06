@@ -31,10 +31,33 @@ pub struct RodAgent {
 #[derive(Clone, Debug, Deserialize, Serialize, PartialEq, AbsDiffEq)]
 #[pyclass]
 #[approx(epsilon_type = f32)]
-pub struct PhysicalInteraction(pub(crate) PhysInt, #[approx(equal)] pub(crate) usize);
+#[serde(from = "PhysicalInteractionSerde")]
+#[serde(into = "PhysicalInteractionSerde")]
+pub struct PhysicalInteraction(pub PhysInt, #[approx(equal)] pub usize);
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+struct PhysicalInteractionSerde {
+    interaction: PhysInt,
+    n_neighbors: usize,
+}
+
+impl From<PhysicalInteraction> for PhysicalInteractionSerde {
+    fn from(value: PhysicalInteraction) -> Self {
+        PhysicalInteractionSerde {
+            interaction: value.0,
+            n_neighbors: value.1,
+        }
+    }
+}
+
+impl From<PhysicalInteractionSerde> for PhysicalInteraction {
+    fn from(value: PhysicalInteractionSerde) -> Self {
+        PhysicalInteraction(value.interaction, value.n_neighbors)
+    }
+}
 
 #[derive(Clone, Debug, Deserialize, Serialize, PartialEq, AbsDiffEq)]
-pub(crate) enum PhysInt {
+pub enum PhysInt {
     /// Wraps the :class:`MiePotentialF32`
     MiePotentialF32(MiePotentialF32),
     /// Wraps the :class:`MorsePotentialF32`
