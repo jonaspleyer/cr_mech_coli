@@ -149,23 +149,31 @@ impl MultilayerConfig {
     }
 
     /// Converts the :class:`MultilayerConfig` into a toml string.
-    pub fn to_toml(&self) -> PyResult<String> {
-        toml::to_string_pretty(&self)
-            .map_err(|e| pyo3::exceptions::PyValueError::new_err(format!("{e}")))
+    pub fn to_toml_string(&self) -> PyResult<String> {
+        toml::to_string(&self).map_err(|e| pyo3::exceptions::PyValueError::new_err(format!("{e}")))
     }
 
     /// Saves the :class:`MultilayerConfig` to the given file.
     /// This function will fail if the file already exists.
     pub fn to_toml_file(&self, filename: std::path::PathBuf) -> PyResult<()> {
         use std::io::prelude::*;
-        let toml_string = self.to_toml()?;
+        let toml_string = self.to_toml_string()?;
         let mut file = std::fs::File::create_new(filename)?;
         file.write_all(toml_string.as_bytes())?;
         Ok(())
     }
 
-    fn __eq__(&self, other: &Self) -> bool {
-        AbsDiffEq::abs_diff_eq(self, other, f32::EPSILON)
+    /// Loads the :class:`MultilayerConfig` from the file at the given path.
+    #[staticmethod]
+    pub fn load_from_toml_file(path: std::path::PathBuf) -> PyResult<Self> {
+        let contents = std::fs::read_to_string(path)?;
+        Self::load_from_toml_str(&contents)
+    }
+
+    /// Loads the :class:`MultilayerConfig` from the given string.
+    #[staticmethod]
+    pub fn load_from_toml_str(input: &str) -> PyResult<Self> {
+        toml::from_str(input).map_err(|e| pyo3::exceptions::PyValueError::new_err(format!("{e}")))
     }
 }
 
