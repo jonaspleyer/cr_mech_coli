@@ -99,7 +99,7 @@ The images below show the steps outlined above.
     Scripts <scripts/index>
     Model <model>
     Fitting Methods <fitting-methods>
-    Imaging Generation <image-generation>
+    Image Generation <image-generation>
     Cell Segmentation <cell-segmentation>
     Performance <performance>
     References <references>
