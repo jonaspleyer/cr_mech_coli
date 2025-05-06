@@ -149,8 +149,12 @@ impl PartialEq for AgentSettings {
             neighbor_reduction,
         } = &self;
         Python::with_gil(|py| {
-            mechanics.borrow(py).eq(&other.mechanics.borrow(py))
-                && interaction.borrow(py).eq(&other.interaction.borrow(py))
+            use core::ops::Deref;
+            mechanics.borrow(py).deref().eq(&other.mechanics.borrow(py))
+                && interaction
+                    .borrow(py)
+                    .deref()
+                    .eq(&other.interaction.borrow(py))
                 && growth_rate.eq(&other.growth_rate)
                 && spring_length_threshold.eq(&other.spring_length_threshold)
                 && neighbor_reduction.eq(&other.neighbor_reduction)

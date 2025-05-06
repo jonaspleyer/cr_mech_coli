@@ -48,9 +48,11 @@ impl PartialEq for MultilayerConfig {
             n_vertices,
         } = &self;
         Python::with_gil(|py| {
-            config.borrow(py).eq(&other.config.borrow(py))
+            use core::ops::Deref;
+            config.borrow(py).deref().eq(&other.config.borrow(py))
                 && agent_settings
                     .borrow(py)
+                    .deref()
                     .eq(&other.agent_settings.borrow(py))
                 && rng_seed.eq(&other.rng_seed)
                 && dx.eq(&other.dx)
