@@ -38,7 +38,11 @@ impl SampledFloat {
     }
 }
 
-/// TODO
+/// This enum has 3 variants:
+///
+/// - :class:`SampledFloat` Samples the value in the given range
+/// - :class:`float` Fixes it to the given value
+/// - :class:`list` Fixes it on a per-agent basis to the given values.
 #[pyclass(get_all, set_all, module = "cr_mech_coli.crm_fit")]
 #[derive(Clone, Debug, Serialize, Deserialize, AbsDiffEq, PartialEq)]
 #[approx(epsilon_type = f32)]
