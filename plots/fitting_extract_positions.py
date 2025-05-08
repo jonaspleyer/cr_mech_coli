@@ -40,7 +40,7 @@ def calculate_lengths_distances(
     lengths_exact = []
     for p in positions:
         color = mask[int(np.round(p[0][0])), int(np.round(p[0][1]))]
-        ident = cell_container.get_cell_from_color([*color])
+        ident = cell_container.get_cell_from_color((color[0], color[1], color[2]))
         cell = cells_at_iteration[ident][0]
         q = cell.pos[:, :2]
         p = crm.convert_pixel_to_position(p, config.domain_size, mask.shape[:2])
@@ -134,7 +134,6 @@ if __name__ == "__main__":
 
         for iteration, mask in tqdm(iter_masks):
             # This generates extracted positions in pixel units
-            cv.imwrite("temp.png", mask)
             positions = crm.extract_positions(
                 mask,
                 n_vertices=pyargs.n_vertices,
@@ -148,7 +147,9 @@ if __name__ == "__main__":
             for n, p0 in enumerate(positions):
                 # Get color
                 color = mask[p0[0][0], p0[0][1]]
-                ident = cell_container.get_cell_from_color([*color])
+                ident = cell_container.get_cell_from_color(
+                    (color[0], color[1], color[2])
+                )
                 cell = all_cells[iteration][ident][0]
                 p1 = crm.convert_cell_pos_to_pixels(
                     cell.pos[:, :2], config.domain_size, mask.shape[:2]
