@@ -434,7 +434,7 @@ impl Settings {
             domain_size,
             n_voxels: [n_voxels[0].get(), n_voxels[1].get()],
             rng_seed,
-            gravity: 0.,
+            gel_pressure: 0.,
             surface_friction: 0.,
             surface_friction_distance: 1.,
             storage_options: vec![StorageOption::Memory],

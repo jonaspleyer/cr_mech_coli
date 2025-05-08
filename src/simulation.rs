@@ -338,7 +338,7 @@ pub struct Configuration {
     #[approx(equal)]
     pub rng_seed: u64,
     /// See [cellular_raza-building_blocks::CartesianSubDomainRods]
-    pub gravity: f32,
+    pub gel_pressure: f32,
     /// See [cellular_raza-building_blocks::CartesianCuboidRods]
     pub surface_friction: f32,
     /// See [cellular_raza-building_blocks::CartesianCuboidRods]
@@ -368,7 +368,7 @@ impl Default for Configuration {
             domain_height: 2.5,      // MICROMETRE
             n_voxels: [1; 2],
             rng_seed: 0,
-            gravity: 0.,
+            gel_pressure: 0.,
             surface_friction: 0.,
             surface_friction_distance: 1.,
             storage_options: vec![StorageOption::Memory],
@@ -727,7 +727,7 @@ pub fn run_simulation_with_agents(
     domain.rng_seed = config.rng_seed;
     let domain = CartesianCuboidRods {
         domain,
-        gravity: config.gravity,
+        gel_pressure: config.gel_pressure,
         surface_friction: config.surface_friction,
         surface_friction_distance: config.surface_friction_distance,
     };

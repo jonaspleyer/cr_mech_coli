@@ -139,7 +139,7 @@ def crm_multilayer_main():
     ml_config.config.domain_size = (1600, 1600)
     ml_config.dx = (700, 700)
     ml_config.config.n_voxels = (10, 10)
-    ml_config.config.gravity = 0.15
+    ml_config.config.gel_pressure = 0.15
     ml_config.config.show_progressbar = True
     ml_config.config.n_threads = 8
 

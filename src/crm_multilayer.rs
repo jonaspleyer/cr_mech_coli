@@ -90,7 +90,7 @@ impl MultilayerConfig {
         let config = Py::new(
             py,
             Configuration {
-                gravity: 0.01,
+                gel_pressure: 0.01,
                 ..Default::default()
             },
         )?;

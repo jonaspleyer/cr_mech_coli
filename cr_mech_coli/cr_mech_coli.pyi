@@ -89,7 +89,7 @@ class Configuration:
     domain_height: float
     n_voxels: tuple[int, int]
     rng_seed: int
-    gravity: float
+    gel_pressure: float
     surface_friction: float
     surface_friction_distance: float
     storage_options: list[StorageOption]
