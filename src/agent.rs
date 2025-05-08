@@ -27,6 +27,7 @@ pub struct RodAgent {
     #[pyo3(set, get)]
     pub spring_length_threshold: f32,
     /// Reduces the growth rate with multiplier $((max - N)/max)^q $
+    #[pyo3(set, get)]
     pub neighbor_reduction: Option<(usize, f32)>,
 }
 
