@@ -25,7 +25,7 @@ This module contains functionality to configure and run simulations.
 """
 
 from .cr_mech_coli import (
-    generate_positions_old,
+    generate_positions,
     run_simulation_with_agents,
     AgentSettings,
     RodAgent,

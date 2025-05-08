@@ -30,7 +30,7 @@ def run_sim(
         n_voxels=(n_voxels, n_voxels),
     )
     agent_settings = crm.AgentSettings()
-    positions = crm.generate_positions_old(
+    positions = crm.generate_positions(
         n_agents,
         agent_settings,
         config,

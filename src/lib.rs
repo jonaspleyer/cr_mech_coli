@@ -42,7 +42,7 @@ fn cr_mech_coli(py: Python, m: &Bound<'_, PyModule>) -> PyResult<()> {
         submodule_multilayer,
     )?;
 
-    m.add_function(wrap_pyfunction!(generate_positions_old, m)?)?;
+    m.add_function(wrap_pyfunction!(generate_positions, m)?)?;
     m.add_function(wrap_pyfunction!(run_simulation_with_agents, m)?)?;
     m.add_function(wrap_pyfunction!(sort_cellular_identifiers, m)?)?;
     m.add_class::<CellIdentifier>()?;

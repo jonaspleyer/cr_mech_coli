@@ -536,7 +536,7 @@ prepare_types!(
     randomize_positions = 0.0,
     n_vertices = 8,
 ))]
-pub fn generate_positions_old<'py>(
+pub fn generate_positions<'py>(
     py: Python<'py>,
     n_agents: usize,
     agent_settings: &AgentSettings,

@@ -19,7 +19,7 @@ from cr_mech_coli.crm_perf_plots import COLOR1, COLOR2, COLOR3, COLOR4, COLOR5
 
 def run_sim(ml_config: MultilayerConfig) -> crm.CellContainer:
     positions = np.array(
-        crm.generate_positions_old(
+        crm.generate_positions(
             n_agents=1,
             agent_settings=ml_config.agent_settings,
             config=ml_config.config,

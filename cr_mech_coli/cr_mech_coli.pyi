@@ -186,7 +186,7 @@ class CellContainer:
     @staticmethod
     def load_from_storage(config: Configuration, date: Path | str) -> CellContainer: ...
 
-def generate_positions_old(
+def generate_positions(
     n_agents: int,
     agent_settings: AgentSettings,
     config: Configuration,
