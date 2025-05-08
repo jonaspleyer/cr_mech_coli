@@ -5,6 +5,7 @@
 
 mod agent;
 mod cell_container;
+mod config;
 mod crm_fit;
 mod crm_multilayer;
 mod fitting;
@@ -16,6 +17,7 @@ pub use agent::*;
 pub use cell_container::*;
 pub use cellular_raza::prelude::{CellIdentifier, VoxelPlainIndex};
 use cellular_raza::prelude::{MiePotentialF32, MorsePotentialF32, StorageOption};
+pub use config::*;
 pub use crm_fit::*;
 pub use fitting::*;
 pub use imaging::*;
