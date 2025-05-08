@@ -439,6 +439,7 @@ impl Settings {
             surface_friction_distance: 1.,
             storage_options: vec![StorageOption::Memory],
             storage_location: std::path::PathBuf::new(),
+            storage_suffix: None,
         })
     }
 

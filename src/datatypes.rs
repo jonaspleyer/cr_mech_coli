@@ -1,5 +1,5 @@
 use cellular_raza::prelude::{
-    CellBox, CellIdentifier, SimulationError, StorageInterfaceLoad, StorageOption,
+    CellBox, CellIdentifier, SimulationError, StorageBuilder, StorageInterfaceLoad,
 };
 use pyo3::prelude::*;
 use serde::{Deserialize, Serialize};
@@ -309,18 +309,22 @@ impl CellContainer {
     #[staticmethod]
     pub fn load_from_storage(
         config: Configuration,
-        date: std::path::PathBuf,
+        path: std::path::PathBuf,
     ) -> Result<Self, SimulationError> {
-        let mut new_config = config.clone();
-        new_config.storage_options = config
+        let mut config = config.clone();
+        config.storage_options = config
             .storage_options
             .clone()
             .into_iter()
             .filter(|x| x != &cellular_raza::prelude::StorageOption::Memory)
             .collect();
-        let builder = crate::simulation::new_storage_builder(&new_config)
-            .suffix(std::path::PathBuf::from("cells"))
-            .init_with_date(&date);
+
+        let builder = StorageBuilder::new()
+            .priority(config.storage_options.clone())
+            .location(&path)
+            .add_date(false)
+            .suffix("cells")
+            .init();
         let cells_storage = cellular_raza::prelude::StorageManager::<
             CellIdentifier,
             (CellBox<RodAgent>, serde::de::IgnoredAny),
@@ -338,15 +342,6 @@ impl CellContainer {
                 )
             })
             .collect();
-        let path = if config.storage_options.contains(&StorageOption::SerdeJson) {
-            cells_storage
-                .extract_builder()
-                .get_full_path()
-                .parent()
-                .map(|x| x.to_path_buf())
-        } else {
-            None
-        };
-        Ok(CellContainer::new(cells, path))
+        Ok(CellContainer::new(cells, Some(path)))
     }
 }

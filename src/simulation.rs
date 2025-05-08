@@ -350,6 +350,9 @@ pub struct Configuration {
     /// utilized.
     #[approx(skip)]
     pub storage_location: std::path::PathBuf,
+    /// Appends a suffix to the date which is generated automatically.
+    #[approx(skip)]
+    pub storage_suffix: Option<std::path::PathBuf>,
 }
 
 impl Default for Configuration {
@@ -370,6 +373,7 @@ impl Default for Configuration {
             surface_friction_distance: 1.,
             storage_options: vec![StorageOption::Memory],
             storage_location: std::path::PathBuf::from("out"),
+            storage_suffix: None,
         }
     }
 }
@@ -673,9 +677,14 @@ fn backwards_compat_generate_positions_old() -> PyResult<()> {
 }
 
 pub(crate) fn new_storage_builder(config: &Configuration) -> StorageBuilder {
-    StorageBuilder::new()
+    let builder = StorageBuilder::new()
         .priority(config.storage_options.clone())
-        .location(&config.storage_location)
+        .location(&config.storage_location);
+    if let Some(suffix) = &config.storage_suffix {
+        builder.suffix(suffix)
+    } else {
+        builder
+    }
 }
 
 /// Executes a simulation given a :class:`Configuration` and a list of :class:`RodAgent`.
