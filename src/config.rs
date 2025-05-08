@@ -6,7 +6,9 @@ use pyo3::IntoPyObjectExt;
 use pyo3::{prelude::*, types::PyString};
 use serde::{Deserialize, Serialize};
 
-use crate::agent::{PhysInt, PhysicalInteraction};
+use crate::agent::{PhysInt, PhysicalInteraction, RodAgent};
+
+use cellular_raza::prelude::{RodInteraction, RodMechanics, StorageOption};
 
 fn serialize_matrixxx3<S>(m: &nalgebra::MatrixXx3<f32>, s: S) -> Result<S::Ok, S::Error>
 where
@@ -55,6 +57,29 @@ pub struct RodMechanicsSettings {
     /// Damping constant
     #[pyo3(get, set)]
     pub damping: f32,
+}
+
+impl From<RodMechanicsSettings> for RodMechanics<f32, 3> {
+    fn from(value: RodMechanicsSettings) -> Self {
+        let RodMechanicsSettings {
+            pos,
+            vel,
+            diffusion_constant,
+            spring_tension,
+            rigidity,
+            spring_length,
+            damping,
+        } = value;
+        RodMechanics {
+            pos,
+            vel,
+            diffusion_constant,
+            spring_tension,
+            rigidity,
+            spring_length,
+            damping,
+        }
+    }
 }
 
 #[pymethods]
@@ -158,6 +183,31 @@ impl PartialEq for AgentSettings {
                 && growth_rate_distr.eq(&other.growth_rate_distr)
                 && spring_length_threshold.eq(&other.spring_length_threshold)
                 && neighbor_reduction.eq(&other.neighbor_reduction)
+        })
+    }
+}
+
+impl From<AgentSettings> for RodAgent {
+    fn from(value: AgentSettings) -> Self {
+        Python::with_gil(|py| {
+            let AgentSettings {
+                mechanics,
+                interaction,
+                growth_rate,
+                growth_rate_distr,
+                spring_length_threshold,
+                neighbor_reduction,
+            } = value;
+            let mechanics = mechanics.borrow(py).clone().into();
+            let interaction = RodInteraction(interaction.borrow(py).clone());
+            RodAgent {
+                mechanics,
+                interaction,
+                growth_rate,
+                growth_rate_distr,
+                spring_length_threshold,
+                neighbor_reduction,
+            }
         })
     }
 }
