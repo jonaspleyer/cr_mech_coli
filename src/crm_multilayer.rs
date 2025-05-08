@@ -126,6 +126,10 @@ impl MultilayerConfig {
                             ),
                         )?,
                         growth_rate: 0.1 * MICRO_METRE / MINUTE,
+                        growth_rate_distr: (
+                            0.1 * MICRO_METRE / MINUTE,
+                            0.02 * MICRO_METRE / MINUTE,
+                        ),
                         spring_length_threshold: 6. * MICRO_METRE,
                         neighbor_reduction: Some((16, 1.)),
                     },

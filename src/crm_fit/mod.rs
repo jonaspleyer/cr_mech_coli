@@ -732,6 +732,7 @@ impl Settings {
                     },
                     interaction: interaction[n].clone(),
                     growth_rate: growth_rate[n],
+                    growth_rate_distr: (growth_rate[n], 0.),
                     spring_length_threshold: f32::INFINITY,
                     neighbor_reduction: None,
                 }

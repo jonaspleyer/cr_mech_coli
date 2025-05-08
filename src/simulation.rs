@@ -131,6 +131,9 @@ pub struct AgentSettings {
     pub interaction: Py<PhysicalInteraction>,
     /// Rate with which the length of the bacterium grows
     pub growth_rate: f32,
+    /// See :class:`RodAgent`
+    #[approx(epsilon_map = |x| (x, x))]
+    pub growth_rate_distr: (f32, f32),
     /// Threshold when the bacterium divides
     pub spring_length_threshold: f32,
     /// Reduces the growth rate with multiplier $((max - N)/max)^q $
@@ -145,6 +148,7 @@ impl PartialEq for AgentSettings {
             mechanics,
             interaction,
             growth_rate,
+            growth_rate_distr,
             spring_length_threshold,
             neighbor_reduction,
         } = &self;
@@ -156,6 +160,7 @@ impl PartialEq for AgentSettings {
                     .deref()
                     .eq(&other.interaction.borrow(py))
                 && growth_rate.eq(&other.growth_rate)
+                && growth_rate_distr.eq(&other.growth_rate_distr)
                 && spring_length_threshold.eq(&other.spring_length_threshold)
                 && neighbor_reduction.eq(&other.neighbor_reduction)
         })
@@ -191,6 +196,7 @@ impl AgentSettings {
                     ),
                 )?,
                 growth_rate: 0.1,
+                growth_rate_distr: (0.1, 0.),
                 spring_length_threshold: 6.0,
                 neighbor_reduction: None,
             },
@@ -243,6 +249,7 @@ impl AgentSettings {
             mechanics,
             interaction,
             growth_rate,
+            growth_rate_distr,
             spring_length_threshold,
             neighbor_reduction,
         } = self;
@@ -263,6 +270,15 @@ impl AgentSettings {
                     .into_pyobject_or_pyerr(py)?
                     .into_any()
                     .unbind(),
+            ),
+            (
+                "growth_rate_distr",
+                pyo3::types::PyTuple::new(
+                    py,
+                    [growth_rate_distr.0 as f64, growth_rate_distr.1 as f64],
+                )?
+                .into_any()
+                .unbind(),
             ),
             (
                 "growth_rate",

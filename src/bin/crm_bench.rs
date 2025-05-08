@@ -63,6 +63,7 @@ fn main() {
                 mechanics: mechanics.clone(),
                 interaction: interaction.clone(),
                 growth_rate: 0.1,
+                growth_rate_distr: (0.1, 0.),
                 spring_length_threshold: 6.0,
                 neighbor_reduction: None,
             };

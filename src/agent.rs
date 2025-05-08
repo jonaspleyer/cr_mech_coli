@@ -20,6 +20,9 @@ pub struct RodAgent {
     /// Rate with which the cell grows in units `1/MIN`.
     #[pyo3(set, get)]
     pub growth_rate: f32,
+    /// Determines the mean and width of distribution for sampling new values of growth rate.
+    #[pyo3(set, get)]
+    pub growth_rate_distr: (f32, f32),
     /// Threshold at which the cell will divide in units `MICROMETRE`.
     #[pyo3(set, get)]
     pub spring_length_threshold: f32,
@@ -208,6 +211,7 @@ impl RodAgent {
         spring_length=3.0,
         damping=1.0,
         growth_rate=0.1,
+        growth_rate_distr=(0.1, 0.0),
         spring_length_threshold=6.0,
         neighbor_reduction=None,
     ))]
@@ -223,6 +227,7 @@ impl RodAgent {
         spring_length: f32,
         damping: f32,
         growth_rate: f32,
+        growth_rate_distr: (f32, f32),
         spring_length_threshold: f32,
         neighbor_reduction: Option<(usize, f32)>,
     ) -> pyo3::PyResult<Self> {
@@ -244,6 +249,7 @@ impl RodAgent {
             },
             interaction: RodInteraction(interaction),
             growth_rate,
+            growth_rate_distr,
             spring_length_threshold,
             neighbor_reduction,
         })
@@ -322,9 +328,17 @@ impl Cycle<RodAgent, f32> for RodAgent {
         }
     }
 
-    fn divide(_rng: &mut rand_chacha::ChaCha8Rng, cell: &mut Self) -> Result<Self, DivisionError> {
+    fn divide(rng: &mut rand_chacha::ChaCha8Rng, cell: &mut Self) -> Result<Self, DivisionError> {
+        use rand_distr::Distribution;
         let c2_mechanics = cell.mechanics.divide(cell.radius())?;
         let mut c2 = cell.clone();
+        // Pick new growth parameters
+        let distr = rand_distr::Normal::new(cell.growth_rate_distr.0, cell.growth_rate_distr.1)
+            .map_err(|e| DivisionError(format!("{e}")))?;
+        let g1 = distr.sample(rng);
+        let g2 = distr.sample(rng);
+        cell.growth_rate = g1;
+        c2.growth_rate = g2;
         c2.mechanics = c2_mechanics;
         Ok(c2)
     }
