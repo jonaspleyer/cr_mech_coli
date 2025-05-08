@@ -9,7 +9,7 @@ use pyo3::{prelude::*, types::PyString};
 use serde::{Deserialize, Serialize};
 use time::FixedStepsize;
 
-use crate::datatypes::CellContainer;
+use crate::cell_container::CellContainer;
 
 use crate::agent::*;
 
