@@ -50,6 +50,55 @@ pub fn generate_positions<'py>(
     .collect())
 }
 
+/// Uses the :func:`generate_positions_old` function to generate positions and then sets parameters
+/// of the generated agents from the supplied :class:`AgentSettings`.
+#[allow(clippy::too_many_arguments)]
+#[pyfunction]
+#[pyo3(signature = (
+    n_agents,
+    agent_settings,
+    config,
+    rng_seed = 0,
+    dx = [0.0, 0.0],
+    randomize_positions = 0.0,
+    n_vertices = 8,
+))]
+pub fn generate_agents(
+    py: Python,
+    n_agents: usize,
+    agent_settings: &AgentSettings,
+    config: &Configuration,
+    rng_seed: u64,
+    dx: [f32; 2],
+    randomize_positions: f32,
+    n_vertices: usize,
+) -> Vec<crate::RodAgent> {
+    use core::ops::Deref;
+    let positions = _generate_positions_old(
+        n_agents,
+        agent_settings.mechanics.borrow(py).deref(),
+        config,
+        rng_seed,
+        dx,
+        randomize_positions,
+        n_vertices,
+    );
+    positions
+        .into_iter()
+        .map(|pos| crate::RodAgent {
+            mechanics: RodMechanics {
+                pos,
+                ..agent_settings.mechanics.borrow(py).clone().into()
+            },
+            interaction: RodInteraction(agent_settings.interaction.borrow(py).clone()),
+            growth_rate: agent_settings.growth_rate,
+            growth_rate_distr: agent_settings.growth_rate_distr,
+            spring_length_threshold: agent_settings.spring_length_threshold,
+            neighbor_reduction: agent_settings.neighbor_reduction,
+        })
+        .collect()
+}
+
 /// Backend functionality to use within rust-specific code for [generate_positions_old]
 pub fn _generate_positions_old(
     n_agents: usize,
