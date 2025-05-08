@@ -363,10 +363,6 @@ def plot_colony_height_versus_gel_pressure():
         np.column_stack([np.mean(t, axis=0), np.mean(d, axis=0) / radius])
         for t, d in zip(data_times, data_y95th)
     ]
-    # y_collection = [
-    #     np.column_stack([np.linspace(0, 1.2), np.linspace(0, 1.2) ** i])
-    #     for i in range(5)
-    # ]
 
     line_collection = mpl.collections.LineCollection(
         y_collection, array=gel_pressures, cmap=cmap
