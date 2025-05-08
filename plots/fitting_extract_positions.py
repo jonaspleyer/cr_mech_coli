@@ -75,6 +75,7 @@ def create_simulation_result(n_vertices: int, rng_seed: int = 3):
         n_saves=49,
         domain_size=np.array([150, 150]),
     )
+    config.storage_options = [crm.StorageOption.Memory]
     agent_settings = crm.AgentSettings(growth_rate=0.05, growth_rate_distr=(0.05, 0.01))
     agent_settings.mechanics.rigidity = 8.0
     config.domain_height = 0.2
