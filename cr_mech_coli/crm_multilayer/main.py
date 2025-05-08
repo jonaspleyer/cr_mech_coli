@@ -1,6 +1,12 @@
+"""
+TODO
+"""
+
+from matplotlib.colors import hex2color
 import cr_mech_coli as crm
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib as mpl
 import multiprocessing as mp
 import argparse
 from tqdm import tqdm
@@ -37,7 +43,7 @@ def run_sim(ml_config: MultilayerConfig) -> crm.CellContainer:
     return container
 
 
-def produce_ydata(container):
+def produce_ydata(container: crm.CellContainer):
     cells = container.get_cells()
     iterations = container.get_all_iterations()
     positions = [np.array([c[0].pos for c in cells[i].values()]) for i in iterations]
@@ -51,16 +57,21 @@ def load_or_compute(
     ml_config: MultilayerConfig, out_path=Path("out/crm_multilayer/")
 ) -> crm.CellContainer:
     settings_files = glob(str(out_path / "*/ml_config.toml"))
+    settings_files2 = glob(str(out_path / "*/*/ml_config.toml"))
+    settings_files.extend(settings_files2)
+
     for file_path in settings_files:
         file_path = Path(file_path)
         ml_config_loaded = MultilayerConfig.load_from_toml_file(Path(file_path))
         if ml_config.approx_eq(ml_config_loaded):
             container = crm.CellContainer.load_from_storage(
-                ml_config.config, file_path.parent.stem
+                ml_config.config, file_path.parent
             )
             return container
     else:
-        return run_sim(ml_config)
+        res = run_sim(ml_config)
+        print()
+        return res
 
 
 def render_image(
@@ -115,23 +126,11 @@ def set_rc_params():
     )
 
 
-def crm_multilayer_main():
-    """
-    TODO
-    """
-    parser = argparse.ArgumentParser(
-        prog="crm_multilayer",
-        description="Run Simulations to analyze Multilayer-behaviour of Rod-Shaped Bacteria.",
-    )
-    parser.add_argument("--plot-snapshots", default=False, type=bool)
-    parser.add_argument("--seeds", nargs="+", default=[0, 1, 2], type=int)
-    pyargs = parser.parse_args()
-    pyargs.seeds = [int(n) for n in pyargs.seeds]
-
+def produce_ml_config() -> MultilayerConfig:
     # Create many Multilayer-Configs
     ml_config = crm.crm_multilayer.MultilayerConfig()
     ml_config.config.dt = 0.05
-    ml_config.config.t_max = 250
+    ml_config.config.t_max = 350
     ml_config.config.n_saves = int(
         np.ceil(ml_config.config.t_max / (ml_config.config.dt * 100))
     )
@@ -139,21 +138,20 @@ def crm_multilayer_main():
     ml_config.config.domain_size = (1600, 1600)
     ml_config.dx = (700, 700)
     ml_config.config.n_voxels = (10, 10)
-    ml_config.config.gel_pressure = 0.15
-    ml_config.config.show_progressbar = True
-    ml_config.config.n_threads = 8
+    ml_config.config.gel_pressure = 0.05
+    ml_config.config.n_threads = 1
 
     ml_config.config.surface_friction = 0.3
     ml_config.config.surface_friction_distance = (
         ml_config.agent_settings.interaction.radius / 10
     )
 
-    ml_config.agent_settings.mechanics.damping = 0.05
-    ml_config.agent_settings.mechanics.diffusion_constant
+    ml_config.agent_settings.mechanics.damping = 0.1
     ml_config.agent_settings.mechanics.rigidity = 15
     ml_config.agent_settings.interaction.strength = 0.2
     ml_config.agent_settings.neighbor_reduction = (200, 0.5)
     ml_config.agent_settings.growth_rate = 0.4
+    ml_config.agent_settings.growth_rate_distr = (0.4, 0.02)
 
     ml_config.config.storage_options = [
         crm.simulation.StorageOption.Memory,
@@ -161,8 +159,29 @@ def crm_multilayer_main():
     ]
     ml_config.config.storage_location = "out/crm_multilayer"
 
-    ml_configs = [ml_config.clone_with_args(rng_seed=seed) for seed in pyargs.seeds]
+    return ml_config
+
+
+def plot_colony_height_over_time():
+    parser = argparse.ArgumentParser(
+        prog="crm_multilayer",
+        description="Run Simulations to analyze Multilayer-behaviour of Rod-Shaped Bacteria.",
+    )
+    parser.add_argument("--plot-snapshots", action="store_true")
+    parser.add_argument("--seeds", nargs="+", default=[0, 1, 2, 3], type=int)
+    pyargs = parser.parse_args()
+    pyargs.seeds = [int(n) for n in pyargs.seeds]
+
+    ml_config = produce_ml_config()
+
+    def create_new_ml_configs(ml_config, seeds):
+        for seed in seeds:
+            ml_config_new = ml_config.clone_with_args(rng_seed=seed)
+            ml_config_new.config.storage_suffix = f"{seed:03}"
+            yield ml_config_new
+
     # Produce data for various configs
+    ml_configs = list(create_new_ml_configs(ml_config, pyargs.seeds))
 
     iterations = []
     ymax_values = []
@@ -205,7 +224,6 @@ def crm_multilayer_main():
                 )
             )
 
-    set_rc_params()
     fig, ax = plt.subplots(figsize=(8, 8))
 
     t = np.array(iterations[0]) * ml_config.config.dt
@@ -216,8 +234,7 @@ def crm_multilayer_main():
     ymean_std = np.mean(ymean_values, axis=0)
     ymean_err = np.std(ymean_values, axis=0)
     n_agents = np.array(n_agents)
-    radius = ml_config.agent_settings.interaction.radius * np.ones(t.shape[0])
-    diameter = 2 * radius[0]
+    diameter = 2 * ml_config.agent_settings.interaction.radius
 
     ax.plot(t, ymax, label="Max", c=COLOR3)
     ax.fill_between(t, ymax - ymax_err, ymax + ymax_err, color=COLOR3, alpha=0.3)
@@ -251,3 +268,138 @@ def crm_multilayer_main():
 
     fig.savefig("out/crm_multilayer/multilayer-time-evolution.pdf")
     fig.savefig("out/crm_multilayer/multilayer-time-evolution.png")
+
+
+def produce_ydata_helper(ml_config_string):
+    ml_config = MultilayerConfig.load_from_toml_str(ml_config_string)
+    container = load_or_compute(ml_config)
+    return produce_ydata(container)
+
+
+def plot_colony_height_versus_gel_pressure():
+    ml_config = produce_ml_config()
+    ml_config.config.n_saves = 100
+    ml_config.config.dt *= 1.5
+    ml_config.config.t_max = 200
+
+    gel_pressures = np.arange(0.1, 0.525, 0.025)
+    seeds = np.arange(8)
+
+    def create_args(ml_config, gel_pressures, seeds):
+        for gel_pressure in gel_pressures:
+            for s in seeds:
+                ml_config_new = ml_config.clone_with_args()
+                ml_config_new.config.gel_pressure = gel_pressure
+                ml_config_new.config.rng_seed = s
+                ml_config_new.config.storage_suffix = (
+                    f"seed{s:02}-strength{gel_pressure:08.5f}"
+                )
+                yield ml_config_new.to_toml_string()
+
+    args = list(create_args(ml_config, gel_pressures, seeds))
+
+    n_threads = mp.cpu_count() // ml_config.config.n_threads
+    pool = mp.Pool(n_threads)
+    data = list(tqdm(pool.imap(produce_ydata_helper, args), total=len(args)))
+
+    data_times = (
+        np.array([d[0] for d in data]).reshape((len(gel_pressures), len(seeds), -1))
+        * ml_config.config.dt
+    )
+    data_ymax = np.array([d[2] for d in data]).reshape(data_times.shape)
+    data_y95th = np.array([d[3] for d in data]).reshape(data_times.shape)
+
+    radius = ml_config.agent_settings.interaction.radius
+
+    ind_max = np.argmin(data_ymax < 1.5 * radius, axis=2)
+    ind_y95th = np.argmin(data_y95th < 1.5 * radius, axis=2)
+
+    times_max = np.zeros(ind_max.shape)
+    times_95th = np.zeros(ind_max.shape)
+
+    for i in range(data_ymax.shape[0]):
+        for j in range(data_ymax.shape[1]):
+            times_max[i, j] = data_times[i][j][ind_max[i, j]]
+            times_95th[i, j] = data_times[i][j][ind_y95th[i, j]]
+
+    ############
+    ## Plot 1 ##
+    ############
+    fig, ax = plt.subplots(figsize=(8, 8))
+
+    times = [times_max, times_95th]
+    colors = [COLOR3, COLOR5]
+    labels = ["Max", "95th pctl."]
+    for t, color, label in zip(times, colors, labels):
+        t_mean = np.mean(t, axis=1)
+        t_err = np.std(t, axis=1)
+
+        ax.plot(gel_pressures, t_mean, c=color, linestyle="-", label=label)
+        ax.fill_between(
+            gel_pressures,
+            t_mean - t_err,
+            t_mean + t_err,
+            color=color,
+            alpha=0.3,
+        )
+
+    ax.legend(
+        loc="upper center",
+        bbox_to_anchor=(0.5, 1.10),
+        ncol=3,
+        frameon=False,
+    )
+
+    ############
+    ## Plot 2 ##
+    ############
+    fig2, ax2 = plt.subplots(figsize=(8, 8))
+
+    cmap = mpl.colors.LinearSegmentedColormap.from_list(
+        "mymap", [(0.0, hex2color(COLOR1)), (1.0, hex2color(COLOR3))]
+    )
+
+    y_collection = [
+        np.column_stack([np.mean(t, axis=0), np.mean(d, axis=0) / radius])
+        for t, d in zip(data_times, data_y95th)
+    ]
+    # y_collection = [
+    #     np.column_stack([np.linspace(0, 1.2), np.linspace(0, 1.2) ** i])
+    #     for i in range(5)
+    # ]
+
+    line_collection = mpl.collections.LineCollection(
+        y_collection, array=gel_pressures, cmap=cmap
+    )
+
+    ax2.set_xlim(float(np.min(data_times)), float(np.max(data_times)))
+    ylow = float(np.min([y[:, 1] for y in y_collection]))
+    yhigh = float(np.max([y[:, 1] for y in y_collection]))
+    diff = yhigh - ylow
+    ax2.set_ylim(ylow - 0.05 * diff, yhigh + 0.05 * diff)
+
+    ax2.add_collection(line_collection)
+    fig2.colorbar(line_collection, label="Gel Pressure")
+
+    for a in [ax, ax2]:
+        a.grid(True, which="major", linestyle="-", linewidth=0.75, alpha=0.75)
+        a.minorticks_on()
+        a.grid(True, which="minor", linestyle="-", linewidth=0.25, alpha=0.15)
+
+    # Save Plot 1
+    ax.set_xlabel("Gel Pressure")
+    ax.set_ylabel("Transition 2nd Layer [min]")
+    fig.savefig("out/crm_multilayer/colony-height-vs-gel_pressure.pdf")
+    fig.savefig("out/crm_multilayer/colony-height-vs-gel_pressure.png")
+
+    # Save Plot 2
+    ax2.set_xlabel("Time [min]")
+    ax2.set_ylabel("95th pctl. Colony Height [R]")
+    fig2.savefig("out/crm_multilayer/colony-height-vs-time.pdf")
+    fig2.savefig("out/crm_multilayer/colony-height-vs-time.png")
+
+
+def crm_multilayer_main():
+    set_rc_params()
+    plot_colony_height_over_time()
+    plot_colony_height_versus_gel_pressure()
