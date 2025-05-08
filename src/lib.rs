@@ -10,7 +10,6 @@ mod crm_fit;
 mod crm_multilayer;
 mod fitting;
 mod imaging;
-mod sampling;
 mod simulation;
 
 pub use agent::*;
@@ -19,10 +18,9 @@ pub use cellular_raza::prelude::{CellIdentifier, VoxelPlainIndex};
 use cellular_raza::prelude::{MiePotentialF32, MorsePotentialF32, StorageOption};
 pub use config::*;
 pub use crm_fit::*;
+pub use crm_multilayer::*;
 pub use fitting::*;
 pub use imaging::*;
-// pub use sampling::*;
-pub use crm_multilayer::*;
 pub use simulation::*;
 
 use pyo3::prelude::*;
