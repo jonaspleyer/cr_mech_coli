@@ -32,3 +32,4 @@ serde-pickle = "1.2"
 serde_json = { version = "1.0.128", features = ["arbitrary_precision", "float_roundtrip", "preserve_order", "std"] }
 toml = "0.8"
 clap = { version = "4.5.35", features = ["derive"] }
+rand_distr = "0.5.1"
