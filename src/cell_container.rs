@@ -345,3 +345,48 @@ impl CellContainer {
         Ok(CellContainer::new(cells, Some(path)))
     }
 }
+
+#[test]
+fn cell_container_de_serialize() {
+    use crate::*;
+    use cellular_raza::prelude::*;
+
+    let config = Configuration {
+        t_max: 10.0,
+        n_threads: 1.try_into().unwrap(),
+        storage_options: vec![cellular_raza::prelude::StorageOption::Memory],
+        ..Default::default()
+    };
+    let n_vertices = 8;
+    let mechanics = RodMechanicsSettings::default();
+    let positions = crate::simulation::_generate_positions_old(
+        4, &mechanics, &config, 0, [0.1; 2], 0.01, n_vertices,
+    );
+    let agents = positions
+        .into_iter()
+        .map(|pos| RodAgent {
+            mechanics: RodMechanics {
+                pos,
+                ..mechanics.clone().into()
+            },
+            interaction: RodInteraction(PhysicalInteraction(
+                crate::PhysInt::MorsePotentialF32(MorsePotentialF32 {
+                    strength: 0.1,
+                    radius: 1.0,
+                    potential_stiffness: 0.1,
+                    cutoff: 2.5,
+                }),
+                0,
+            )),
+            growth_rate: 0.05,
+            growth_rate_distr: (0.05, 0.0),
+            spring_length_threshold: 2.0,
+            neighbor_reduction: None,
+        })
+        .collect();
+    let cell_container = crate::simulation::run_simulation_with_agents(&config, agents).unwrap();
+    let bytes = cell_container.serialize().unwrap();
+    assert!(!bytes.is_empty());
+    let container_deserialized = CellContainer::deserialize(bytes).unwrap();
+    assert_eq!(cell_container.cells, container_deserialized.cells);
+}

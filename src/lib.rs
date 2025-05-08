@@ -4,19 +4,19 @@
 //! time.
 
 mod agent;
+mod cell_container;
 mod crm_fit;
 mod crm_multilayer;
-mod datatypes;
 mod fitting;
 mod imaging;
 mod sampling;
 mod simulation;
 
 pub use agent::*;
+pub use cell_container::*;
 pub use cellular_raza::prelude::{CellIdentifier, VoxelPlainIndex};
 use cellular_raza::prelude::{MiePotentialF32, MorsePotentialF32, StorageOption};
 pub use crm_fit::*;
-pub use datatypes::*;
 pub use fitting::*;
 pub use imaging::*;
 // pub use sampling::*;
