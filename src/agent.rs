@@ -8,7 +8,8 @@ use serde::{Deserialize, Serialize};
 /// A basic cell-agent which makes use of
 /// `RodMechanics <https://cellular-raza.com/docs/cellular_raza_building_blocks/structs.RodMechanics.html>`_
 #[pyclass]
-#[derive(CellAgent, Clone, Debug, Deserialize, Serialize)]
+#[derive(CellAgent, Clone, Debug, Deserialize, Serialize, AbsDiffEq, PartialEq)]
+#[approx(epsilon_type = f32)]
 pub struct RodAgent {
     /// Determines mechanical properties of the agent.
     /// See :class:`RodMechanics`.
@@ -22,12 +23,15 @@ pub struct RodAgent {
     pub growth_rate: f32,
     /// Determines the mean and width of distribution for sampling new values of growth rate.
     #[pyo3(set, get)]
+    #[approx(epsilon_map = |x| (x, x))]
     pub growth_rate_distr: (f32, f32),
     /// Threshold at which the cell will divide in units `MICROMETRE`.
     #[pyo3(set, get)]
     pub spring_length_threshold: f32,
     /// Reduces the growth rate with multiplier $((max - N)/max)^q $
     #[pyo3(set, get)]
+    #[approx(epsilon_map = |x| (x, x))]
+    #[approx(map = |x: &Option<(usize, f32)>| x.map(|z| (z.0 as f32, z.1)))]
     pub neighbor_reduction: Option<(usize, f32)>,
 }
 
