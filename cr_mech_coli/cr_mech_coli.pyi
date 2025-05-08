@@ -48,6 +48,7 @@ class AgentSettings:
     mechanics: RodMechanicsSettings
     interaction: MorsePotentialF32
     growth_rate: float
+    growth_rate_distr: tuple[float, float]
     spring_length_threshold: float
     neighbor_reduction: tuple[int, float] | None
 
@@ -94,6 +95,7 @@ class Configuration:
     surface_friction_distance: float
     storage_options: list[StorageOption]
     storage_location: Path | str
+    storage_suffix: Path | str | None = None
 
     @staticmethod
     def __new__(cls, **kwargs) -> Configuration: ...
