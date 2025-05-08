@@ -79,7 +79,7 @@ def create_simulation_result(n_vertices: int, rng_seed: int = 3):
     agent_settings.mechanics.rigidity = 8.0
     config.domain_height = 0.2
 
-    positions = crm.generate_positions_old(
+    positions = crm.generate_positions(
         n_agents,
         agent_settings,
         config,
