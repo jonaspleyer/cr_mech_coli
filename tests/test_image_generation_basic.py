@@ -12,7 +12,7 @@ def test_store_iamges():
     agent_settings = crm.AgentSettings()
     agent_settings.growth_rate = 0.1
 
-    positions = crm.generate_positions_old(8, agent_settings, config, rng_seed=1031)
+    positions = crm.generate_positions(8, agent_settings, config, rng_seed=1031)
     agents = [
         crm.RodAgent(pos=p, vel=0 * p, **agent_settings.to_rod_agent_dict())
         for p in positions

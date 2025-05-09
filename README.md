@@ -28,21 +28,11 @@ config = crm.Configuration()
 agent_settings = crm.AgentSettings()
 
 # Automatically generate positions
-positions = crm.generate_positions_old(
+agents = crm.generate_agents(
     4,
     agent_settings,
     config
 )
-
-# Create new agents
-agents = [
-    crm.RodAgent(
-        pos=p,
-        vel=p*0.0,
-        **agent_settings.to_rod_agent_dict()
-    )
-    for p in positions
-]
 
 # Run simulation and return container
 cell_container = crm.run_simulation_with_agents(agents, config)
