@@ -6,13 +6,6 @@ use pyo3::{prelude::*, types::PyString};
 
 use serde::{Deserialize, Serialize};
 
-/// Micro metre base unit
-pub const MICRO_METRE: f32 = 1.0;
-/// Minute in base unit
-pub const MINUTE: f32 = 1.0;
-/// Hour derived from [MINUTE]
-pub const HOUR: f32 = 60. * MINUTE;
-
 /// Contain s all parameters and configuration valuese of the crm_multilayer script
 #[pyclass(get_all, set_all)]
 #[derive(Clone, Debug, Deserialize, Serialize, AbsDiffEq)]

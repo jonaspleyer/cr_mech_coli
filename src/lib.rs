@@ -25,6 +25,13 @@ pub use simulation::*;
 
 use pyo3::prelude::*;
 
+/// Micro metre base unit
+pub const MICRO_METRE: f32 = 1.0;
+/// Minute in base unit
+pub const MINUTE: f32 = 1.0;
+/// Hour derived from [MINUTE]
+pub const HOUR: f32 = 60. * MINUTE;
+
 /// A Python module implemented in Rust.
 #[pymodule]
 #[pyo3(name = "cr_mech_coli")]
@@ -63,5 +70,9 @@ fn cr_mech_coli(py: Python, m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<CellContainer>()?;
     m.add_class::<CellIdentifier>()?;
     m.add_class::<StorageOption>()?;
+
+    m.add("MINUTE", MINUTE)?;
+    m.add("HOUR", HOUR)?;
+    m.add("MICRO_METRE", MICRO_METRE)?;
     Ok(())
 }
