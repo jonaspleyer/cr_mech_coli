@@ -38,6 +38,14 @@ short_default::default! {
     }
 }
 
+#[pymethods]
+impl Parameters {
+    #[new]
+    fn new() -> Self {
+        Self::default()
+    }
+}
+
 #[derive(Clone, Debug, CellAgent, Deserialize, Serialize)]
 #[pyclass]
 pub struct FixedRod {
@@ -212,6 +220,7 @@ fn run_sim(
 pub fn crm_amir(py: Python) -> PyResult<Bound<PyModule>> {
     let m = PyModule::new(py, "crm_amir")?;
     m.add_function(wrap_pyfunction!(run_sim, &m)?)?;
+    m.add_class::<FixedRod>()?;
     m.add_class::<Parameters>()?;
     Ok(m)
 }
