@@ -1,7 +1,7 @@
 use cellular_raza::prelude::{MorsePotentialF32, RodInteraction, RodMechanics, StorageOption};
 use cr_mech_coli::{
-    _generate_positions_old, run_simulation_with_agents, Configuration, PhysInt,
-    PhysicalInteraction, RodAgent,
+    _generate_positions, run_simulation_with_agents, Configuration, PhysInt, PhysicalInteraction,
+    RodAgent,
 };
 
 fn main() {
@@ -46,7 +46,7 @@ fn main() {
         }),
         0,
     ));
-    let positions = _generate_positions_old(
+    let positions = _generate_positions(
         n_agents,
         &mechanics_settings,
         &config,

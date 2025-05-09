@@ -359,7 +359,7 @@ fn cell_container_de_serialize() {
     };
     let n_vertices = 8;
     let mechanics = RodMechanicsSettings::default();
-    let positions = crate::simulation::_generate_positions_old(
+    let positions = crate::simulation::_generate_positions(
         4, &mechanics, &config, 0, [0.1; 2], 0.01, n_vertices,
     );
     let agents = positions

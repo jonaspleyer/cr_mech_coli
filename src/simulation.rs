@@ -36,7 +36,7 @@ pub fn generate_positions<'py>(
     n_vertices: usize,
 ) -> PyResult<Vec<Bound<'py, numpy::PyArray2<f32>>>> {
     let mechanics: RodMechanicsSettings = agent_settings.mechanics.extract(py)?;
-    Ok(_generate_positions_old(
+    Ok(_generate_positions(
         n_agents,
         &mechanics,
         config,
@@ -50,7 +50,7 @@ pub fn generate_positions<'py>(
     .collect())
 }
 
-/// Uses the :func:`generate_positions_old` function to generate positions and then sets parameters
+/// Uses the :func:`generate_positions` function to generate positions and then sets parameters
 /// of the generated agents from the supplied :class:`AgentSettings`.
 #[allow(clippy::too_many_arguments)]
 #[pyfunction]
@@ -74,7 +74,7 @@ pub fn generate_agents(
     n_vertices: usize,
 ) -> Vec<crate::RodAgent> {
     use core::ops::Deref;
-    let positions = _generate_positions_old(
+    let positions = _generate_positions(
         n_agents,
         agent_settings.mechanics.borrow(py).deref(),
         config,
@@ -99,8 +99,8 @@ pub fn generate_agents(
         .collect()
 }
 
-/// Backend functionality to use within rust-specific code for [generate_positions_old]
-pub fn _generate_positions_old(
+/// Backend functionality to use within rust-specific code for [generate_positions]
+pub fn _generate_positions(
     n_agents: usize,
     mechanics: &RodMechanicsSettings,
     config: &Configuration,
@@ -162,10 +162,10 @@ pub fn _generate_positions_old(
 }
 
 #[test]
-fn backwards_compat_generate_positions_old() -> PyResult<()> {
+fn backwards_compat_generate_positions() -> PyResult<()> {
     let mechanics = RodMechanicsSettings::default();
     let config = Configuration::default();
-    let generated_pos = _generate_positions_old(4, &mechanics, &config, 1, [0.0; 2], 0.1, 8);
+    let generated_pos = _generate_positions(4, &mechanics, &config, 1, [0.0; 2], 0.1, 8);
     let old_pos = vec![
         numpy::nalgebra::dmatrix![
             15.782119,  16.658249,  1.4922986;
