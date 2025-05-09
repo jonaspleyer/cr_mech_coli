@@ -24,6 +24,8 @@ short_default::default! {
         block_size: f32 = 30.0,
         /// Maximum simulation time
         t_max: f32 = 150.0,
+        /// Interval in which to save Agent data
+        save_interval: f32 = 5.0,
         /// Time increment for solving the equations
         dt: f32 = 0.1,
         /// Overall starting length of the rod
@@ -110,9 +112,6 @@ fn run_sim(
 ) -> Result<Vec<(u64, FixedRod)>, cellular_raza::prelude::SimulationError> {
     let domain_size = 200.0;
 
-    let save_interval = 5.0;
-    let dt = 0.1;
-
     let mechanics = RodMechanics {
         pos: nalgebra::MatrixXx3::zeros(parameters.n_vertices),
         vel: nalgebra::MatrixXx3::zeros(parameters.n_vertices),
@@ -162,7 +161,7 @@ fn run_sim(
         0.,
         parameters.dt,
         parameters.t_max,
-        save_interval,
+        parameters.save_interval,
     )
     .map_err(SimulationError::from)?;
     let storage = StorageBuilder::new().priority([StorageOption::Memory]);
