@@ -53,6 +53,7 @@ jobs:
           set -e
           python3 -m venv .venv
           source .venv/bin/activate
+          pip install -r requirements.txt
           pip install cr_mech_coli --no-index --find-links dist --force-reinstall
           pip install pytest
           pytest
@@ -107,6 +108,7 @@ jobs:
           set -e
           python3 -m venv .venv
           source .venv/Scripts/activate
+          pip install -r requirements.txt
           pip install cr_mech_coli --no-index --find-links dist --force-reinstall
           pip install pytest
           pytest
@@ -143,6 +145,7 @@ jobs:
           set -e
           python3 -m venv .venv
           source .venv/bin/activate
+          pip install -r requirements.txt
           pip install cr_mech_coli --no-index --find-links dist --force-reinstall
           pip install pytest
           pytest
