@@ -207,6 +207,21 @@ def generate_positions(
     """
     ...
 
+def generate_agents(
+    n_agents: int,
+    agent_settings: AgentSettings,
+    config: Configuration,
+    rng_seed: int = 0,
+    dx: tuple[float, float] = (0.0, 0.0),
+    randomize_positions: float = 0.0,
+    n_vertices: int = 8,
+) -> list[np.ndarray]:
+    """\
+    Takes exactly the same arguments as the :meth:`generate_positions` function but automatically
+    produces agents instead.
+    """
+    ...
+
 def run_simulation_with_agents(
     config: Configuration, agents: list[RodAgent]
 ) -> CellContainer:
