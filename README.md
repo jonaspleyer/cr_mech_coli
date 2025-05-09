@@ -27,7 +27,7 @@ config = crm.Configuration()
 # Use predefined values for agents
 agent_settings = crm.AgentSettings()
 
-# Automatically generate positions
+# Automatically generate agents
 agents = crm.generate_agents(
     4,
     agent_settings,
