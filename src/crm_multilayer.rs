@@ -1,4 +1,7 @@
-use crate::{AgentSettings, Configuration, PhysInt, PhysicalInteraction, RodMechanicsSettings};
+use crate::{
+    AgentSettings, Configuration, PhysInt, PhysicalInteraction, RodMechanicsSettings, MICRO_METRE,
+    MINUTE,
+};
 use approx::AbsDiffEq;
 use cellular_raza::prelude::MorsePotentialF32;
 use pyo3::types::PyDict;
