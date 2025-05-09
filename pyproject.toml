@@ -24,6 +24,7 @@ dependencies = [
 crm_fit = "cr_mech_coli:crm_fit.crm_fit_main"
 crm_multilayer = "cr_mech_coli:crm_multilayer.crm_multilayer_main"
 crm_perf_plots = "cr_mech_coli:crm_perf_plots.crm_perf_plots_main"
+crm_amir = "cr_mech_coli:crm_amir.crm_amir_main"
 
 [tool.maturin]
 features = ["pyo3/extension-module"]
