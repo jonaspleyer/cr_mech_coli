@@ -13,7 +13,9 @@ class Parameters:
     dt: float
     rod_length: float
     rod_rigiditiy: float
+    growth_rate: float
     n_vertices: int
+    show_progressbar: bool
 
     def __new__(cls) -> Parameters: ...
 
