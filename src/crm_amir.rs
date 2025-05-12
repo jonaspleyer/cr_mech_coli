@@ -142,10 +142,10 @@ fn run_sim(
         pos: nalgebra::MatrixXx3::zeros(parameters.n_vertices),
         vel: nalgebra::MatrixXx3::zeros(parameters.n_vertices),
         diffusion_constant: 0.0,
-        spring_tension: 1.0,
+        spring_tension: 0.5,
         rigidity: parameters.rod_rigiditiy,
         spring_length: 3.0,
-        damping: 1.0,
+        damping: 0.1,
     };
 
     let interaction = RodInteraction(PhysicalInteraction(
