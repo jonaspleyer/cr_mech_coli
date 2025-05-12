@@ -213,7 +213,6 @@ def crm_fit_main():
     agents_predicted = cell_container.get_cells_at_iteration(iterations[-1])
 
     if not pyargs.skip_masks:
-        figs_axs = [plt.subplots() for _ in range(4)]
 
         def plot_snapshot(pos, img, name):
             for p in pos:
