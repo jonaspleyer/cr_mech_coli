@@ -180,7 +180,7 @@ fn run_sim(
             neighbor_reduction: None,
         },
         domain_size,
-        block_size: 30.0,
+        block_size: parameters.block_size,
     }];
 
     let time = FixedStepsize::from_partial_save_interval(
