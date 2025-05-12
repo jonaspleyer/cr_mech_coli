@@ -97,7 +97,7 @@ def extract_masks(path: Path, save_progressions: list[int] = []):
         it = Path(img_file).stem
         it = int(it)
         position = extract_mask(it, img, it in save_progressions)
-        if position is not None:
+        if position is not None and np.sum(position.shape) > 0:
             np.savetxt((path / "positions") / f"position-{it:06}.txt", position)
         else:
             print(f"[{it:06}] Could not extract positions")
