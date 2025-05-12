@@ -76,10 +76,12 @@ impl Mechanics<RodPos, RodPos, RodPos, f32> for FixedRod {
 }
 
 impl Position<RodPos> for FixedRod {
+    #[inline]
     fn pos(&self) -> RodPos {
         self.agent.mechanics.pos()
     }
 
+    #[inline]
     fn set_pos(&mut self, pos: &RodPos) {
         let mut new_pos = pos.clone();
         new_pos.row_iter_mut().for_each(|mut col| {
@@ -92,10 +94,12 @@ impl Position<RodPos> for FixedRod {
 }
 
 impl Velocity<RodPos> for FixedRod {
+    #[inline]
     fn velocity(&self) -> RodPos {
         self.agent.velocity()
     }
 
+    #[inline]
     fn set_velocity(&mut self, velocity: &RodPos) {
         self.agent.mechanics.set_velocity(velocity);
     }
