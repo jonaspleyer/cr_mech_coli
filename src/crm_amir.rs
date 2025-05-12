@@ -84,9 +84,11 @@ impl Position<RodPos> for FixedRod {
     #[inline]
     fn set_pos(&mut self, pos: &RodPos) {
         let mut new_pos = pos.clone();
-        new_pos.row_iter_mut().for_each(|mut col| {
-            if col[0] <= self.block_size {
-                col[2] = self.domain_size / 2.0;
+        new_pos.row_mut(0)[0] = 0.0;
+        (1..new_pos.nrows()).for_each(|n| {
+            let x: f32 = new_pos.row(n - 1)[0];
+            if x <= self.block_size {
+                new_pos.row_mut(n)[2] = self.domain_size / 2.0;
             }
         });
         self.agent.mechanics.set_pos(&new_pos);
@@ -101,7 +103,18 @@ impl Velocity<RodPos> for FixedRod {
 
     #[inline]
     fn set_velocity(&mut self, velocity: &RodPos) {
-        self.agent.mechanics.set_velocity(velocity);
+        let mut new_velocity = velocity.clone();
+        new_velocity.row_mut(0)[2] = 0.0;
+        new_velocity
+            .row_iter_mut()
+            .enumerate()
+            .skip(1)
+            .for_each(|(n, mut col)| {
+                if self.pos()[(n - 1, 0)] <= self.block_size {
+                    col[2] = 0.0;
+                }
+            });
+        self.agent.mechanics.set_velocity(&new_velocity);
     }
 }
 
