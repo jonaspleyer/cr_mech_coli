@@ -51,7 +51,6 @@ impl Parameters {
 #[derive(Clone, Debug, CellAgent, Deserialize, Serialize)]
 #[pyclass]
 pub struct FixedRod {
-    #[Interaction]
     #[pyo3(get)]
     agent: RodAgent,
     #[pyo3(get)]
@@ -195,7 +194,7 @@ fn run_sim(
         agents: agents,
         domain: domain,
         settings: settings,
-        aspects: [Mechanics, Interaction, Cycle, DomainForce],
+        aspects: [Mechanics, Cycle, DomainForce],
         zero_force_default: |c: &FixedRod| {
             nalgebra::MatrixXx3::zeros(c.agent.mechanics.pos().nrows())
         },
