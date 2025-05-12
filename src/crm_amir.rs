@@ -32,6 +32,8 @@ short_default::default! {
         rod_length: f32 = 24.0,
         /// Rigidity of the rod
         rod_rigiditiy: f32 = 2.0,
+        /// Growth rate of the rod
+        growth_rate: f32 = 0.1,
         /// Number of vertices to use for Rod
         #[approx(equal)]
         n_vertices: usize = 8,
@@ -156,8 +158,8 @@ fn run_sim(
                 ..mechanics
             },
             interaction,
-            growth_rate: 0.1,
-            growth_rate_distr: (0.1, 0.),
+            growth_rate: parameters.growth_rate,
+            growth_rate_distr: (parameters.growth_rate, 0.),
             spring_length_threshold: f32::INFINITY,
             neighbor_reduction: None,
         },
