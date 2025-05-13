@@ -64,17 +64,21 @@ def plot_different_angles():
     line_collection = mpl.collections.LineCollection(
         y_collection, array=rod_rigidities, cmap=cmap
     )
-
     y_collection = np.array(y_collection)
+
+    # Prepare Figure
     crm.plotting.set_mpl_rc_params()
     fig, ax = plt.subplots(figsize=(8, 8))
+
+    # Define x and y limits
     y = y_collection[:, :, 1::2]
-    t = y_collection[:, :, ::2]
-    t = t[~np.isnan(y)]
+    t = y_collection[:, :, ::2][~np.isnan(y)]
     ax.set_xlim(float(np.min(t)), float(np.max(t)))
     ylow = float(np.nanmin(y))
     yhigh = float(np.nanmax(y))
     ax.set_ylim(ylow - 0.05 * (yhigh - ylow), yhigh + 0.05 * (yhigh - ylow))
+
+    # Add curves
     ax.add_collection(line_collection)
     fig.colorbar(line_collection, label="Rod Rigidity")
 
