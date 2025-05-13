@@ -91,6 +91,7 @@ impl Position<RodPos> for FixedRod {
     #[inline]
     fn set_pos(&mut self, pos: &RodPos) {
         let mut new_pos = pos.clone();
+        // Make sure that lower positions are blocked
         new_pos.row_mut(0)[0] = 0.0;
         (1..new_pos.nrows()).for_each(|n| {
             let x: f32 = new_pos.row(n - 1)[0];
