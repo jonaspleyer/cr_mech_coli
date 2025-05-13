@@ -32,8 +32,12 @@ short_default::default! {
         rod_length: f32 = 24.0,
         /// Rigidity of the rod
         rod_rigiditiy: f32 = 2.0,
+        /// Tension with which the segment lengths are enforced
+        spring_tension: f32 = 0.5,
         /// Growth rate of the rod
         growth_rate: f32 = 0.1,
+        /// Damping constant
+        damping: f32 = 0.05,
         /// Number of vertices to use for Rod
         #[approx(equal)]
         n_vertices: usize = 8,
@@ -145,10 +149,10 @@ fn run_sim(
         pos: nalgebra::MatrixXx3::zeros(parameters.n_vertices),
         vel: nalgebra::MatrixXx3::zeros(parameters.n_vertices),
         diffusion_constant: 0.0,
-        spring_tension: 0.5,
+        spring_tension: parameters.spring_tension,
         rigidity: parameters.rod_rigiditiy,
         spring_length: 3.0,
-        damping: 0.1,
+        damping: parameters.damping,
     };
 
     let interaction = RodInteraction(PhysicalInteraction(
