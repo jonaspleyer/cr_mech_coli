@@ -61,6 +61,7 @@ def plot_different_angles():
         ],
     )
 
+    # Create line collection
     line_collection = mpl.collections.LineCollection(
         y_collection, array=rod_rigidities, cmap=cmap
     )
@@ -90,8 +91,11 @@ def plot_different_angles():
     yticks = [0, np.pi / 4, np.pi / 2]
     yticklabels = ["0", "π/4", "π/2"]
     ax.set_yticks(yticks, yticklabels)
+
+    # Save Figure
     fig.tight_layout()
-    plt.show()
+    fig.savefig("out/crm_amir/angles.pdf")
+    fig.savefig("out/crm_amir/angles.png")
 
 
 def compare_with_data():
