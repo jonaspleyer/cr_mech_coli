@@ -151,7 +151,7 @@ fn run_sim(
         diffusion_constant: 0.0,
         spring_tension: parameters.spring_tension,
         rigidity: parameters.rod_rigiditiy,
-        spring_length: 3.0,
+        spring_length: parameters.rod_length / (parameters.n_vertices as f32 - 1.0),
         damping: parameters.damping,
     };
 
