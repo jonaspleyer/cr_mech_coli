@@ -77,7 +77,10 @@ def plot_different_angles():
     ax.set_ylim(ylow - 0.05 * (yhigh - ylow), yhigh + 0.05 * (yhigh - ylow))
     ax.add_collection(line_collection)
     fig.colorbar(line_collection, label="Rod Rigidity")
-    crm.plotting.prepare_ax(ax)
+
+    # Apply settings to axis
+    crm.plotting.configure_ax(ax)
+
     ax.set_ylabel("Angle [radian]")
     ax.set_xlabel("Time [min]")
     yticks = [0, np.pi / 4, np.pi / 2]

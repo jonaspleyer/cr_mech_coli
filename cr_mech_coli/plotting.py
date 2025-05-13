@@ -22,7 +22,7 @@ def set_mpl_rc_params():
     )
 
 
-def prepare_ax(ax):
+def configure_ax(ax):
     ax.grid(True, which="major", linestyle="-", linewidth=0.75, alpha=0.25)
     ax.minorticks_on()
     ax.grid(True, which="minor", linestyle="-", linewidth=0.25, alpha=0.15)
