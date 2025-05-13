@@ -139,7 +139,7 @@ impl Cycle<FixedRod, f32> for FixedRod {
 fn run_sim(
     parameters: Parameters,
 ) -> Result<Vec<(u64, FixedRod)>, cellular_raza::prelude::SimulationError> {
-    let domain_size = 200.0;
+    let domain_size = parameters.domain_size;
 
     let mechanics = RodMechanics {
         pos: nalgebra::MatrixXx3::zeros(parameters.n_vertices),
