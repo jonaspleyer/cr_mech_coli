@@ -13,10 +13,12 @@ class Parameters:
     dt: float
     rod_length: float
     rod_rigiditiy: float
+    spring_tension: float
     growth_rate: float
+    damping: float
     n_vertices: int
     show_progressbar: bool
 
     def __new__(cls) -> Parameters: ...
 
-def run_sim(parameters: Parameters): ...
+def run_sim(parameters: Parameters) -> list[tuple[int, FixedRod]]: ...
