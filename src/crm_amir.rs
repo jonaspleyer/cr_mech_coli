@@ -135,7 +135,7 @@ impl Cycle<FixedRod, f32> for FixedRod {
         None
     }
     fn divide(_: &mut rand_chacha::ChaCha8Rng, _: &mut Self) -> Result<Self, DivisionError> {
-        panic!()
+        Err(DivisionError("This function should never be called".into()))
     }
 }
 
