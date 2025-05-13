@@ -3,18 +3,12 @@ TODO
 """
 
 import cr_mech_coli as crm
+from cr_mech_coli.plotting import COLOR1, COLOR2, COLOR3, COLOR4, COLOR5
 import numpy as np
 import matplotlib.pyplot as plt
 from tqdm import tqdm
 import time
 import scipy as sp
-
-
-COLOR1 = "#6bd2db"
-COLOR2 = "#0ea7b5"
-COLOR3 = "#0c457d"
-COLOR4 = "#ffbe4f"
-COLOR5 = "#e8702a"
 
 
 def run_sim(
