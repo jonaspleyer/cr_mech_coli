@@ -23,6 +23,8 @@ short_default::default! {
         domain_size: f32 = 200.0,
         /// Size for which to block movement along additional coordinate
         block_size: f32 = 30.0,
+        /// Drag force exerted by the flow
+        drag_force: f32 = 0.1,
         /// Maximum simulation time
         t_max: f32 = 150.0,
         /// Interval in which to save Agent data
@@ -275,7 +277,7 @@ fn run_sim(
     let domain = CartesianCuboid::from_boundaries_and_n_voxels([0.0; 3], domain_size, [1, 1, 1])?;
     let domain = MyDomain(CartesianCuboidRods {
         domain,
-        gel_pressure: 0.1,
+        gel_pressure: parameters.drag_force,
         surface_friction: 0.0,
         surface_friction_distance: f32::INFINITY,
     });

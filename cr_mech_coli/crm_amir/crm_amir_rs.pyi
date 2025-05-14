@@ -8,6 +8,7 @@ class FixedRod:
 class Parameters:
     domain_size: float
     block_size: float
+    drag_force: float
     t_max: float
     save_interval: float
     dt: float
