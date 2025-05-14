@@ -168,23 +168,6 @@ where
         }
     }
 
-    fn get_interaction_information(&self) -> f32 {
-        match &self.0 {
-            PhysInt::MiePotentialF32(pot) => <MiePotentialF32 as Interaction<
-                nalgebra::Vector2<f32>,
-                _,
-                _,
-                f32,
-            >>::get_interaction_information(pot),
-            PhysInt::MorsePotentialF32(pot) => <MorsePotentialF32 as Interaction<
-                nalgebra::Vector2<f32>,
-                _,
-                _,
-                f32,
-            >>::get_interaction_information(pot),
-        }
-    }
-
     fn is_neighbor(&self, own_pos: &T, ext_pos: &T, ext_radius: &f32) -> Result<bool, CalcError> {
         for p in own_pos.row_iter() {
             for q in ext_pos.row_iter() {
@@ -199,6 +182,19 @@ where
     fn react_to_neighbors(&mut self, neighbors: usize) -> Result<(), CalcError> {
         self.1 = neighbors;
         Ok(())
+    }
+}
+
+impl InteractionInformation<f32> for PhysicalInteraction {
+    fn get_interaction_information(&self) -> f32 {
+        match &self.0 {
+            PhysInt::MiePotentialF32(pot) => {
+                <MiePotentialF32 as InteractionInformation<f32>>::get_interaction_information(pot)
+            }
+            PhysInt::MorsePotentialF32(pot) => {
+                <MorsePotentialF32 as InteractionInformation<f32>>::get_interaction_information(pot)
+            }
+        }
     }
 }
 

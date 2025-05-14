@@ -59,6 +59,7 @@ impl Parameters {
 #[pyclass]
 pub struct FixedRod {
     #[pyo3(get)]
+    #[InteractionInformation]
     agent: RodAgent,
     #[pyo3(get)]
     domain_size: f32,
