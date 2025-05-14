@@ -7,6 +7,7 @@
 //! Then we can use the gel_pressure which acts from top to bottom without any modifications.
 
 use core::f32;
+use itertools::Itertools;
 use pyo3::prelude::*;
 
 use crate::{PhysInt, PhysicalInteraction, RodAgent};
@@ -127,17 +128,80 @@ impl Velocity<RodPos> for FixedRod {
     }
 }
 
-impl Cycle<FixedRod, f32> for FixedRod {
-    fn update_cycle(
-        _: &mut rand_chacha::ChaCha8Rng,
-        dt: &f32,
-        cell: &mut Self,
-    ) -> Option<CycleEvent> {
-        cell.agent.mechanics.spring_length += cell.agent.growth_rate * dt;
-        None
+impl Intracellular<f32> for FixedRod {
+    fn get_intracellular(&self) -> f32 {
+        self.agent.mechanics.spring_length
     }
-    fn divide(_: &mut rand_chacha::ChaCha8Rng, _: &mut Self) -> Result<Self, DivisionError> {
-        Err(DivisionError("This function should never be called".into()))
+
+    fn set_intracellular(&mut self, intracellular: f32) {
+        self.agent.mechanics.spring_length = intracellular;
+    }
+}
+
+struct MyDomain(CartesianCuboidRods<f32, 3>);
+
+impl Domain<FixedRod, MySubDomain> for MyDomain {
+    type VoxelIndex = <CartesianCuboidRods<f32, 3> as Domain<
+        FixedRod,
+        CartesianSubDomainRods<f32, 3>,
+    >>::VoxelIndex;
+    type SubDomainIndex = <CartesianCuboidRods<f32, 3> as Domain<
+        FixedRod,
+        CartesianSubDomainRods<f32, 3>,
+    >>::SubDomainIndex;
+
+    fn decompose(
+        self,
+        n_subdomains: core::num::NonZeroUsize,
+        cells: Vec<FixedRod>,
+    ) -> Result<DecomposedDomain<Self::SubDomainIndex, MySubDomain, FixedRod>, DecomposeError> {
+        let DecomposedDomain {
+            n_subdomains,
+            index_subdomain_cells,
+            neighbor_map,
+            rng_seed,
+        } = self.0.decompose(n_subdomains, cells)?;
+        let index_subdomain_cells = index_subdomain_cells
+            .into_iter()
+            .map(|(index, sbd, cells)| (index, MySubDomain(sbd), cells))
+            .collect();
+        Ok(DecomposedDomain {
+            n_subdomains,
+            index_subdomain_cells,
+            neighbor_map,
+            rng_seed,
+        })
+    }
+}
+
+#[derive(Clone, Serialize, Deserialize, SubDomain)]
+struct MySubDomain(
+    #[Base]
+    #[Mechanics]
+    #[SortCells]
+    CartesianSubDomainRods<f32, 3>,
+);
+
+impl SubDomainForce<RodPos, RodPos, RodPos, f32> for MySubDomain {
+    #[inline]
+    fn calculate_custom_force(
+        &self,
+        pos: &RodPos,
+        _: &RodPos,
+        _: &f32,
+    ) -> Result<RodPos, CalcError> {
+        let mut force = RodPos::zeros(pos.nrows());
+        pos.row_iter()
+            .enumerate()
+            .tuple_windows()
+            .for_each(|((n1, p1), (n2, p2))| {
+                let dir = (p2 - p1).normalize();
+                let angle = dir.angle(&nalgebra::matrix![0.0, 1.0, 0.0]);
+                let f = self.0.gel_pressure * angle.sin();
+                force.row_mut(n1)[2] -= f / 2.0;
+                force.row_mut(n2)[2] -= f / 2.0;
+            });
+        Ok(force)
     }
 }
 
@@ -209,12 +273,12 @@ fn run_sim(
 
     let domain_size = [domain_size, 0.1, domain_size];
     let domain = CartesianCuboid::from_boundaries_and_n_voxels([0.0; 3], domain_size, [1, 1, 1])?;
-    let domain = CartesianCuboidRods {
+    let domain = MyDomain(CartesianCuboidRods {
         domain,
         gel_pressure: 0.1,
         surface_friction: 0.0,
         surface_friction_distance: f32::INFINITY,
-    };
+    });
 
     let storage = cellular_raza::prelude::run_simulation!(
         agents: agents,
