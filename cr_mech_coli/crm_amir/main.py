@@ -22,33 +22,37 @@ def calculate_angle(p: np.ndarray, parameters: Parameters) -> float:
 def generate_parameters() -> Parameters:
     parameters = Parameters()
     parameters.rod_rigiditiy = 4.0
-    parameters.block_size = 50.0
+    parameters.block_size = 25.0
     parameters.dt = 0.01
     parameters.t_max = 200
     parameters.domain_size = 400
     n_vertices = 20
     parameters.n_vertices = n_vertices
-    parameters.growth_rate = 0.1 * 7 / (n_vertices - 1)
-    parameters.rod_rigiditiy = 2.0
+    parameters.growth_rate = 0.02 * 7 / (n_vertices - 1)
+    parameters.rod_rigiditiy = 2.0 * n_vertices / 20
     parameters.save_interval = 1.0
     parameters.damping = 1.0
     parameters.spring_tension = 10.0
     return parameters
 
 
-def plot_different_angles():
+def plot_angles_and_endpoints():
     parameters = generate_parameters()
 
+    endpoints = []
     y_collection = []
-    rod_rigidities = np.linspace(1, 10, 20, endpoint=True)
+    rod_rigidities = np.linspace(1, 20, 20, endpoint=True)
     for rod_rigiditiy in rod_rigidities:
         parameters.rod_rigiditiy = rod_rigiditiy
         agents = run_sim(parameters)
+        t = np.array([a[0] for a in agents]) * parameters.dt
+
         angles = [
             calculate_angle(a[1].agent.pos[:, [0, 2]], parameters) for a in agents
         ]
-        t = np.array([a[0] for a in agents]) * parameters.dt
         y_collection.append(np.column_stack([t, angles]))
+
+        endpoints.append(np.array([a.agent.pos[-1, [0, 2]] for _, a in agents]))
 
     cmap = mpl.colors.LinearSegmentedColormap.from_list(
         "mymap",
@@ -69,33 +73,62 @@ def plot_different_angles():
 
     # Prepare Figure
     crm.plotting.set_mpl_rc_params()
-    fig, ax = plt.subplots(figsize=(8, 8))
+    fig, [ax1, ax2] = plt.subplots(ncols=2, figsize=(16, 8))
 
     # Define x and y limits
     y = y_collection[:, :, 1::2]
     t = y_collection[:, :, ::2][~np.isnan(y)]
-    ax.set_xlim(float(np.min(t)), float(np.max(t)))
+    ax1.set_xlim(float(np.min(t)), float(np.max(t)))
     ylow = float(np.nanmin(y))
     yhigh = float(np.nanmax(y))
-    ax.set_ylim(ylow - 0.05 * (yhigh - ylow), yhigh + 0.05 * (yhigh - ylow))
+    ax1.set_ylim(ylow - 0.05 * (yhigh - ylow), yhigh + 0.05 * (yhigh - ylow))
 
     # Add curves
-    ax.add_collection(line_collection)
-    fig.colorbar(line_collection, label="Rod Rigidity")
+    ax1.add_collection(line_collection)
 
-    # Apply settings to axis
-    crm.plotting.configure_ax(ax)
-
-    ax.set_ylabel("Angle [radian]")
-    ax.set_xlabel("Time [min]")
+    ax1.set_ylabel("Angle [radian]")
+    ax1.set_xlabel("Time [min]")
     yticks = [0, np.pi / 4, np.pi / 2]
     yticklabels = ["0", "π/4", "π/2"]
-    ax.set_yticks(yticks, yticklabels)
+    ax1.set_yticks(yticks, yticklabels)
+
+    # 2nd Plot: Endpoints
+    endpoints = (
+        np.array([parameters.domain_size, 0])
+        + np.array([-1, 1]) * np.array(endpoints)[:, :, ::-1]
+    )
+    line_collection = mpl.collections.LineCollection(
+        endpoints,
+        array=rod_rigidities,
+        cmap=cmap,
+    )
+    ax2.add_collection(line_collection)
+
+    # Define x and y limits
+    ymax = np.max(endpoints[:, :, 1::2])
+    xmax = np.max(np.abs(endpoints[:, :, ::2] - parameters.domain_size / 2.0))
+    ax2.set_ylim(0, 1.2 * ymax)
+    ax2.set_xlim(
+        parameters.domain_size / 2 - 1.2 * xmax,
+        parameters.domain_size / 2.0 + 1.2 * xmax,
+    )
+    ax2.fill_between(
+        [0, parameters.domain_size],
+        [0, 0],
+        [parameters.block_size] * 2,
+        color="k",
+        alpha=0.3,
+    )
+
+    # Apply settings to axis
+    crm.plotting.configure_ax(ax1)
+    crm.plotting.configure_ax(ax2)
 
     # Save Figure
-    fig.tight_layout()
-    fig.savefig("out/crm_amir/angles.pdf")
-    fig.savefig("out/crm_amir/angles.png")
+    # fig.tight_layout()
+    fig.colorbar(line_collection, label="Rod Rigidity", ax=ax2)
+    fig.savefig("out/crm_amir/angles-endpoints.pdf")
+    fig.savefig("out/crm_amir/angles-endpoints.png")
 
 
 def compare_with_data():
@@ -146,4 +179,4 @@ def render_snapshots():
 def crm_amir_main():
     # render_snapshots()
     # compare_with_data()
-    plot_different_angles()
+    plot_angles_and_endpoints()
