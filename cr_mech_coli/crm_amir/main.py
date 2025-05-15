@@ -41,7 +41,7 @@ def plot_angles_and_endpoints():
 
     endpoints = []
     y_collection = []
-    rod_rigidities = np.linspace(1, 20, 20, endpoint=True)
+    rod_rigidities = np.linspace(0.3, 30, 20, endpoint=True)
     for rod_rigiditiy in rod_rigidities:
         parameters.rod_rigiditiy = rod_rigiditiy
         agents = run_sim(parameters)
@@ -78,19 +78,19 @@ def plot_angles_and_endpoints():
     # Define x and y limits
     y = y_collection[:, :, 1::2]
     t = y_collection[:, :, ::2][~np.isnan(y)]
-    ax1.set_xlim(float(np.min(t)), float(np.max(t)))
+    ax2.set_xlim(float(np.min(t)), float(np.max(t)))
     ylow = float(np.nanmin(y))
     yhigh = float(np.nanmax(y))
-    ax1.set_ylim(ylow - 0.05 * (yhigh - ylow), yhigh + 0.05 * (yhigh - ylow))
+    ax2.set_ylim(ylow - 0.05 * (yhigh - ylow), yhigh + 0.05 * (yhigh - ylow))
 
     # Add curves
-    ax1.add_collection(line_collection)
+    ax2.add_collection(line_collection)
 
-    ax1.set_ylabel("Angle [radian]")
-    ax1.set_xlabel("Time [min]")
-    yticks = [0, np.pi / 4, np.pi / 2]
-    yticklabels = ["0", "π/4", "π/2"]
-    ax1.set_yticks(yticks, yticklabels)
+    ax2.set_ylabel("Angle [radian]")
+    ax2.set_xlabel("Time [min]")
+    yticks = [0, np.pi / 8, np.pi / 4, 3 * np.pi / 8, np.pi / 2]
+    yticklabels = ["0", "π/8", "π/4", "3π/8", "π/2"]
+    ax2.set_yticks(yticks, yticklabels)
 
     # 2nd Plot: Endpoints
     endpoints = (
@@ -102,27 +102,30 @@ def plot_angles_and_endpoints():
         array=rod_rigidities,
         cmap=cmap,
     )
-    ax2.add_collection(line_collection)
+    ax1.add_collection(line_collection)
 
     # Define x and y limits
     ymax = np.max(endpoints[:, :, 1::2])
     xmax = np.max(np.abs(endpoints[:, :, ::2] - parameters.domain_size / 2.0))
-    ax2.set_ylim(0, 1.2 * ymax)
-    ax2.set_xlim(
-        parameters.domain_size / 2 - 1.2 * xmax,
-        parameters.domain_size / 2.0 + 1.2 * xmax,
+    dmax = max(xmax, ymax)
+    ax1.set_ylim(0, 1.2 * dmax)
+    ax1.set_xlim(
+        parameters.domain_size / 2 - 0.6 * dmax,
+        parameters.domain_size / 2 + 0.6 * dmax,
     )
-    ax2.fill_between(
+    ax1.fill_between(
         [0, parameters.domain_size],
         [0, 0],
         [parameters.block_size] * 2,
         color="k",
         alpha=0.3,
     )
+    ax1.set_xlabel("[µm]")
+    ax1.set_ylabel("[µm]")
 
     # Apply settings to axis
-    crm.plotting.configure_ax(ax1)
     crm.plotting.configure_ax(ax2)
+    crm.plotting.configure_ax(ax1)
 
     # Save Figure
     # fig.tight_layout()
