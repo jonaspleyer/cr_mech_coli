@@ -215,7 +215,7 @@ def generate_agents(
     dx: tuple[float, float] = (0.0, 0.0),
     randomize_positions: float = 0.0,
     n_vertices: int = 8,
-) -> list[np.ndarray]:
+) -> list[RodAgent]:
     """\
     Takes exactly the same arguments as the :meth:`generate_positions` function but automatically
     produces agents instead.
