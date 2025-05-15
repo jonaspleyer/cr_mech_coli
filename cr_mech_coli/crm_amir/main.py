@@ -54,16 +54,7 @@ def plot_angles_and_endpoints():
 
         endpoints.append(np.array([a.agent.pos[-1, [0, 2]] for _, a in agents]))
 
-    cmap = mpl.colors.LinearSegmentedColormap.from_list(
-        "mymap",
-        [
-            (0.00, mpl.colors.hex2color(crm.plotting.COLOR3)),
-            (0.25, mpl.colors.hex2color(crm.plotting.COLOR2)),
-            (0.50, mpl.colors.hex2color(crm.plotting.COLOR1)),
-            (0.75, mpl.colors.hex2color(crm.plotting.COLOR4)),
-            (1.00, mpl.colors.hex2color(crm.plotting.COLOR5)),
-        ],
-    )
+    cmap = crm.plotting.cmap
 
     # Create line collection
     line_collection = mpl.collections.LineCollection(

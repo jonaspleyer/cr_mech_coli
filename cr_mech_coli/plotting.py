@@ -1,10 +1,22 @@
 import matplotlib.pyplot as plt
+from matplotlib import colors
 
 COLOR1 = "#6bd2db"
 COLOR2 = "#0ea7b5"
 COLOR3 = "#0c457d"
 COLOR4 = "#ffbe4f"
 COLOR5 = "#e8702a"
+
+cmap = colors.LinearSegmentedColormap.from_list(
+    "mymap",
+    [
+        (0.00, colors.hex2color(COLOR3)),
+        (0.25, colors.hex2color(COLOR2)),
+        (0.50, colors.hex2color(COLOR1)),
+        (0.75, colors.hex2color(COLOR4)),
+        (1.00, colors.hex2color(COLOR5)),
+    ],
+)
 
 
 def set_mpl_rc_params():
