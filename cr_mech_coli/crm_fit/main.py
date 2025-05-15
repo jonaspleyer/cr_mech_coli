@@ -4,11 +4,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 from glob import glob
-import scipy as sp
 import time
 from pathlib import Path
 import multiprocessing as mp
 import argparse
+import scipy as sp
 
 from .plotting import plot_profile, plot_distributions, visualize_param_space
 from .predict import predict_flatten, predict, store_parameters
@@ -28,6 +28,58 @@ def get_out_folder(iteration: int | None, potential_type) -> Path:
         out = base / f"{n:04}"
     out.mkdir(parents=True, exist_ok=True)
     return out
+
+
+def exponential_growth(t, grate, x0):
+    return x0 * np.exp(grate * t)
+
+
+def estimate_growth_rates(iterations, lengths, settings, out_path):
+    times = np.array(iterations) / (len(iterations) - 1) * settings.constants.t_max
+    popts = []
+    pcovs = []
+    growth_rates = []
+    growth_rates_err = []
+    for i in range(len(lengths[0])):
+        x0 = lengths[0][i]
+        xf = lengths[-1][i]
+        popt, pcov = sp.optimize.curve_fit(
+            exponential_growth,
+            times,
+            [length[i] for length in lengths],
+            p0=(np.log(xf / x0) / settings.constants.t_max, x0),
+        )
+        popts.append(popt)
+        pcovs.append(pcov)
+        growth_rates.append(popt[0])
+        growth_rates_err.append(np.sqrt(pcov[0, 0]))
+
+    growth_rates = np.array(growth_rates)
+    growth_rates_err = np.array(growth_rates_err)
+
+    fig, ax = plt.subplots(figsize=(8, 8))
+    crm.plotting.configure_ax(ax)
+    ax.plot(times, lengths, color=crm.plotting.COLOR5)
+    for n, popt, pcov in zip(range(len(growth_rates)), popts, pcovs):
+        ax.plot(
+            times,
+            exponential_growth(times, *popt),
+            color=crm.plotting.COLOR3,
+        )
+        ax.fill_between(
+            times,
+            exponential_growth(times, *(popt - np.array([pcov[0, 0] ** 0.5, 0]))),
+            exponential_growth(times, *(popt + np.array([pcov[0, 0] ** 0.5, 0]))),
+            color=crm.plotting.COLOR1,
+            alpha=0.3,
+        )
+
+    ax.set_xlabel("Time [min]")
+    ax.set_ylabel("Rod Length [pix]")
+
+    fig.savefig(out_path / "estimated-growth-rates.png")
+    fig.savefig(out_path / "estimated-growth-rates.pdf")
+    return growth_rates, growth_rates_err
 
 
 def crm_fit_main():
