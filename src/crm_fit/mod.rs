@@ -533,27 +533,12 @@ impl Settings {
                 }
             }
         );
-        append_infos_bounds!(radius, "Radius", "\\SI{}{\\micro\\metre}", "r");
-        append_infos_bounds!(
-            rigidity,
-            "Rigidity",
-            "\\SI{}{\\micro\\metre\\per\\min}",
-            "\\kappa"
-        );
-        append_infos_bounds!(
-            spring_tension,
-            "Spring Tension",
-            "\\SI{}{\\per\\min^2}",
-            "\\gamma"
-        );
-        append_infos_bounds!(damping, "Damping", "\\SI{}{\\per\\min}", "\\lambda");
-        append_infos_bounds!(
-            strength,
-            "Strength",
-            "\\SI{}{\\micro\\metre^2\\per\\min^2}",
-            "C"
-        );
-        append_infos_bounds!(growth_rate, "Growth Rate", "\\SI{}{\\per\\min}", "\\mu");
+        append_infos_bounds!(radius, "Radius", "µm", "r");
+        append_infos_bounds!(rigidity, "Rigidity", "µm/min", "\\kappa");
+        append_infos_bounds!(spring_tension, "Spring Tension", "1/min²", "γ");
+        append_infos_bounds!(damping, "Damping", "1/min", "λ");
+        append_infos_bounds!(strength, "Strength", "µm^2/min^2", "C");
+        append_infos_bounds!(growth_rate, "Growth Rate", "1/min", "\\mu");
         match potential_type {
             PotentialType::Mie(mie) => {
                 let en = mie.en.clone();
@@ -561,12 +546,9 @@ impl Settings {
                 append_infos_bounds!(en, "Exponent n", "1", "n");
                 append_infos_bounds!(em, "Exponent m", "1", "m");
             }
-            PotentialType::Morse(morse) => append_infos_bounds!(
-                &morse.potential_stiffness,
-                "Potential Stiffness",
-                "\\SI{}{\\micro\\metre}",
-                "\\lambda"
-            ),
+            PotentialType::Morse(morse) => {
+                append_infos_bounds!(&morse.potential_stiffness, "Potential Stiffness", "µm", "λ")
+            }
         }
 
         Ok((
