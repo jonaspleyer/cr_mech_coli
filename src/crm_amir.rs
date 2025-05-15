@@ -16,6 +16,7 @@ use cellular_raza::prelude::*;
 use serde::{Deserialize, Serialize};
 
 short_default::default! {
+    /// Contains all parameters required for the simulation
     #[derive(Clone, Debug, PartialEq, Deserialize, Serialize, AbsDiffEq)]
     #[pyclass(get_all, set_all)]
     pub struct Parameters {
@@ -58,6 +59,10 @@ impl Parameters {
     }
 }
 
+/// RodAgent which is based on the :class:`RodAgent` class.
+///
+/// It applies a fixed value to the first vertex of the rod and ensures that vertices can only move
+/// along a one-dimensional line when inside the nanochamber given by the `block_size` value.
 #[derive(Clone, Debug, CellAgent, Deserialize, Serialize)]
 #[pyclass]
 pub struct FixedRod {
