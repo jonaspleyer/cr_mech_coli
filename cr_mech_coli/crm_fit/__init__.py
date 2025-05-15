@@ -32,6 +32,13 @@
                             images
     --skip-param-space    Skips visualization of parameter space
     --skip-distributions  Skips plotting of distributions
+
+.. warning::
+    It is important that the input files for the masks are named in ascending order.
+    Furthermore, they should be named by the convention `00015-something.csv`.
+    The script will infer the spacing between the masks from this naming convention.
+    If we provide the files `00015-mask.csv`, `00016-mask.csv` and `00019-mask.csv` it will deduce
+    that iterations 17 and 18 have been left out for this prediction.
 """
 
 from .plotting import *
