@@ -17,7 +17,7 @@ def produce_masks():
     iterations = cell_container.get_all_iterations()
     colors = cell_container.cell_to_color
     i1 = iterations[1]
-    i2 = iterations[2]
+    i2 = iterations[-1]
 
     domain_size = config.domain_size
     rs = crm.RenderSettings()
