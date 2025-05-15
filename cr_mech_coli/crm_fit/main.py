@@ -282,7 +282,7 @@ def crm_fit_main():
                 p = crm.convert_cell_pos_to_pixels(p, domain_size, img.shape[:2])
                 img = cv.polylines(
                     np.array(img),
-                    [np.round(p).astype(int)],
+                    [np.round(p[:, ::-1]).astype(int)],
                     isClosed=False,
                     color=(250, 250, 250),
                     thickness=1,
