@@ -115,24 +115,43 @@ def crm_fit_main():
 
     interval = time.time()
 
-    img1 = cv.imread(files_images[0])
-    img2 = cv.imread(files_images[-1])
+    imgs = [cv.imread(fi) for fi in files_images]
 
-    mask1 = np.loadtxt(files_masks[0], delimiter=",").T
-    mask2 = np.loadtxt(files_masks[-1], delimiter=",").T
+    masks = [np.loadtxt(fm, delimiter=",") for fm in files_masks]
 
     print(f"{time.time() - interval:10.4f}s Loaded data")
     interval = time.time()
 
     n_vertices = settings.constants.n_vertices
     domain_size = settings.constants.domain_size
-    pos1 = crm.extract_positions(mask1, n_vertices, domain_size=domain_size)[0]
-    pos2 = crm.extract_positions(mask2, n_vertices, domain_size=domain_size)[0]
+
+    iterations = []
+    positions = []
+    lengths = []
+    for mask, filename in zip(masks, files_masks):
+        try:
+            pos, length, _ = crm.extract_positions(
+                mask, n_vertices, domain_size=domain_size
+            )
+            positions.append(pos)
+            lengths.append(length)
+            iterations.append(int(Path(filename).stem.split("-")[0]))
+        except ValueError as e:
+            print("Encountered Error during extraction of positions:")
+            print(filename)
+            print(e)
+            print("Omitting this particular result.")
+
+    iterations = np.array(iterations) - iterations[0]
+    growth_rates, _ = estimate_growth_rates(iterations, lengths, settings, out)
+    settings.constants.n_saves = max(iterations)
+
+    settings.parameters.growth_rate = list(growth_rates)
 
     print(f"{time.time() - interval:10.4f}s Calculated initial values")
     interval = time.time()
 
-    n_agents = pos1.shape[0]
+    n_agents = positions[0].shape[0]
     lower, upper, x0, param_infos, constants, constant_infos = (
         settings.generate_optimization_infos(n_agents)
     )
@@ -140,8 +159,8 @@ def crm_fit_main():
 
     # Fix some parameters for the simulation
     args_predict = (
-        pos1,
-        pos2,
+        iterations,
+        positions,
         settings,
         out,
     )
@@ -201,7 +220,7 @@ def crm_fit_main():
 
     cell_container = predict(
         final_params,
-        pos1,
+        positions[0],
         settings,
     )
 
@@ -216,7 +235,7 @@ def crm_fit_main():
 
         def plot_snapshot(pos, img, name):
             for p in pos:
-                p = crm.convert_cell_pos_to_pixels(p, domain_size, img1.shape[:2][::-1])
+                p = crm.convert_cell_pos_to_pixels(p, domain_size, img.shape[:2])
                 img = cv.polylines(
                     np.array(img),
                     [np.round(p).astype(int)],
@@ -226,11 +245,10 @@ def crm_fit_main():
                 )
             cv.imwrite(f"{out}/{name}.png", img)
 
-        plot_snapshot(pos1, img1, "snapshot-initial")
-        plot_snapshot(pos2, img2, "snapshot-final")
-
-        pos_final = np.array([c[0].pos for c in agents_predicted.values()])
-        plot_snapshot(pos_final, img2, "snapshot-final-predicted")
+        for iter, img in zip(iterations, imgs):
+            agents = cell_container.get_cells_at_iteration(iter)
+            pos = np.array([c[0].pos for c in agents.values()])
+            plot_snapshot(pos, img, f"snapshot-{iter:06}")
 
         print(f"{time.time() - interval:10.4f}s Rendered Masks")
         interval = time.time()

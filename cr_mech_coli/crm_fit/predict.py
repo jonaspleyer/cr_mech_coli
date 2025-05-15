@@ -65,14 +65,14 @@ def store_parameters(parameters, filename, out_path, cost=None):
 
 def predict_flatten(
     parameters: tuple | list,
-    pos_initial,
-    pos_final,
+    iterations,
+    positions,
     settings,
     out_path: Path | None = None,
 ):
     cell_container = predict(
         parameters,
-        pos_initial,
+        positions[0],
         settings,
         out_path,
     )
@@ -80,20 +80,24 @@ def predict_flatten(
     if cell_container is None:
         cost = np.inf
     else:
-        final_iter = cell_container.get_all_iterations()[-1]
-        final_cells = cell_container.get_cells_at_iteration(final_iter)
-        final_cells = [(k, final_cells[k]) for k in final_cells]
-        final_cells.sort(key=lambda x: x[0])
-        pos_predicted = np.array(
-            [(kv[1][0]).pos for kv in final_cells], dtype=np.float32
-        )
+        iters = cell_container.get_all_iterations()
+        total_cost = 0
+        for n, pos in zip(iterations[1:], positions[1:]):
+            iteration = iters[n]
 
-        cost = np.sum(
-            [
-                (pos_predicted[i][:, :2] - pos_final[i]) ** 2
-                for i in range(len(pos_predicted))
-            ]
-        )
+            # final_iter = cell_container.get_all_iterations()[-1]
+            cells = cell_container.get_cells_at_iteration(iteration)
+            cells = [(k, cells[k]) for k in cells]
+            cells.sort(key=lambda x: x[0])
+            pos_predicted = np.array([(kv[1][0]).pos for kv in cells], dtype=np.float32)
+            cost = np.sum(
+                [
+                    (pos_predicted[i][:, :2] - pos[i]) ** 2
+                    for i in range(len(pos_predicted))
+                ]
+            )
+            total_cost += cost
+        return total_cost / len(positions)
 
     if out_path is not None:
         store_parameters(parameters, "param-costs.csv", out_path, cost)
