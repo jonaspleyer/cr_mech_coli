@@ -36,6 +36,7 @@ class Parameters:
     rigidity: Parameter | SampledFloat | list | float
     damping: Parameter | SampledFloat | list | float
     strength: Parameter | SampledFloat | list | float
+    growth_rate: Parameter | SampledFloat | list | float
     potential_type: PotentialType
 
 class Constants:
