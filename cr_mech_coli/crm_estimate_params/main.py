@@ -226,7 +226,7 @@ def crm_estimate_params_main():
     )
 
     filenames = [
-        f"data/raw/2007-youtube/frames/{i:06}-markers.csv" for i in range(20, 27)
+        f"data/raw/2007-youtube/markers/{i:06}-markers.csv" for i in range(20, 27)
     ]
     estimate_growth_curves_individual(
         filenames,
