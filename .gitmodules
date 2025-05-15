@@ -1,3 +1,6 @@
 [submodule "presentation/reveal.js"]
 	path = docs/source/_static/2025-02-03-presentation-jeti-seminar/reveal.js
 	url = https://github.com/hakimel/reveal.js
+[submodule "omnipose"]
+	path = omnipose
+	url = https://github.com/kevinjohncutler/omnipose
