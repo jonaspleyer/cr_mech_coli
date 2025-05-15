@@ -211,8 +211,8 @@ impl RodAgent {
         rigidity=2.0,
         spring_length=3.0,
         damping=1.0,
-        growth_rate=0.1,
-        growth_rate_distr=(0.1, 0.0),
+        growth_rate=0.01,
+        growth_rate_distr=(0.01, 0.0),
         spring_length_threshold=6.0,
         neighbor_reduction=None,
     ))]
@@ -320,7 +320,7 @@ impl Cycle<RodAgent, f32> for RodAgent {
             cell.growth_rate * ((m - n) / m).max(0.).powf(exp)
         } else {
             cell.growth_rate
-        };
+        } * cell.mechanics.spring_length;
         cell.mechanics.spring_length += rate * dt;
         if cell.mechanics.spring_length > cell.spring_length_threshold {
             Some(CycleEvent::Division)

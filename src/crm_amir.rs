@@ -140,6 +140,20 @@ impl Intracellular<f32> for FixedRod {
     }
 }
 
+impl Cycle<FixedRod, f32> for FixedRod {
+    fn update_cycle(
+        rng: &mut rand_chacha::ChaCha8Rng,
+        dt: &f32,
+        cell: &mut FixedRod,
+    ) -> Option<CycleEvent> {
+        RodAgent::update_cycle(rng, dt, &mut cell.agent)?;
+        None
+    }
+    fn divide(_: &mut rand_chacha::ChaCha8Rng, _: &mut Self) -> Result<Self, DivisionError> {
+        Err(DivisionError("This function should never be called".into()))
+    }
+}
+
 struct MyDomain(CartesianCuboidRods<f32, 3>);
 
 impl Domain<FixedRod, MySubDomain> for MyDomain {
