@@ -227,9 +227,11 @@ impl SubDomainForce<RodPos, RodPos, RodPos, f32> for MySubDomain {
 }
 
 #[pyfunction]
+#[pyo3(signature = (parameters, initial_pos=None))]
 fn run_sim(
     parameters: Parameters,
-) -> Result<Vec<(u64, FixedRod)>, cellular_raza::prelude::SimulationError> {
+    initial_pos: Option<Bound<numpy::PyArray2<f32>>>,
+) -> PyResult<Vec<(u64, FixedRod)>> {
     let domain_size = parameters.domain_size;
 
     let mechanics = RodMechanics {
@@ -251,7 +253,12 @@ fn run_sim(
         }),
         0,
     ));
-    let position = {
+    let position = if let Some(initial_pos) = initial_pos {
+        use numpy::PyArrayMethods;
+        let nrows = parameters.n_vertices;
+        let iter: Vec<f32> = initial_pos.to_vec()?;
+        nalgebra::MatrixXx3::<f32>::from_iterator(nrows, iter)
+    } else {
         let mut pos = nalgebra::MatrixXx3::zeros(parameters.n_vertices);
         for (i, mut p) in pos.row_iter_mut().enumerate() {
             p[0] = i as f32 * mechanics.spring_length;
@@ -293,7 +300,8 @@ fn run_sim(
     };
 
     let domain_size = [domain_size, 0.1, domain_size];
-    let domain = CartesianCuboid::from_boundaries_and_n_voxels([0.0; 3], domain_size, [1, 1, 1])?;
+    let domain = CartesianCuboid::from_boundaries_and_n_voxels([0.0; 3], domain_size, [1, 1, 1])
+        .map_err(SimulationError::from)?;
     let domain = MyDomain(CartesianCuboidRods {
         domain,
         gel_pressure: parameters.drag_force,
@@ -312,7 +320,8 @@ fn run_sim(
     )?;
     let cells: Vec<_> = storage
         .cells
-        .load_all_elements()?
+        .load_all_elements()
+        .map_err(SimulationError::from)?
         .into_iter()
         .map(|(iteration, cells)| {
             (
