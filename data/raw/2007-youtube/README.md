@@ -20,3 +20,9 @@ The script requires `wget` and `ffmpeg` to be installed.
 
 The jupyter notebook `segment.ipynb` is used to segment the cells.
 Note that we installed omnipose for `python3.10` from the submodule at the base of the repository.
+From the root of the repositroy perform the following actions.
+
+```bash
+cd omnipose
+uv pip install -e .
+```
