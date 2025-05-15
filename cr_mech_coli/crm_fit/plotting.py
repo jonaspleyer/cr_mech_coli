@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from pathlib import Path
 from tqdm.contrib.concurrent import process_map
+import cr_mech_coli as crm
 
 from .predict import predict_flatten
 
