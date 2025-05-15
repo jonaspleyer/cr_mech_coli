@@ -116,10 +116,10 @@ def crm_fit_main():
     interval = time.time()
 
     img1 = cv.imread(files_images[0])
-    img2 = cv.imread(files_images[1])
+    img2 = cv.imread(files_images[-1])
 
     mask1 = np.loadtxt(files_masks[0], delimiter=",").T
-    mask2 = np.loadtxt(files_masks[1], delimiter=",").T
+    mask2 = np.loadtxt(files_masks[-1], delimiter=",").T
 
     print(f"{time.time() - interval:10.4f}s Loaded data")
     interval = time.time()
