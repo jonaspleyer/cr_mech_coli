@@ -23,7 +23,7 @@ def plot_profile(
     steps: int = 20,
 ):
     if fig_ax is None:
-        fig_ax = plt.subplots()
+        fig_ax = plt.subplots(figsize=(8, 8))
         fig, ax = fig_ax
     else:
         fig, ax = fig_ax
@@ -47,18 +47,19 @@ def plot_profile(
     y = y[sorter]
 
     ax.set_title(name)
-    ax.set_ylabel("Cost function $L$")
-    ax.set_xlabel(f"${short}$ $[{units}]$")
+    ax.set_ylabel("Cost function L")
+    ax.set_xlabel(f"{short} [{units}]")
     ax.scatter(
         final_params[n],
         final_cost,
         marker="o",
-        edgecolor="k",
-        facecolor=(0.3, 0.3, 0.3),
+        edgecolor=crm.plotting.COLOR3,
+        facecolor=crm.plotting.COLOR2,
     )
-    ax.plot(x, y, color="k", linestyle="--")
+    crm.plotting.configure_ax(ax)
+    ax.plot(x, y, color=crm.plotting.COLOR3, linestyle="--")
     fig.tight_layout()
-    plt.savefig(f"{out}/{name}.png".lower().replace(" ", "-"))
+    plt.savefig(f"{out}/profile-{name}.png".lower().replace(" ", "-"))
     return (fig, ax)
 
 
@@ -110,9 +111,9 @@ def visualize_param_space(out: Path, param_infos, final_params, final_cost):
 
     # Plot matrix
     fig, ax = plt.subplots()
-    names = [f"${p[2]}$" for p in param_infos]
+    names = [f"{p[2]}" for p in param_infos]
     img = ax.imshow(np.abs(basis), cmap="Grays", vmin=0, vmax=1)
-    plt.colorbar(img, ax=ax)
+    plt.colorbar(img, ax=ax, cmap=crm.plotting.cmap)
     ax.set_yticks(np.arange(len(names)))
     ax.set_xticks(np.arange(len(names)))
     ax.set_yticklabels(
@@ -139,7 +140,7 @@ def visualize_param_space(out: Path, param_infos, final_params, final_cost):
 def plot_distributions(agents_predicted, out: Path):
     agents = [a[0] for a in agents_predicted.values()]
     growth_rates = np.array([a.growth_rate for a in agents])
-    fig, ax = plt.subplots()
+    fig, ax = plt.subplots(figsize=(8, 8))
     ax2 = ax.twiny()
     ax.hist(
         growth_rates,
@@ -149,7 +150,7 @@ def plot_distributions(agents_predicted, out: Path):
         label="Growth Rates",
         hatch=".",
     )
-    ax.set_xlabel("Growth Rate [$\\SI{}{\\micro\\metre\\per\\min}$]")
+    ax.set_xlabel("Growth Rate [µm/min]")
     ax.set_ylabel("Count")
 
     radii = np.array([a.radius for a in agents])
@@ -161,7 +162,7 @@ def plot_distributions(agents_predicted, out: Path):
         alpha=0.5,
         label="Radii",
     )
-    ax2.set_xlabel("Radius [$\\SI{}{\\micro\\metre}$]")
+    ax2.set_xlabel("Radius [µm]")
     fig.legend(loc="upper right", bbox_to_anchor=(1, 1), bbox_transform=ax.transAxes)
     fig.savefig(out / "growth_rates_lengths_distribution.png")
     fig.clf()

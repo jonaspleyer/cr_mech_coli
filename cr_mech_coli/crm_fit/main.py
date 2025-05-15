@@ -1,8 +1,8 @@
 import cv2 as cv
 import cr_mech_coli as crm
+from cr_mech_coli import crm_fit
 import numpy as np
 import matplotlib.pyplot as plt
-import matplotlib as mpl
 from glob import glob
 import time
 from pathlib import Path
@@ -146,15 +146,7 @@ def crm_fit_main():
     files_images = sorted(glob(str(data_dir / "images/*")))
     files_masks = sorted(glob(str(data_dir / "masks/*.csv")))
 
-    mpl.use("pgf")
-    plt.rcParams.update(
-        {
-            "font.family": "serif",  # use serif/main font for text elements
-            "text.usetex": True,  # use inline math for ticks
-            "pgf.rcfonts": False,  # don't setup fonts from rc parameters
-            "pgf.preamble": "\\usepackage{siunitx}",  # load additional packages
-        }
-    )
+    crm.plotting.set_mpl_rc_params()
 
     # Try to read config file
     filename = data_dir / "settings.toml"
