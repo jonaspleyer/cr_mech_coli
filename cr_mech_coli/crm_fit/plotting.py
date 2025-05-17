@@ -112,45 +112,6 @@ def _get_orthogonal_basis_by_cost(parameters, p0, costs, c0):
     return np.array(basis), np.array(contribs) / np.sum(contribs)
 
 
-def visualize_param_space(out: Path, param_infos, final_params, final_cost):
-    final_params = np.array(final_params)
-    param_costs = np.genfromtxt(out / "param-costs.csv", delimiter=",")
-
-    basis, contribs = _get_orthogonal_basis_by_cost(
-        param_costs[:, :-1],
-        final_params,
-        param_costs[:, -1],
-        final_cost,
-    )
-
-    # Plot matrix
-    fig, ax = plt.subplots()
-    names = [f"{p[2]}" for p in param_infos]
-    img = ax.imshow(np.abs(basis), cmap="Grays", vmin=0, vmax=1)
-    plt.colorbar(img, ax=ax, cmap=crm.plotting.cmap)
-    ax.set_yticks(np.arange(len(names)))
-    ax.set_xticks(np.arange(len(names)))
-    ax.set_yticklabels(
-        [
-            f"$\\vec{{v}}_{{{i}}}~{contribs[i] * 100:5.1f}\\%$"
-            for i in range(len(param_infos))
-        ]
-    )
-    ax.set_xticklabels(names)
-    ax.set_xlabel("Parameters $\\vec{p}$")
-    ax.set_ylabel("Basis Vectors")
-
-    try:
-        rank = f"\nwith rank {np.linalg.matrix_rank(basis)}/{np.min(basis.shape)}"
-    except:
-        print("Calculation of rank failed.")
-        rank = ""
-    ax.set_title(
-        "Gradient of Cost $\\vec{\\nabla}_{\\vec{v}_i} L(\\vec{p}_\\text{opt})$" + rank
-    )
-    fig.savefig(out / "parameter_space_matrix.png")
-
-
 def plot_distributions(agents_predicted, out: Path):
     agents = [a[0] for a in agents_predicted.values()]
     growth_rates = np.array([a.growth_rate for a in agents])

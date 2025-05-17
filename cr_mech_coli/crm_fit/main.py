@@ -10,7 +10,7 @@ import multiprocessing as mp
 import argparse
 import scipy as sp
 
-from .plotting import plot_profile, plot_distributions, visualize_param_space
+from .plotting import plot_profile, plot_distributions
 
 
 # Create folder to store output
@@ -294,11 +294,6 @@ def crm_fit_main():
             plot_snapshot(pos, img, f"snapshot-{iter:06}")
 
         print(f"{time.time() - interval:10.4f}s Rendered Masks")
-        interval = time.time()
-
-    if not pyargs.skip_param_space:
-        visualize_param_space(out, param_infos, final_params, final_cost)
-        print(f"{time.time() - interval:10.4f}s Visualized parameter space")
         interval = time.time()
 
     if not pyargs.skip_distributions:
