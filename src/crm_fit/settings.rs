@@ -667,6 +667,7 @@ mod test {
                         max_iter: default_max_iter(),
                         pop_size: default_pop_size(),
                         recombination: default_recombination(),
+                        polish: default_polish(),
                     }),
                 )?,
                 others: Some(Py::new(
@@ -724,8 +725,10 @@ show_progressbar = false
         let (settings, _) = generate_test_settings().unwrap();
 
         for n_agents in 1..10 {
-            let (lower, upper, _, _, _, _) =
+            let infos =
                 Python::with_gil(|py| settings.generate_optimization_infos(py, n_agents)).unwrap();
+            let lower = infos.bounds_lower;
+            let upper = infos.bounds_upper;
             assert_eq!(lower.len(), n_agents + 5);
             assert_eq!(upper.len(), n_agents + 5);
         }
