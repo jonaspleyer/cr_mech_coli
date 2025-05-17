@@ -168,26 +168,26 @@ def crm_fit_main():
     n_vertices = settings.constants.n_vertices
     domain_size = settings.constants.domain_size
 
-    iterations = []
-    positions = []
-    lengths = []
+    iterations_all = []
+    positions_all = []
+    lengths_all = []
     for mask, filename in zip(masks, files_masks):
         try:
             pos, length, _ = crm.extract_positions(
                 mask, n_vertices, domain_size=domain_size
             )
-            positions.append(pos)
-            lengths.append(length)
-            iterations.append(int(Path(filename).stem.split("-")[0]))
+            positions_all.append(pos)
+            lengths_all.append(length)
+            iterations_all.append(int(Path(filename).stem.split("-")[0]))
         except ValueError as e:
             print("Encountered Error during extraction of positions:")
             print(filename)
             print(e)
             print("Omitting this particular result.")
 
-    iterations = np.array(iterations) - iterations[0]
-    growth_rates, _ = estimate_growth_rates(iterations, lengths, settings, out)
-    settings.constants.n_saves = max(iterations)
+    positions_all = np.array(positions_all, dtype=np.float32)
+    iterations_all = np.array(iterations_all, dtype=np.uint64) - iterations_all[0]
+    settings.constants.n_saves = max(iterations_all)
 
     settings.parameters.growth_rate = list(growth_rates)
 
