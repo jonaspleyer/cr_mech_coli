@@ -18,5 +18,6 @@ pub fn crm_fit_rs(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<PotentialType>()?;
     m.add_class::<OptimizationInfos>()?;
     m.add_function(wrap_pyfunction!(predict::run_simulation, m)?)?;
+    m.add_function(wrap_pyfunction!(predict::predict_calculate_cost, m)?)?;
     Ok(())
 }

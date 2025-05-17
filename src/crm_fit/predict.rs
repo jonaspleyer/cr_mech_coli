@@ -168,3 +168,51 @@ pub fn run_simulation(
         .collect();
     Ok(crate::run_simulation_with_agents(&config, agents)?)
 }
+
+#[pyfunction]
+pub fn predict_calculate_cost(
+    py: Python,
+    parameters: Vec<f32>,
+    positions_all: numpy::PyReadonlyArray4<f32>,
+    iterations: Vec<usize>,
+    settings: &Settings,
+) -> PyResult<f32> {
+    let positions_initial = positions_all
+        .as_array()
+        .slice(numpy::ndarray::s![0, .., .., ..])
+        .to_pyarray(py)
+        .readonly();
+    let res = run_simulation(py, parameters, positions_initial, settings);
+    if let Err(e) = res {
+        eprintln!("Encountered error during solving of system");
+        eprintln!("{e}");
+        return Ok(f32::NAN);
+    }
+    let container = res.unwrap();
+
+    // let mut positions_final = numpy::ndarray::Array4::<f32>::zeros(positions_all.dims());
+    let positions_all = positions_all.as_array();
+    let all_iterations = container.get_all_iterations();
+    let cost = iterations
+        .into_iter()
+        .enumerate()
+        .flat_map(|(n_result, data_index)| {
+            let it = all_iterations[data_index];
+            container
+                .get_cells_at_iteration(it)
+                .into_iter()
+                .enumerate()
+                .map(move |(n_agent, (_, (c, _)))| {
+                    let p1 = c
+                        .pos(py)
+                        .to_owned_array()
+                        .slice(numpy::ndarray::s![.., ..2])
+                        .to_owned();
+                    let p2 = positions_all.slice(numpy::ndarray::s![n_result, n_agent, .., ..]);
+                    (p1 - p2).pow2().sum().sqrt()
+                })
+        })
+        .sum();
+
+    Ok(cost)
+}
