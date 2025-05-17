@@ -320,6 +320,24 @@ pub enum OptimizationMethod {
     DifferentialEvolution(DifferentialEvolution),
 }
 
+/// Return type of the :meth:`Settings.generate_optimization_infos` method.
+#[pyclass(get_all, set_all)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct OptimizationInfos {
+    /// Lower Bounds
+    pub bounds_lower: Vec<f32>,
+    /// Upper Bounds
+    pub bounds_upper: Vec<f32>,
+    /// Initial Guess for parameters
+    pub initial_values: Vec<f32>,
+    /// Information generated for parameters
+    pub parameter_infos: Vec<(String, String, String)>,
+    /// Values of constants
+    pub constants: Vec<f32>,
+    /// Information for constants
+    pub constant_infos: Vec<(String, String, String)>,
+}
+
 /// Contains all settings required to fit the model to images
 #[pyclass(get_all, set_all, module = "cr_mech_coli.crm_fit")]
 #[derive(Clone, Debug, Serialize, Deserialize, AbsDiffEq)]
@@ -466,14 +484,7 @@ impl Settings {
         &self,
         py: Python,
         n_agents: usize,
-    ) -> PyResult<(
-        Vec<f32>,
-        Vec<f32>,
-        Vec<f32>,
-        Vec<(String, String, String)>,
-        Vec<f32>,
-        Vec<(String, String, String)>,
-    )> {
+    ) -> PyResult<OptimizationInfos> {
         let mut param_space_dim = 0;
 
         #[allow(unused)]
