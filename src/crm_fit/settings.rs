@@ -222,6 +222,16 @@ pub struct DifferentialEvolution {
     pub polish: bool,
 }
 
+/// TODO
+#[pyclass(get_all, set_all, module = "cr_mech_coli.crm_fit")]
+#[derive(Clone, Debug, Serialize, Deserialize, AbsDiffEq, PartialEq)]
+#[approx(epsilon_type = f32)]
+pub struct LatinHypercube {
+    /// Number of points which should be sampled
+    #[approx(equal)]
+    pub n_points: usize,
+}
+
 /// Other settings which are not related to the outcome of the simulation
 #[pyclass(get_all, set_all, module = "cr_mech_coli.crm_fit")]
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
@@ -318,6 +328,9 @@ pub enum OptimizationMethod {
     /// Settings for the :class:`Optimization` method.
     #[serde(rename = "differential_evolution")]
     DifferentialEvolution(DifferentialEvolution),
+    /// Settings for the :class:`LatinHypercube` method.
+    #[serde(rename = "latin_hypercube")]
+    LatinHypercube(LatinHypercube),
 }
 
 /// Return type of the :meth:`Settings.generate_optimization_infos` method.

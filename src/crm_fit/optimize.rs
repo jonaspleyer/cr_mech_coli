@@ -119,5 +119,6 @@ res = sp.optimize.differential_evolution(
                 niter,
             })
         }
+        OptimizationMethod::LatinHypercube(lhs) => todo!(),
     }
 }
