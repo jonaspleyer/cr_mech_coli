@@ -131,6 +131,13 @@ def crm_fit_main():
         help="Skips plotting of distributions",
         action="store_true",
     )
+    parser.add_argument(
+        "--fit-growth-rates",
+        default=False,
+        help="Estimate individual growth rates initially by fitting an exponential curve to rod\
+            lengths.",
+        action="store_true",
+    )
     pyargs = parser.parse_args()
     if pyargs.workers == -1:
         pyargs.workers = mp.cpu_count()
@@ -189,7 +196,11 @@ def crm_fit_main():
     iterations_all = np.array(iterations_all, dtype=np.uint64) - iterations_all[0]
     settings.constants.n_saves = max(iterations_all)
 
-    settings.parameters.growth_rate = list(growth_rates)
+    if pyargs.fit_growth_rates:
+        growth_rates, _ = estimate_growth_rates(
+            iterations_all, lengths_all, settings, out
+        )
+        settings.parameters.growth_rate = list(growth_rates)
 
     print(f"{time.time() - interval:10.4f}s Calculated initial values")
     interval = time.time()
