@@ -197,7 +197,7 @@ impl PotentialType {
 #[pyclass(get_all, set_all, module = "cr_mech_coli.crm_fit")]
 #[derive(Clone, Debug, Serialize, Deserialize, AbsDiffEq, PartialEq)]
 #[approx(epsilon_type = f32)]
-pub struct Optimization {
+pub struct DifferentialEvolution {
     /// Initial seed of the differential evolution algorithm
     #[serde(default)]
     #[approx(equal)]
@@ -303,6 +303,15 @@ where
     ptp.extract(py).unwrap()
 }
 
+/// Contains settings for the various optimization routines.
+#[pyclass(module = "cr_mech_coli.crm_fit")]
+#[derive(Clone, Debug, Serialize, Deserialize, AbsDiffEq, PartialEq)]
+pub enum OptimizationMethod {
+    /// Settings for the :class:`Optimization` method.
+    #[serde(rename = "differential_evolution")]
+    DifferentialEvolution(DifferentialEvolution),
+}
+
 /// Contains all settings required to fit the model to images
 #[pyclass(get_all, set_all, module = "cr_mech_coli.crm_fit")]
 #[derive(Clone, Debug, Serialize, Deserialize, AbsDiffEq)]
@@ -316,7 +325,7 @@ pub struct Settings {
     pub parameters: Py<Parameters>,
     /// See :class:`OptimizationParameters`
     #[approx(map = |b| Python::with_gil(|py| Some(get_inner(b, py))))]
-    pub optimization: Py<Optimization>,
+    pub optimization: Py<OptimizationMethod>,
     /// See :class:`Other`
     #[approx(skip)]
     pub others: Option<Py<Others>>,
@@ -800,13 +809,13 @@ mod test {
                 )?,
                 optimization: Py::new(
                     py,
-                    Optimization {
+                    OptimizationMethod::DifferentialEvolution(DifferentialEvolution {
                         seed: 0,
                         tol: 1e-3,
                         max_iter: default_max_iter(),
                         pop_size: default_pop_size(),
                         recombination: default_recombination(),
-                    },
+                    }),
                 )?,
                 others: Some(Py::new(
                     py,
@@ -838,7 +847,7 @@ en = { min=0.2, max=25.0, initial=6.0, individual=false}
 em = { min=0.2, max=25.0, initial=5.5}
 bound = 8.0
 
-[optimization]
+[optimization.differential_evolution]
 seed = 0
 tol = 1e-3
 
