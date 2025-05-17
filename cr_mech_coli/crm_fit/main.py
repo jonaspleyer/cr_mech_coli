@@ -34,7 +34,11 @@ def exponential_growth(t, grate, x0):
 
 
 def estimate_growth_rates(iterations, lengths, settings, out_path):
-    times = np.array(iterations) / (len(iterations) - 1) * settings.constants.t_max
+    times = (
+        (np.array(iterations) - np.min(iterations))
+        / (np.max(iterations) - np.min(iterations))
+        * settings.constants.t_max
+    )
     popts = []
     pcovs = []
     growth_rates = []
