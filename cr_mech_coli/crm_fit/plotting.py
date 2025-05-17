@@ -14,11 +14,8 @@ def pred_flatten_wrapper(args):
 
 def plot_profile(
     n: int,
-    bound,
-    args: tuple,
-    param_info: tuple,
-    final_params,
-    final_cost: float,
+    args: tuple[list[int], np.ndarray, Settings],
+    optimization_result: OptimizationResult,
     out: Path,
     n_workers,
     fig_ax=None,
