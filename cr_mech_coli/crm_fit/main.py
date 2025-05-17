@@ -205,62 +205,28 @@ def crm_fit_main():
     print(f"{time.time() - interval:10.4f}s Calculated initial values")
     interval = time.time()
 
-    n_agents = positions[0].shape[0]
-    lower, upper, x0, param_infos, constants, constant_infos = (
-        settings.generate_optimization_infos(n_agents)
-    )
-    bounds = np.array([lower, upper]).T
-
-    # Fix some parameters for the simulation
-    args_predict = (
-        iterations,
-        positions,
-        settings,
-        out,
-    )
-
     filename = "final_params.csv"
     if (out / filename).exists():
-        params = np.genfromtxt(out / filename, delimiter=",")
-        final_params = params[:-1]
-        final_cost = params[-1]
-        print(f"{time.time() - interval:10.4f}s Found previous results")
+        optimization_result = crm_fit.OptimizationResult.load_from_file(out / filename)
     else:
-        res = sp.optimize.differential_evolution(
-            predict_flatten,
-            bounds=bounds,
-            x0=x0,
-            args=args_predict,
-            workers=pyargs.workers,
-            updating="deferred",
-            maxiter=settings.optimization.max_iter,
-            # constraints=constraints,
-            disp=True,
-            tol=settings.optimization.tol,
-            recombination=settings.optimization.recombination,
-            popsize=settings.optimization.pop_size,
-            polish=False,
-            rng=settings.optimization.seed,
+        optimization_result = crm_fit.run_optimizer(
+            iterations_all, positions_all, settings
         )
-        final_cost = res.fun
-        final_params = res.x
+
         # Store information in file
-        store_parameters(final_params, filename, out, final_cost)
+        optimization_result.save_to_file(out / filename)
         print(f"{time.time() - interval:10.4f}s Finished Parameter Optimization")
 
     interval = time.time()
 
     # Plot Cost function against varying parameters
     if not pyargs.skip_profiles:
-        for n, (p, bound) in enumerate(zip(final_params, bounds)):
+        for n in range(len(optimization_result.params)):
             fig_ax = None
             fig_ax = plot_profile(
                 n,
-                bound,
-                args_predict[:-1],
-                param_infos[n],
-                final_params,
-                final_cost,
+                (iterations_all, positions_all, settings),
+                optimization_result,
                 out,
                 pyargs.workers,
                 fig_ax,
@@ -272,9 +238,9 @@ def crm_fit_main():
         print(f"{time.time() - interval:10.4f} Plotted Profiles")
         interval = time.time()
 
-    cell_container = predict(
-        final_params,
-        positions[0],
+    cell_container = crm_fit.run_simulation(
+        optimization_result.params,
+        positions_all[0],
         settings,
     )
 
@@ -282,8 +248,8 @@ def crm_fit_main():
         print("Best fit does not produce valid result.")
         exit()
 
-    iterations = cell_container.get_all_iterations()
-    agents_predicted = cell_container.get_cells_at_iteration(iterations[-1])
+    iterations_all = cell_container.get_all_iterations()
+    agents_predicted = cell_container.get_cells_at_iteration(iterations_all[-1])
 
     if not pyargs.skip_masks:
 
@@ -299,7 +265,7 @@ def crm_fit_main():
                 )
             cv.imwrite(f"{out}/{name}.png", img)
 
-        for iter, img in zip(iterations, imgs):
+        for iter, img in zip(iterations_all, imgs):
             agents = cell_container.get_cells_at_iteration(iter)
             pos = np.array([c[0].pos for c in agents.values()])
             plot_snapshot(pos, img, f"snapshot-{iter:06}")
