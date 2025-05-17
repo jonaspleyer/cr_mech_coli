@@ -575,11 +575,11 @@ impl Settings {
             }
         }
 
-        Ok((
+        Ok(OptimizationInfos {
             bounds_lower,
             bounds_upper,
             initial_values,
-            infos,
+            parameter_infos: infos,
             constants,
             constant_infos,
         ))
