@@ -216,6 +216,10 @@ pub struct DifferentialEvolution {
     /// Recombination value of the differential evolution algorithm
     #[serde(default = "default_recombination")]
     pub recombination: f32,
+    /// Determines if the final result should be polished
+    #[approx(equal)]
+    #[serde(default = "default_polish")]
+    pub polish: bool,
 }
 
 /// Other settings which are not related to the outcome of the simulation
@@ -257,6 +261,10 @@ pub(crate) const fn default_pop_size() -> usize {
 
 pub(crate) const fn default_recombination() -> f32 {
     0.3
+}
+
+pub(crate) const fn default_polish() -> bool {
+    false
 }
 
 /// Contains all constants of the numerical simulation
