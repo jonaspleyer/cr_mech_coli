@@ -2,11 +2,9 @@ use core::f32;
 use std::ops::Deref;
 
 use approx::AbsDiffEq;
-use cellular_raza::prelude::{MiePotentialF32, MorsePotentialF32, RodInteraction, StorageOption};
+use cellular_raza::prelude::StorageOption;
 use pyo3::{prelude::*, IntoPyObjectExt};
 use serde::{Deserialize, Serialize};
-
-use crate::{PhysInt, PhysicalInteraction};
 
 /// TODO
 #[pyclass(get_all, set_all, module = "cr_mech_coli.crm_fit")]
@@ -182,8 +180,6 @@ impl PotentialType {
             None,
         )
         .unwrap();
-        // py.run_bound("from crm_fit import deserialize_potential_type", None, None)
-        //     .unwrap();
         let deserialize = py.eval(
             &std::ffi::CString::new("PotentialType.deserialize")?,
             None,
