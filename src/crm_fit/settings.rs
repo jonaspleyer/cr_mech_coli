@@ -76,19 +76,19 @@ fn parameter_from_obj(obj: &Bound<PyAny>) -> PyResult<Parameter> {
 #[derive(Clone, Debug, Serialize, Deserialize, AbsDiffEq, PartialEq)]
 pub struct Parameters {
     /// TODO
-    radius: Parameter,
+    pub radius: Parameter,
     /// TODO
-    rigidity: Parameter,
+    pub rigidity: Parameter,
     /// TODO
-    spring_tension: Parameter,
+    pub spring_tension: Parameter,
     /// TODO
-    damping: Parameter,
+    pub damping: Parameter,
     /// TODO
-    strength: Parameter,
+    pub strength: Parameter,
     /// TODO
-    potential_type: PotentialType,
+    pub potential_type: PotentialType,
     /// TODO
-    growth_rate: Parameter,
+    pub growth_rate: Parameter,
 }
 
 macro_rules! impl_setters(
@@ -124,7 +124,7 @@ impl_setters!(
 #[approx(epsilon_type = f32)]
 pub struct Morse {
     /// TODO
-    potential_stiffness: Parameter,
+    pub potential_stiffness: Parameter,
 }
 
 /// TODO
@@ -243,19 +243,19 @@ impl Default for Others {
     }
 }
 
-const fn default_tol() -> f32 {
+pub(crate) const fn default_tol() -> f32 {
     1e-4
 }
 
-const fn default_max_iter() -> usize {
+pub(crate) const fn default_max_iter() -> usize {
     50
 }
 
-const fn default_pop_size() -> usize {
+pub(crate) const fn default_pop_size() -> usize {
     100
 }
 
-const fn default_recombination() -> f32 {
+pub(crate) const fn default_recombination() -> f32 {
     0.3
 }
 
