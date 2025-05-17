@@ -1,19 +1,13 @@
 import enum
+import numpy as np
+from pathlib import Path
 
 import cr_mech_coli as crm
+from cr_mech_coli.cr_mech_coli import CellContainer
 
 class PotentialType(enum.Enum):
     Mie = 0
     Morse = 1
-
-class PotentialType_Mie:
-    """
-    Variant of the :class:`PotentialType`.
-    """
-
-    ...
-
-class PotentialType_Morse: ...
 
 class SampledFloat:
     min: float
@@ -50,22 +44,33 @@ class Constants:
     n_vertices: int
     n_saves: int
 
-class Optimization:
+class DifferentialEvolution:
     seed: int
     tol: float
     max_iter: int
     pop_size: int
     recombination: float
 
+class OptimizationMethod(enum.Enum):
+    DifferentialEvolution = DifferentialEvolution()
+
 class Others:
     show_progressbar: bool
     @staticmethod
     def __new__(cls, show_progressbar: bool = False) -> SampledFloat: ...
 
+class OptimizationInfos:
+    bounds_lower: list[float]
+    bounds_upper: list[float]
+    initial_values: list[float]
+    parameter_infos: list[tuple[str, str, str]]
+    constants: list[float]
+    constant_infos: list[tuple[str, str, str]]
+
 class Settings:
     parameters: Parameters
     constants: Constants
-    optimization: Optimization
+    optimization: OptimizationMethod
     others: Others
 
     @staticmethod
@@ -73,4 +78,23 @@ class Settings:
     @staticmethod
     def from_toml_string(toml_str: str) -> Settings: ...
     def to_config(self, n_saves: int) -> crm.Configuration: ...
-    def generate_optimization_infos(self, n_agents: int) -> list: ...
+    def generate_optimization_infos(self, n_agents: int) -> OptimizationInfos: ...
+
+def run_simulation(
+    parameters: list[float], positions: np.ndarray, settings: Settings
+) -> CellContainer: ...
+
+class OptimizationResult:
+    params: list[float]
+    cost: float
+    success: bool | None
+    neval: int | None
+    niter: int | None
+
+    def save_to_file(self, filename: Path): ...
+    @staticmethod
+    def load_from_file(filename: Path): ...
+
+def run_optimizer(
+    iterations: np.ndarray, positions: np.ndarray, settings: Settings
+) -> OptimizationResult: ...
