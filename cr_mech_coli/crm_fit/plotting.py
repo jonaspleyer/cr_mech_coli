@@ -4,11 +4,12 @@ from pathlib import Path
 from tqdm.contrib.concurrent import process_map
 import cr_mech_coli as crm
 
-from .predict import predict_flatten
+from .crm_fit_rs import Settings, OptimizationResult, predict_calculate_cost
 
 
 def pred_flatten_wrapper(args):
-    return predict_flatten(*args)
+    parameters, iterations, positions_all, settings = args
+    return predict_calculate_cost(parameters, positions_all, iterations, settings)
 
 
 def plot_profile(
@@ -23,6 +24,12 @@ def plot_profile(
     fig_ax=None,
     steps: int = 20,
 ):
+    (_, positions_all, settings) = args
+    infos = settings.generate_optimization_infos(positions_all.shape[1])
+    bound_lower = infos.bounds_lower[n]
+    bound_upper = infos.bounds_upper[n]
+    param_info = infos.parameter_infos[n]
+
     if fig_ax is None:
         fig_ax = plt.subplots(figsize=(8, 8))
         fig, ax = fig_ax
@@ -30,8 +37,11 @@ def plot_profile(
         fig, ax = fig_ax
         fig.clf()
 
-    x = np.linspace(bound[0], bound[1], steps)
-    ps = [[pi if n != i else xi for i, pi in enumerate(final_params)] for xi in x]
+    x = np.linspace(bound_lower, bound_upper, steps)
+    ps = [
+        [pi if n != i else xi for i, pi in enumerate(optimization_result.params)]
+        for xi in x
+    ]
 
     (name, units, short) = param_info
 
@@ -39,6 +49,9 @@ def plot_profile(
     y = process_map(
         pred_flatten_wrapper, pool_args, desc=f"Profile: {name}", max_workers=n_workers
     )
+
+    final_params = optimization_result.params
+    final_cost = optimization_result.cost
 
     # Extend x and y by values from final_params and final cost
     x = np.append(x, final_params[n])

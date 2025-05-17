@@ -11,7 +11,6 @@ import argparse
 import scipy as sp
 
 from .plotting import plot_profile, plot_distributions, visualize_param_space
-from .predict import predict_flatten, predict, store_parameters
 
 
 # Create folder to store output
