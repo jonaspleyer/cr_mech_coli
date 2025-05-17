@@ -183,7 +183,7 @@ impl MultilayerConfig {
 
 /// A Python module implemented in Rust.
 pub fn crm_multilayer_rs(py: Python) -> PyResult<Bound<PyModule>> {
-    let m = PyModule::new(py, "crm_multilayer_rs")?;
+    let m = PyModule::new(py, "cr_mech_coli.crm_multilayer.crm_multilayer_rs")?;
     m.add_class::<MultilayerConfig>()?;
     Ok(m)
 }

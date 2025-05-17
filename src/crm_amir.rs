@@ -339,7 +339,7 @@ fn run_sim(
 
 /// A Python module implemented in Rust.
 pub fn crm_amir(py: Python) -> PyResult<Bound<PyModule>> {
-    let m = PyModule::new(py, "crm_amir")?;
+    let m = PyModule::new(py, "cr_mech_coli.crm_amir.crm_amir_rs")?;
     m.add_function(wrap_pyfunction!(run_sim, &m)?)?;
     m.add_class::<FixedRod>()?;
     m.add_class::<Parameters>()?;

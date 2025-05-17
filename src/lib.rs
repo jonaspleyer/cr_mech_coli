@@ -41,7 +41,8 @@ pub const HOUR: f32 = 60. * MINUTE;
 #[pymodule]
 #[pyo3(name = "cr_mech_coli")]
 fn cr_mech_coli(py: Python, m: &Bound<'_, PyModule>) -> PyResult<()> {
-    let submodule = crm_fit::crm_fit_rs(py)?;
+    let submodule = PyModule::new(py, "cr_mech_coli.crm_fit.crm_fit_rs")?;
+    crm_fit::crm_fit_rs(&submodule)?;
     m.add_submodule(&submodule)?;
     py.import("sys")?
         .getattr("modules")?
@@ -60,11 +61,11 @@ fn cr_mech_coli(py: Python, m: &Bound<'_, PyModule>) -> PyResult<()> {
         .getattr("modules")?
         .set_item("cr_mech_coli.crm_amir.crm_amir_rs", submodule_fit_amir)?;
 
-    let submodule_fit_amir = crm_estimate_params::crm_estimate_params_rs(py)?;
-    m.add_submodule(&submodule_fit_amir)?;
+    let submodule_estimate_params = crm_estimate_params::crm_estimate_params_rs(py)?;
+    m.add_submodule(&submodule_estimate_params)?;
     py.import("sys")?.getattr("modules")?.set_item(
         "cr_mech_coli.crm_estimate_params.crm_estimate_params_rs",
-        submodule_fit_amir,
+        submodule_estimate_params,
     )?;
 
     m.add_function(wrap_pyfunction!(generate_positions, m)?)?;
