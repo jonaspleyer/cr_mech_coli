@@ -23,6 +23,6 @@ en = { min=0.2, max=25.0, initial=6.0}
 em = { min=0.2, max=25.0, initial=5.5}
 bound = 10.0
 
-[optimization]
+[optimization.differential_evolution]
 max_iter = 30
 pop_size = 120
