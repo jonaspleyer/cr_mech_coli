@@ -113,7 +113,6 @@ res = sp.optimize.differential_evolution(
                 Some(&locals),
             )?;
             let res = locals.get_item("res")?.unwrap();
-            println!("something");
             let params: Vec<f32> = res.get_item("x")?.extract()?;
             let cost: f32 = res.get_item("fun")?.extract()?;
             let success: Option<bool> = res.get_item("success").ok().and_then(|x| x.extract().ok());
