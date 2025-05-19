@@ -34,6 +34,6 @@ toml = "0.8"
 clap = { version = "4.5.35", features = ["derive"] }
 rand_distr = "0.5.1"
 short_default = "0.1.1"
-ndarray = "0.15"
+ndarray = "0.16"
 egobox-doe = "0.29.0"
 kdam = "0.6.2"
