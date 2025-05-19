@@ -71,9 +71,6 @@ docs/build/
 # Pyenv
 .python-version
 
-# Cargo
-Cargo.lock
-
 # Generated files
 out
 
