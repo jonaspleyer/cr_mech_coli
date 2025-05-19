@@ -192,14 +192,42 @@ pub fn predict_calculate_cost(
     parameters: Vec<f32>,
     positions_all: numpy::PyReadonlyArray4<f32>,
     iterations: Vec<usize>,
-    settings: &Settings,
+    settings: Settings,
 ) -> PyResult<f32> {
-    let positions_initial = positions_all
-        .as_array()
-        .slice(numpy::ndarray::s![0, .., .., ..])
-        .to_pyarray(py)
-        .readonly();
-    let res = run_simulation(py, parameters, positions_initial, settings);
+    let positions_all = positions_all.as_array();
+    // let initial_positions = initial_positions.as_array();
+    let config = settings.to_config(py)?;
+    let parameter_defs: Parameters = settings.parameters.extract(py)?;
+    let constants: Constants = settings.constants.extract(py)?;
+    predict_calculate_cost_rs(
+        parameters,
+        positions_all,
+        settings.domain_height(),
+        &parameter_defs,
+        &constants,
+        &config,
+        &iterations,
+    )
+}
+
+pub fn predict_calculate_cost_rs(
+    parameters: Vec<f32>,
+    positions_all: numpy::ndarray::ArrayView4<f32>,
+    domain_height: f32,
+    parameter_defs: &Parameters,
+    constants: &Constants,
+    config: &crate::Configuration,
+    iterations: &Vec<usize>,
+) -> PyResult<f32> {
+    let initial_positions = positions_all.slice(numpy::ndarray::s![0, .., .., ..]);
+    let agents = define_initial_agents(
+        parameters,
+        initial_positions,
+        domain_height,
+        parameter_defs,
+        constants,
+    );
+    let res = crate::run_simulation_with_agents(config, agents);
     if let Err(e) = res {
         eprintln!("Encountered error during solving of system");
         eprintln!("{e}");
@@ -208,25 +236,23 @@ pub fn predict_calculate_cost(
     let container = res.unwrap();
 
     // let mut positions_final = numpy::ndarray::Array4::<f32>::zeros(positions_all.dims());
-    let positions_all = positions_all.as_array();
     let all_iterations = container.get_all_iterations();
     let cost = iterations
-        .into_iter()
+        .iter()
         .enumerate()
         .flat_map(|(n_result, data_index)| {
-            let it = all_iterations[data_index];
+            let it = all_iterations[*data_index];
             container
                 .get_cells_at_iteration(it)
                 .into_iter()
                 .enumerate()
                 .map(move |(n_agent, (_, (c, _)))| {
-                    let p1 = c
-                        .pos(py)
-                        .to_owned_array()
-                        .slice(numpy::ndarray::s![.., ..2])
-                        .to_owned();
+                    let p1 =
+                        ndarray::Array2::from_shape_fn((c.mechanics.pos.nrows(), 2), |(i, j)| {
+                            c.mechanics.pos[(i, j)]
+                        });
                     let p2 = positions_all.slice(numpy::ndarray::s![n_result, n_agent, .., ..]);
-                    (p1 - p2).pow2().sum().sqrt()
+                    (p1 - p2).map(|x| x.powf(2.0)).sum().sqrt()
                 })
         })
         .sum();
