@@ -10,7 +10,7 @@ use crate::agent::*;
 use crate::config::*;
 
 prepare_types!(
-    aspects: [Mechanics, Interaction, Cycle],
+    aspects: [Mechanics, Interaction, Cycle, DomainForce],
 );
 
 /// Creates positions for multiple :class:`RodAgent` which can be used for simulation purposes.
@@ -271,7 +271,7 @@ pub fn run_simulation_with_agents(
     };
 
     test_compatibility!(
-        aspects: [Mechanics, Interaction, Cycle],
+        aspects: [Mechanics, Interaction, Cycle, DomainForce],
         domain: domain,
         agents: agents,
         settings: settings,
