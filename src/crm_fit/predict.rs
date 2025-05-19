@@ -1,10 +1,8 @@
 use super::settings::*;
-use crate::{PhysInt, PhysicalInteraction};
+use crate::{run_simulation_with_agents, PhysInt, PhysicalInteraction};
 use cellular_raza::prelude::{MiePotentialF32, MorsePotentialF32, RodInteraction};
-use numpy::{PyArrayMethods, ToPyArray};
 use pyo3::prelude::*;
 
-/// TODO
 #[pyfunction]
 pub fn run_simulation(
     py: Python,
@@ -12,8 +10,29 @@ pub fn run_simulation(
     initial_positions: numpy::PyReadonlyArray3<f32>,
     settings: &Settings,
 ) -> PyResult<crate::CellContainer> {
+    let initial_positions = initial_positions.as_array();
     let config = settings.to_config(py)?;
-    let mut positions = initial_positions.as_array().to_owned();
+    let parameter_defs = settings.parameters.extract(py)?;
+    let constants: Constants = settings.constants.extract(py)?;
+    let agents = define_initial_agents(
+        parameters,
+        initial_positions,
+        settings.domain_height(),
+        &parameter_defs,
+        &constants,
+    );
+    Ok(run_simulation_with_agents(&config, agents)?)
+}
+
+/// TODO
+pub fn define_initial_agents(
+    parameters: Vec<f32>,
+    initial_positions: numpy::ndarray::ArrayView3<f32>,
+    domain_height: f32,
+    parameter_defs: &Parameters,
+    constants: &Constants,
+) -> Vec<crate::RodAgent> {
+    let mut positions = initial_positions.to_owned();
 
     // If the positions do not have dimension (?,?,3), we bring them to this dimension
     if positions.shape()[2] != 3 {
@@ -25,7 +44,7 @@ pub fn run_simulation(
         use core::ops::AddAssign;
         new_positions
             .slice_mut(numpy::ndarray::s![.., .., 2])
-            .add_assign(settings.domain_height() / 2.0);
+            .add_assign(domain_height / 2.0);
         positions = new_positions;
     }
     let n_agents = positions.shape()[0];
@@ -38,9 +57,7 @@ pub fn run_simulation(
         strength,
         potential_type,
         growth_rate,
-    } = settings.parameters.extract(py)?;
-
-    let constants: Constants = settings.constants.extract(py)?;
+    } = parameter_defs;
 
     let mut param_counter = 0;
     macro_rules! check_parameter(
@@ -58,7 +75,7 @@ pub fn run_simulation(
                         individual,
                     }) => {
                         // Sampled-Individual
-                        if individual == Some(true) {
+                        if individual == &Some(true) {
                             let res = parameters[param_counter..param_counter+n_agents]
                                 .to_vec();
                             param_counter += n_agents;
@@ -99,7 +116,7 @@ pub fn run_simulation(
                             em,
                             strength: strength[n],
                             radius: radius[n],
-                            bound,
+                            bound: *bound,
                             cutoff: constants.cutoff,
                         }),
                         0,
@@ -166,7 +183,7 @@ pub fn run_simulation(
             }
         })
         .collect();
-    Ok(crate::run_simulation_with_agents(&config, agents)?)
+    agents
 }
 
 #[pyfunction]
