@@ -38,39 +38,44 @@ impl OptimizationResult {
 #[pyfunction]
 pub fn run_optimizer(
     py: Python,
-    iterations: numpy::PyReadonlyArray1<u64>,
-    all_positions: numpy::PyReadonlyArray4<f32>,
+    iterations: Vec<usize>,
+    positions_all: numpy::PyReadonlyArray4<f32>,
     settings: &Settings,
 ) -> PyResult<OptimizationResult> {
-    let n_agents = all_positions.shape()[1];
+    let n_agents = positions_all.shape()[1];
+    let oinfs = settings.generate_optimization_infos(py, n_agents)?;
+    let OptimizationInfos {
+        bounds_lower,
+        bounds_upper,
+        initial_values,
+        parameter_infos: _,
+        constants: _,
+        constant_infos: _,
+    } = oinfs;
+
+    let bounds = numpy::ndarray::Array2::from_shape_fn((bounds_lower.len(), 2), |(i, j)| {
+        if j == 0 {
+            bounds_lower[i]
+        } else {
+            bounds_upper[i]
+        }
+    });
+
+    let positions_all = positions_all.as_array();
+    let domain_height = settings.domain_height();
+    let constants: Constants = settings.constants.extract(py)?;
+    let parameter_defs: Parameters = settings.parameters.extract(py)?;
+    let config = settings.to_config(py)?;
 
     match settings.optimization.borrow(py).deref() {
         OptimizationMethod::DifferentialEvolution(de) => {
-            let oinfs = settings.generate_optimization_infos(py, n_agents)?;
-            let OptimizationInfos {
-                bounds_lower,
-                bounds_upper,
-                initial_values,
-                parameter_infos: _,
-                constants: _,
-                constant_infos: _,
-            } = oinfs;
-
-            let bounds =
-                numpy::ndarray::Array2::from_shape_fn((bounds_lower.len(), 2), |(i, j)| {
-                    if j == 0 {
-                        bounds_lower[i]
-                    } else {
-                        bounds_upper[i]
-                    }
-                });
             let locals = pyo3::types::PyDict::new(py);
 
             // Required
             locals.set_item("bounds", bounds.to_pyarray(py))?;
             locals.set_item("x0", initial_values.into_pyobject(py)?)?;
-            locals.set_item("positions_all", all_positions.as_any())?;
-            locals.set_item("iterations", iterations.as_any())?;
+            locals.set_item("positions_all", positions_all.to_pyarray(py))?;
+            locals.set_item("iterations", iterations)?;
             locals.set_item("settings", settings.clone().into_pyobject(py)?)?;
 
             // Optional
