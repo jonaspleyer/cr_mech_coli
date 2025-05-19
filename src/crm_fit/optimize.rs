@@ -1,7 +1,10 @@
 use std::ops::Deref;
 
+use crate::crm_fit::predict::predict_calculate_cost_rs;
+
 use super::settings::*;
 
+use egobox_doe::SamplingMethod;
 use numpy::{PyUntypedArrayMethods, ToPyArray};
 use pyo3::prelude::*;
 use serde::{Deserialize, Serialize};
@@ -124,6 +127,56 @@ res = sp.optimize.differential_evolution(
                 niter,
             })
         }
-        OptimizationMethod::LatinHypercube(lhs) => todo!(),
+        OptimizationMethod::LatinHypercube(lhs) => {
+            use kdam::*;
+            use rayon::prelude::*;
+
+            // Sample the space
+            let LatinHypercube { n_points } = lhs;
+            let lhs_doe = egobox_doe::Lhs::new(&bounds);
+            let combinations = lhs_doe.sample(*n_points);
+
+            // Calculate Costs for every sampled parameter point
+            let result = kdam::par_tqdm!(
+                combinations.axis_iter(ndarray::Axis(0)).into_par_iter(),
+                desc = "Optimization LatinHypercube",
+                total = *n_points
+            )
+            .filter_map(move |parameters| {
+                predict_calculate_cost_rs(
+                    parameters.to_vec(),
+                    positions_all,
+                    domain_height,
+                    &parameter_defs,
+                    &constants,
+                    &config,
+                    &iterations,
+                )
+                .ok()
+                .map(|x| (parameters.to_vec(), x))
+            })
+            .filter(|x| x.1.is_finite())
+            .reduce_with(|x, y| if x.1 < y.1 { x } else { y });
+
+            // Return Optizmization Result
+            if let Some((params, cost)) = result {
+                let params = params.to_vec();
+                Ok(OptimizationResult {
+                    params,
+                    cost,
+                    success: Some(true),
+                    neval: Some(*n_points),
+                    niter: None,
+                })
+            } else {
+                Ok(OptimizationResult {
+                    params: initial_values.clone(),
+                    cost: f32::NAN,
+                    success: Some(false),
+                    neval: Some(*n_points),
+                    niter: None,
+                })
+            }
+        }
     }
 }
