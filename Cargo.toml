@@ -31,7 +31,7 @@ serde = { version = "1.0", features = ["derive"] }
 serde-pickle = "1.2"
 serde_json = { version = "1.0.128", features = ["arbitrary_precision", "float_roundtrip", "preserve_order", "std"] }
 toml = "0.8"
-clap = { version = "4.5.39", features = ["derive"] }
+clap = { version = "4.5.40", features = ["derive"] }
 rand_distr = "0.5.1"
 short_default = "0.1.1"
 ndarray = "0.15"
