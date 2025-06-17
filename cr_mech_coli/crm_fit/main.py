@@ -142,6 +142,12 @@ def crm_fit_main():
             lengths.",
         action="store_true",
     )
+    parser.add_argument(
+        "--skip-interaction-potential",
+        default=False,
+        help="Plot the shape of the interaction potential",
+        action="store_true",
+    )
     pyargs = parser.parse_args()
     if pyargs.workers == -1:
         pyargs.workers = mp.cpu_count()
