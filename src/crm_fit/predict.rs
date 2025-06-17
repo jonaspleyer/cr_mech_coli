@@ -199,7 +199,7 @@ pub fn predict_calculate_cost(
     let config = settings.to_config(py)?;
     let parameter_defs: Parameters = settings.parameters.extract(py)?;
     let constants: Constants = settings.constants.extract(py)?;
-    predict_calculate_cost_rs(
+    Ok(predict_calculate_cost_rs(
         parameters,
         positions_all,
         settings.domain_height(),
@@ -207,7 +207,7 @@ pub fn predict_calculate_cost(
         &constants,
         &config,
         &iterations,
-    )
+    )?)
 }
 
 pub fn predict_calculate_cost_rs(
@@ -217,8 +217,8 @@ pub fn predict_calculate_cost_rs(
     parameter_defs: &Parameters,
     constants: &Constants,
     config: &crate::Configuration,
-    iterations: &Vec<usize>,
-) -> PyResult<f32> {
+    iterations_images: &[usize],
+) -> Result<f32, SimulationError> {
     let initial_positions = positions_all.slice(numpy::ndarray::s![0, .., .., ..]);
     let agents = define_initial_agents(
         parameters,
