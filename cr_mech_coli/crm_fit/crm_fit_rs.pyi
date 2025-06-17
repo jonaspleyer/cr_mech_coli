@@ -36,7 +36,7 @@ class Parameters:
 class Constants:
     t_max: float
     dt: float
-    domain_size: float
+    domain_size: tuple[float, float]
     n_voxels: int
     rng_seed: int
     cutoff: float
@@ -103,5 +103,8 @@ class OptimizationResult:
     def load_from_file(filename: Path): ...
 
 def run_optimizer(
-    iterations: np.ndarray, positions: np.ndarray, settings: Settings
+    iterations: np.ndarray,
+    positions: np.ndarray,
+    settings: Settings,
+    n_workers: int = -1,
 ) -> OptimizationResult: ...
