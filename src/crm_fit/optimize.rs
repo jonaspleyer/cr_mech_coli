@@ -38,6 +38,57 @@ impl OptimizationResult {
     }
 }
 
+fn lhs_optimization(
+    py: Python,
+    n_points: usize,
+    n_iter: usize,
+    bounds: &numpy::ndarray::Array2<f32>,
+    iterations_images: &[usize],
+    positions_all: numpy::ndarray::ArrayView4<f32>,
+    settings: &Settings,
+) -> PyResult<Option<(Vec<f32>, f32)>> {
+    use kdam::{term::Colorizer, *};
+    use rayon::prelude::*;
+
+    let domain_height = settings.domain_height();
+    let constants: Constants = settings.constants.extract(py)?;
+    let parameter_defs: Parameters = settings.parameters.extract(py)?;
+    let config = settings.to_config(py)?;
+
+    let lhs_doe = egobox_doe::Lhs::new(bounds);
+    let combinations = lhs_doe.sample(n_points);
+
+    // Initialize progress bar
+    kdam::term::init(true);
+    let result = kdam::par_tqdm!(
+        combinations.axis_iter(ndarray::Axis(0)).into_par_iter(),
+        desc = format!("LHS Step {n_iter}").colorize("green"),
+        total = n_points
+    )
+    // Calculate Costs for every sampled parameter point
+    .filter_map(|parameters| {
+        predict_calculate_cost_rs(
+            parameters.to_vec(),
+            positions_all,
+            domain_height,
+            &parameter_defs,
+            &constants,
+            &config,
+            iterations_images,
+        )
+        .ok()
+        .map(|x| (parameters.to_vec(), x))
+    })
+    .filter(|x| x.1.is_finite())
+    .reduce_with(|x, y| if x.1 < y.1 { x } else { y });
+
+    if let Some((_, cost)) = result {
+        println!("Final cost: {}", format!("{cost}").colorize("blue"));
+    }
+
+    Ok(result)
+}
+
 #[pyfunction]
 pub fn run_optimizer(
     py: Python,
