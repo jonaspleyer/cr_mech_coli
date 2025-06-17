@@ -230,6 +230,12 @@ pub struct LatinHypercube {
     /// Number of points which should be sampled
     #[approx(equal)]
     pub n_points: usize,
+    /// Maximum lowering steps of the iterative approach
+    #[approx(equal)]
+    #[serde(default = "Default::default")]
+    pub n_steps: usize,
+    /// Relative reduction of bound size per lowering step
+    pub relative_reduction: f32,
 }
 
 /// Other settings which are not related to the outcome of the simulation
