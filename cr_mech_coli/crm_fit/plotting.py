@@ -71,7 +71,10 @@ def plot_profile(
     crm.plotting.configure_ax(ax)
     ax.plot(x, y, color=crm.plotting.COLOR3, linestyle="--")
     fig.tight_layout()
-    plt.savefig(f"{out}/profile-{name}.png".lower().replace(" ", "-"))
+    odir = out / "profiles"
+    odir.mkdir(parents=True, exist_ok=True)
+    plt.savefig(f"{odir}/{name}.png".lower().replace(" ", "-"))
+    plt.savefig(f"{odir}/{name}.pdf".lower().replace(" ", "-"))
     return (fig, ax)
 
 
@@ -183,6 +186,7 @@ def plot_distributions(agents_predicted, out: Path):
         label="Radii",
     )
     ax2.set_xlabel("Radius [µm]")
-    fig.legend(loc="upper right", bbox_to_anchor=(1, 1), bbox_transform=ax.transAxes)
+    fig.legend(loc="upper center", bbox_to_anchor=(0.5, 1.10), ncol=3, frameon=False)
     fig.savefig(out / "growth_rates_lengths_distribution.png")
+    fig.savefig(out / "growth_rates_lengths_distribution.pdf")
     fig.clf()
