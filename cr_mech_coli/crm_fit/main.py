@@ -269,7 +269,7 @@ def crm_fit_main():
 
     if not pyargs.skip_masks:
 
-        def plot_snapshot(pos, img, name):
+        def plot_snapshot(pos, img, snapshot_dir, name):
             for p in pos:
                 p = crm.convert_cell_pos_to_pixels(p, domain_size, img.shape[:2])
                 img = cv.polylines(
@@ -279,12 +279,42 @@ def crm_fit_main():
                     color=(250, 250, 250),
                     thickness=1,
                 )
-            cv.imwrite(f"{out}/{name}.png", img)
+            odir = out / snapshot_dir
+            odir.mkdir(parents=True, exist_ok=True)
+            cv.imwrite(f"{odir}/{name}.png", img)
 
-        for iter, img in zip(iterations_all, imgs):
+        def plot_position_diff(p_exact, p_fit, iteration):
+            fig, ax = plt.subplots(figsize=(8, 8))
+            for p1i, p2i in zip(p_exact, p_fit):
+                crm.plotting.configure_ax(ax)
+                x1 = p1i[:, 0]
+                y1 = p1i[:, 1]
+                x2 = p2i[:, 0]
+                y2 = p2i[:, 1]
+                ax.plot(x1, y1, color=crm.plotting.COLOR5, label="Exact")
+                ax.plot(x2, y2, color=crm.plotting.COLOR3, label="Fit")
+
+            handles, labels = ax.get_legend_handles_labels()
+            ax.legend(
+                handles[:2],
+                labels[:2],
+                loc="upper center",
+                bbox_to_anchor=(0.5, 1.10),
+                ncol=3,
+                frameon=False,
+            )
+            iterdir = out / "celldifss"
+            iterdir.mkdir(parents=True, exist_ok=True)
+            fig.savefig(iterdir / f"cell-{iteration:06}.png")
+            fig.savefig(iterdir / f"cell-{iteration:06}.pdf")
+            plt.close(fig)
+
+        for pos_exact, iter, img in zip(positions_all, iterations_all, imgs):
             agents = cell_container.get_cells_at_iteration(iter)
             pos = np.array([c[0].pos for c in agents.values()])
-            plot_snapshot(pos, img, f"snapshot-{iter:06}")
+            plot_snapshot(pos, img, "snapshots", f"predicted-{iter:06}")
+            plot_snapshot(pos_exact, img, "snapshots", f"exact-{iter:06}")
+            plot_position_diff(pos_exact, pos, iter)
 
         print(f"{time.time() - interval:10.4f}s Rendered Masks")
         interval = time.time()
