@@ -384,7 +384,7 @@ pub struct Settings {
     /// See :class:`OptimizationParameters`
     #[approx(map = |b| Python::with_gil(|py| Some(get_inner(b, py))))]
     pub optimization: Py<OptimizationMethod>,
-    /// See :class:`Other`
+    /// See :class:`Others`
     #[approx(skip)]
     pub others: Option<Py<Others>>,
 }
