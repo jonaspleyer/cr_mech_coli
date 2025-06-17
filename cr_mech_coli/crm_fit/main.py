@@ -39,6 +39,7 @@ def estimate_growth_rates(iterations, lengths, settings, out_path):
         / (np.max(iterations) - np.min(iterations))
         * settings.constants.t_max
     )
+
     popts = []
     pcovs = []
     growth_rates = []
@@ -63,7 +64,7 @@ def estimate_growth_rates(iterations, lengths, settings, out_path):
     fig, ax = plt.subplots(figsize=(8, 8))
     crm.plotting.configure_ax(ax)
     ax.plot(times, lengths, color=crm.plotting.COLOR5)
-    for n, popt, pcov in zip(range(len(growth_rates)), popts, pcovs):
+    for popt, pcov in zip(popts, pcovs):
         ax.plot(
             times,
             exponential_growth(times, *popt),
