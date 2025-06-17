@@ -253,5 +253,85 @@ res = sp.optimize.differential_evolution(
                 })
             }
         }
+        OptimizationMethod::NelderMead(nelder_mead) => {
+            let NelderMead { max_iter } = nelder_mead;
+            todo!()
+            // Loal Minimization at end
+            /* if let Some((params, _)) = initial_values {
+                            // Required
+                            let locals = pyo3::types::PyDict::new(py);
+                            locals.set_item("bounds", bounds.to_pyarray(py))?;
+                            locals.set_item("x0", params.into_pyobject(py)?)?;
+                            locals.set_item("positions_all", positions_all.to_pyarray(py))?;
+                            locals.set_item("iterations", iterations_images)?;
+                            locals.set_item("settings", settings.clone().into_pyobject(py)?)?;
+                            locals.set_item("disp", true)?;
+                            locals.set_item("max_iter", n_points)?;
+
+                            // Optional
+                            let max_iter = 0;
+                            locals.set_item("max_iter", max_iter)?;
+
+                            py.run(
+                                pyo3::ffi::c_str!(
+                                    r#"
+            import scipy as sp
+            from cr_mech_coli.crm_fit import predict_calculate_cost
+
+            args = (positions_all, iterations, settings)
+
+            def callback(intermediate_result):
+                # nit = intermediate_result.nit
+                fun = intermediate_result.fun
+                print(f"Objective Function: {fun}")
+
+            print("Starting Nelder-Mead Optimization")
+            res = sp.optimize.minimize(
+                predict_calculate_cost,
+                x0=x0,
+                args=args,
+                bounds=bounds,
+                method="Nelder-Mead",
+                options={
+                    "disp": disp,
+                    "maxiter": max_iter,
+                    "maxfev": max_iter,
+                },
+                callback=callback,
+            )
+            "#
+                                ),
+                                None,
+                                Some(&locals),
+                            )?;
+                            let res = locals.get_item("res")?.unwrap();
+                            let params: Vec<f32> = res.get_item("x")?.extract()?;
+                            let cost: f32 = res.get_item("fun")?.extract()?;
+                            let success: Option<bool> =
+                                res.get_item("success").ok().and_then(|x| x.extract().ok());
+                            let neval: usize = res
+                                .get_item("nfev")
+                                .ok()
+                                .and_then(|x| x.extract().ok())
+                                .unwrap_or(0);
+                            let niter = res.get_item("nit").ok().and_then(|x| x.extract().ok());
+
+                            Ok(OptimizationResult {
+                                params,
+                                cost,
+                                success,
+                                neval: Some(*n_points + neval),
+                                niter,
+                            })
+                        } else {
+                            Ok(OptimizationResult {
+                                params: initial_values.clone(),
+                                cost: f32::NAN,
+                                success: Some(false),
+                                neval: Some(*n_points),
+                                niter: None,
+                            })
+                        }*/
+        }
     }
 }
