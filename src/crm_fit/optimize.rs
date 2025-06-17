@@ -116,10 +116,6 @@ pub fn run_optimizer(
     });
 
     let positions_all = positions_all.as_array();
-    let domain_height = settings.domain_height();
-    let constants: Constants = settings.constants.extract(py)?;
-    let parameter_defs: Parameters = settings.parameters.extract(py)?;
-    let config = settings.to_config(py)?;
 
     match settings.optimization.borrow(py).deref() {
         OptimizationMethod::DifferentialEvolution(de) => {
@@ -178,52 +174,71 @@ res = sp.optimize.differential_evolution(
             })
         }
         OptimizationMethod::LatinHypercube(lhs) => {
-            use kdam::*;
-            use rayon::prelude::*;
-
             // Sample the space
-            let LatinHypercube { n_points } = lhs;
-            let lhs_doe = egobox_doe::Lhs::new(&bounds);
-            let combinations = lhs_doe.sample(*n_points);
+            let LatinHypercube {
+                n_points,
+                n_steps,
+                relative_reduction,
+            } = lhs;
 
-            // Calculate Costs for every sampled parameter point
-            let result = kdam::par_tqdm!(
-                combinations.axis_iter(ndarray::Axis(0)).into_par_iter(),
-                desc = "Optimization LatinHypercube",
-                total = *n_points
-            )
-            .filter_map(move |parameters| {
-                predict_calculate_cost_rs(
-                    parameters.to_vec(),
+            // Initialize threadpool with correct number of workers
+            rayon::ThreadPoolBuilder::new()
+                .num_threads(n_workers)
+                .build_global()
+                .map_err(|e| pyo3::exceptions::PyValueError::new_err(format!("{e}")))?;
+
+            // Do lowering via repeated applications of LatinHypercube algorithm
+            let mut bounds = bounds;
+            let mut result = None;
+            for n_iteration in 0..*n_steps {
+                let new_result = lhs_optimization(
+                    py,
+                    *n_points,
+                    n_iteration,
+                    &bounds,
+                    &iterations_images,
                     positions_all,
-                    domain_height,
-                    &parameter_defs,
-                    &constants,
-                    &config,
-                    &iterations,
-                )
-                .ok()
-                .map(|x| (parameters.to_vec(), x))
-            })
-            .filter(|x| x.1.is_finite())
-            .reduce_with(|x, y| if x.1 < y.1 { x } else { y });
+                    settings,
+                )?;
+                // If the newly calculated results are better, we update. Otherwise do nothing.
+                // This will still decrease the overall size
+                if result.is_none() && new_result.is_some() {
+                    result = new_result;
+                } else if let (Some((_, c0)), Some((p1, c1))) = (&result, new_result) {
+                    if c1 < *c0 {
+                        result = Some((p1, c1));
+                    }
+                }
 
-            // Return Optizmization Result
+                if let Some((params, _)) = &result {
+                    let dists = &bounds.column(1) - &bounds.column(0);
+                    for i in 0..params.len() {
+                        let d = dists[i];
+                        let q: f32 = d * relative_reduction / 2.0;
+                        let b0 = params[i] - q;
+                        let b1 = params[i] + q;
+                        bounds[(i, 0)] = bounds[(i, 0)].max(b0);
+                        bounds[(i, 1)] = bounds[(i, 1)].min(b1);
+                    }
+                } else {
+                    break;
+                }
+            }
+
             if let Some((params, cost)) = result {
-                let params = params.to_vec();
                 Ok(OptimizationResult {
                     params,
                     cost,
                     success: Some(true),
-                    neval: Some(*n_points),
-                    niter: None,
+                    neval: Some(n_steps * n_points),
+                    niter: Some(*n_steps),
                 })
             } else {
                 Ok(OptimizationResult {
-                    params: initial_values.clone(),
-                    cost: f32::NAN,
+                    params: initial_values,
+                    cost: f32::INFINITY,
                     success: Some(false),
-                    neval: Some(*n_points),
+                    neval: None,
                     niter: None,
                 })
             }
