@@ -1,6 +1,9 @@
 use super::settings::*;
 use crate::{run_simulation_with_agents, PhysInt, PhysicalInteraction};
-use cellular_raza::prelude::{MiePotentialF32, MorsePotentialF32, RodInteraction};
+use cellular_raza::prelude::{
+    CellIdentifier, MiePotentialF32, MorsePotentialF32, RodInteraction, SimulationError,
+};
+use itertools::Itertools;
 use pyo3::prelude::*;
 
 #[pyfunction]
@@ -237,27 +240,33 @@ pub fn predict_calculate_cost_rs(
         Ok(c) => c,
     };
 
-    // let mut positions_final = numpy::ndarray::Array4::<f32>::zeros(positions_all.dims());
+    let mut total_cost = 0f32;
     let all_iterations = container.get_all_iterations();
-    let cost = iterations
-        .iter()
-        .enumerate()
-        .flat_map(|(n_result, data_index)| {
-            let it = all_iterations[*data_index];
-            container
-                .get_cells_at_iteration(it)
-                .into_iter()
-                .enumerate()
-                .map(move |(n_agent, (_, (c, _)))| {
+    for (n_result, data_index) in iterations_images.iter().enumerate() {
+        let it = all_iterations[*data_index];
+
+        container
+            .get_cells_at_iteration(it)
+            .into_iter()
+            .try_for_each(|(ident, (c, _))| {
+                if let CellIdentifier::Initial(n_agent) = ident {
                     let p1 =
                         ndarray::Array2::from_shape_fn((c.mechanics.pos.nrows(), 2), |(i, j)| {
                             c.mechanics.pos[(i, j)]
                         });
                     let p2 = positions_all.slice(numpy::ndarray::s![n_result, n_agent, .., ..]);
-                    (p1 - p2).map(|x| x.powf(2.0)).sum().sqrt()
-                })
-        })
-        .sum();
-
-    Ok(cost)
+                    total_cost += (p1.to_owned() - p2).map(|x| x.powf(2.0)).sum();
+                    Ok(())
+                } else {
+                    Err(SimulationError::IndexError(
+                        cellular_raza::prelude::IndexError(
+                            "Cell division is currently not supported by this optimization\
+                            algorithm"
+                                .to_string(),
+                        ),
+                    ))
+                }
+            })?;
+    }
+    Ok(total_cost)
 }
