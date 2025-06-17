@@ -92,7 +92,7 @@ fn lhs_optimization(
 #[pyfunction]
 pub fn run_optimizer(
     py: Python,
-    iterations: Vec<usize>,
+    iterations_images: Vec<usize>,
     positions_all: numpy::PyReadonlyArray4<f32>,
     settings: &Settings,
     n_workers: isize,
@@ -131,7 +131,7 @@ pub fn run_optimizer(
             locals.set_item("bounds", bounds.to_pyarray(py))?;
             locals.set_item("x0", initial_values.into_pyobject(py)?)?;
             locals.set_item("positions_all", positions_all.to_pyarray(py))?;
-            locals.set_item("iterations", iterations)?;
+            locals.set_item("iterations_images", iterations_images)?;
             locals.set_item("settings", settings.clone().into_pyobject(py)?)?;
 
             // Optional
@@ -144,7 +144,7 @@ pub fn run_optimizer(
 import scipy as sp
 from cr_mech_coli.crm_fit import predict_calculate_cost
 
-args = (positions_all, iterations, settings)
+args = (positions_all, iterations_images, settings)
 
 res = sp.optimize.differential_evolution(
     predict_calculate_cost,
