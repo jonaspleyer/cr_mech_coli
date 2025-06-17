@@ -10,7 +10,7 @@ import multiprocessing as mp
 import argparse
 import scipy as sp
 
-from .plotting import plot_profile, plot_distributions
+from .plotting import plot_interaction_potential, plot_profile, plot_distributions
 
 
 # Create folder to store output
@@ -241,6 +241,11 @@ def crm_fit_main():
 
         print(f"{time.time() - interval:10.4f} Plotted Profiles")
         interval = time.time()
+
+    if not pyargs.skip_interaction_potential:
+        plot_interaction_potential(
+            settings, optimization_result, positions_all.shape[1], out
+        )
 
     cell_container = crm_fit.run_simulation(
         optimization_result.params,

@@ -3,6 +3,7 @@ import numpy as np
 from pathlib import Path
 from tqdm.contrib.concurrent import process_map
 import cr_mech_coli as crm
+from cr_mech_coli.cr_mech_coli import MorsePotentialF32
 
 from .crm_fit_rs import Settings, OptimizationResult, predict_calculate_cost
 
@@ -72,6 +73,53 @@ def plot_profile(
     fig.tight_layout()
     plt.savefig(f"{out}/profile-{name}.png".lower().replace(" ", "-"))
     return (fig, ax)
+
+
+def plot_interaction_potential(
+    settings: Settings,
+    optimization_result: OptimizationResult,
+    n_agents,
+    out,
+):
+    if settings.parameters.potential_type == MorsePotentialF32:
+        return None
+
+    agent_index = 0
+    expn = settings.get_param("Exponent n", optimization_result, n_agents, agent_index)
+    expm = settings.get_param("Exponent m", optimization_result, n_agents, agent_index)
+    radius = settings.get_param("Radius", optimization_result, n_agents, agent_index)
+    strength = settings.get_param(
+        "Strength", optimization_result, n_agents, agent_index
+    )
+    bound = settings.get_param("Bound", optimization_result, n_agents, agent_index)
+
+    def mie_potential(x: np.ndarray):
+        c = expn / (expn - expm) * (expn / expm) ** (expm / (expn - expm))
+        sigma = radius * (expm / expn) ** (1 / (expn - expm))
+        return np.minimum(
+            strength * c * ((sigma / x) ** expn - (sigma / x) ** expm),
+            np.array([bound] * len(x)),
+        )
+
+    x = np.linspace(0.05 * radius, settings.constants.cutoff, 200)
+    y = mie_potential(x)
+
+    fig, ax = plt.subplots(figsize=(8, 8))
+    crm.plotting.configure_ax(ax)
+
+    ax.plot(x / radius, y / strength, label="Mie Potential", color=crm.plotting.COLOR3)
+    ax.set_xlabel("Distance [R]")
+    ax.set_ylabel("Normalized Interaction Strength")
+
+    ax.legend(
+        loc="upper center",
+        bbox_to_anchor=(0.5, 1.10),
+        ncol=1,
+        frameon=False,
+    )
+
+    fig.savefig(out / "potential-shape.png")
+    fig.savefig(out / "potential-shape.pdf")
 
 
 def _get_orthogonal_basis_by_cost(parameters, p0, costs, c0):
