@@ -228,12 +228,14 @@ pub fn predict_calculate_cost_rs(
         constants,
     );
     let res = crate::run_simulation_with_agents(config, agents);
-    if let Err(e) = res {
-        eprintln!("Encountered error during solving of system");
-        eprintln!("{e}");
-        return Ok(f32::NAN);
-    }
-    let container = res.unwrap();
+    let container = match res {
+        Err(e) => {
+            log::warn!("Encountered error during solving of system");
+            log::warn!("{e}");
+            return Ok(f32::NAN);
+        }
+        Ok(c) => c,
+    };
 
     // let mut positions_final = numpy::ndarray::Array4::<f32>::zeros(positions_all.dims());
     let all_iterations = container.get_all_iterations();
