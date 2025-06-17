@@ -1,10 +1,10 @@
 [constants]
 t_max=100.0
-dt=0.005
+dt=0.0025
 domain_size=[768, 576]
 n_voxels=[4, 3]
 rng_seed=0
-cutoff=20.0
+cutoff=50.0
 pixel_per_micron=1
 n_vertices=8
 
@@ -12,17 +12,20 @@ n_vertices=8
 # radius = { min = 3.0, max=8.0, initial=4.5, individual=false }
 radius = [5.630516, 5.445153, 4.7796803, 5.580657, 5.963134, 6.2007318]
 rigidity = 8.0
-damping = { min=0.1, max=2.5, initial=1.5 }
-strength = { min=1.0, max=5.5, initial=1.0 }
-spring_tension = 1.0
-growth_rate = [0.00842039, 0.0128359,  0.01364351, 0.01530663, 0.01944372, 0.01396576]
-# growth_rate = { min=0.0, max=0.1, initial=0.05, individual=true }
+damping = { min=0.5, max=15.0, initial=1.5 }
+strength = { min=0.1, max=10.0, initial=1.0 }
+spring_tension = 3.0
+# growth_rate = [0.00842039, 0.0128359,  0.01364351, 0.01530663, 0.01944372, 0.01396576]
+growth_rate = { min=0.0, max=0.01, initial=0.05, individual=true }
 
 [parameters.potential_type.Mie]
 en = { min=0.2, max=25.0, initial=6.0}
 em = { min=0.2, max=25.0, initial=5.5}
 bound = 10.0
 
-[optimization.differential_evolution]
-max_iter = 6
-pop_size = 60
+# [optimization.differential_evolution]
+# max_iter = 30
+# pop_size = 120
+
+[optimization.latin_hypercube]
+n_points = 100
