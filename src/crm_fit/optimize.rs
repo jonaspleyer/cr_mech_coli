@@ -98,6 +98,8 @@ pub fn run_optimizer(
     settings: &Settings,
     n_workers: isize,
 ) -> PyResult<OptimizationResult> {
+    env_logger::init();
+
     let n_agents = positions_all.shape()[1];
     let oinfs = settings.generate_optimization_infos(py, n_agents)?;
     let OptimizationInfos {
