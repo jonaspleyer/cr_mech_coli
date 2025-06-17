@@ -221,7 +221,7 @@ def crm_fit_main():
         optimization_result = crm_fit.OptimizationResult.load_from_file(out / filename)
     else:
         optimization_result = crm_fit.run_optimizer(
-            iterations_all, positions_all, settings
+            iterations_all, positions_all, settings, pyargs.workers
         )
 
         # Store information in file
