@@ -79,6 +79,13 @@ class Settings:
     def from_toml_string(toml_str: str) -> Settings: ...
     def to_config(self, n_saves: int) -> crm.Configuration: ...
     def generate_optimization_infos(self, n_agents: int) -> OptimizationInfos: ...
+    def get_final_param(
+        self,
+        param_name: str,
+        optimization_result: OptimizationResult,
+        n_agents: int,
+        agent_index: int,
+    ) -> float: ...
 
 def run_simulation(
     parameters: list[float], positions: np.ndarray, settings: Settings

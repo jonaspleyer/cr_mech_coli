@@ -621,6 +621,87 @@ impl Settings {
     pub fn __repr__(&self) -> String {
         format!("{self:#?}")
     }
+
+    /// Return a parameter which has been obtained either by optimization or fixed initially.
+    pub fn get_param(
+        &self,
+        py: Python,
+        param_name: &str,
+        optizmization_result: &super::optimize::OptimizationResult,
+        n_agents: usize,
+        agent_index: usize,
+    ) -> PyResult<f32> {
+        // Check if the parameter used for optimization contain the queried parameter name
+        let param_name_cleaned = param_name.trim().to_lowercase();
+        let parameter_infos = self
+            .generate_optimization_infos(py, n_agents)?
+            .parameter_infos;
+
+        let mut first_last = None;
+        for (n, (pname, _, _)) in parameter_infos.iter().enumerate() {
+            // This is a hack since we append parameter names with a number corresponding to the
+            // cell. Thus we check if is contained rather than identical.
+            if pname.trim().to_lowercase().contains(&param_name_cleaned) {
+                if first_last.is_none() {
+                    first_last = Some((n, n));
+                }
+                if let Some((m, _)) = first_last {
+                    first_last = Some((m, n));
+                }
+            }
+        }
+        if let Some((n, m)) = first_last {
+            if n == m {
+                return Ok(optizmization_result.params[n]);
+            } else {
+                return Ok(optizmization_result.params[n + agent_index]);
+            }
+        }
+
+        use PotentialType::*;
+        macro_rules! find_param(
+            (@interaction $potential_type:ident, $param_str:literal, $param_field:ident) => {
+                if param_name_cleaned == $param_str.trim().to_lowercase() {
+                    if let $potential_type(pot) = &self.parameters.bind(py).borrow().potential_type
+                    {
+                        match &pot.$param_field {
+                            Parameter::Float(value) => return Ok(*value),
+                            Parameter::List(list) => return Ok(list[agent_index]),
+                            _ => (),
+                        }
+                    }
+                }
+            };
+            ($param_str:literal, $param_field:ident) => {
+                if param_name_cleaned == $param_str.trim().to_lowercase() {
+                    match &self.parameters.bind(py).borrow().$param_field {
+                        Parameter::Float(value) => return Ok(*value),
+                        Parameter::List(list) => return Ok(list[agent_index]),
+                        _ => (),
+                    }
+                }
+            };
+        );
+
+        find_param!("Radius", radius);
+        find_param!("Rigidity", rigidity);
+        find_param!("Spring Tension", spring_tension);
+        find_param!("Damping", damping);
+        find_param!("Strength", strength);
+        find_param!("Growth Rate", growth_rate);
+        find_param!(@interaction Mie, "Exponent n", en);
+        find_param!(@interaction Mie, "Exponent m", em);
+        if param_name_cleaned == "bound" {
+            if let Mie(pot) = &self.parameters.bind(py).borrow().potential_type {
+                return Ok(pot.bound);
+            }
+        }
+        find_param!(@interaction Morse, "Potential Stiffness", potential_stiffness);
+
+        panic!(
+            "Parameter with name {param_name} at agent index {agent_index} could not be obtained"
+        )
+    }
 }
 
 #[cfg(test)]
