@@ -90,6 +90,7 @@ fn lhs_optimization(
 }
 
 #[pyfunction]
+#[pyo3(signature = (iterations_images, positions_all, settings, n_workers=-1))]
 pub fn run_optimizer(
     py: Python,
     iterations_images: Vec<usize>,
