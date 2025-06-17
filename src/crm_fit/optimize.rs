@@ -95,6 +95,7 @@ pub fn run_optimizer(
     iterations: Vec<usize>,
     positions_all: numpy::PyReadonlyArray4<f32>,
     settings: &Settings,
+    n_workers: isize,
 ) -> PyResult<OptimizationResult> {
     let n_agents = positions_all.shape()[1];
     let oinfs = settings.generate_optimization_infos(py, n_agents)?;
@@ -106,6 +107,11 @@ pub fn run_optimizer(
         constants: _,
         constant_infos: _,
     } = oinfs;
+    let n_workers = if n_workers <= 0 {
+        rayon::max_num_threads()
+    } else {
+        n_workers as usize
+    };
 
     let bounds = numpy::ndarray::Array2::from_shape_fn((bounds_lower.len(), 2), |(i, j)| {
         if j == 0 {
@@ -130,6 +136,7 @@ pub fn run_optimizer(
 
             // Optional
             locals.set_item("optimization", de.clone().into_pyobject(py)?)?;
+            locals.set_item("n_workers", n_workers)?;
 
             py.run(
                 pyo3::ffi::c_str!(
@@ -144,7 +151,7 @@ res = sp.optimize.differential_evolution(
     bounds=bounds,
     x0=x0,
     args=args,
-    workers=14,
+    workers=n_workers,
     updating="deferred",
     maxiter=optimization.max_iter,
     disp=True,
