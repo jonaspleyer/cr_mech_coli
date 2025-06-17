@@ -314,14 +314,17 @@ impl Cycle<RodAgent, f32> for RodAgent {
         dt: &f32,
         cell: &mut Self,
     ) -> Option<CycleEvent> {
+        // Determine growth rate depening on number of neighbors
         let rate = if let Some((max, exp)) = cell.neighbor_reduction {
             let m = max as f32;
             let n = cell.interaction.0 .1 as f32;
             cell.growth_rate * ((m - n) / m).max(0.).powf(exp)
         } else {
             cell.growth_rate
-        } * cell.mechanics.spring_length;
-        cell.mechanics.spring_length += rate * dt;
+        };
+
+        // Exponential Growth
+        cell.mechanics.spring_length += rate * dt * cell.mechanics.spring_length;
         if cell.mechanics.spring_length > cell.spring_length_threshold {
             Some(CycleEvent::Division)
         } else {
