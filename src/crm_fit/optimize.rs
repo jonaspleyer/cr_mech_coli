@@ -89,6 +89,58 @@ fn lhs_optimization(
     Ok(result)
 }
 
+fn lhs_optimization_iter(
+    py: Python,
+    n_points: usize,
+    n_steps: usize,
+    bounds: &numpy::ndarray::Array2<f32>,
+    iterations_images: &[usize],
+    positions_all: numpy::ndarray::ArrayView4<f32>,
+    settings: &Settings,
+    relative_reduction: f32,
+) -> PyResult<Option<(Vec<f32>, f32)>> {
+    // Do lowering via repeated applications of LatinHypercube algorithm
+    let mut bounds = bounds.clone();
+    let mut result = None;
+
+    for n in 0..n_steps {
+        let new_result = lhs_optimization(
+            py,
+            n_points,
+            n,
+            &bounds,
+            &iterations_images,
+            positions_all,
+            settings,
+        )?;
+        // If the newly calculated results are better, we update. Otherwise do nothing.
+        // This will still decrease the overall size
+        if result.is_none() && new_result.is_some() {
+            result = new_result;
+        } else if let (Some((_, c0)), Some((p1, c1))) = (&result, new_result) {
+            if c1 < *c0 {
+                result = Some((p1, c1));
+            }
+        }
+
+        if let Some((params, _)) = &result {
+            let dists = &bounds.column(1) - &bounds.column(0);
+            for i in 0..params.len() {
+                let d = dists[i];
+                let q: f32 = d * relative_reduction / 2.0;
+                let b0 = params[i] - q;
+                let b1 = params[i] + q;
+                bounds[(i, 0)] = bounds[(i, 0)].max(b0);
+                bounds[(i, 1)] = bounds[(i, 1)].min(b1);
+            }
+        } else {
+            break;
+        }
+    }
+
+    Ok(result)
+}
+
 #[pyfunction]
 #[pyo3(signature = (iterations_images, positions_all, settings, n_workers=-1))]
 pub fn run_optimizer(
@@ -197,43 +249,16 @@ res = sp.optimize.differential_evolution(
                 .build_global()
                 .map_err(|e| pyo3::exceptions::PyValueError::new_err(format!("{e}")))?;
 
-            // Do lowering via repeated applications of LatinHypercube algorithm
-            let mut bounds = bounds;
-            let mut result = None;
-            for n_iteration in 0..*n_steps {
-                let new_result = lhs_optimization(
-                    py,
-                    *n_points,
-                    n_iteration,
-                    &bounds,
-                    &iterations_images,
-                    positions_all,
-                    settings,
-                )?;
-                // If the newly calculated results are better, we update. Otherwise do nothing.
-                // This will still decrease the overall size
-                if result.is_none() && new_result.is_some() {
-                    result = new_result;
-                } else if let (Some((_, c0)), Some((p1, c1))) = (&result, new_result) {
-                    if c1 < *c0 {
-                        result = Some((p1, c1));
-                    }
-                }
-
-                if let Some((params, _)) = &result {
-                    let dists = &bounds.column(1) - &bounds.column(0);
-                    for i in 0..params.len() {
-                        let d = dists[i];
-                        let q: f32 = d * relative_reduction / 2.0;
-                        let b0 = params[i] - q;
-                        let b1 = params[i] + q;
-                        bounds[(i, 0)] = bounds[(i, 0)].max(b0);
-                        bounds[(i, 1)] = bounds[(i, 1)].min(b1);
-                    }
-                } else {
-                    break;
-                }
-            }
+            let result = lhs_optimization_iter(
+                py,
+                *n_points,
+                *n_steps,
+                &bounds,
+                &iterations_images,
+                positions_all,
+                settings,
+                *relative_reduction,
+            )?;
 
             if let Some((params, cost)) = result {
                 Ok(OptimizationResult {
@@ -253,85 +278,106 @@ res = sp.optimize.differential_evolution(
                 })
             }
         }
-        OptimizationMethod::NelderMead(nelder_mead) => {
-            let NelderMead { max_iter } = nelder_mead;
-            todo!()
+        OptimizationMethod::LHSNelderMead(nelder_mead) => {
+            let LHSNelderMead {
+                max_iter,
+                latin_hypercube,
+            } = nelder_mead;
+            let result = if let Some(LatinHypercube {
+                n_points,
+                n_steps,
+                relative_reduction,
+            }) = latin_hypercube
+            {
+                lhs_optimization_iter(
+                    py,
+                    *n_points,
+                    *n_steps,
+                    &bounds,
+                    &iterations_images,
+                    positions_all,
+                    settings,
+                    *relative_reduction,
+                )?
+            } else {
+                Some((initial_values.clone(), f32::MAX))
+            };
+
+            let params = if let Some((params, _)) = result {
+                params
+            } else {
+                return Ok(OptimizationResult {
+                    params: initial_values,
+                    cost: f32::MAX,
+                    success: Some(false),
+                    neval: None,
+                    niter: None,
+                });
+            };
+
             // Loal Minimization at end
-            /* if let Some((params, _)) = initial_values {
-                            // Required
-                            let locals = pyo3::types::PyDict::new(py);
-                            locals.set_item("bounds", bounds.to_pyarray(py))?;
-                            locals.set_item("x0", params.into_pyobject(py)?)?;
-                            locals.set_item("positions_all", positions_all.to_pyarray(py))?;
-                            locals.set_item("iterations", iterations_images)?;
-                            locals.set_item("settings", settings.clone().into_pyobject(py)?)?;
-                            locals.set_item("disp", true)?;
-                            locals.set_item("max_iter", n_points)?;
+            // Required
+            let locals = pyo3::types::PyDict::new(py);
+            locals.set_item("bounds", bounds.to_pyarray(py))?;
+            locals.set_item("x0", params.into_pyobject(py)?)?;
+            locals.set_item("positions_all", positions_all.to_pyarray(py))?;
+            locals.set_item("iterations", iterations_images)?;
+            locals.set_item("settings", settings.clone().into_pyobject(py)?)?;
+            locals.set_item("disp", true)?;
 
-                            // Optional
-                            let max_iter = 0;
-                            locals.set_item("max_iter", max_iter)?;
+            // Optional
+            locals.set_item("max_iter", max_iter)?;
 
-                            py.run(
-                                pyo3::ffi::c_str!(
-                                    r#"
-            import scipy as sp
-            from cr_mech_coli.crm_fit import predict_calculate_cost
+            py.run(
+                pyo3::ffi::c_str!(
+                    r#"
+import scipy as sp
+from cr_mech_coli.crm_fit import predict_calculate_cost
 
-            args = (positions_all, iterations, settings)
+args = (positions_all, iterations, settings)
 
-            def callback(intermediate_result):
-                # nit = intermediate_result.nit
-                fun = intermediate_result.fun
-                print(f"Objective Function: {fun}")
+def callback(intermediate_result):
+    # nit = intermediate_result.nit
+    fun = intermediate_result.fun
+    print(f"Objective Function: {fun}")
 
-            print("Starting Nelder-Mead Optimization")
-            res = sp.optimize.minimize(
-                predict_calculate_cost,
-                x0=x0,
-                args=args,
-                bounds=bounds,
-                method="Nelder-Mead",
-                options={
-                    "disp": disp,
-                    "maxiter": max_iter,
-                    "maxfev": max_iter,
-                },
-                callback=callback,
-            )
+print("Starting Nelder-Mead Optimization")
+res = sp.optimize.minimize(
+    predict_calculate_cost,
+    x0=x0,
+    args=args,
+    bounds=bounds,
+    method="Nelder-Mead",
+    options={
+        "disp": disp,
+        "maxiter": max_iter,
+        "maxfev": max_iter,
+    },
+    callback=callback,
+)
             "#
-                                ),
-                                None,
-                                Some(&locals),
-                            )?;
-                            let res = locals.get_item("res")?.unwrap();
-                            let params: Vec<f32> = res.get_item("x")?.extract()?;
-                            let cost: f32 = res.get_item("fun")?.extract()?;
-                            let success: Option<bool> =
-                                res.get_item("success").ok().and_then(|x| x.extract().ok());
-                            let neval: usize = res
-                                .get_item("nfev")
-                                .ok()
-                                .and_then(|x| x.extract().ok())
-                                .unwrap_or(0);
-                            let niter = res.get_item("nit").ok().and_then(|x| x.extract().ok());
+                ),
+                None,
+                Some(&locals),
+            )?;
+            let res = locals.get_item("res")?.unwrap();
+            let params: Vec<f32> = res.get_item("x")?.extract()?;
+            let cost: f32 = res.get_item("fun")?.extract()?;
+            let success: Option<bool> = res.get_item("success").ok().and_then(|x| x.extract().ok());
+            let neval: usize = res
+                .get_item("nfev")
+                .ok()
+                .and_then(|x| x.extract().ok())
+                .unwrap_or(0);
+            let niter = res.get_item("nit").ok().and_then(|x| x.extract().ok());
 
-                            Ok(OptimizationResult {
-                                params,
-                                cost,
-                                success,
-                                neval: Some(*n_points + neval),
-                                niter,
-                            })
-                        } else {
-                            Ok(OptimizationResult {
-                                params: initial_values.clone(),
-                                cost: f32::NAN,
-                                success: Some(false),
-                                neval: Some(*n_points),
-                                niter: None,
-                            })
-                        }*/
+            Ok(OptimizationResult {
+                params,
+                cost,
+                success,
+                neval: Some(neval),
+                niter,
+            })
         }
     }
 }

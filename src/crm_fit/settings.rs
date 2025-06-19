@@ -242,10 +242,13 @@ pub struct LatinHypercube {
 #[pyclass(get_all, set_all, module = "cr_mech_coli.crm_fit")]
 #[derive(Clone, Debug, Serialize, Deserialize, AbsDiffEq, PartialEq)]
 #[approx(epsilon_type = f32)]
-pub struct NelderMead {
+pub struct LHSNelderMead {
     /// Maximum number of iterations
     #[approx(equal)]
     pub max_iter: usize,
+    /// Performs a LatinHypercube sweep before applying the Nelder-Mead method
+    #[serde(rename = "latin_hypercube")]
+    pub latin_hypercube: Option<LatinHypercube>,
 }
 
 /// Other settings which are not related to the outcome of the simulation
@@ -348,8 +351,8 @@ pub enum OptimizationMethod {
     #[serde(rename = "latin_hypercube")]
     LatinHypercube(LatinHypercube),
     /// Uses [egobox_ego] to optimize
-    #[serde(rename = "ego")]
-    NelderMead(NelderMead),
+    #[serde(rename = "lhs_nelder_mead")]
+    LHSNelderMead(LHSNelderMead),
 }
 
 /// Return type of the :meth:`Settings.generate_optimization_infos` method.
