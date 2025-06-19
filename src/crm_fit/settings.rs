@@ -567,7 +567,7 @@ impl Settings {
                                     .map(|i| (
                                         format!("{} {}", $var_name, i),
                                         $units.to_string(),
-                                        format!("{}_{{{}}}", $symbol, i),
+                                        format!("{}", $symbol),
                                     ))
                             );
                             initial_values.extend(vec![initial.clone(); n_agents]);
