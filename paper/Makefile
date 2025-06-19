@@ -8,7 +8,7 @@ all: onimage
 onimage:
 	pdflatex onimage.dtx
 
-clean:
+clean_partial:
 	rm -f $(TARGET).aux
 	rm -f $(TARGET).bbl
 	rm -f $(TARGET).blg
@@ -16,7 +16,6 @@ clean:
 	rm -f $(TARGET).fdb_latexmk
 	rm -f $(TARGET).log
 	rm -f $(TARGET).out
-	rm -f $(TARGET).pdf
 	rm -f $(TARGET).fls
 
 	# Onimage
@@ -30,4 +29,11 @@ clean:
 	rm -f onimage.pdf
 	rm -f onimage.sty
 
+clean: clean_partial
+	rm -f $(TARGET).pdf
+
 fresh: clean all
+
+zip: fresh
+	$(MAKE) clean_partial
+	zip archive.zip -r *
