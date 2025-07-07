@@ -27,7 +27,6 @@ clean_partial:
 	rm -f onimage.log
 	rm -f onimage.out
 	rm -f onimage.pdf
-	rm -f onimage.sty
 
 clean: clean_partial
 	rm -f $(TARGET).pdf
