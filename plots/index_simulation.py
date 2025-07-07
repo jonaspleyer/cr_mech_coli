@@ -1,18 +1,27 @@
 import cr_mech_coli as crm
 
 if __name__ == "__main__":
-    config = crm.Configuration(
-        n_agents=4,
-    )
+    config = crm.Configuration()
     agent_settings = crm.AgentSettings(
         growth_rate=0.078947365,
     )
     config.t0 = 0.0
     config.dt = 0.1
     config.t_max = 100.0
-    config.save_interval = 20.0
+    config.n_saves = 5
+    config.domain_size = (150, 150)
 
-    sim_result = crm.run_simulation(config, agent_settings)
+    positions = crm.generate_positions(
+        n_agents=4,
+        agent_settings=agent_settings,
+        config=config,
+        rng_seed=3,
+        dx=(config.domain_size[0] * 0.1, config.domain_size[1] * 0.1),
+    )
+    agent_dict = agent_settings.to_rod_agent_dict()
+    agents = [crm.RodAgent(p, 0.0 * p, **agent_dict) for p in positions]
+
+    sim_result = crm.run_simulation_with_agents(config, agents)
     render_settings = crm.RenderSettings()
     render_settings.noise = 50
     render_settings.kernel_size = 30
