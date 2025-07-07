@@ -171,24 +171,26 @@ comparable with respect to the extension of the rod~\cite{Chang2014}.
     \tikzstyle{darrow} = [arrow, dashed]
     \begin{tikzpicture}
         \node (model) [rect, align=center] at (0,0) {Mathematical \&\\ Computational Model};
-        \node (extraction) [rect] at (6, 0) {Data Extraction};
+        \node (extraction) [rect] at (0, -2) {Data Extraction};
         \node (params) [rect] at (6, -2) {Parameter Estimation};
-        \node (visualization) [rect] at (0, -2) {Visualization};
+        \node (visualization) [rect] at (6, 0) {Visualization};
 
-        \draw[arrow] (model.east) -- (extraction.west);
-        \draw[darrow] (params.north) -- node[anchor=south, rotate=-10] {validate} (model.south);
-        \draw[arrow] (model.south) -- (visualization.north);
-        \draw[arrow] (visualization.east) -- (params.west);
-        \draw[arrow] (extraction.south) -- (params.north);
+        \draw[arrow] (model) -- (extraction);
+        \draw[darrow] (params) -- node[anchor=south, rotate=-18.43] {validate} (model);
+        \draw[arrow] (model) -- (visualization);
+        \draw[arrow] (visualization) -- (params);
+        \draw[arrow] (extraction) -- (params);
 
         % Future stuff
-        \node (realimages) [frect] at (0, -4) {Data Generation};
-        \node (segmentation) [frect] at (6, -3.5) {Cell Segmentation};
-        \node (tracking) [frect] at (6, -4.5) {Cell Tracking};
+        \node (realimages) [frect] at (12, 0) {Data Generation};
+        \node (segmentation) [frect] at (12, -2) {Cell Segmentation};
+        \node (tracking) [frect] at (12, -3) {Cell Tracking};
+        \node (analysis) [frect] at (0, -4) {Analysis Methods};
 
-        \draw[arrow] (visualization.south) -- (realimages.north);
-        \draw[arrow] (realimages) -- (segmentation.west);
-        \draw[arrow] (realimages) -- (tracking.west);
+        \draw[arrow] (visualization) -- (realimages);
+        \draw[arrow] (realimages) -- (segmentation);
+        \draw[arrow] (extraction) -- (analysis);
+        \draw[arrow] (params) -- (realimages);
     \end{tikzpicture}
     \caption{
         The project can be divided into 4 subparts (yellow) that interact with and depend on each
