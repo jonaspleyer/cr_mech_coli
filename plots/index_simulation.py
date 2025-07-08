@@ -8,7 +8,7 @@ if __name__ == "__main__":
     config.t0 = 0.0
     config.dt = 0.1
     config.t_max = 100.0
-    config.n_saves = 5
+    config.n_saves = 4
     config.domain_size = (150, 150)
 
     positions = crm.generate_positions(

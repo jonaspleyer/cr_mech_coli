@@ -1,0 +1,26 @@
+{
+  "n_threads": 1,
+  "t0": 0.0,
+  "dt": 0.1,
+  "t_max": 100.0,
+  "n_saves": 4,
+  "show_progressbar": false,
+  "domain_size": [
+    150.0,
+    150.0
+  ],
+  "domain_height": 2.5,
+  "n_voxels": [
+    1,
+    1
+  ],
+  "rng_seed": 0,
+  "gel_pressure": 0.0,
+  "surface_friction": 0.0,
+  "surface_friction_distance": 1.0,
+  "storage_options": [
+    "Memory"
+  ],
+  "storage_location": "out",
+  "storage_suffix": null
+}
