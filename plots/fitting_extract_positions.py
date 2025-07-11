@@ -7,16 +7,7 @@ import matplotlib as mpl
 from tqdm import tqdm
 import argparse
 import time
-
-mpl.use("pgf")
-plt.rcParams.update(
-    {
-        "font.family": "serif",  # use serif/main font for text elements
-        "text.usetex": True,  # use inline math for ticks
-        "pgf.rcfonts": False,  # don't setup fonts from rc parameters
-        "pgf.preamble": "\\usepackage{siunitx}",  # load additional packages
-    }
-)
+import scipy as sp
 
 
 def calculate_lengths_distances(
@@ -76,7 +67,11 @@ def create_simulation_result(n_vertices: int, rng_seed: int = 3):
         domain_size=np.array([150, 150]),
     )
     config.storage_options = [crm.StorageOption.Memory]
-    agent_settings = crm.AgentSettings(growth_rate=0.05, growth_rate_distr=(0.05, 0.01))
+    config.show_progressbar = True
+    agent_settings = crm.AgentSettings(
+        growth_rate=0.012,
+        growth_rate_distr=(0.012, 0.000),
+    )
     agent_settings.mechanics.rigidity = 8.0
     config.domain_height = 0.2
 
@@ -188,6 +183,7 @@ if __name__ == "__main__":
     ]
 
     if not pyargs.skip_graph or not pyargs.skip_distribution:
+        crm.plotting.set_mpl_rc_params()
         if pyargs.workers < 0:
             import multiprocessing as mp
 
@@ -208,54 +204,86 @@ if __name__ == "__main__":
         exit()
 
     if not pyargs.skip_distribution:
-        fig, ax = plt.subplots()
+        fig, ax = plt.subplots(figsize=(8, 8))
+        crm.plotting.configure_ax(ax)
 
-        t = 0.7
         q = len(distances_vertices)
-        colors = [(t * i / q, t * i / q, t * i / q) for i in range(q)]
-        ax.set_title("Distribution of distances between individual vertices")
+        c1 = np.array(mpl.colors.to_rgba(crm.plotting.COLOR3))
+        c2 = np.array(mpl.colors.to_rgba(crm.plotting.COLOR1))
+        colors = [c2 * i / q + (1 - i / q) * c1 for i in range(q)]
+        # ax.set_title("Distribution of distances between individual vertices")
         n_bins = 50
         logbins = np.logspace(
             np.log10(np.min([np.min(d) for d in distances_vertices])),
             np.log10(np.max([np.max(d) for d in distances_vertices])),
             n_bins + 1,
         )
-        ax.hist(
+        values, bins, _ = ax.hist(
             distances_vertices,
             logbins,
             stacked=True,
             color=colors,
-            label="Distance between vertices",
+            label="Vertex Diff",
         )
+
+        # Fit exponential decay
+        # def fit_func(t, a, b, t0):
+        #     z1 = a * np.exp(-b * (t - t0) ** 2)
+        #     z2 = a * np.exp(-b * (t + t0) ** 2)
+        #     return z1 + z2
+        #
+        # y_fit = np.max(values, axis=0)
+        # x_fit = 0.5 * (np.array(bins)[1:] + np.array(bins)[:-1])
+        # popt, pcov = sp.optimize.curve_fit(
+        #     fit_func,
+        #     x_fit,
+        #     y_fit,
+        #     p0=(np.max(y_fit), 100, np.mean(x_fit)),
+        #     bounds=(0, np.inf),
+        # )
+        # ax.plot(
+        #     x_fit, fit_func(x_fit, *popt), c=crm.plotting.COLOR5, label="Log-normal Fit"
+        # )
+        # ymax = np.max(values)
+        # ax.set_ylim(1, 2 * ymax)
+
         ax.set_xscale("log")
         ax.set_yscale("log")
-        ax.set_xlabel("Distance [$\\SI{}{\\micro\\metre}$]")
+        ax.set_xlabel("Distance [µm]")
         ax.set_ylabel("Count")
-        ax.legend()
+        ax.legend(
+            loc="upper center",
+            bbox_to_anchor=(0.5, 1.10),
+            ncol=3,
+            frameon=False,
+        )
+
         fig.savefig("docs/source/_static/fitting-methods/displacement-distribution.png")
+        fig.savefig("docs/source/_static/fitting-methods/displacement-distribution.pdf")
         plt.close(fig)
 
     if not pyargs.skip_graph:
-        fig, ax1 = plt.subplots()
+        fig, ax = plt.subplots(figsize=(8, 8))
+        crm.plotting.configure_ax(ax)
 
         x = np.arange(len(distances)) * config.t_max / (config.n_saves + 1)
-        ax1.plot(
+        ax.plot(
             x,
             [np.mean(li) for li in lengths_extracted],
             # yerr=[np.std(li) for li in lengths1],
             linestyle="--",
-            color="k",
-            label="Avg. Rod Length (Extracted)",
+            color=crm.plotting.COLOR3,
+            label="Extracted",
         )
-        ax1.plot(
+        ax.plot(
             x,
             [np.mean(li) for li in lengths_exact],
             # yerr=[np.std(li) for li in lengths2],
             linestyle=":",
-            color="k",
-            label="Avg. Rod Length (Exact)",
+            color=crm.plotting.COLOR5,
+            label="Exact",
         )
-        ax1.fill_between(
+        ax.fill_between(
             x,
             y1=[
                 np.mean(lengths_extracted[i]) - np.mean(distances[i])
@@ -266,12 +294,18 @@ if __name__ == "__main__":
                 for i in range(len(lengths_extracted))
             ],
             alpha=0.3,
-            color="gray",
-            label="Avg. Vertex Distance",
+            color=crm.plotting.COLOR5,
+            label="Vertex Diff",
         )
-        ax1.legend()
-        ax1.set_ylabel("Length [µm]")
-        ax1.set_xlabel("Time [min]")
-        ax1.set_title("Evaluation of Position Extraction Algorithm")
+        ax.legend(
+            loc="upper center",
+            bbox_to_anchor=(0.5, 1.10),
+            ncol=3,
+            frameon=False,
+        )
+        ax.set_ylabel("Rod Length [µm]")
+        ax.set_xlabel("Time [min]")
+        # ax.set_title("Evaluation of Position Extraction Algorithm")
         fig.savefig("docs/source/_static/fitting-methods/displacement-calculations.png")
+        fig.savefig("docs/source/_static/fitting-methods/displacement-calculations.pdf")
         plt.close(fig)

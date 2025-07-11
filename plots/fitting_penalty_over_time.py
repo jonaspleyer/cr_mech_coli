@@ -10,16 +10,6 @@ import argparse
 from fitting_extract_positions import create_simulation_result
 
 
-plt.rcParams.update(
-    {
-        "font.family": "serif",  # use serif/main font for text elements
-        "text.usetex": True,  # use inline math for ticks
-        "pgf.rcfonts": False,  # don't setup fonts from rc parameters
-        "pgf.preamble": "\\usepackage{siunitx}",  # load additional packages
-    }
-)
-
-
 def render_single_mask(n_iter: int, cell_container, domain_size, render_settings):
     cell_container = crm.CellContainer.deserialize(cell_container)
     cells_at_iter = cell_container.get_cells_at_iteration(n_iter)
@@ -43,14 +33,15 @@ if __name__ == "__main__":
     interval = time.time()
     pool = mp.Pool()
 
-    rs = crm.RenderSettings(resolution=800)
+    rs = crm.RenderSettings()
     args = [(i, cell_container.serialize(), config.domain_size, rs) for i in iterations]
     masks = pool.starmap(render_single_mask, args)
     print(f"{time.time() - interval:8.4} Calculated Masks:")
     interval = time.time()
 
+    save_interval = config.t_max / (config.n_saves + 1)
     penalties_area_diff = [
-        crm.penalty_area_diff(masks[i - 1], masks[i]) / config.save_interval
+        crm.penalty_area_diff(masks[i - 1], masks[i]) / save_interval
         for i in range(1, len(iterations))
     ]
     print(f"{time.time() - interval:8.4} Calculated Penalties without parents:")
@@ -58,14 +49,14 @@ if __name__ == "__main__":
 
     penalties_parents = [
         crm.penalty_area_diff_account_parents(masks[i - 1], masks[i], cell_container, 0)
-        / config.save_interval
+        / save_interval
         for i in range(1, len(iterations))
     ]
     print(f"{time.time() - interval:8.4} Calculated Penalties with parents:")
     interval = time.time()
 
     n_cells = [len(cell_container.get_cells_at_iteration(i)) for i in iterations]
-    x = np.array([i * config.save_interval for i in range(len(iterations))])
+    x = np.array([i * save_interval for i in range(len(iterations))])
 
     # Fit exponential function to penalties with parents
     def exponential(x, A, growth):
@@ -78,7 +69,9 @@ if __name__ == "__main__":
         p0=(0.1, np.log(penalties_parents[-1] / penalties_parents[0]) / (x[-1] - x[0])),
     )
 
-    fig, ax1 = plt.subplots()
+    crm.plotting.set_mpl_rc_params()
+    fig, ax1 = plt.subplots(figsize=(8, 8))
+    crm.plotting.configure_ax(ax1)
     ax1.plot(
         x[1:],
         penalties_area_diff,
@@ -100,18 +93,31 @@ if __name__ == "__main__":
         label="Fit $A e^{{\\lambda t}}$",
         color=(0.85, 0.85, 0.85),
     )
-    ax1.legend(loc="upper left")
     ax1.set_xlabel("Time [min]")
     ax1.set_ylabel("Penalty [1/min]")
     ax2 = ax1.twinx()
     ax2.plot(x, n_cells, label="Number of Cells", linestyle=(0, (1, 1)), color="k")
-    ax2.legend(loc="upper right")
     ax2.set_ylabel("Number of Cells")
     ax2.set_ylim(1, 100)
     ax1.set_yscale("log")
     ax2.set_yscale("log")
     fig.tight_layout()
+
+    handles1, labels1 = ax1.get_legend_handles_labels()
+    handles2, labels2 = ax1.get_legend_handles_labels()
+    handles = handles1 + handles2
+    labels = labels1 + labels2
+    ax1.legend(
+        handles,
+        labels,
+        loc="upper center",
+        bbox_to_anchor=(0.5, 1.18),
+        ncol=4,
+        frameon=False,
+    )
+
     path = Path("docs/source/_static/fitting-methods/")
     path.mkdir(parents=True, exist_ok=True)
     fig.savefig(str(path / "penalty-time-flow.png"))
+    fig.savefig(str(path / "penalty-time-flow.pdf"))
     print(f"{time.time() - interval:8.4} Plotted Results")
