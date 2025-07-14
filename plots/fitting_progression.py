@@ -13,7 +13,7 @@ if __name__ == "__main__":
     i1 = iterations[25]
     i2 = iterations[35]
 
-    rs = crm.RenderSettings(resolution=800)
+    rs = crm.RenderSettings()
     mask1 = crm.render_mask(all_cells[i1], colors, config.domain_size, rs)
     mask2 = crm.render_mask(all_cells[i2], colors, config.domain_size, rs)
     mask3 = crm.area_diff_mask(mask1, mask2)
