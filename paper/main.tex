@@ -333,23 +333,23 @@ the desired number of vertices $\vec{v}_i$.
 
 \begin{figure}
     \centering
-    \begin{tikzonimage}[width=0.32\textwidth]
+    \begin{tikzonimage}[width=0.36\textwidth]
         {docs/source/_static/fitting-methods/algorithm/image001042.png}
         \node at (0.025, 0.975)[anchor=north west, rectangle, draw, white, minimum width=15pt, minimum height=15pt]{\textbf{A}};
     \end{tikzonimage}
-    \begin{tikzonimage}[width=0.32\textwidth]
+    \begin{tikzonimage}[width=0.36\textwidth]
         {docs/source/_static/fitting-methods/algorithm/mask-zoom.png}
         \node at (0.025, 0.975)[anchor=north west, rectangle, draw, white, minimum width=15pt, minimum height=15pt]{\textbf{B}};
     \end{tikzonimage}
-    \begin{tikzonimage}[width=0.32\textwidth]
-        {docs/source/_static/fitting-methods/algorithm/mask-zoom.png}
+    \begin{tikzonimage}[width=0.255\textwidth]
+        {docs/source/_static/fitting-methods/algorithm/interpolate-positions.png}
         \node at (0.025, 0.975)[anchor=north west, rectangle, draw, white, minimum width=15pt, minimum height=15pt]{\textbf{C}};
     \end{tikzonimage}
     \caption{
         TODO change 2nd image!\\
         (A) An example of a microscopic image.
-        (B) The associated mask which assigns individual color values to each bacterium.
-        (C) The result of the  skeletonization algorithm when applying it to a single cell.
+        (B) The result of the  skeletonization algorithm when applying it to a single cell.
+        (C) Extrapolated vertices $\vec{v}_i$ which represent the position of our cell-agents.
     }
     \label{fig:position-extraction-algorithm}
 \end{figure}
