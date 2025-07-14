@@ -64,13 +64,13 @@ def create_simulation_result(n_vertices: int, rng_seed: int = 3):
         dt=0.02,
         t_max=200.0,
         n_saves=49,
-        domain_size=np.array([150, 150]),
+        domain_size=np.array([200, 200]),
     )
     config.storage_options = [crm.StorageOption.Memory]
     config.show_progressbar = True
     agent_settings = crm.AgentSettings(
         growth_rate=0.012,
-        growth_rate_distr=(0.012, 0.000),
+        growth_rate_distr=(0.012, 0.002),
     )
     agent_settings.mechanics.rigidity = 8.0
     config.domain_height = 0.2
@@ -86,6 +86,9 @@ def create_simulation_result(n_vertices: int, rng_seed: int = 3):
     )
     rod_args = agent_settings.to_rod_agent_dict()
     agents = [crm.RodAgent(pos=p, vel=p * 0.0, **rod_args) for p in positions]
+    rng = np.random.default_rng(rng_seed)
+    for a in agents:
+        a.growth_rate += 0.002 * rng.random(1)
     res = crm.run_simulation_with_agents(config, agents)
     print(f"{time.time() - interval:8.4} Created Simulation Result:")
     return config, res
