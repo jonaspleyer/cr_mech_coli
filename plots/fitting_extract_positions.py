@@ -179,10 +179,13 @@ if __name__ == "__main__":
             )
 
     ccs = cell_container.serialize()
-    arglist = [
-        (n, ccs, config.domain_size, pyargs.skel_method, pyargs.n_vertices)
-        for n in iterations
-    ]
+    arglist = tqdm(
+        [
+            (n, ccs, config.domain_size, pyargs.skel_method, pyargs.n_vertices)
+            for n in iterations
+        ],
+        total=len(iterations),
+    )
 
     if not pyargs.skip_graph or not pyargs.skip_distribution:
         crm.plotting.set_mpl_rc_params()
