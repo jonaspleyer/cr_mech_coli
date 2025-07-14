@@ -228,7 +228,44 @@ comparable with respect to the extension of the rod~\cite{Chang2014}.
 % Use some parts of the proposal text
 
 %###################################################################################################
-\section{Modeling Prerequesites}
+\section{Fundamental Assumptions on the Spatial Representation of Rod-Shaped Bacteria}
+% TODO CITATIONS
+This work makes use of a few but powerfull assumptions concerning the mathematical representation of
+the cells in question.
+In order to describe the spatial dynamics of individual agents, we need to define their position,
+shape and how they interact with each other.
+In order to provide as much flexibility as possible when constructing new models, we restrict
+ourselves to assumptions concerning the position such that researchers can freely experiment with
+various shapes and interaction types.
+Furthermore, it is very important to strike a good balance between the restrictiveness of our
+assumptions and generality in order to provide meaningful results and still be able to apply our
+approach to a broader class of models.
+Taking into account the natural shape of rod-like bacteria, it is clear that they can not be
+represented with a singular point $\vec{v}$ in space.
+We could extend this positional definition with a vector $\vec{w}$, indicating the direction of
+extension but this would restrict ourselves to fully straight rod-shaped bacteria.
+However, multiple experiments have shown that MReB is responsible for the growth and maintenance of
+the elongated shape of bacteria~\cite{Erickson2001}.
+By means of this protein, rod-shaped bacteria can bend elastically on short time-scales and
+deform plastically over longer periods of time.
+Our goal is to provide a model which can encapsulate these effects.
+Thus, we extend our model from a single point to multiple vertices which are part of a 1-dimensional
+polygon with two endpoints $\vec{v}_i$.
+In essence, we discretize the (possibly non-straight) rod of the agent.
+Figure~\ref{fig:mechanics-bacterium} shows a visualization of this approach.
+The angles $\alpha_i$ between vertices $\vec{v}_{i-1},\vec{v}_i$ can be used when modeling the
+dynamics of these bacteria.
+
+With these fundamental thoughts layed out, we retain the flexibility to represent many models such
+as varying shapes since we do not have to make any assumptions on the type of interactions between
+two bacteria.
+Even concerning the shape of bacteria, this assumption still allows us to mdoel elliptical cells by
+modifying the interaction type as well as other effects such as polarity of
+interactions~\cite{Duvernoy2018}.
+Furthermore, we also did not have to assume any particular mechanical dynamics of the agents, only
+their spatial representation, thus leaving in particular room for plastical or elastic deformations
+of the rod and other more intricate mechanisms.
+
 \begin{enumerate}
     \item represent bacteria as polygon with vertices $\vec{v}_i$
     \item Assumes that these vertices are not fundamental but rather a discretization of the actual
