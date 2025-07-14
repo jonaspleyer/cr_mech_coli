@@ -231,7 +231,8 @@ comparable with respect to the extension of the rod~\cite{Chang2014}.
 % Use some parts of the proposal text
 
 %###################################################################################################
-\section{Fundamental Assumptions on the Spatial Representation of Rod-Shaped Bacteria}
+\section{Method Description}
+\subsection{Fundamental Assumptions on the Spatial Representation of Rod-Shaped Bacteria}
 % TODO CITATIONS
 This work makes use of a few but powerfull assumptions concerning the mathematical representation of
 the cells in question.
@@ -289,7 +290,7 @@ of the rod and other more intricate mechanisms.
 \end{figure}
 
 %###################################################################################################
-\section{Data Extraction}
+\subsection{Data Extraction}
 \label{section:fitting-and-comparing-masks}
 
 This section will explain how we can determine the collection of vertices $\vec{v}_i$ introduced in
@@ -424,7 +425,7 @@ is not dominated by outliers.
 
 
 %###################################################################################################
-\section{Visualization}
+\subsection{Visualization}
 \label{section:generating-masks-and-images}
 \begin{itemize}
     \item use pyvista (VTK) for Visualization
@@ -483,7 +484,7 @@ is not dominated by outliers.
 \end{figure}
 
 %###################################################################################################
-\section{Parameter Estimation}
+\subsection{Parameter Estimation}
 In order to effectively estimate the parameters of our model, we need to set up a cost function
 which can be minimized.
 In doing so, we hope to identify all parameters, given relevant experimental data.
@@ -494,7 +495,7 @@ annottating images.
 Following this, we can define a cost-function and an optimization scheme to minimize said function.
 
 % --------------------------------------------------------------------------------------------------
-\subsection{Challenges of Constructing a Loss Function}
+\subsubsection{Challenges of Constructing a Loss Function}
 
 As within any optimization scheme, it can be beneficial to construct custom cost functions
 which are tailored to the problem at hand.
@@ -508,12 +509,12 @@ In the case where we either the numerical model or the experimental data contain
 than the other result, we are not able to compare them with this approach.
 
 % --------------------------------------------------------------------------------------------------
-\subsection{Comparison with Semantic Segmentation}
+\subsubsection{Relationship to Semantic Segmentation}
 \label{paragraph:comparison-semantic-segmentation}
 \cite{Jadon2020}
 
 % --------------------------------------------------------------------------------------------------
-\subsection{Comparison across Generations}
+\subsubsection{Comparison across Generations}
 \label{paragraph:comparison-across-generations}
 
 In order to compare a variable amount of cells, we can not utilize the positions of these cells
