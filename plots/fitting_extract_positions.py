@@ -253,19 +253,19 @@ if __name__ == "__main__":
         x = np.arange(len(distances)) * config.t_max / (config.n_saves + 1)
         ax.plot(
             x,
-            [np.mean(li) for li in lengths_extracted],
-            # yerr=[np.std(li) for li in lengths1],
-            linestyle="--",
-            color=crm.plotting.COLOR3,
-            label="Extracted",
+            [np.mean(li) for li in lengths_exact],
+            # yerr=[np.std(li) for li in lengths2],
+            linestyle="-",
+            color=crm.plotting.COLOR5,
+            label="Exact",
         )
         ax.plot(
             x,
-            [np.mean(li) for li in lengths_exact],
-            # yerr=[np.std(li) for li in lengths2],
+            [np.mean(li) for li in lengths_extracted],
+            # yerr=[np.std(li) for li in lengths1],
             linestyle=":",
-            color=crm.plotting.COLOR5,
-            label="Exact",
+            color=crm.plotting.COLOR3,
+            label="Extracted",
         )
         ax.fill_between(
             x,
@@ -278,8 +278,7 @@ if __name__ == "__main__":
                 for i in range(len(lengths_extracted))
             ],
             alpha=0.3,
-            color=crm.plotting.COLOR5,
-            label="Vertex Diff",
+            color=crm.plotting.COLOR1,
         )
         ax.legend(
             loc="upper center",

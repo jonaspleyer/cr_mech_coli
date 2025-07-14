@@ -76,35 +76,39 @@ if __name__ == "__main__":
         x[1:],
         penalties_area_diff,
         label="Area Difference",
-        linestyle=(0, (6, 4)),
-        color="gray",
+        color=crm.plotting.COLOR3,
     )
     ax1.plot(
         x[1:],
         penalties_parents,
-        label="Account for Parents",
-        linestyle="-",
-        color="k",
+        label="with Parents",
+        linestyle="--",
+        color=crm.plotting.COLOR2,
+    )
+    ax1.plot(
+        x[1:],
+        exponential(x[1:], *popt),
+        color=crm.plotting.COLOR1,
+        label="ER",
     )
     ax1.fill_between(
         x[1:],
         exponential(x[1:], *[popt[i] - pcov[i][i] ** 0.5 for i in range(len(popt))]),
         exponential(x[1:], *[popt[i] + pcov[i][i] ** 0.5 for i in range(len(popt))]),
-        label="Fit $A e^{{\\lambda t}}$",
-        color=(0.85, 0.85, 0.85),
+        color=crm.plotting.COLOR1,
+        alpha=0.6,
     )
     ax1.set_xlabel("Time [min]")
     ax1.set_ylabel("Penalty [1/min]")
     ax2 = ax1.twinx()
-    ax2.plot(x, n_cells, label="Number of Cells", linestyle=(0, (1, 1)), color="k")
+    ax2.plot(x, n_cells, label="Cells", linestyle=(0, (1, 1)), color="k")
     ax2.set_ylabel("Number of Cells")
     ax2.set_ylim(1, 100)
     ax1.set_yscale("log")
     ax2.set_yscale("log")
-    fig.tight_layout()
 
     handles1, labels1 = ax1.get_legend_handles_labels()
-    handles2, labels2 = ax1.get_legend_handles_labels()
+    handles2, labels2 = ax2.get_legend_handles_labels()
     handles = handles1 + handles2
     labels = labels1 + labels2
     ax1.legend(
@@ -112,7 +116,7 @@ if __name__ == "__main__":
         labels,
         loc="upper center",
         bbox_to_anchor=(0.5, 1.18),
-        ncol=4,
+        ncol=2,
         frameon=False,
     )
 
