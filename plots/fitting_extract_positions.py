@@ -7,7 +7,6 @@ import matplotlib as mpl
 from tqdm import tqdm
 import argparse
 import time
-import scipy as sp
 
 
 def calculate_lengths_distances(
@@ -228,27 +227,6 @@ if __name__ == "__main__":
             color=colors,
             label="Vertex Diff",
         )
-
-        # Fit exponential decay
-        # def fit_func(t, a, b, t0):
-        #     z1 = a * np.exp(-b * (t - t0) ** 2)
-        #     z2 = a * np.exp(-b * (t + t0) ** 2)
-        #     return z1 + z2
-        #
-        # y_fit = np.max(values, axis=0)
-        # x_fit = 0.5 * (np.array(bins)[1:] + np.array(bins)[:-1])
-        # popt, pcov = sp.optimize.curve_fit(
-        #     fit_func,
-        #     x_fit,
-        #     y_fit,
-        #     p0=(np.max(y_fit), 100, np.mean(x_fit)),
-        #     bounds=(0, np.inf),
-        # )
-        # ax.plot(
-        #     x_fit, fit_func(x_fit, *popt), c=crm.plotting.COLOR5, label="Log-normal Fit"
-        # )
-        # ymax = np.max(values)
-        # ax.set_ylim(1, 2 * ymax)
 
         ax.set_xscale("log")
         ax.set_yscale("log")
