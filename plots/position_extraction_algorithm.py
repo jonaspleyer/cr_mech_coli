@@ -10,7 +10,7 @@ def get_skeleton(submask, color):
 
 
 if __name__ == "__main__":
-    mask = np.loadtxt("data/crm_fit/0001/masks/image001042-markers.csv", delimiter=",")
+    mask = np.loadtxt("data/crm_fit/0001/masks/001042-markers.csv", delimiter=",")
 
     # Create new colors for mask
     new_colors = {int(i): crm.counter_to_color(int(i)) for i in np.unique(mask)}
@@ -98,7 +98,11 @@ if __name__ == "__main__":
     ax.set_axis_off()
     ax.imshow(submask)
     for p in pos:
-        ax.plot(p[:, 0] - xmin, p[:, 1] - ymin, color="white")
+        p1 = p[:, 0] - xmin - dx / 2
+        p2 = p[:, 1] - ymin - dy / 2
+        q1 = -(-p1 + p2) * (-1) + p1
+        q2 = -(-p1 + p2) * (+1) + p2
+        ax.plot(q1 + dx / 2, q2 + dy / 2, color="white", marker="+", markersize=15)
     fig.savefig(
         "docs/source/_static/fitting-methods/algorithm/interpolate-positions.png",
         bbox_inches="tight",
