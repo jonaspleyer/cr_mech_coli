@@ -19,10 +19,13 @@ def test_color_counter_conversion():
                 assert color == color_new
 
 
-def est_assign_colors():
+def test_assign_colors():
     config = crm.Configuration()
     agent_settings = crm.AgentSettings()
-    sim_result = crm.run_simulation(config, agent_settings)
+    positions = crm.generate_positions(8, agent_settings, config)
+    rod_args = agent_settings.to_rod_agent_dict()
+    agents = [crm.RodAgent(pos=p, vel=p * 0.0, **rod_args) for p in positions]
+    sim_result = crm.run_simulation_with_agents(config, agents)
 
     cell_to_color = sim_result.cell_to_color
     iterations = sim_result.get_all_iterations()
@@ -39,9 +42,9 @@ def est_assign_colors():
                 color = (color[0], color[1], color[2])
                 if color not in all_colors:
                     all_colors.add(color)
-                    counter = crm.color_to_counter(list(color))
+                    counter = crm.color_to_counter(color)
                     all_counters.add(counter)
-    for i, cell in enumerate(cells):
-        color_expected = tuple(crm.counter_to_color(i + 1))
+    for i, cell in enumerate(cells, np.min(np.array([a for a in all_counters]))):
+        color_expected = tuple(crm.counter_to_color(i))
         assert color_expected in all_colors
         cell_to_color[cell]
