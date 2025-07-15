@@ -585,7 +585,13 @@ which would be assigned or set it to zero.
         By assigning penalties to all highlighted pixels, we would not take into consideration the
         parental relationship.
         This approach is displayed in (D) where pixels of cells that are related have been colored
-        in gray.
+        in gray.\\
+        Total cost between successive iteration steps $t_n,t_{n+1}$.
+        The overall shape is expected to have the slope of an exponential function.
+        We can clearly see that division events introduce jumps within this relationship.
+        In the case where we account for the parental relationship, these jumps are mitigated.
+        The penalty was set to $0$ for pixel-comparisons which belong to cells that are in a
+        parental relationship.
     }
     \label{fig:mask-difference-metric}
 \end{figure}
@@ -596,7 +602,7 @@ We expect to obtain an exponential growth in the penalty.
 This can be explained by to the fact that the growth of the total area is exponential in time.
 Furthremore, the temporal area difference can be viewed as a derivative but the derivative of an
 exponential is again an exponential.
-Figure~\ref{fig:parameter-estimates-single-step} shows the total penalty for this approach.
+Figure~\ref{fig:mask-difference-metric} shows the total penalty for this approach.
 We can see that by accounting for the parental relationship, we get the overall desired effect.
 This method allows us to compare results between states that have a different number of cells
 inside as long as their origin stems from the a shared initial state.
@@ -604,21 +610,6 @@ However, since this algorithm requires us to calculate a cell-mask for each comp
 process this mask as well as the comparator, it is much more computationally demanding.
 In cases where the simpler approach of comparing positions of the agents is reasonable, this method
 should be preferred.
-
-\begin{figure}
-    \centering
-    \includegraphics[width=0.5\textwidth]
-        {docs/source/_static/fitting-methods/penalty-time-flow.png}%
-    \caption{
-        Total cost between successive iteration steps $t_n,t_{n+1}$.
-        The overall shape is expected to have the slope of an exponential function.
-        We can clearly see that division events introduce jumps within this relationship.
-        In the case where we account for the parental relationship, these jumps are mitigated.
-        The penalty was set to $0$ for pixel-comparisons which belong to cells that are in a
-        parental relationship.
-    }
-    \label{fig:penalty-calculation-cell-division}
-\end{figure}
 
 % --------------------------------------------------------------------------------------------------
 \section{Application to Mechanics of Rod-Shaped Bacteria}
