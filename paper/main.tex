@@ -256,7 +256,6 @@ What has been done so far?
         minimum width=4cm,
         minimum height=1cm,
         text centered,
-        draw=black,
         fill=color4!70,
     ]
     \tikzstyle{brect} = [rect, fill=color5!50]
@@ -315,7 +314,8 @@ What has been done so far?
 % Use some parts of the proposal text
 
 %###################################################################################################
-\section{Method Description}
+\section{Methodology}
+% --------------------------------------------------------------------------------------------------
 \subsection{Fundamental Assumptions on the Spatial Representation of Rod-Shaped Bacteria}
 % TODO CITATIONS
 This work makes use of a few but powerfull assumptions concerning the mathematical representation of
@@ -373,7 +373,7 @@ of the rod and other more intricate mechanisms.
     \label{fig:mechanics-bacterium}
 \end{figure}
 
-%###################################################################################################
+% --------------------------------------------------------------------------------------------------
 \subsection{Data Extraction}
 \label{section:fitting-and-comparing-masks}
 
@@ -568,7 +568,7 @@ is not dominated by outliers.
     \label{fig:progression-image-generation}
 \end{figure}
 
-%###################################################################################################
+% --------------------------------------------------------------------------------------------------
 \subsection{Parameter Estimation}
 In order to effectively estimate the parameters of our model, we need to set up a cost function
 which can be minimized.
@@ -692,8 +692,8 @@ process this mask as well as the comparator, it is much more computationally dem
 In cases where the simpler approach of comparing positions of the agents is reasonable, this method
 should be preferred.
 
-% --------------------------------------------------------------------------------------------------
-\section{Application to Mechanics of Rod-Shaped Bacteria}
+%###################################################################################################
+\section{A Mechanical Model for Rod-Shaped Bacteria}
 \label{subsubsection:mechanical-model-rod-shaped-bacteria}
 
 %###################################################################################################
