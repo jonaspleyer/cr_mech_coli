@@ -97,12 +97,25 @@ if __name__ == "__main__":
     ax.set_ylim((submask.shape[0], 0))
     ax.set_axis_off()
     ax.imshow(submask)
+
+    colors = list(
+        filter(
+            lambda x: np.all(x != [0, 0, 0]),
+            np.unique(submask.reshape((-1, 3)), axis=0),
+        )
+    )
+    c1 = colors[0]
+    c2 = colors[1]
+    skeleton1 = get_skeleton(mask, c1)
+    skeleton2 = get_skeleton(mask, c2)
     for p in pos:
         p1 = p[:, 0] - xmin - dx / 2
         p2 = p[:, 1] - ymin - dy / 2
         q1 = -(-p1 + p2) * (-1) + p1
         q2 = -(-p1 + p2) * (+1) + p2
         ax.plot(q1 + dx / 2, q2 + dy / 2, color="white", marker="+", markersize=15)
+
+    fig.tight_layout()
     fig.savefig(
         "docs/source/_static/fitting-methods/algorithm/interpolate-positions.png",
         bbox_inches="tight",
