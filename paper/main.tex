@@ -137,8 +137,85 @@ Species such as E.coli and B.subtilis~\cite{Errington2020} fall under the first 
 S.pombe represents the latter.
 New material is inserted in small bursts on the nanoscale in forms of patches, bands or
 hoops~\cite{DePedro2003}.
-Despite their differences in wall-size, B.subtilis and E.coli follow growth rules which are
-comparable with respect to the extension of the rod~\cite{Chang2014}.
+Despite their differences in wall-size, \textit{B.subtilis} and \textit{E.coli} follow growth rules
+which are comparable with respect to the extension of the rod~\cite{Chang2014}.
+
+\paragraph{Experimental studies of mechanical properties}
+\textbf{Study of Individual Bacteria}
+\begin{itemize}
+    \item \cite{Robert2014} growth of individual rods, distribution of parameters
+    \item \cite{Koutsoumanis2013} inheritance of growth rates, growth parameter distributions
+    \item \cite{Ursell2014} MreB acts againts curvature during growth of cell
+    \item \cite{Takeuchi2005} cells in microchambers leads to plastic deformations
+    \item \cite{Amir2014} bending stiffness, plastic + elastic deformations
+\end{itemize}
+\textbf{Collective Effects \& Self-Organization}
+\begin{itemize}
+    \item \cite{Trejo2013} mechanical response of bacterial colony
+    \item \cite{Duvernoy2018} bacterial colonies form multilayers, interactions are polar
+    \item \cite{vanGestel2015} van Gogh bundles form from interplay of 2 cell-types
+\end{itemize}
+
+% --------------------------------------------------------------------------------------------------
+\subsection{Numerical Models of Rod-Shaped Bacteria}
+\textbf{Requirements}
+\begin{itemize}
+    \item capture bendiness; do not assume rigid bodies
+    \item model in 2D and 3D possible
+    \item individual-based model; model single cells
+    \item collective phenomena; describe many interacting cells, not just a single one
+\end{itemize}
+
+\textbf{Computational Modeling Frameworks}
+What has been done so far?
+\begin{itemize}
+    \item In general: not many frameworks which support some form of rod-shaped bacteria
+    \item \cite{Kang2014} Biocellion has support for cylindrically-shaped agents; no
+        bendiness/rigidity or polar interactions
+    \item \cite{Matyjaszkiewicz2017} BSim2.0 represents cells as rigid capsular cells made from a
+        cylindrical center part and two half-spheres, which are placed at the ends of the cylinder
+        to round out the shape. In order to calculate interactions between cells, possible overlaps
+        are determined and minimized, thus determining the position values of the next iteration
+        step.
+        BSim does not consider bending forces for individual cells or polar interactions.
+    \item \cite{Gutirrez2017} The gro programming language was designed to simulate the growth of
+        colonies and cell-cell communication. Its “physics computation has been optimized for rigid
+        rod-shaped bodies, like E. coli bacteria” (Gutiérrez et al. 2017). They recognize two types
+        of forces which are acting on the cellular agents: Local forces which are calculated between
+        adjacent bacteria and a global force which pushes bacteria outwards of the colony. The
+        latter of these is a phenomenological implementation of the observed colony expansion and
+        the associated central pressure with it. This assumption may yield incorrect results for
+        sparsely populated cases.
+        The engine is limited to 2D and does not consider polar interactions or bending of the rods.
+\end{itemize}
+
+% --------------------------------------------------------------------------------------------------
+\subsection{Purpose-built Models}
+\begin{itemize}
+    \item \cite{Abar2017} Review of various ABMs
+    \item \cite{Winkle2017} Modeling mechanical interations in growing populations of rod-shaped
+        bacteria
+    \item \cite{Doumic2020} "A purely mechanical model with asymmetric features for early
+        morphogenesis of rod-shaped bacteria micro-colony"
+    \begin{itemize}
+        \item Really good paper for referencing
+        \item comparison of distributions; not individual agents
+        \item no bending in model
+        \item uses steric force (see also \cite{Trejo2013})
+    \end{itemize}
+    \item \cite{Grant2014} purposely-built model written in C++
+    \begin{itemize}
+        \item describes bacteria as collection of overlapping spheres
+        \item spheres are coupled by non-linear springs (Euler-Bernoulli dynamic beam theory). This
+            assumption is werid but does not alter their results
+        \item Only model repulsive forces; no attraction, adhesion
+    \end{itemize}
+    \item \cite{Cho2007} only 2D model; no param estimation; based on work done in \cite{Jnsson2005}
+    \item \cite{Storck2014} no bending; 41 parameters for various cases; only 8 parameters taken
+        from literature values or quantified; generate growth rate from normal distribution at each
+        integration step; stochastically equivalient for collection of bacteria but unfounded for
+        individual bactera
+\end{itemize}
 
 %###################################################################################################
 \section{Overview (TODO)}
