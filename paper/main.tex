@@ -794,8 +794,8 @@ between bacteria.
         %     surfactin-producing cells \cite{vanGestel2015,Lpez2010}.\\
         (3) & Division &
             Rod-Shaped bacteria divide in the middle of the rod, thus forming two new
-            agents.
-            Bacteria can form multilayers during their growth phase \cite{Duvernoy2018}.\\
+            agents.\\
+            % Bacteria can form multilayers during their growth phase \cite{Duvernoy2018}.\\
         (4) & Variable Parameters &
             Parameters for individual cells are not fixed values but rather taken from a
             distribution \cite{Koutsoumanis2013}.\\
@@ -807,13 +807,13 @@ between bacteria.
             % The interaction between rods can be polarized \cite{Duvernoy2018}.\\
         % (7) & Friction &
         %     Friction between cells \cite{Grant2014} can be asymmetrical \cite{Doumic2020}.\\
-        &\textbf{(DC) Domain-Cell Interactions}\\
-        \midrule
-        (6) & External Forces &
-            Bacteria which rub against surfaces tend to stick to them after some
-            time~\cite{vanLoosdrecht1989}.
-            The extracellular gel which surrounds the bacteria exerts a force onto the cells
-            \cite{Grant2014}.\\
+        % &\textbf{(DC) Domain-Cell Interactions}\\
+        % \midrule
+        % (6) & External Forces &
+        %     Bacteria which rub against surfaces tend to stick to them after some
+        %     time~\cite{vanLoosdrecht1989}.
+        %     The extracellular gel which surrounds the bacteria exerts a force onto the cells
+        %     \cite{Grant2014}.\\
         % (9) & Extracellular Reactions &
         %     Bacteria can take up nutrients or possible secrete/take up signalling molecules
         %     \cite{Li2025}.\\
@@ -993,15 +993,6 @@ We stop when we have reached a length that matches the length of the new spring 
 From here, we continue and iterate this procedure until we have found all new vertices $\vec{w}_i$.
 Equation~\ref{eq:growth-rod-new-lengths} ensures that that the tips of the two new rods are touching
 right after the division event.
-
-% --------------------------------------------------------------------------------------------------
-\subsection{External Forces}
-\label{subsection:mechanical-model-external-forces}
-TODO
-\begin{itemize}
-    \item Friction force against surface. perpendicular to motion; proportional to velocity.
-    \item gel pressure coming from experiment (simply downwards force $F_z$)
-\end{itemize}
 
 % --------------------------------------------------------------------------------------------------
 \subsection{Numerical Implementation}
@@ -1291,6 +1282,12 @@ the mechanistic methodology of our approach.
 %###################################################################################################
 \section{Multilayer Predictions}
 % TODO
+
+\begin{itemize}
+    \item Friction force against surface. perpendicular to motion; proportional to velocity.
+    \item gel pressure coming from experiment (simply downwards force $F_z$)
+\end{itemize}
+
 \begin{itemize}
     \item Do we need this in this publication?
     \item Maybe this is out of scope as this is a more methodological paper.
