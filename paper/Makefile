@@ -26,6 +26,7 @@ clean_partial:
 	rm -f *.ins
 	rm -f *.log
 	rm -f *.out
+	rm -f *main.toc
 	rm -f archive.zip
 
 clean: clean_partial

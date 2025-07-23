@@ -1,2 +1,15 @@
-main*
-onimage*
+*.aux
+*.bbl
+*.blg
+*.dvi
+*.fdb_latexmk
+*.fls
+*.glo
+*.hd
+*.idx
+*.ins
+*.log
+*.out
+*.pdf
+*.toc
+archive.zip
