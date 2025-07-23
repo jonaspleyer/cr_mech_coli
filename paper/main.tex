@@ -18,6 +18,7 @@
 \usepackage{doi}
 \usepackage{acronym}
 \usepackage{listings}
+\usepackage[mode=buildnew]{standalone}
 \usepackage{tikz}
 \usepackage{tabularx}
 \usepackage{siunitx}
@@ -25,14 +26,7 @@
 \usepackage{acronym}
 \usepackage{xcolor}
 
-\usetikzlibrary{trees}
-\usetikzlibrary{shapes.geometric, arrows}
-
-\definecolor{color1}{HTML}{6bd2db}
-\definecolor{color2}{HTML}{0ea7b5}
-\definecolor{color3}{HTML}{0c457d}
-\definecolor{color4}{HTML}{ffbe4f}
-\definecolor{color5}{HTML}{e8702a}
+\input{figures/tikz-preamble.tex}
 
 \title{Methods for Analyzing Models of Rod-Shaped Bacteria}
 
@@ -250,46 +244,11 @@ What has been done so far?
 
 \begin{figure}[H]
     \centering
-    \tikzstyle{rect} = [
-        rectangle,
-        % rounded corners,
-        minimum width=4cm,
-        minimum height=1cm,
-        text centered,
-        fill=color4!70,
-    ]
-    \tikzstyle{brect} = [rect, fill=color5!50]
-    \tikzstyle{frect} = [rect, fill=color3!40]
-    \tikzstyle{arrow} = [thick,->,>=stealth]
-    \tikzstyle{darrow} = [arrow, dashed]
-    \begin{tikzpicture}
-        \node (model) [brect, align=center] at (0,0) {Mathematical \&\\ Computational Model};
-        \node (extraction) [rect] at (0, -2) {Data Extraction};
-        \node (params) [brect] at (6, -2) {Parameter Estimation};
-        \node (visualization) [rect] at (6, 0) {Visualization};
-
-        \draw[arrow] (model) -- (extraction);
-        \draw[darrow] (params) -- node[anchor=south, rotate=-18.43] {validate} (model);
-        \draw[arrow] (model) -- (visualization);
-        \draw[arrow] (visualization) -- (params);
-        \draw[arrow] (extraction) -- (params);
-
-        % Future stuff
-        \node (realimages) [frect] at (12, 0) {Data Generation};
-        \node (segmentation) [frect] at (12, -2) {Cell Segmentation};
-        \node (tracking) [frect] at (12, -3) {Cell Tracking};
-        \node (analysis) [frect] at (0, -4) {Analysis Methods};
-
-        \draw[arrow] (visualization) -- (realimages);
-        \draw[arrow] (realimages) -- (segmentation);
-        \draw[arrow] (extraction) -- (analysis);
-        \draw[arrow] (params) -- (realimages);
-    \end{tikzpicture}
+    % \includegraphics[width=0.8\textwidth]{overview.pdf}
+    \includestandalone[width=0.8\textwidth]{figures/concept/overview}
     \caption{
-        The project can be divided into 4 subparts (orange + yellow) that interact with and depend
-        on each other.
-        The orange blocks require input by the user by specifying the model and supplying input
-        data.
+        The project can be divided into 4 subparts (yellow) that interact with and depend on each
+        other.
         Additional blocks (blue-gray) indicate possible future extensions of this project.
         Arrows with solid lines indicate dependencies between the subparts while dashed arrows carry
         special meaning, which is specifically annotated.
