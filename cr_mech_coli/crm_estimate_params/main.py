@@ -7,6 +7,7 @@ from cr_mech_coli.plotting import COLOR3, COLOR5
 import scipy as sp
 import multiprocessing as mp
 from pathlib import Path
+from glob import glob
 
 
 def delayed_growth(t, t0, x0, growth_rate):
@@ -217,10 +218,7 @@ def estimate_growth_curves_individual(filenames, out_path, delay=None):
 
 
 def crm_estimate_params_main():
-    filenames = [
-        f"data/raw/1981-IWF-Goettingen/growth-2-marked/image{i:06}-markers.csv"
-        for i in range(998, 1050)
-    ]
+    filenames = list(sorted(glob("data/crm_fit/0004/masks/*.csv")))
     estimate_growth_curves_individual(
         filenames, "out/crm_estimate_params/IWF-Goettingen/"
     )
