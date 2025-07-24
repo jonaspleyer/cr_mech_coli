@@ -85,8 +85,8 @@ def estimate_growth_curves_individual(filenames, out_path, delay=None):
     crm.plotting.configure_ax(ax)
 
     # Set Labels
-    ax.set_xlabel("Time [min]")
-    ax.set_ylabel("Rod Length [µm]")
+    ax.set_xlabel("Time [frames]")
+    ax.set_ylabel("Rod Length [pix]")
 
     # Plot Data
     ax.plot(y, color=COLOR3, label="Data")
@@ -160,8 +160,8 @@ def estimate_growth_curves_individual(filenames, out_path, delay=None):
             linestyle="--",
         )
 
-    ax.set_xlabel("Time [min]")
-    ax.set_ylabel("Rod Length [µm]")
+    ax.set_xlabel("Time [frames]")
+    ax.set_ylabel("Rod Length [pix]")
 
     handles, labels = ax.get_legend_handles_labels()
     ax.legend(
