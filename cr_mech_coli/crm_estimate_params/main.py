@@ -10,7 +10,7 @@ from pathlib import Path
 from glob import glob
 
 
-def delayed_growth(t, t0, x0, growth_rate):
+def delayed_growth(t, x0, growth_rate, t0):
     x = np.array(t < t0)
     return x * x0 + ~x * x0 * np.exp((t - t0) * growth_rate)
 
@@ -94,11 +94,11 @@ def estimate_growth_curves_individual(filenames, out_path, delay=None):
 
     if delay is None:
         growth_curve = delayed_growth
-        p0 = (len(iterations) / 2, y[0], np.log(y[-1] / y[0]))
+        p0 = (y[0], np.log(y[-1] / y[0]), len(iterations) / 2)
     else:
 
         def special_delayed_growth(t, x0, growth_rate):
-            return delayed_growth(t, delay, x0, growth_rate)
+            return delayed_growth(t, x0, growth_rate, delay)
 
         growth_curve = special_delayed_growth
         p0 = (y[0], np.log(y[-1] / y[0]))
@@ -139,7 +139,7 @@ def estimate_growth_curves_individual(filenames, out_path, delay=None):
     for i in range(rod_lengths.shape[1]):
         yi = rod_lengths[:, i]
         if delay is None:
-            p0 = (len(iterations) / 2, yi[0], np.log(yi[-1] / yi[0]))
+            p0 = (yi[0], np.log(yi[-1] / yi[0]), len(iterations) / 2)
         else:
             p0 = (yi[0], np.log(yi[-1] / yi[0]))
 
@@ -182,25 +182,38 @@ def estimate_growth_curves_individual(filenames, out_path, delay=None):
 
     parameters = np.array(parameters)
     x = parameters[:, 0]
-    y = parameters[:, 1]
+    if delay is None:
+        y = parameters[:, 2]
+    else:
+        y = parameters[:, 1]
     ax.scatter(x, y, color=COLOR3)
 
     for popt, pcov in zip(parameters, covariances):
-        confidence_region(
-            popt[:2], pcov[:2, :2], ax, color=COLOR3, alpha=0.3, label="Individual"
-        )
+        if delay is None:
+            pm = popt[[0, 2]]
+            pc = pcov[0:3:2, 0:3:2]
+        else:
+            pm = popt[:2]
+            pc = pcov[:2, :2]
 
-    ax.scatter([popt_mean[0]], [popt_mean[1]], color=COLOR5)
-    confidence_region(
-        popt_mean[:2], pcov_mean[:2, :2], ax, color=COLOR5, alpha=0.3, label="Mean"
-    )
+        confidence_region(pm, pc, ax, color=COLOR3, alpha=0.3, label="Individual")
 
     if delay is None:
-        ax.set_xlabel("Growth Rate [1/min]")
-        ax.set_ylabel("Delay [min]")
+        pm = popt_mean[[0, 2]]
+        pc = pcov_mean[0:3:2, 0:3:2]
     else:
-        ax.set_xlabel("Starting Length [µm]")
-        ax.set_ylabel("Growth Rate [1/min]")
+        pm = popt_mean[:2]
+        pc = pcov_mean[:2, :2]
+    ax.scatter([pm[0]], [pm[1]], color=COLOR5)
+
+    confidence_region(pm, pc, ax, color=COLOR5, alpha=0.3, label="Mean")
+
+    if delay is None:
+        ax.set_xlabel("Delay [frame]")
+        ax.set_ylabel("Growth Rate [1/frame]")
+    else:
+        ax.set_xlabel("Starting Length [pix]")
+        ax.set_ylabel("Growth Rate [1/frame]")
 
     handles, labels = ax.get_legend_handles_labels()
     ax.legend(
