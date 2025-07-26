@@ -121,34 +121,100 @@ pdfkeywords={},
 \section{Introduction (TODO)}
 \label{section:introduction}
 
-Bacteria exist in many physical shapes such as spheroidal, rod-shaped or spiral
-\cite{Zapun2008,Young2006}.
 The last decades have fundamentally challenged and changed our understanding of how bacteria retain
 their shape.
+They exist in many physical shapes such as spheroidal, rod-shaped or spiral
+\cite{Zapun2008,Young2006}.
 Rod-shaped bacteria can grow by extending their circular part, or by inserting new material at the
 tip of the rod.
-Species such as E.coli and B.subtilis~\cite{Errington2020} fall under the first category while
+Species such as \textit{E.coli} and \textit{B.subtilis}~\cite{Errington2020} fall under the first
+category while
 S.pombe represents the latter.
 New material is inserted in small bursts on the nanoscale in forms of patches, bands or
 hoops~\cite{DePedro2003}.
-Despite their differences in wall-size, \textit{B.subtilis} and \textit{E.coli} follow growth rules
-which are comparable with respect to the extension of the rod~\cite{Chang2014}.
+Despite their differences such as wall-size or length \textit{B.subtilis} and \textit{E.coli} follow
+growth rules which are comparable with respect to the extension of the rod~\cite{Chang2014}.
 
 \paragraph{Experimental studies of mechanical properties}
-\textbf{Study of Individual Bacteria}
-\begin{itemize}
-    \item \cite{Robert2014} growth of individual rods, distribution of parameters
-    \item \cite{Koutsoumanis2013} inheritance of growth rates, growth parameter distributions
-    \item \cite{Ursell2014} MreB acts againts curvature during growth of cell
-    \item \cite{Takeuchi2005} cells in microchambers leads to plastic deformations
-    \item \cite{Amir2014} bending stiffness, plastic + elastic deformations
-\end{itemize}
-\textbf{Collective Effects \& Self-Organization}
-\begin{itemize}
-    \item \cite{Trejo2013} mechanical response of bacterial colony
-    \item \cite{Duvernoy2018} bacterial colonies form multilayers, interactions are polar
-    \item \cite{vanGestel2015} van Gogh bundles form from interplay of 2 cell-types
-\end{itemize}
+It was long believed that bacteria lack cytoskeletal filaments but with the end of the last
+century, it was discovered that the MreB protein fills this role since it "[..] forms an actin-like
+cytoskeleton in bacteria [..]" \cite{Erickson2001}.
+It can polymerize and form filaments which behave similar to actin microfilaments \cite{Dersch2020}.
+Studies of its crystal structure further showed the similarity to actin \cite{vandenEnt2001} and the
+MreB, MreC and MreD proteins were identified as homologues of actin \cite{Lowe2017_lj}.\
+Jones et al. studied the species of different bacterial sub-kingdoms which have the MreB
+gene~\cite{Jones2001}.
+They concluded: "Many of the organisms are rod shaped, similar to \textit{B. subtilis} and
+\textit{E. coli}.
+Organisms with more complex shapes, including curved, filamentous, and helical bacteria, were all
+abundantly represented." \cite{Jones2001}.
+Furthermore, \cite{Wachi1987} found that mutants of \textit{E.Coli} which create defective MreB
+proteins will be spherical instead of their natural rod-shaped form.
+
+% \begin{itemize}
+%     \item \cite{Robert2014} growth of individual rods, distribution of parameters
+%     \item \cite{Koutsoumanis2013} inheritance of growth rates, growth parameter distributions
+%     \item \cite{Ursell2014} MreB acts againts curvature during growth of cell
+%     \item \cite{Takeuchi2005} cells in microchambers leads to plastic deformations
+%     \item \cite{Amir2014} bending stiffness, plastic + elastic deformations
+% \end{itemize}
+Other experiments found that individual rods of \textit{E.Coli} grow exponentially until the
+division event which is triggered by a size-sensing rather than a time-sensing
+mechanism~\cite{Robert2014}.
+These results also showed that the growth parameters were randomly distributed but did not quantify
+said distribution.
+Using $220$ \textit{Salmonella enterica}, Koutsoumanis et al. analysed the distribution of division
+times and was able to quantify their distributions~\cite{Koutsoumanis2013}.
+They found that while the initial division times were longer, there was no correlation between
+division times of mother and daughter cells.
+The first finding can be explained by the bacterias lag-phase~\cite{Bertrand2019} which is a
+temporary period during which bacteria do not grow.
+The second observation is an example of principle of thought which underlyies guides this work:
+Cells are individual agents with individual parameters and thus individual behaviour and need to be
+treated as such.
+This is especially important if we want to determine parameters of our model for individual agents.
+
+
+
+% \paragraph{Collective Effects \& Self-Organization}
+% are emergent phenomena that result from the combined interactions of multiple cells.
+% Although they do not allow us to fundamentally understand, the individual behaviour of cells
+% directly, they can provide a way to falsify our results and thus further guide our modeling
+% approach.
+% \cite{Trejo2013} investigated the mechanical response of a tightly packed colony of \textit{Bacillus
+% Subtilis}.
+% \cite{Trejo2013} studied the formation of macroscopic wrinkles when growing bacteria in a confined
+% space.
+% They were able to model the strain and stress of the collection of bacteria which requires that
+% cells are connected by a (to first order) spring-like force.
+% The developing wrinkles could then be described by a buckling instability.
+% 
+% Duvernoy et al. used laser techniques and force microscopy to investigate adhesion of individual
+% \textit{E.coli} and \textit{Pseudomonas aeruginosa} cells~\cite{Duvernoy2018}.
+% They found that the adhesion forces of the rods are polar, resulting in mechanical tension which in
+% turn determines daughter cell arrangement.
+% They measured the size of the grown bacterial colonies, fitted ellipses to their shapes and found
+% that adhesion and polar adhesion in particular resulted in a greater difference between the long and
+% short axis of the fitted ellipse and thus a more oval shape rather than circular (WT).
+% By extending the work of \cite{Grant2014}, they showed, that the critical value of transitioning
+% from a monolayer to multiple layers of bacteria, depends on the adhesive strength and polarity of
+% the interaction.
+% \cite{Grant2014} described the growing bacterial colony as a disc with radius $R$ which is pressed
+% into the agarose slab.
+% The authors created a purposely-designed simulation in `C++` in order to model the effects of the
+% gel on the collection of bacteria.
+% 
+% Van Gestel et al. explored how \textit{B.subtilis} migrates over a surface by forming multicellular
+% structures~\cite{vanGestel2015}.
+% The cells organize themselves into "van Gogh bundles" of cells which are tightly aligned in chains
+% and form filamentous loops.
+% This phenomenon occurs at the border of the bacterial colony and the migration is driven by two
+% phenotypically different cell types~\cite{Lpez2010}.
+% \begin{itemize}
+%     \item \cite{Trejo2013} mechanical response of bacterial colony
+%     \item \cite{Duvernoy2018} bacterial colonies form multilayers, interactions are polar
+%     \item \cite{vanGestel2015} van Gogh bundles form from interplay of 2 cell-types
+% \end{itemize}
 
 % --------------------------------------------------------------------------------------------------
 \subsection{Numerical Models of Rod-Shaped Bacteria}
