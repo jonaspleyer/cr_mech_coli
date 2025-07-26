@@ -703,17 +703,19 @@ should be preferred.
 \section{A Mechanical Model for Rod-Shaped Bacteria}
 \label{subsubsection:mechanical-model-rod-shaped-bacteria}
 
-%###################################################################################################
-
-In order to construct a mechanical model of rod-shaped bacteria, we have to take care of a number of
-different aspects.
 The mechanical behaviour of rod-shaped bacteria is governed by a plethora of effects.
-Although we set out to construct a model which is able to describe as many of these effects as
-possible, we will fall short in this paper and restrict ourselves to the aspects presented
-in~\ref{table:simulation-aspects}.
-We will discuss, how this model can be extended in order to capture more effects and how we can
-validate our approach given the existing literaturesection:supplement-more-simulation-aspects
-(see section~\ref{section:discussion}, and~\ref{section:supplement-more-simulation-aspects}).
+In this work, we aim to establish a model which is abstract enough such that it can be reused for
+many types of rod-shaped bacteria but also explicit enough such that we can quantify its parameters.
+We are thus aiming to work with a set of assumptions that is as general as possible but still
+specific to rod-shaped bacteria.
+With this delicate balance in mind, it is clear that many cellular processes which might be specific
+to one particular celltype or simply not necessary to assume in order to construct our model, will
+be omitted alltogether.
+This concerns effects such as polar interactions~\cite{Duvernoy2018}, extracellular
+reactions~\cite{Wang2010} or differentiation processes~\cite{vanGestel2015,Lpez2010} and many other.
+We restrict ourselves to the aspects presented in table~\ref{table:simulation-aspects}.
+For a collection of other known effects which could be considered, we refer to the supplementary
+section~\ref{section:discussion}, and~\ref{section:supplement-more-simulation-aspects}.
 
 \paragraph{(C) Cellular}
 The key component of this model consists of the cellular representation.
