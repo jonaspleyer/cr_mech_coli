@@ -1025,8 +1025,36 @@ interactions, we were still able to properly utilize the speedup from executing 
 parallalel using the built-in parallelization methods of \texttt{cellular\_raza} (see
 Supplementary Material, Figure~\ref{fig:performance}).
 
+%###################################################################################################
+\section{Parameter Estimation of \textit{E.Coli.} growing on Agar}
 % --------------------------------------------------------------------------------------------------
-\subsection{Estimating Mechanical Parameters of Growing \textit{E.Coli.} on Agar}
+\subsection{Data Preparation}
+TODO: Decide if this should be Supplement
+\begin{enumerate}
+    \item Have masks of data; reference image segmantation tools; or do it by hand
+    \item ensure that colors are matching for bacteria between time-steps
+    \item clean borders of images if needed
+    \item know domain size; otherwise use pixels
+\end{enumerate}
+
+% --------------------------------------------------------------------------------------------------
+\subsection{Non-Individual Treatment}
+% --------------------------------------------------------------------------------------------------
+\subsection{Individual Treatment}
+\label{subsec:parameter-estimation-individual-treatment}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.33\textwidth]
+        {figures/crm_estimate_params/IWF-Goettingen/rod-lengths-individual.pdf}%
+    \includegraphics[width=0.33\textwidth]
+        {figures/crm_estimate_params/IWF-Goettingen/rod-lengths-average.pdf}%
+    \includegraphics[width=0.33\textwidth]
+        {figures/crm_estimate_params/IWF-Goettingen/parameter-distribution.pdf}%
+    \caption{}
+    \label{fig:estimated-growth-rates}
+\end{figure}
+% --------------------------------------------------------------------------------------------------
+\subsection{With Division}
 We will now focus on using the presented methods for parameter estimation via microscopic images.
 Our initial state is given by TODO~\cite{}.% TODO
 We use our extraction algorithm to obtain the initial positions of our cells.
