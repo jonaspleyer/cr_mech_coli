@@ -213,58 +213,74 @@ What has been done so far?
 
 %###################################################################################################
 \section{Overview (TODO)}
+This work consists of many subcomponents which can be combined in order to achieve various tasks.
+Figure~\ref{fig:flowchart-project-structure} shows a high-level overview of all components.
+This work assumes that bacterial rods can be represented by a colleciton of vertices $\vec{v}_i$.
+This assumption alone is enough to allow us to visualize the bacteria and extract positional data
+of bacterial agents from microscopic images.
+The dynamics of the vertices $\vec{v}_i$ are determined by a computational model which is defined
+by the respective researcher.
+It is important to note that the components visualization and data extraction do not require any
+knowledge about the computational model, thus allowing us to reuse their functionality across
+various models.
 
+Constructing a computational model requires knowledge about the target system and thus allows us to
+interpret the results gathered by the provided data extraction methods which can then further be
+used to restrict or determine the paramters of our model.
+For example, by extracing the positions of bacteria across a time-series of microscopic images, we
+can also calculate their lengths at these time-points and thus determine their rate of growth and
+type of growth (see section~\ref{subsec:parameter-estimation-individual-treatment}).
 
-\begin{itemize}
-    \item This publication contains 5 things:
-    \begin{enumerate}
-        \item Methods of how to obtain data from microscopic images and perform parameter
-            estimations; $\rightarrow$ also possibly across multiple generations
-        \item Showcase the usefulness of the methods and the model by applying it to parameter
-            estimation via microscopic images and multilayer formation
-        \item Initial (incomplete) model of rod-shaped bacteria
-        \item Generate 3D Images (masks)
-        \item A python package which can do all of that and can be reused and extended
-    \end{enumerate}
-    \item Overall structure
-    \begin{enumerate}
-        \item users bring model + data
-        \item this paper provides methods to do the parameter estimation + visualization
-    \end{enumerate}
-    \item For complete model, more work has to be done
-    \begin{itemize}
-        \item More aspects (see Review; put in discussion)
-        \item Note that we only care about \textit{E.Coli} and \textit{B.Subtilits}! This is
-            important.
-    \end{itemize}
-    \begin{itemize}
-        \item State of the Art
-    \end{itemize}
-\end{itemize}
+The visualization methods are an integral part of any modeling endevaour.
+They allow researchers to obtain feedback quickly and improve iteration times when constructing new
+models.
+Furthermore, they are an integral part of our advanced parameter estimation techniques
+(see section~\ref{subsec:comparison-across-generations}) and enable us to effectively compare states
+across generations of cells.
+In the future, we are planning to extend this work and generate realistic microscopic images and
+time-series.
+Together with the parameter estimation methods, they can then be used to provide large amounts of
+mechanistic data for the training cell-segmentation and cell-tracking machine learning algorithms.
+
+% \begin{itemize}
+%     \item This publication contains 5 things:
+%     \begin{enumerate}
+%         \item Methods of how to obtain data from microscopic images and perform parameter
+%             estimations; $\rightarrow$ also possibly across multiple generations
+%         \item Showcase the usefulness of the methods and the model by applying it to parameter
+%             estimation via microscopic images and multilayer formation
+%         \item Initial (incomplete) model of rod-shaped bacteria
+%         \item Generate 3D Images (masks)
+%         \item A python package which can do all of that and can be reused and extended
+%     \end{enumerate}
+%     \item Overall structure
+%     \begin{enumerate}
+%         \item users bring model + data
+%         \item this paper provides methods to do the parameter estimation + visualization
+%     \end{enumerate}
+%     \item For complete model, more work has to be done
+%     \begin{itemize}
+%         \item More aspects (see Review; put in discussion)
+%         \item Note that we only care about \textit{E.Coli} and \textit{B.Subtilits}! This is
+%             important.
+%     \end{itemize}
+%     \begin{itemize}
+%         \item State of the Art
+%     \end{itemize}
+% \end{itemize}
 
 \begin{figure}[H]
     \centering
     % \includegraphics[width=0.8\textwidth]{overview.pdf}
     \includestandalone[width=0.8\textwidth]{figures/concept/overview}
     \caption{
-        The project can be divided into 4 subparts (yellow) that interact with and depend on each
-        other.
-        Additional blocks (blue-gray) indicate possible future extensions of this project.
-        Arrows with solid lines indicate dependencies between the subparts while dashed arrows carry
-        special meaning, which is specifically annotated.
-        The mathematical models provides the theoretical framework and is thus the parent of all
-        following work.
-        "Data Extraction" allows us to read variable and parameter values directly from microscopic
-        images.
-        The obtained data can then be used to initialize a numerical simulations and thus estimate
-        parameters.
-        On the other hand, results produced by our model can be visualized as 3D renders and
-        projected to cell-masks.
-        These algorithms can be exploited to construct cost-functions which can be used in the
-        parameter estimation process.
-        In future work, this visualization scheme could be extended to generate realistic
-        microscopic images with cell-masks and thus train cell-segmentation and cell-tracking
-        algorithms.
+        The project can be divided into subcomponents (yellow, red) that interact with and depend on
+        each other.
+        Yellow blocks are provided by this work and red blocks require additional input such as
+        modeling assumptions or input data.
+        Blue blocks indicate possible future extensions of this project.
+        Every component builds on the spatial representation of rod-shaped bacteria as vertices
+        $\vec{v}_i$ for all proceeding work.
     }
     \label{fig:flowchart-project-structure}
 \end{figure}
