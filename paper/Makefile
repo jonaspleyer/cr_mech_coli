@@ -8,10 +8,13 @@ all: onimage figures
 onimage:
 	pdflatex onimage.dtx
 
-figures: overview
+figures: overview visualization
 
 overview:
 	$(CC) $(OPTIONS) figures/concept/overview.tex
+
+visualization:
+	$(CC) $(OPTIONS) figures/concept/visualization.tex
 
 clean_partial:
 	rm -f *.aux
