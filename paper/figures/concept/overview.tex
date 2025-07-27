@@ -57,7 +57,8 @@ on top/.default=4pt]
     \filldraw[fill=white,draw=white] ($1/2*(mo) + 1/2*(dg)$) circle (4pt);
     \path [arrow]
         (mo) edge (dg)
-        (mo) edge (pe)
+        (mo) edge (pe);
+    \path [arrow,<->]
         (mo) edge (am);
 \end{tikzpicture}
 \end{document}
