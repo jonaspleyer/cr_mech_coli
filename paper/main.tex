@@ -496,6 +496,97 @@ of the rod and other more intricate mechanisms.
 \end{figure}
 
 % --------------------------------------------------------------------------------------------------
+\subsection{Visualization}
+\label{section:generating-masks-and-images}
+
+For visualization we use pyvista, which provides high-level wrappers around the popular VTK
+library~\cite{vtkBook,Sullivan2019}.
+The first stage of our visualization is to generate 3D meshes for each bacterium, which we consider
+an intermediate representation.
+We insert spheres of a given radius $r$ at each vertex $\vec{v}_i$ and connect adjacent vertices
+$\vec{v}_i,\vec{v}_{i+1}$ with a cylinder, also of radius $r$ which is positioned such that its core
+is identical to the connecting line segment between the two vertices.
+Finally, we combine the meshes of all of these objects to obtain a single mesh of one bacterium.
+A render of this result can be seen in figure~\ref{fig:progression-image-generation}.
+Since we use a 3D rendering engine as an intermediate representation, the resulting image can have
+overlaps of bacteria which are placed at higher or lower values along the z-direction.
+
+To generate masks, we assign unique colors to every mesh of the respective cellular agent.
+This mapping is unique, ensuring no two agents will use identical colors.
+We then use a parallel projection and remove any existing light sources in order to obtain a solid
+color for every cell-agent.
+The resulting image is shown in subfigure (B).
+Subfigure (C) shows an example of a simplified way to generate microscopic images.
+The properties of the meshes such as roughness and reflectivity have been adjusted and we use
+physically-based rendering of VTK.
+The result of this render is augmented by introducing white noise on the pixel values at each point.
+This approach is very rudimentary and we hope to extend these methods in the future.
+In order to properly generate data, we need to deal with microscopic imaging techniques and possible
+defects that can occurr.
+It is crucial to get this part of the image-generation process right in order to obtain
+near-realistic images that can be further reused.
+
+% \begin{itemize}
+%     \item use pyvista (VTK) for Visualization
+%     \item always do 3D render. This way, we can have overalp between agents and produce more
+%         realistic masks.
+%     \item Assign unique color values for idividual agents.
+%         We have a 1:1 mapping between agent identifier and color! (for each simulation different
+%         though)
+%     \item use parallel projection; this should be most close to what microscopes measure due to the
+%         relatively large distance between object and lens.
+%     \item use some noise to smear out the rods; this is already similar to microscopic images; use
+%         more like this and deal with real-world defects to make it more realistic (future, not now)
+%     \item Figure~\ref{fig:progression-image-generation} shows steps in generating image.
+%     \item Reflectivity, placement of light etc. can already introduce some heterogeneity in the
+%         visual of the rod.
+%     \item Plan to implement noise on the mesh itself; make it have rough surface (like real rods as
+%         seen under electron microscopy)
+% \end{itemize}
+%
+% \paragraph{Algorithm}
+% \begin{enumerate}
+%     \item Get position of cell
+%     \item Insert spheres at each vertex
+%     \item Insert cylinder along edges
+%     \item Combine individual objects into one big mesh
+%     \item Use \ac{pbr}
+% \end{enumerate}
+
+\begin{figure}[H]
+    \centering
+    % \begin{tikzonimage}[width=0.9\textwidth]{visualization.pdf}
+    %     \node at (0.025, 0.975)[anchor=north west, rectangle, draw, minimum width=15pt, minimum height=15pt]{\textbf{A}};
+    % \end{tikzonimage}
+    \begin{tikzonimage}[width=0.3\textwidth]
+        {docs/source/_static/09395645494836445480/raw_pv/000000400.png}
+        \node at (0.025, 0.975)[anchor=north west, rectangle, draw, white, minimum width=15pt, minimum height=15pt]{\textbf{A}};
+    \end{tikzonimage}
+    \begin{tikzonimage}[width=0.3\textwidth]
+        {docs/source/_static/09395645494836445480/masks/000000400.png}
+        \node at (0.025, 0.975)[anchor=north west, rectangle, draw, white, minimum width=15pt, minimum height=15pt]{\textbf{B}};
+    \end{tikzonimage}
+    \begin{tikzonimage}[width=0.3\textwidth]
+        {docs/source/_static/09395645494836445480/images/000000400.png}
+        \node at (0.025, 0.975)[anchor=north west, rectangle, draw, white, minimum width=15pt, minimum height=15pt]{\textbf{C}};
+    \end{tikzonimage}
+    \caption{
+        (A) shows the result from combining sphere and cylinder meshes to obtain the shape of a
+        bacterial rod.
+        This render contains lighting coming from 2 light sources which thus produces a small glow
+        on the upper part of the meshes.
+        (B) Unique color values are assigned to each agent and light sources are removed.
+        Afterwards, the image is rendered by projecting along the z-axis.
+        (C) We use physically-based rendering and assign properties such as roughness and
+        reflectivity to generate an initial render.
+        Afterwards, we apply white noise to the pixel values of image.
+        In the future, we hope to extend this approach in order to construct near-realistic
+        microscopic images from synthetic data.
+    }
+    \label{fig:progression-image-generation}
+\end{figure}
+
+% --------------------------------------------------------------------------------------------------
 \subsection{Data Extraction}
 \label{section:fitting-and-comparing-masks}
 
@@ -628,98 +719,6 @@ is not dominated by outliers.
 "Iceberg plot"
     }
     \label{fig:benchmarking-extraction-algorithm}
-\end{figure}
-
-
-% --------------------------------------------------------------------------------------------------
-\subsection{Visualization}
-\label{section:generating-masks-and-images}
-
-For visualization we use pyvista, which provides high-level wrappers around the popular VTK
-library~\cite{vtkBook,Sullivan2019}.
-The first stage of our visualization is to generate 3D meshes for each bacterium, which we consider
-an intermediate representation.
-We insert spheres of a given radius $r$ at each vertex $\vec{v}_i$ and connect adjacent vertices
-$\vec{v}_i,\vec{v}_{i+1}$ with a cylinder, also of radius $r$ which is positioned such that its core
-is identical to the connecting line segment between the two vertices.
-Finally, we combine the meshes of all of these objects to obtain a single mesh of one bacterium.
-A render of this result can be seen in figure~\ref{fig:progression-image-generation}.
-Since we use a 3D rendering engine as an intermediate representation, the resulting image can have
-overlaps of bacteria which are placed at higher or lower values along the z-direction.
-
-To generate masks, we assign unique colors to every mesh of the respective cellular agent.
-This mapping is unique, ensuring no two agents will use identical colors.
-We then use a parallel projection and remove any existing light sources in order to obtain a solid
-color for every cell-agent.
-The resulting image is shown in subfigure (B).
-Subfigure (C) shows an example of a simplified way to generate microscopic images.
-The properties of the meshes such as roughness and reflectivity have been adjusted and we use
-physically-based rendering of VTK.
-The result of this render is augmented by introducing white noise on the pixel values at each point.
-This approach is very rudimentary and we hope to extend these methods in the future.
-In order to properly generate data, we need to deal with microscopic imaging techniques and possible
-defects that can occurr.
-It is crucial to get this part of the image-generation process right in order to obtain
-near-realistic images that can be further reused.
-
-% \begin{itemize}
-%     \item use pyvista (VTK) for Visualization
-%     \item always do 3D render. This way, we can have overalp between agents and produce more
-%         realistic masks.
-%     \item Assign unique color values for idividual agents.
-%         We have a 1:1 mapping between agent identifier and color! (for each simulation different
-%         though)
-%     \item use parallel projection; this should be most close to what microscopes measure due to the
-%         relatively large distance between object and lens.
-%     \item use some noise to smear out the rods; this is already similar to microscopic images; use
-%         more like this and deal with real-world defects to make it more realistic (future, not now)
-%     \item Figure~\ref{fig:progression-image-generation} shows steps in generating image.
-%     \item Reflectivity, placement of light etc. can already introduce some heterogeneity in the
-%         visual of the rod.
-%     \item Plan to implement noise on the mesh itself; make it have rough surface (like real rods as
-%         seen under electron microscopy)
-% \end{itemize}
-% 
-% \paragraph{Algorithm}
-% \begin{enumerate}
-%     \item Get position of cell
-%     \item Insert spheres at each vertex
-%     \item Insert cylinder along edges
-%     \item Combine individual objects into one big mesh
-%     \item Use \ac{pbr}
-% \end{enumerate}
-
-\begin{figure}[H]
-    \centering
-    % \begin{tikzonimage}[width=0.9\textwidth]{visualization.pdf}
-    %     \node at (0.025, 0.975)[anchor=north west, rectangle, draw, minimum width=15pt, minimum height=15pt]{\textbf{A}};
-    % \end{tikzonimage}
-    \begin{tikzonimage}[width=0.3\textwidth]
-        {docs/source/_static/09395645494836445480/raw_pv/000000400.png}
-        \node at (0.025, 0.975)[anchor=north west, rectangle, draw, white, minimum width=15pt, minimum height=15pt]{\textbf{A}};
-    \end{tikzonimage}
-    \begin{tikzonimage}[width=0.3\textwidth]
-        {docs/source/_static/09395645494836445480/masks/000000400.png}
-        \node at (0.025, 0.975)[anchor=north west, rectangle, draw, white, minimum width=15pt, minimum height=15pt]{\textbf{B}};
-    \end{tikzonimage}
-    \begin{tikzonimage}[width=0.3\textwidth]
-        {docs/source/_static/09395645494836445480/images/000000400.png}
-        \node at (0.025, 0.975)[anchor=north west, rectangle, draw, white, minimum width=15pt, minimum height=15pt]{\textbf{C}};
-    \end{tikzonimage}
-    \caption{
-        (A) shows the result from combining sphere and cylinder meshes to obtain the shape of a
-        bacterial rod.
-        This render contains lighting coming from 2 light sources which thus produces a small glow
-        on the upper part of the meshes.
-        (B) Unique color values are assigned to each agent and light sources are removed.
-        Afterwards, the image is rendered by projecting along the z-axis.
-        (C) We use physically-based rendering and assign properties such as roughness and
-        reflectivity to generate an initial render.
-        Afterwards, we apply white noise to the pixel values of image.
-        In the future, we hope to extend this approach in order to construct near-realistic
-        microscopic images from synthetic data.
-    }
-    \label{fig:progression-image-generation}
 \end{figure}
 
 % --------------------------------------------------------------------------------------------------
