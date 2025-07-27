@@ -354,32 +354,40 @@ particular problem.
 \section{Overview (TODO)}
 This work consists of many subcomponents which can be combined in order to achieve various tasks.
 Figure~\ref{fig:flowchart-project-structure} shows a high-level overview of all components.
-This work assumes that bacterial rods can be represented by a colleciton of vertices $\vec{v}_i$.
-This assumption alone is enough to allow us to visualize the bacteria and extract positional data
-of bacterial agents from microscopic images.
-The dynamics of the vertices $\vec{v}_i$ are determined by a computational model which is defined
-by the respective researcher.
-It is important to note that the components visualization and data extraction do not require any
-knowledge about the computational model, thus allowing us to reuse their functionality across
-various models.
+We assume that bacterial rods can be represented by a colleciton of vertices $\vec{v}_i$.
+This assumption alone is enough to enable a cascade of other components.
+Using the spatial representation, we provide visualization methods that create 3D models from the
+given vertices which can then either be rendered or projected to a 2D plane.
+The data extraction component determines the vertices $\vec{v}_i$ from given cell masks which
+correspond to microscopic images.
+This allows us in particular to turn any sequence of images (movie) into a sequence of bacterial
+positions.
+The dynamics of the vertices $\vec{v}_i$ are determined by a computational model which is specific
+to the respective use-case and should be defined by the researcher.
+It merely needs to utilize the aforementioned spatial representation of bacterial rods as a
+collection of vertices $\vec{v}_i$.
+This work will provide one example of how such a model can be defined.
+Notably, the visualization and data extraction components do not require any knowledge about the
+computational model, thus allowing us to reuse their functionality across multiple models.
 
 Constructing a computational model requires knowledge about the target system and thus allows us to
-interpret the results gathered by the provided data extraction methods which can then further be
-used to restrict or determine the paramters of our model.
+interpret the results gathered by the provided data extraction methods.
+These results can then further be used to restrict or determine the parameters of our model.
 For example, by extracing the positions of bacteria across a time-series of microscopic images, we
 can also calculate their lengths at these time-points and thus determine their rate of growth and
-type of growth (see section~\ref{subsec:parameter-estimation-individual-treatment}).
+type of growth (see section~\ref{subsec:parameter-estimation-individual-treatment}), thus
+effectively guiding our modeling steps.
 
-The visualization methods are an integral part of any modeling endevaour.
+Visualization methods are an integral part of any modeling endevaour.
 They allow researchers to obtain feedback quickly and improve iteration times when constructing new
 models.
-Furthermore, they are an integral part of our advanced parameter estimation techniques
-(see section~\ref{subsec:comparison-across-generations}) and enable us to effectively compare states
-across generations of cells.
-In the future, we are planning to extend this work and generate realistic microscopic images and
-time-series.
+Furthermore, we utilize them in our more advanced parameter estimation methods (see
+section~\ref{subsec:comparison-across-generations}) where they enable us to effectively compare
+two bacterial configurations across division events.
+In the future, we are planning to build on the current state and generate realistic microscopic
+images and time-series.
 Together with the parameter estimation methods, they can then be used to provide large amounts of
-mechanistic data for the training cell-segmentation and cell-tracking machine learning algorithms.
+mechanistic data for the training cell-segmentation and cell-tracking machine-learning algorithms.
 
 % \begin{itemize}
 %     \item This publication contains 5 things:
@@ -416,10 +424,10 @@ mechanistic data for the training cell-segmentation and cell-tracking machine le
         The project can be divided into subcomponents (yellow, red) that interact with and depend on
         each other.
         Yellow blocks are provided by this work and red blocks require additional input such as
-        modeling assumptions or input data.
+        modeling assumptions or data.
         Blue blocks indicate possible future extensions of this project.
-        Every component builds on the spatial representation of rod-shaped bacteria as vertices
-        $\vec{v}_i$ for all proceeding work.
+        Every component implicitly builds on the spatial representation of rod-shaped bacteria as
+        vertices $\vec{v}_i$.
     }
     \label{fig:flowchart-project-structure}
 \end{figure}
