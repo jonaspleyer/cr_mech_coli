@@ -815,15 +815,16 @@ which would be assigned or set it to zero.
     \end{minipage}
     \caption{
         The figure shows two masks (A,B) which will be compared against each other.
-        As we can see, image (B) contains more cells which has resulted from a division process that
-        is not yet occurred in image (A).
-        In (C) we can see the "naive" comparison, simply identifying non-matching colors.
-        By assigning penalties to all highlighted pixels, we would not take into consideration the
-        parental relationship.
-        This approach is displayed in (D) where pixels of cells that are related have been colored
-        in gray.\\
-        Total cost between successive iteration steps $t_n,t_{n+1}$.
-        The overall shape is expected to have the slope of an exponential function.
+        Image (B) contains more cells which are a result of cellular division events that have not
+        yet occurred in image (A).
+        (C) "Naive" comparison of cell masks, which identifies pixels of non-matching colors and
+        assigns a cost by counting these pixels.
+        This simple approach does not take into consideration the parental relationship.
+        This approach is displayed in (D) where pixels of cells that are directly related have been
+        colored in gray.\\
+        (E) Comparison of cost functions, exponential regression (ER) and number of cells.
+        % Total cost between successive iteration steps $t_n,t_{n+1}$.
+        The overall shape of the cost is expected to have the slope of an exponential function.
         We can clearly see that division events introduce jumps within this relationship.
         In the case where we account for the parental relationship, these jumps are mitigated.
         The penalty was set to $0$ for pixel-comparisons which belong to cells that are in a
