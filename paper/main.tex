@@ -356,18 +356,18 @@ particular problem.
 \section{Overview}
 This work consists of many subcomponents which can be combined in order to achieve various tasks.
 Figure~\ref{fig:flowchart-project-structure} shows a high-level overview of all components.
-We assume that bacterial rods can be represented by a colleciton of vertices $\vec{v}_i$.
+We assume that bacterial rods can be represented by a colleciton of vertices $\vec{x}_i$.
 This assumption alone is enough to enable a cascade of other components.
 Using the spatial representation, we provide visualization methods that create 3D models from the
 given vertices which can then either be rendered or projected to a 2D plane.
-The data extraction component determines the vertices $\vec{v}_i$ from given cell masks which
+The data extraction component determines the vertices $\vec{x}_i$ from given cell masks which
 correspond to microscopic images.
 This allows us in particular to turn any sequence of images (movie) into a sequence of bacterial
 positions.
-The dynamics of the vertices $\vec{v}_i$ are determined by a computational model which is specific
+The dynamics of the vertices $\vec{x}_i$ are determined by a computational model which is specific
 to the respective use-case and should be defined by the researcher.
 It merely needs to utilize the aforementioned spatial representation of bacterial rods as a
-collection of vertices $\vec{v}_i$.
+collection of vertices $\vec{x}_i$.
 This work will provide one example of how such a model can be defined.
 Notably, the visualization and data extraction components do not require any knowledge about the
 computational model, thus allowing us to reuse their functionality across multiple models.
@@ -429,7 +429,7 @@ mechanistic data for the training cell-segmentation and cell-tracking machine-le
         modeling assumptions or data.
         Blue blocks indicate possible future extensions of this project.
         Every component implicitly builds on the spatial representation of rod-shaped bacteria as
-        vertices $\vec{v}_i$.
+        vertices $\vec{x}_i$.
     }
     \label{fig:flowchart-project-structure}
 \end{figure}
@@ -449,7 +449,7 @@ Furthermore, it is very important to strike a good balance between the restricti
 assumptions and generality in order to provide meaningful results and still be able to apply our
 approach to a broader class of models.
 Taking into account the natural shape of rod-like bacteria, it is clear that they can not be
-represented with a singular point $\vec{v}$ in space.
+represented with a singular point $\vec{x}$ in space.
 We could extend this positional definition with a vector $\vec{w}$, indicating the direction of
 extension but this would restrict ourselves to fully straight rod-shaped bacteria.
 However, multiple experiments have shown that MReB is responsible for the growth and maintenance of
@@ -458,10 +458,10 @@ By means of this protein, rod-shaped bacteria can bend elastically on short time
 deform plastically over longer periods of time.
 Our goal is to provide a model which can encapsulate these effects.
 Thus, we extend our model from a single point to multiple vertices which are part of a 1-dimensional
-polygon with two endpoints $\vec{v}_i$.
+polygon with two endpoints $\vec{x}_i$.
 In essence, we discretize the (possibly non-straight) rod of the agent.
 Figure~\ref{fig:mechanics-bacterium} shows a visualization of this approach.
-The angles $\alpha_i$ between vertices $\vec{v}_{i-1},\vec{v}_i$ can be used when modeling the
+The angles $\alpha_i$ between vertices $\vec{x}_{i-1},\vec{x}_i$ can be used when modeling the
 dynamics of these bacteria.
 
 With these fundamental thoughts layed out, we retain the flexibility to represent many models such
@@ -475,7 +475,7 @@ their spatial representation, thus leaving in particular room for plastical or e
 of the rod and other more intricate mechanisms.
 
 % \begin{enumerate}
-%     \item represent bacteria as polygon with vertices $\vec{v}_i$
+%     \item represent bacteria as polygon with vertices $\vec{x}_i$
 %     \item Assumes that these vertices are not fundamental but rather a discretization of the actual
 %         problem
 % \end{enumerate}
@@ -501,8 +501,8 @@ For visualization we use pyvista, which provides high-level wrappers around the 
 library~\cite{vtkBook,Sullivan2019}.
 The first stage of our visualization is to generate 3D meshes for each bacterium, which we consider
 an intermediate representation.
-We insert spheres of a given radius $r$ at each vertex $\vec{v}_i$ and connect adjacent vertices
-$\vec{v}_i,\vec{v}_{i+1}$ with a cylinder, also of radius $r$ which is positioned such that its core
+We insert spheres of a given radius $r$ at each vertex $\vec{x}_i$ and connect adjacent vertices
+$\vec{x}_i,\vec{x}_{i+1}$ with a cylinder, also of radius $r$ which is positioned such that its core
 is identical to the connecting line segment between the two vertices.
 Finally, we combine the meshes of all of these objects to obtain a single mesh of one bacterium.
 A render of this result can be seen in figure~\ref{fig:progression-image-generation}.
@@ -588,7 +588,7 @@ near-realistic images that can be further reused.
 \subsection{Data Extraction}
 \label{section:fitting-and-comparing-masks}
 
-This section will explain how we can determine the collection of vertices $\vec{v}_i$ introduced in
+This section will explain how we can determine the collection of vertices $\vec{x}_i$ introduced in
 subsection~\ref{subsection:mechanical-model-mechanics} from microscopic images
 (Figure~\ref{fig:position-extraction-algorithm} (A)).
 They will serve as initial, final and intermediate values with which we can compare our predictions.
@@ -603,7 +603,7 @@ Afterwards, we proceed with the following 5 steps.
     \item Determine endpoints $\vec{q}_0,\vec{q}_1$.
         Assert that there are only 2 endpoints.
     \item Sort points such that they form a polygon.
-    \item Interpolate vertices $\vec{v}_i$ from obtained polygon.
+    \item Interpolate vertices $\vec{x}_i$ from obtained polygon.
 \end{enumerate}
 In the first step, the image will be split into a collection of subimages that only contain
 information for one single cell.
@@ -624,7 +624,7 @@ and is aborted.
 Next, we start with one of the endpoints and determine the next neighbor which was not yet picked.
 We list the points in this order, thus forming a sorted polygon of pixel coordinates.\\
 In the last step, we take the sorted, extracted points $\vec{p}_i$ and interpolate $n$ values for
-the desired number of vertices $\vec{v}_i$.
+the desired number of vertices $\vec{x}_i$.
 
 \begin{figure}[H]
     \centering
@@ -643,7 +643,7 @@ the desired number of vertices $\vec{v}_i$.
     \caption{
         (A) Input image.
         (B) Result of the skeletonization algorithm for a single cell.
-        (C) Vertices $\vec{v}_i$ which have been interpolated from the skeletonized cell.
+        (C) Vertices $\vec{x}_i$ which have been interpolated from the skeletonized cell.
         They represent the position of our cell-agents.
     }
     \label{fig:position-extraction-algorithm}
@@ -1141,7 +1141,7 @@ We first calculate the new spring lengths of the two resulting rods.
     \tilde{l} = l_i\left(\frac{1}{2} - \frac{r}{\sum\limits_i l_i}\right)
     \label{eq:growth-rod-new-lengths}
 \end{equation}
-Afterwards, we start at one endpoint $\vec{v}_0$ and travel along the polygon defined by the
+Afterwards, we start at one endpoint $\vec{x}_0$ and travel along the polygon defined by the
 bacterial rod.
 We stop when we have reached a length that matches the length of the new spring length $\tilde{l}$.
 From here, we continue and iterate this procedure until we have found all new vertices $\vec{w}_i$.
