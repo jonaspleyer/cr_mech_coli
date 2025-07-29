@@ -1012,9 +1012,10 @@ We use principles from discrete differential geometry~\cite{bobenko2008discrete}
 stiffness and flexibility of the bacterial rod.
 As explained previously, MReB will counteract the bending of the rod, resulting in a stiffening
 force.
-In order to construct a model which can be parametrized and by method of Occam's Razor, we chose to
-model the bacterium as a bending beam, thus utilizing the simplest solution which can still produce
-the desired effects.
+In principle, this stress will be dependent on the position inside the cell~\cite{Chatterjee1988}
+but in order to construct a model which can be parametrized and by method of Occam's Razor, we chose
+to model the bacterium as a bending beam, thus utilizing the simplest solution which can still
+produce the desired effects.
 Such a beam can be represented by a collection of vertices $\vec{x}_i$ which are connected by a
 springs of lengths $l_i$.
 We use the notation $\vec{c}_i:=\vec{x}_i-\vec{x}_{i-1}$ with which the resulting force acting
@@ -1064,9 +1065,6 @@ and are integrated via
 where $D$ is the diffusion constant and $\vec{\xi}$ is the wiener process.
 Together they determine the stochastic motion of the individual vertices which can arise from
 recurring collisions with small particles of the surrounding medium or other minor fluctuations.
-
-%TODO use these citations
-\cite{Chatterjee1988},\cite{Ursell2014}
 
 % --------------------------------------------------------------------------------------------------
 \subsection{Physical Interactions}
