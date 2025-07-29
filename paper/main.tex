@@ -438,6 +438,7 @@ mechanistic data for the training cell-segmentation and cell-tracking machine-le
 \section{Methodology}
 % --------------------------------------------------------------------------------------------------
 \subsection{Spatial Representation of Rod-Shaped Bacteria}
+\label{subsec:spatial-representation}
 This work makes use of a few but powerfull assumptions concerning the mathematical representation of
 the cells in question.
 In order to describe the spatial dynamics of individual agents, we need to define their position,
@@ -495,7 +496,7 @@ of the rod and other more intricate mechanisms.
 
 % --------------------------------------------------------------------------------------------------
 \subsection{Visualization}
-\label{section:generating-masks-and-images}
+\label{subsubsection:visualization}
 
 For visualization we use pyvista, which provides high-level wrappers around the popular VTK
 library~\cite{vtkBook,Sullivan2019}.
@@ -655,7 +656,7 @@ the desired number of vertices $\vec{x}_i$.
 
 In order to determine if our extraction algorithm provides reliable results, we have to take
 advantage of a functionality which will be introduced later in
-section~\ref{section:generating-masks-and-images}.
+section~\ref{subsubsection:visualization}.
 Our methodology makes use of the fact that we have already set up our model and solving scheme and
 are able to produce cell masks from these numerical results.
 In doing so, we have exact knowledge about the position of our agents since we can simply obtain
