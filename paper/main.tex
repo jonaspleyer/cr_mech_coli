@@ -496,7 +496,7 @@ of the rod and other more intricate mechanisms.
 
 % --------------------------------------------------------------------------------------------------
 \subsection{Visualization}
-\label{subsubsection:visualization}
+\label{subsection:visualization}
 
 For visualization we use pyvista, which provides high-level wrappers around the popular VTK
 library~\cite{vtkBook,Sullivan2019}.
@@ -587,7 +587,7 @@ near-realistic images that can be further reused.
 
 % --------------------------------------------------------------------------------------------------
 \subsection{Data Extraction}
-\label{section:fitting-and-comparing-masks}
+\label{section:data-extraction}
 
 This section will explain how we can determine the collection of vertices $\vec{x}_i$ introduced in
 subsection~\ref{subsection:mechanical-model-mechanics} from microscopic images
@@ -656,7 +656,7 @@ the desired number of vertices $\vec{x}_i$.
 
 In order to determine if our extraction algorithm provides reliable results, we have to take
 advantage of a functionality which will be introduced later in
-section~\ref{subsubsection:visualization}.
+section~\ref{subsection:visualization}.
 Our methodology makes use of the fact that we have already set up our model and solving scheme and
 are able to produce cell masks from these numerical results.
 In doing so, we have exact knowledge about the position of our agents since we can simply obtain
@@ -760,7 +760,7 @@ for comparison directly since one particular state of our simulation might conta
 not present in the experimental results (or vice-versa).
 We thus need additional methods which can be used for comparisons across division events.
 To achieve this, we use the numerical results of the \ac{abm} simulation and our visualization
-algorithms to generate cell-masks (see section~\ref{subsubsection:visualization}).
+algorithms to generate cell-masks (see section~\ref{subsection:visualization}).
 We then compare the generated masks to the experimentally obtained ones pixel by pixel.
 Whenever two pixel colors are not matching, a loss value is assigned.
 The sum of all those penalties is then the total cost.
@@ -1217,7 +1217,7 @@ TODO: Decide if this should be Supplement
     \label{fig:estimated-growth-rates}
 \end{figure}
 % --------------------------------------------------------------------------------------------------
-\subsection{With Division}
+\subsection{Without Division}
 We will now focus on using the presented methods for parameter estimation via microscopic images.
 Our initial state is given by TODO~\cite{}.% TODO
 We use our extraction algorithm to obtain the initial positions of our cells.
@@ -1312,6 +1312,9 @@ the mechanistic methodology of our approach.
     }
     \label{fig:parameter-estimates-single-step}
 \end{figure}
+
+% --------------------------------------------------------------------------------------------------
+\subsection{With Division (TODO)}
 
 %###################################################################################################
 \section{Discussion (TODO)}
