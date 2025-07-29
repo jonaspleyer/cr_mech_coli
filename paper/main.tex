@@ -723,7 +723,7 @@ is not dominated by outliers.
 % --------------------------------------------------------------------------------------------------
 \subsection{Parameter Estimation}
 \label{section:parameter-estimation}
-In order to effectively estimate the parameters of our model, we need to set up a cost function
+In order to effectively estimate the parameters of our model, we need to set up a loss function
 which can be minimized.
 In doing so, we hope to identify all parameters, given relevant experimental data.
 We utilize the preceding algorithms to extract data from cell-masks, simulate from an initial state
@@ -763,7 +763,7 @@ To achieve this, we use the numerical results of the \ac{abm} simulation and our
 algorithms to generate cell-masks (see section~\ref{subsection:visualization}).
 We then compare the generated masks to the experimentally obtained ones pixel by pixel.
 Whenever two pixel colors are not matching, a loss value is assigned.
-The sum of all those penalties is then the total cost.
+The sum of all those penalties is then the total loss.
 This algorithm is an implementation of a signed area measure.
 It is very important to take into account the parental relationship between the cells, checking if
 either one of the cells is a daughter of the other cell.
@@ -838,13 +838,13 @@ circumstances~\cite{Dice1945}.
         Image (B) contains more cells which are a result of cellular division events that have not
         yet occurred in image (A).
         (C) "Naive" comparison of cell masks, which identifies pixels of non-matching colors and
-        assigns a cost by counting these pixels.
+        assigns a loss by counting these pixels.
         This simple approach does not take into consideration the parental relationship.
         This approach is displayed in (D) where pixels of cells that are directly related have been
         colored in gray.\\
-        (E) Comparison of cost functions, exponential regression (ER) and number of cells.
-        % Total cost between successive iteration steps $t_n,t_{n+1}$.
-        The overall shape of the cost is expected to have the slope of an exponential function.
+        (E) Comparison of loss functions, exponential regression (ER) and number of cells.
+        % Total loss between successive iteration steps $t_n,t_{n+1}$.
+        The overall shape of the loss is expected to have the slope of an exponential function.
         We can clearly see that division events introduce jumps within this relationship.
         In the case where we account for the parental relationship, these jumps are mitigated.
         The loss value was set to $0$ for pixel-comparisons which belong to cells that are in a
@@ -1313,7 +1313,7 @@ This leads to a total of $4+2\times 6=16$ parameters.
 To estimate these parameters we used a latin-hypercube sweep across the parameter space and
 performed a local minimization with the Nelder-Mead method (TODO citations).% CITATIONS
 
-Figure~\ref{fig:parameter-estimates-single-step} shows the cost function of multiple simulations.
+Figure~\ref{fig:parameter-estimates-single-step} shows the loss function of multiple simulations.
 The curves show the value at the found optimium and how it changes when varying the value of the
 parameter in question.
 We have exemplified the values for radii $r_i$ and growth rates $\mu_i$ with values of the first
@@ -1375,9 +1375,9 @@ the mechanistic methodology of our approach.
         \node at (0.025, 0.975)[anchor=north west, rectangle, draw, black, minimum width=15pt, minimum height=15pt]{\textbf{F}};
     \end{tikzonimage}
     \caption{
-        The curves show the value of the cost function at the optimium as determined by our
+        The curves show the value of the loss function at the optimium as determined by our
         otimization scheme (blue dot).
-        We have chosen a single parameter and calculated the resulting cost function across a range
+        We have chosen a single parameter and calculated the resulting loss function across a range
         of values and plotted it.
         In the cases of (B-F), we can see that a minimum was achieved and thus the parameters could
         be identified.
