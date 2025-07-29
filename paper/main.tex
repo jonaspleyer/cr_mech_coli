@@ -722,63 +722,86 @@ is not dominated by outliers.
 
 % --------------------------------------------------------------------------------------------------
 \subsection{Parameter Estimation}
+\label{section:parameter-estimation}
 In order to effectively estimate the parameters of our model, we need to set up a cost function
 which can be minimized.
 In doing so, we hope to identify all parameters, given relevant experimental data.
-We use microscopic images and construct a novel algorithm that can extract the position of the agent
-from a provided cell-mask.
-These cell-masks are easily obtainable by either using existing segmentation tools or manually
-annottating images.
-Following this, we can define a cost-function and an optimization scheme to minimize said function.
+We utilize the preceding algorithms to extract data from cell-masks, simulate from an initial state
+and then compare both results.
+The cell-masks are easily obtainable by either using existing segmentation
+tools~\cite{Cutler2022,Stringer2020,Hardo2022} or manually annottating microscopic image series.
 
-% --------------------------------------------------------------------------------------------------
-\subsubsection{Challenges of Constructing a Loss Function}
+\paragraph{No Cell Division}
+In the scenario where no cells divide during the observed interval, we can use our extraction
+algorithm to obtain the position of the cells and then compare them directly to the positions
+calculated from the computational results.
+For all cells $j=1..M$, we have a collection of $i=0..N$ vertices $\vec{x}_{i,j}$.
+Thus, the total amount of information is an array of shape $(M,N,2)$
+Assuming that we have $N$ cells, each of which is represented by $M$ vertcies, the total amount of
+information is an array of shape $(N,M,2)$, containing all positions of all agents.
+It is thus only a matter of comparing two of these arrays with each other and many methods and
+approaches which already exist~\cite{Wang2020} can be leveraged.
+For now, we simply calculate the distance of each vertex pair, which is equivalent to the
+well-known loss function
 
-As within any optimization scheme, it can be beneficial to construct custom cost functions
-which are tailored to the problem at hand.
-With the methods that we have already estalished, we need to compare a collection of agents which
-were numerically calcualted through our \ac{abm} modeling approach whith microscopic images.
-Utilizing the extraction algorithm, we can simply compare the numerically obtained positions with
-the extracted positions of the data.
-We choose a typical least-squares approach for the comparison of the individual vertices.
-However, this procedure is only valid for the case where cell-division events do not play a role.
-In the case where we either the numerical model or the experimental data contain more or less cells
-than the other result, we are not able to compare them with this approach.
+\begin{equation}
+    L_{\text{LS}}(\vec{x}, \vec{y})
+        = \sqrt{\sum\limits_{i,j}||\vec{x}_{i,j}-\vec{y}_{i,j}||^2}
+        = \sqrt{\sum\limits_{i,j,k}|x_{i,j,k}-y_{i,j,k}|^2}.
+\end{equation}
 
-% --------------------------------------------------------------------------------------------------
-\subsubsection{Relationship to Semantic Segmentation (TODO)}
-\cite{Jadon2020}
+of least squares (LS).
+One important detail is that it must be guaranteed that the ordering of vertices is identical in the
+numerical and experimentally obtained results.
 
-\begin{itemize}
-    \item Semantic Segmentation is more general
-    \item Loss functions and some techniques can be reused
-    \item Discuss which types of loss functions we could consider
-    \item Possibly benchmark them later when doing the parameter estimation; compare loss functions
-\end{itemize}
-
-% --------------------------------------------------------------------------------------------------
-\subsubsection{Comparison across Generations}
-\label{subsec:comparison-across-generations}
-
+\paragraph{Comparison across Generations}
 In order to compare a variable amount of cells, we can not utilize the positions of these cells
-directly.
-In this approach, we propose a method which is similar to already existing routines (TODO mention
-machine learning, some vision algorithms use this).
-From the numerical results of the \ac{abm}, we can again generate an image of cell-masks.
-We then compare this image together to the experimental cell-mask pixel by pixel with each other.
-Whenever two pixel colors are not matching, a penalty value is assigned.
+for comparison directly since one particular state of our simulation might contain cells which are
+not present in the experimental results (or vice-versa).
+We thus need additional methods which can be used for comparisons across division events.
+To achieve this, we use the numerical results of the \ac{abm} simulation and our visualization
+algorithms to generate cell-masks (see section~\ref{subsubsection:visualization}).
+We then compare the generated masks to the experimentally obtained ones pixel by pixel.
+Whenever two pixel colors are not matching, a loss value is assigned.
 The sum of all those penalties is then the total cost.
 This algorithm is an implementation of a signed area measure.
 It is very important to take into account the parental relationship between the cells, checking if
-if either one of the cells is a daughter of the other cell.
+either one of the cells is a daughter of the other cell.
+Figure~\ref{fig:mask-difference-metric} (A,B) shows two successive states of a numerical simulation
+with varying amounts of cells.
+We can see that some division events have occurred but other cells have only grown without
+completing a division step.
+The resulting penalties without accounting for the parental relationships are displayed in
+Figure~\ref{fig:mask-difference-metric} (C).
+Black indicates that the pixels are matching and no loss is assigned while a white pixel
+indicates that the original pixels are not matching, thus assigning a loss value.
+Similarly, Figure~\ref{fig:mask-difference-metric} (D) takes the parental relationship into account
+and highlights these in gray.
+It is possible to assign a custom value for the parental loss value.
+If we set this loss value to $0$, this algorithm ensures the contiuity of the loss function in time.
+
+But it is also biologically motivated.
 If a cell has just divided, the resulting two daughter cells will cover precisely the space that the
-preceding agent had taken up.
-Let's assume as an example that one result has more cells than the other
-(Figure~\ref{fig:mask-difference-metric} (A,B)).
-When we compare the pixels of both images, we can relate the given color of the pixel to a certain
-cell.
-Whenever the colors of two distinct cells are in a parental relationship, we reduce the penalty
-which would be assigned or set it to zero.
+mother had taken up.
+Often times, the exact time at which the fission event is over can not be determined accurately,
+thus leading not only to uncertainties but also some fundamental problems.
+Another approach to construct a comparison algorithm across generations would be to use the
+previously explained position comparison algorithm and use it on intervals in which no division
+event occurrs.
+But this attempt would quickly lead to multiple problems.
+How can we deal with the uncertainties of the timing of the division event?
+And the more cells we want to investigate, the more division events will occurr even in a fixed
+amount of time thus greatly decreasing the effective interval at which this alternative algorithm
+could be used.
+Furthermore, what if there are only two images and there is a division event which is occurring
+between them?
+
+It further needs to be noted that the constructed algorithm can also be adapted by users in order to
+provide more complex loss functions (such as considering time-evolvement, etc.).
+Our method can make use of existing machine leanring algorithms since it is only based on the
+principle of comparing two images with each other.
+There already exists a variety of methods on how to assign loss values in these
+circumstances~\cite{Dice1945}.
 
 \begin{figure}[H]
     \centering
@@ -824,25 +847,28 @@ which would be assigned or set it to zero.
         The overall shape of the cost is expected to have the slope of an exponential function.
         We can clearly see that division events introduce jumps within this relationship.
         In the case where we account for the parental relationship, these jumps are mitigated.
-        The penalty was set to $0$ for pixel-comparisons which belong to cells that are in a
+        The loss value was set to $0$ for pixel-comparisons which belong to cells that are in a
         parental relationship.
     }
     \label{fig:mask-difference-metric}
 \end{figure}
 
-We can use this procedure to calculate the cost between successive iteration steps
+\paragraph{Testing the Comparison Algorithm with Division Events}
+When utilizing a computational model (see section~\ref{sec:computational-model}), we can generate
+data and use the generated masks to provide a benchmark of our algorithm.
+To do this, we set out to calculate the loss between two successive iteration steps
 $t_n$ with $t_{n+1}$.
-We expect to obtain an exponential growth in the penalty.
-This can be explained by to the fact that the growth of the total area is exponential in time.
-Furthremore, the temporal area difference can be viewed as a derivative but the derivative of an
-exponential is again an exponential.
-Figure~\ref{fig:mask-difference-metric} shows the total penalty for this approach.
+We expect to obtain an exponential growth in the loss.
+This can be explained by the fact that the growth of the total area is exponential in time.
+Furthermore, the temporal area difference can be viewed as a derivative of the total area in time,
+which is again an exponential function.
+Figure~\ref{fig:mask-difference-metric} (E) shows the total loss for this approach.
 We can see that by accounting for the parental relationship, we get the overall desired effect.
-This method allows us to compare results between states that have a different number of cells
-inside as long as their origin stems from the a shared initial state.
+This method allows us to compare results between states that have a different number of cells.
 However, since this algorithm requires us to calculate a cell-mask for each comparison and then also
 process this mask as well as the comparator, it is much more computationally demanding.
-In cases where the simpler approach of comparing positions of the agents is reasonable, this method
+After all, for each comparison step, we need to run a full 3D visualization pipeline.
+In cases where the simpler approach of comparing positions of the agents is possible, this method
 should be preferred.
 
 %###################################################################################################
