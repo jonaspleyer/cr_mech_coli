@@ -968,14 +968,10 @@ between bacteria.
             Rod-shaped bacteria are flexible rods which are able to freely move around (off-lattice
             approach) \cite{Takeuchi2005,Ursell2014,Amir2014_2}.\\
         (2) & Growth &
-            Cells grow exponentially by inserting new material along the circular part of the rod
-            \cite{Robert2014,Takeuchi2005}.\\
-        % (3) & Differentiation &
-        %     \textit{B.subtilis} is known to differentiate into matrix-producing and
-        %     surfactin-producing cells \cite{vanGestel2015,Lpez2010}.\\
+            Cells grow exponentially by inserting new material either along the circular part of the
+            rod or at the tip~\cite{Robert2014,Takeuchi2005}.\\
         (3) & Division &
-            Rod-Shaped bacteria divide in the middle of the rod, thus forming two new
-            agents.\\
+            Rod-Shaped bacteria divide in the middle of the rod into two new agents.\\
             % Bacteria can form multilayers during their growth phase \cite{Duvernoy2018}.\\
         (4) & Variable Parameters &
             Parameters for individual cells are not fixed values but rather taken from a
@@ -983,25 +979,22 @@ between bacteria.
         &\textbf{(CC) Cell-Cell Interactions}\\
         \midrule
         (5) & Adhesion &
-            Bacteria adhere to each other at longer distances and attach when in close contact
-            \cite{Verwey1947,Trejo2013}.\\
-            % The interaction between rods can be polarized \cite{Duvernoy2018}.\\
-        % (7) & Friction &
-        %     Friction between cells \cite{Grant2014} can be asymmetrical \cite{Doumic2020}.\\
-        % &\textbf{(DC) Domain-Cell Interactions}\\
-        % \midrule
-        % (6) & External Forces &
-        %     Bacteria which rub against surfaces tend to stick to them after some
-        %     time~\cite{vanLoosdrecht1989}.
-        %     The extracellular gel which surrounds the bacteria exerts a force onto the cells
-        %     \cite{Grant2014}.\\
-        % (9) & Extracellular Reactions &
-        %     Bacteria can take up nutrients or possible secrete/take up signalling molecules
-        %     \cite{Li2025}.\\
+            Bacteria attract at longer distances and adhere to each other at shorter
+            distances~\cite{Verwey1947,Trejo2013}.\\
         \bottomrule
     \end{tabularx}
     \label{table:simulation-aspects}
-    \caption{TODO Insert caption}
+    \caption{
+        This table lists aspects of cellular behaviour which we consider in our computational model.
+        It is split into cellular aspects (C) which concern only an individual bacterium and
+        interactions between cells (CC).
+        These aspects are generalized in order to fit to as many types of rod-shaped bacteria as
+        possible.
+        These are the assumptions for the basic model that we are presenting here.
+        In order for our methods to work, we are really only required to satisfy the assumption of
+        our spatial representation (see section~\ref{subsec:spatial-representation}) and thus, these
+        assumptions can also be loosened if required.
+    }
 \end{table}
 
 To model the spatial mechanics of elongated bacteria \cite{Billaudeau2017}, we represent them as a
@@ -1439,8 +1432,8 @@ the mechanistic methodology of our approach.
             Rod-shaped bacteria are flexible rods which are able to freely move around (off-lattice
             approach) \cite{Takeuchi2005,Ursell2014,Amir2014_2}.\\
         (2) & Growth &
-            Cells grow exponentially by inserting new material along the circular part of the rod
-            \cite{Robert2014,Takeuchi2005}.\\
+            Cells grow exponentially by inserting new material either along the circular part of the
+            rod or at the tip~\cite{Robert2014,Takeuchi2005}.\\
         (3) & Differentiation &
             \textit{B.subtilis} is known to differentiate into matrix-producing and
             surfactin-producing cells \cite{vanGestel2015,Lpez2010}.\\
@@ -1470,7 +1463,11 @@ the mechanistic methodology of our approach.
         \bottomrule
     \end{tabularx}
     \label{table:simulation-aspects-supplement}
-    \caption{TODO Insert caption}
+    \caption{
+        This table extends table~\ref{table:simulation-aspects} with additional observations.
+        It has to be noted that this table includes more specific behaviour that might not be
+        generalizable across all types of rod-shaped bacteria.
+    }
 \end{table}
 
 %###################################################################################################
