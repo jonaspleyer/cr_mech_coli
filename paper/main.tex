@@ -1292,44 +1292,31 @@ and start treating the individually after a certain amount of optimization steps
 
 % --------------------------------------------------------------------------------------------------
 \subsection{Without Division}
-We will now focus on using the presented methods for parameter estimation via microscopic images.
-Our initial state is given by TODO~\cite{}.% TODO
-We use our extraction algorithm to obtain the initial positions of our cells.
-From there, we supply the model with parameters such that we can make a prediction for the final
-positions of the bacteria.
-We chose a time-interval which does not contain any division events.
-By doing so, we can utilize the simpler and more performant position comparison scheme for our cost
+For now, we will focus on a time-interval which does not contain any division events.
+By doing so, we can utilize the simpler and more performant position comparison scheme for our loss
 function.
-Another important detail is the individuality of the agents.
-In our case, this means that each agent might have different parameters associated to it.
 For this dataset, we assumed that all interaction parameters which specify the interaction
 potential are identical across all agents but growth rates and the physical radii of the cells are
-individual and we also optimize them.
+individual and we optimize them like any other global parameter.
 We chose to optimize for 3 interaction parameters of the Mie potential $n,m,V_0$ and two parameters
 which were individual for each cell, namely the radii $r_i$ and growth rates $\mu_i$.
 We also included the damping constant $\lambda$ and removed any stochastic motion contributions
 ($D=0$).
 This leads to a total of $4+2\times 6=16$ parameters.
-To estimate these parameters we used a latin-hypercube sweep across the parameter space and
-performed a local minimization with the Nelder-Mead method (TODO citations).% CITATIONS
+To estimate these parameters we used a latin-hypercube~\cite{McKay1979} sweep across the parameter
+space and performed a local minimization with the Nelder-Mead~\cite{Powell1973} method.
 
-Figure~\ref{fig:parameter-estimates-single-step} shows the loss function of multiple simulations.
-The curves show the value at the found optimium and how it changes when varying the value of the
-parameter in question.
-We have exemplified the values for radii $r_i$ and growth rates $\mu_i$ with values of the first
-cell.
-The remaining plots can be found in the supplementary material in
-section~\ref{sec:supplement-parameter-profiles}.
-
-This depiction is similar to the method of profile likelihood~\cite{Raue2009}.
+In figure~\ref{fig:parameter-estimates-single-step} we performed a sensitivity-analysis for every
+parameter.
 We can see that almost all parameters can be estimated by our optimization approach.
-However, the damping constant exhibits the well-known phenomenon of
-unidentifiability~\cite{Raue2009}.
-This is of course problematic since the real value of $\lambda$ can not be idenified in this case.
-But it also shows that the approach which we used is similar in its ability to detect these defects
-in the first place.
+However, the damping constant (A) does not show any changes in the loss function when increasing its
+value.
+It hints at a non-identifiability~\cite{Raue2009} of the parameter $\lambda$.
+But it also shows that the approach which we used is able to detect these problems.
 As we continue to develop these methods, we expect to be able to reuse many of the existing
-theoretical approaches which have already been developed for less complex systems such as \acp{ode}.
+theoretical approaches such as likelihood estimation and uncertainty quantification which have
+already been developed extensively for less complex systems such as \acp{ode}.
+\textbf{TODO citations, also: is this discussion?}
 Fortunately, \texttt{cellular\_raza} was chosen to construct our model such that we are flexible in
 changing the underlying representation if should find that such unidentifiabilities are structural
 (model-based) rather than practical (due to lack of data).
@@ -1338,14 +1325,22 @@ the mechanistic methodology of our approach.
 
 \begin{figure}[H]
     \centering
-    \begin{tikzonimage}[width=0.33\textwidth]
-        {figures/crm_fit/snapshots/exact-004444.png}%
-        \node at (0.025, 0.975)[anchor=north west, rectangle, draw, black, minimum width=15pt, minimum height=15pt]{\textbf{A}};
+    \begin{tikzonimage}[width=0.54\textwidth]
+        {figures/crm_fit/snapshots/predicted-031111.png}%
+        \node at (0.025, 0.975)[anchor=north west, rectangle, draw, white, minimum width=15pt, minimum height=15pt]{\textbf{A}};
     \end{tikzonimage}%
-    \begin{tikzonimage}[width=0.33\textwidth]
-        {figures/crm_fit/snapshots/exact-004444.png}%
-        \node at (0.025, 0.975)[anchor=north west, rectangle, draw, black, minimum width=15pt, minimum height=15pt]{\textbf{A}};
+    \hspace{0.01\textwidth}%
+    \begin{tikzonimage}[width=0.41\textwidth]
+        {figures/crm_fit/celldifss/cell-031111.png}%
+        \node at (0.025, 0.975)[anchor=north west, rectangle, draw, black, minimum width=15pt, minimum height=15pt]{\textbf{B}};
     \end{tikzonimage}%
+    \caption{
+        \textbf{TODO do we need this figure?}
+        (A) A microscopic image with the predicted positions of the cells overlayed on top.
+        (B) Differences between extracted and predicted positions.
+        % TODO make this figure to scale
+    }
+    \label{fig:celldiffs-individual}
 \end{figure}
 
 \begin{figure}[H]
@@ -1375,14 +1370,18 @@ the mechanistic methodology of our approach.
         \node at (0.025, 0.975)[anchor=north west, rectangle, draw, black, minimum width=15pt, minimum height=15pt]{\textbf{F}};
     \end{tikzonimage}
     \caption{
-        The curves show the value of the loss function at the optimium as determined by our
-        otimization scheme (blue dot).
-        We have chosen a single parameter and calculated the resulting loss function across a range
-        of values and plotted it.
+        Sensitivity analyses werer performed for every optimized parameter of our model.
+        (A-F) show the curves of loss functions when varying this respective parameter and keeping
+        all others constant at the value of the found optimum (blue dot).
         In the cases of (B-F), we can see that a minimum was achieved and thus the parameters could
-        be identified.
-        However, for the case of the damping constant $\lambda$ in (A), a non-identifiability
-        arises.
+        be estimated.
+        However, for the case of the damping constant $\lambda$ in (A), we see that the upper bound
+        is open.
+        This suggests that our model could be reduced with regard to this parameter.
+        We have exemplified the values for radii $r_i$ and growth rates $\mu_i$ with values of the
+        first cell.
+        The remaining plots can be found in the supplementary material in
+        section~\ref{sec:supplement-parameter-profiles}.
     }
     \label{fig:parameter-estimates-single-step}
 \end{figure}
