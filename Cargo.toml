@@ -29,7 +29,7 @@ rand_chacha = { version = "0.9", features = ["serde"] }
 rayon = "1.10.0"
 serde = { version = "1.0", features = ["derive"] }
 serde-pickle = "1.2"
-serde_json = { version = "1.0.141", features = ["arbitrary_precision", "float_roundtrip", "preserve_order", "std"] }
+serde_json = { version = "1.0.142", features = ["arbitrary_precision", "float_roundtrip", "preserve_order", "std"] }
 toml = "0.9"
 clap = { version = "4.5.41", features = ["derive"] }
 rand_distr = "0.5.1"
