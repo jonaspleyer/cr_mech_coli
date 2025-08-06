@@ -161,7 +161,7 @@ def render_pv_image(
     pv.Plotter.enable_parallel_projection(plotter)
     plotter.camera.tight(padding=0)
     plotter.camera.position = (*plotter.camera.position[:2], max(domain_size))
-    plotter.camera.cliping_range = (0, np.inf)
+    plotter.camera.clipping_range = (0, np.inf)
     camera = plotter.camera.copy()
     plotter.clear_actors()
 
