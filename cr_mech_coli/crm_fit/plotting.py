@@ -4,6 +4,8 @@ from pathlib import Path
 from tqdm.contrib.concurrent import process_map
 import cr_mech_coli as crm
 from cr_mech_coli.cr_mech_coli import MorsePotentialF32
+import scipy as sp
+from tqdm import tqdm
 
 from .crm_fit_rs import Settings, OptimizationResult, predict_calculate_cost
 
@@ -11,6 +13,45 @@ from .crm_fit_rs import Settings, OptimizationResult, predict_calculate_cost
 def pred_flatten_wrapper(args):
     parameters, iterations, positions_all, settings = args
     return predict_calculate_cost(parameters, positions_all, iterations, settings)
+
+
+def prediction_optimize_helper(
+    params_opt, param_single, n_param, positions_all, iterations, settings
+):
+    params_all = [0] * (len(params_opt) + 1)
+    params_all[:n_param] = params_opt[:n_param]
+    params_all[n_param] = param_single
+    params_all[n_param + 1 :] = params_opt[n_param:]
+
+    return predict_calculate_cost(params_all, positions_all, iterations, settings)
+
+
+def optimize_around_single_param(opt_args):
+    all_params, bounds_lower, bounds_upper, n, param_single, args = opt_args
+
+    params_opt = list(all_params)
+    b_low = list(bounds_lower)
+    b_upp = list(bounds_upper)
+
+    del params_opt[n]
+    del b_low[n]
+    del b_upp[n]
+
+    bounds = [(b_low[i], b_upp[i]) for i in range(len(b_low))]
+
+    res = sp.optimize.minimize(
+        prediction_optimize_helper,
+        x0=params_opt,
+        args=(param_single, n, *args),
+        bounds=bounds,
+        method="Nelder-Mead",
+        options={
+            "disp": True,
+            "maxiter": 10,
+            "maxfev": 10,
+        },
+    )
+    return res.fun
 
 
 def plot_profile(
@@ -36,16 +77,19 @@ def plot_profile(
         fig.clf()
 
     x = np.linspace(bound_lower, bound_upper, steps)
-    ps = [
-        [pi if n != i else xi for i, pi in enumerate(optimization_result.params)]
-        for xi in x
-    ]
 
     (name, units, short) = param_info
 
-    pool_args = [(p, *args) for p in ps]
+    pool_args = [
+        (optimization_result.params, infos.bounds_lower, infos.bounds_upper, n, p, args)
+        for p in x
+    ]
+
     y = process_map(
-        pred_flatten_wrapper, pool_args, desc=f"Profile: {name}", max_workers=n_workers
+        optimize_around_single_param,
+        pool_args,
+        desc=f"Profile: {name}",
+        max_workers=n_workers,
     )
 
     final_params = optimization_result.params
