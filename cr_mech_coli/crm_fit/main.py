@@ -236,7 +236,7 @@ def crm_fit_main():
             fig_ax = None
             fig_ax = plot_profile(
                 n,
-                (iterations_all, positions_all, settings),
+                (positions_all, iterations_all, settings),
                 optimization_result,
                 out,
                 pyargs.workers,

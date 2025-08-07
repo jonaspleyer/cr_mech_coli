@@ -15,14 +15,14 @@ def pred_flatten_wrapper(args):
 
 def plot_profile(
     n: int,
-    args: tuple[list[int], np.ndarray, Settings],
+    args: tuple[np.ndarray, list[int], Settings],
     optimization_result: OptimizationResult,
     out: Path,
     n_workers,
     fig_ax=None,
     steps: int = 20,
 ):
-    (_, positions_all, settings) = args
+    (positions_all, iterations, settings) = args
     infos = settings.generate_optimization_infos(positions_all.shape[1])
     bound_lower = infos.bounds_lower[n]
     bound_upper = infos.bounds_upper[n]
