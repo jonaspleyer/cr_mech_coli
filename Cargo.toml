@@ -24,7 +24,7 @@ numpy = { version = "0.25.0", features = ["half", "nalgebra"] }
 pyo3 = { version = "0.25", features = ["serde", "py-clone", "multiple-pymethods"] }
 rand = { version = "0.9", features = ["serde"] }
 rand_chacha = { version = "0.9", features = ["serde"] }
-rayon = "1.10.0"
+rayon = "1.11.0"
 serde = { version = "1.0", features = ["derive"] }
 serde-pickle = "1.2"
 serde_json = { version = "1.0.142", features = ["arbitrary_precision", "float_roundtrip", "preserve_order", "std"] }
