@@ -530,9 +530,9 @@ dependencies = [
 
 [[package]]
 name = "egobox-doe"
-version = "0.31.0"
+version = "0.32.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b18772458dd137685668e567fd5fddef284f457c7b971f90d7bce8e3f728219d"
+checksum = "eb61c94863cda2f88e6699253ab397f815e2a36ba2dd2304a93854a5732e9da9"
 dependencies = [
  "linfa",
  "ndarray",
