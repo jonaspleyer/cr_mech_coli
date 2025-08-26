@@ -33,7 +33,7 @@ clap = { version = "4.5.45", features = ["derive"] }
 rand_distr = "0.5.1"
 short_default = "0.1.1"
 ndarray = "0.15"
-egobox-doe = "0.31.0"
+egobox-doe = "0.32.0"
 kdam = "0.6.3"
 log = "0.4.27"
 env_logger = "0.11.8"
