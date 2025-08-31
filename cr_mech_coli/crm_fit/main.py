@@ -303,7 +303,7 @@ def crm_fit_main():
                 ncol=3,
                 frameon=False,
             )
-            iterdir = out / "celldifss"
+            iterdir = out / "celldiffs"
             iterdir.mkdir(parents=True, exist_ok=True)
             fig.savefig(iterdir / f"cell-{iteration:06}.png")
             fig.savefig(iterdir / f"cell-{iteration:06}.pdf")
