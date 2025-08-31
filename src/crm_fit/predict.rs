@@ -3,7 +3,6 @@ use crate::{run_simulation_with_agents, PhysInt, PhysicalInteraction};
 use cellular_raza::prelude::{
     CellIdentifier, MiePotentialF32, MorsePotentialF32, RodInteraction, SimulationError,
 };
-use itertools::Itertools;
 use pyo3::prelude::*;
 
 #[pyfunction]
