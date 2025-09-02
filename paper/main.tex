@@ -260,7 +260,7 @@ mechanistic data for the training cell-segmentation and cell-tracking machine-le
 %     \end{itemize}
 % \end{itemize}
 
-\begin{figure}[H]
+\begin{figure}
     \centering
     % \includegraphics[width=0.8\textwidth]{overview.pdf}
     \includestandalone[width=0.8\textwidth]{figures/concept/overview}
@@ -323,7 +323,7 @@ of the rod and other more intricate mechanisms.
 %         problem
 % \end{enumerate}
 
-\begin{figure}[H]
+\begin{figure}
     \centering
     \includegraphics[width=0.5\textwidth]{docs/source/_static/mechanics.png}
     \caption{
@@ -394,7 +394,7 @@ near-realistic images that can be further reused.
 %     \item Use \ac{pbr}
 % \end{enumerate}
 
-\begin{figure}[H]
+\begin{figure}
     \centering
     % \begin{tikzonimage}[width=0.9\textwidth]{visualization.pdf}
     %     \node at (0.025, 0.975)[anchor=north west, rectangle, draw, minimum width=15pt, minimum height=15pt]{\textbf{A}};
@@ -469,7 +469,7 @@ We list the points in this order, thus forming a sorted polygon of pixel coordin
 In the last step, we take the sorted, extracted points $\vec{p}_i$ and interpolate $n$ values for
 the desired number of vertices $\vec{x}_i$.
 
-\begin{figure}[H]
+\begin{figure}
     \centering
     \begin{tikzonimage}[width=0.36\textwidth]
         {docs/source/_static/fitting-methods/algorithm/image001042.png}
@@ -532,7 +532,7 @@ the extraction.
 However, the overall distribution shows small values of distances for a large number of vertices and
 is not dominated by outliers.
 
-\begin{figure}[H]
+\begin{figure}
     \centering
     \begin{tikzonimage}[width=0.32\textwidth]
         {docs/source/_static/fitting-methods/extract_positions-004000.png}
@@ -645,7 +645,7 @@ principle of comparing two images with each other.
 There already exists a variety of methods on how to assign loss values in these
 circumstances~\cite{Dice1945}.
 
-\begin{figure}[H]
+\begin{figure}
     \centering
     \begin{minipage}{0.5\textwidth}
     \begin{tikzonimage}[width=0.48\textwidth]
@@ -1102,7 +1102,7 @@ and start treating the individually after a certain amount of optimization steps
 % \end{enumerate}
 
 \label{subsec:parameter-estimation-individual-treatment}
-\begin{figure}[H]
+\begin{figure}
     \centering
     \begin{tikzonimage}[width=0.33\textwidth]
         {figures/crm_estimate_params/IWF-Goettingen/rod-lengths-individual.pdf}%
@@ -1165,7 +1165,7 @@ changing the underlying representation if should find that such unidentifiabilit
 This allows us to iterate and find the model formulation which suits the data best but still retain
 the mechanistic methodology of our approach.
 
-\begin{figure}[H]
+\begin{figure}
     \centering
     \begin{tikzonimage}[width=0.54\textwidth]
         {figures/crm_fit/snapshots/predicted-031111.png}%
@@ -1185,7 +1185,7 @@ the mechanistic methodology of our approach.
     \label{fig:celldiffs-individual}
 \end{figure}
 
-\begin{figure}[H]
+\begin{figure}
     \centering
     \begin{tikzonimage}[width=0.33\textwidth]
         {figures/crm_fit/profiles/damping.pdf}%
@@ -1273,7 +1273,7 @@ the mechanistic methodology of our approach.
 % EXCLUDE THIS FOR NOW
 % \section{Plastic Deformations}
 % 
-% \begin{figure}[H]
+% \begin{figure}
 %     \centering
 %     \includegraphics[width=0.49\textwidth]
 %         {docs/source/_static/scripts/crm_amir/0000000023.png}\\
@@ -1307,7 +1307,7 @@ the mechanistic methodology of our approach.
 \section{Parameter Estimation}
 \label{sec:supplement-parameter-profiles}
 %TODO {explain profiles}
-\begin{figure}[H]
+\begin{figure}
     \centering
     \includegraphics[width=0.33\textwidth]
         {figures/crm_fit/profiles/growth-rate-0.pdf}%
@@ -1324,7 +1324,7 @@ the mechanistic methodology of our approach.
     \caption{Parameter estimation of growth rates for individual cells}%TODO extend caption}
     \label{fig:parameter-estimates-supplement-growth-rates}
 \end{figure}
-\begin{figure}[H]
+\begin{figure}
     \centering
     \includegraphics[width=0.33\textwidth]
         {figures/crm_fit/profiles/radius-0.pdf}%
@@ -1411,7 +1411,7 @@ the mechanistic methodology of our approach.
         In particular to update\_mechanics functions.
 \end{itemize}
 
-\begin{figure}[H]
+\begin{figure}
     \centering
     \includegraphics[width=0.49\textwidth]
         {docs/source/_static/performance/computation-time-with-initial-agents.pdf}
@@ -1438,7 +1438,7 @@ the mechanistic methodology of our approach.
 
 \cite{You2019}
 
-\begin{figure}[H]
+\begin{figure}
     \centering
     \includegraphics[width=0.49\textwidth]
         {docs/source/_static/scripts/crm_multilayer/multilayer-time-evolution.pdf}\\
