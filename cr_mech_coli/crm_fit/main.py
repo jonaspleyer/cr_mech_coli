@@ -216,7 +216,7 @@ def crm_fit_main():
     print(f"{time.time() - interval:10.4f}s Calculated initial values")
     interval = time.time()
 
-    filename = "final_params.csv"
+    filename = "final_params.toml"
     if (out / filename).exists():
         optimization_result = crm_fit.OptimizationResult.load_from_file(out / filename)
     else:
