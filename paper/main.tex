@@ -162,8 +162,8 @@ parameters of our model.
 We deliberately distinguish between conceptually separate components within this framework.
 This modularity highlights a "blueprint" which can be adapted and applied to other \acp{abm}.
 
-Mechanical properties of rod-shaped bacteria have been studied
-extensively~\cite{Chatterjee1988,Takeuchi2005,IWAI2002}.
+Mechanical properties of rod-shaped bacteria have been studied in great detail
+experimentally~\cite{Chatterjee1988,Takeuchi2005,IWAI2002}.
 It was found that the MreB protein is the driving force in maintaining their distinct elongated
 shape~\cite{Ursell2014}, which plays an important role in the dynamics of
 growth~\cite{Billaudeau2017}, division~\cite{Harry2001} and their collective
@@ -181,7 +181,8 @@ properties and infer emerging phenomena~\cite{Cho2007,Jnsson2005}.
 Existing tools can describe growth, division and many effects such as colony formation and
 expansion~\cite{Matyjaszkiewicz2017,Doumic2020} but they are limited in describing the
 aforementioned plastic or elastic deformations of the rod.
-Furthermore, the literature on how to estimate the parameters of such models is very sparse.
+Furthermore, the literature on how to estimate the parameters of such models directly from data is
+very sparse.
 
 This work adresses some of these limitations.
 We use microscopic image time series as inputs to obtain information about the spatial
@@ -198,7 +199,8 @@ Our approach takes a general stance which incorporates effects that are observed
 \section{Overview}
 This work consists of many subcomponents which can be combined in order to achieve various tasks.
 Figure~\ref{fig:flowchart-project-structure} shows a high-level overview of all components.
-We assume that bacterial rods can be represented by a colleciton of vertices $\vec{x}_i$.
+We assume that bacterial rods can be represented by a colleciton of vertices $\vec{x}_i$ (see
+section~\ref{subsec:spatial-representation}).
 This assumption alone is enough to enable a cascade of other components.
 Using the spatial representation, we provide visualization methods that create 3D models from the
 given vertices which can then either be rendered or projected to a 2D plane.
@@ -290,6 +292,8 @@ to one particular celltype or simply not necessary to assume in order to constru
 be omitted alltogether.
 This concerns effects such as polar interactions~\cite{Duvernoy2018}, extracellular
 reactions~\cite{Wang2010} or differentiation processes~\cite{vanGestel2015,Lpez2010} and many other.
+When describing our system, we distinguish between cellular aspects which ocurr within a single
+cell and cell-cell interactions between numerous bacteria.
 We restrict ourselves to the aspects presented in table~\ref{table:simulation-aspects}.
 For a collection of other known effects which could be considered, we refer to the supplementary
 section~\ref{section:discussion}, and~\ref{section:supplement-more-simulation-aspects}.
@@ -632,22 +636,18 @@ right after the division event.
 
 We implemented the described model in \texttt{cellular\_raza}~\cite{Pleyer2025}.
 Doing so has many benefits.
-Not only, was a more simpler model already available which could be adapted to our needs.
-But furthermore, due to the nature of \texttt{cellular\_raza} in that it does not assume any
-particular cellular representation, we are free to change the underlying model at any time, even
-making fundamental changes.
-It is an \ac{abm} which is able to natively track cells through the course of a numerical simulation
-and also keeps track of parent/daughter relationships.
+Not only, was a more simpler model already available which we were able to adapt to our needs.
+But by design \texttt{cellular\_raza} aims to provide researchers with a great amount of flexibility
+and therefore does not assume any particular cellular representation, thus enabling us to make
+fundamental changes.
 This allows us to to experiment with different model implementations and still retain performance.
-By leveraging the strong safety guarantees provided by the Rust programming language, we eliminate a
-whole class of problems from the start.
-% TODO CITATION
-In addition, we are using the \texttt{pyo3} and \texttt{maturin} crates which allow us to easily
-generate python bindings and thus interoperate between the two ecosystems.
-While this particular model is more complex due to the nature of non-trivial (asymmetric)
-interactions, we were still able to properly utilize the speedup from executing simulations in
-parallalel using the built-in parallelization methods of \texttt{cellular\_raza} (see
-Supplementary Material, Figure~\ref{fig:performance}).
+Furthermore, it is an \ac{abm} which is able to natively track cells through the course of a
+numerical simulation and also keeps track of mother/daughter relationships.
+On the programming side, we are using the \texttt{pyo3} and \texttt{maturin} crates which allow us
+to easily generate Python bindings and enable us to interoperate between the two ecosystems.
+By using \texttt{cellular\_raza}, we can make use of multiple threads for running a single numerical
+simulation, using the built-in parallelization methods (see Supplementary Material,
+Figure~\ref{fig:performance}).
 
 %###################################################################################################
 \section{Methodology}
@@ -662,8 +662,8 @@ choices with respect to the cellular details.
 \subsection{Visualization}
 \label{subsection:visualization}
 
-For visualization we use pyvista, which provides high-level wrappers around the popular VTK
-library~\cite{vtkBook,Sullivan2019}.
+To visualize the spatial configuration of our results we use pyvista, which provides high-level
+wrappers around the popular VTK library~\cite{vtkBook,Sullivan2019}.
 The first stage of our visualization is to generate 3D meshes for each bacterium, which we consider
 an intermediate representation.
 We insert spheres of a given radius $r$ at each vertex $\vec{x}_i$ and connect adjacent vertices
@@ -674,8 +674,8 @@ A render of this result can be seen in figure~\ref{fig:progression-image-generat
 Since we use a 3D rendering engine as an intermediate representation, the resulting image can have
 overlaps of bacteria which are placed at higher or lower values along the z-direction.
 
-To generate masks, we assign unique colors to every mesh of the respective cellular agent.
-This mapping is unique, ensuring no two agents will use identical colors.
+To generate masks, we assign unique colors to every mesh of the respective cellular agent, ensuring
+no two agents will use identical colors.
 We then use a parallel projection and remove any existing light sources in order to obtain a solid
 color for every cell-agent.
 The resulting image is shown in subfigure (B).
@@ -824,8 +824,8 @@ section~\ref{subsection:visualization}.
 Our methodology makes use of the fact that we have already set up our model and solving scheme and
 are able to produce cell masks from these numerical results.
 In doing so, we have exact knowledge about the position of our agents since we can simply obtain
-this information from our model.
-But on the other hand we can also try to extract this position from the generated cell-masks.
+this information from our computational model.
+But on the other hand we can also try to extract these positions from the generated cell-masks.
 By comparing the differences between them, we get a good estimate of how well our extraction
 algorithm can determine the true position of the bacteria.
 
