@@ -1304,12 +1304,13 @@ dependency.
 
 \appendix
 %###################################################################################################
-\section*{Supplementary Material}
+\renewcommand{\thesection}{}
+\renewcommand{\thesubsection}{S\arabic{subsection}}
+\section{Supplementary Material}
 
-\renewcommand{\thesection}{S\arabic{section}}
 
 %###################################################################################################
-\section{Data Preparation}
+\subsection{Data Preparation}
 \begin{enumerate}
     \item Have masks of data; reference image segmantation tools; or do it by hand
     \item ensure that colors are matching for bacteria between time-steps
@@ -1318,7 +1319,7 @@ dependency.
 \end{enumerate}
 
 %###################################################################################################
-\section{Parameter Estimation}
+\subsection{Parameter Estimation}
 \label{sec:supplement-parameter-profiles}
 %TODO {explain profiles}
 \begin{figure}
@@ -1357,7 +1358,7 @@ dependency.
 \end{figure}
 
 %###################################################################################################
-\section{More Simulation Aspects}
+\subsection{More Simulation Aspects}
 \label{section:supplement-more-simulation-aspects}
 %TODO insert this into the discussion later
 \begin{table}[H]
@@ -1411,7 +1412,7 @@ dependency.
 \end{table}
 
 %###################################################################################################
-\section{Performance}
+\subsection{Performance}
 
 \begin{itemize}
     \item Quadratic Scaling comes from more dense simulation
@@ -1435,7 +1436,7 @@ dependency.
 \end{figure}
 
 %###################################################################################################
-\section{Multilayer Predictions}
+\subsection{Multilayer Predictions}
 % TODO
 
 \begin{itemize}
