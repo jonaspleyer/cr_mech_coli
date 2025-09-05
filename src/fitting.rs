@@ -209,19 +209,16 @@ pub fn _sort_points<'py>(
             let mut total_diff = isize::MAX;
             let mut total_q = remaining[0];
             let mut total_index = 0;
-            '_inner_loop: for n in 0..remaining.len() {
-                let q = remaining[n];
+            '_inner_loop: for (n, q) in remaining.iter().enumerate() {
                 use core::ops::Sub;
                 let diff = (q.sub(&p)).mapv(|x| x.abs()).sum();
                 if diff == 1 {
-                    total_q = q;
+                    total_q = *q;
                     total_index = n;
-                    // points_sorted.row_mut(i).assign(&q);
-                    // remaining.remove(n);
                     break '_inner_loop;
                 } else if diff < total_diff {
                     total_diff = diff;
-                    total_q = q;
+                    total_q = *q;
                     total_index = n;
                 }
             }
