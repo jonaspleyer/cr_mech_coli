@@ -36,6 +36,10 @@ impl OptimizationResult {
         toml::from_str(&contents)
             .map_err(|e| pyo3::exceptions::PyValueError::new_err(format!("{e}")))
     }
+
+    fn __repr__(&self) -> String {
+        format!("{self:?}")
+    }
 }
 
 fn lhs_optimization(
