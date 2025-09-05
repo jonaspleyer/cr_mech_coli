@@ -1137,9 +1137,9 @@ and start treating the individually after a certain amount of optimization steps
 For now, we will focus on a time-interval which does not contain any division events.
 By doing so, we can utilize the simpler and more performant position comparison scheme for our loss
 function.
-For this dataset, we assumed that all interaction parameters which specify the interaction
-potential are identical across all agents but growth rates and the physical radii of the cells are
-individual and we optimize them like any other global parameter.
+For this dataset, we assumed that all parameters which specify the interaction potential are
+identical across all agents but growth rates \textbf{TODO check this} and the physical radii of the
+cells are individual and we optimize them like any other global parameter.
 We chose to optimize for 3 interaction parameters of the Mie potential $n,m,V_0$ and two parameters
 which were individual for each cell, namely the radii $r_i$ and growth rates $\mu_i$.
 We also included the damping constant $\lambda$ and removed any stochastic motion contributions
