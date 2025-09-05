@@ -277,9 +277,138 @@ mechanistic data for the training cell-segmentation and cell-tracking machine-le
 \end{figure}
 
 %###################################################################################################
-\section{Methodology}
+\section{A Computational Model for Rod-Shaped Bacteria}
+\label{sec:computational-model}
+
+The mechanical behaviour of rod-shaped bacteria is governed by a plethora of effects.
+In this work, we aim to establish a model which is abstract enough such that it can be reused for
+many types of rod-shaped bacteria but also explicit enough such that we can quantify its parameters.
+We are thus aiming to work with a set of assumptions that is as general as possible but still
+specific to rod-shaped bacteria.
+With this delicate balance in mind, it is clear that many cellular processes which might be specific
+to one particular celltype or simply not necessary to assume in order to construct our model, will
+be omitted alltogether.
+This concerns effects such as polar interactions~\cite{Duvernoy2018}, extracellular
+reactions~\cite{Wang2010} or differentiation processes~\cite{vanGestel2015,Lpez2010} and many other.
+We restrict ourselves to the aspects presented in table~\ref{table:simulation-aspects}.
+For a collection of other known effects which could be considered, we refer to the supplementary
+section~\ref{section:discussion}, and~\ref{section:supplement-more-simulation-aspects}.
+
+\paragraph{(C) Cellular}
+It was long believed that bacteria lack cytoskeletal filaments but with the end of the last century,
+it was discovered that the MreB protein fills this role since it “[..] forms an actin-like
+cytoskeleton in bacteria [..]”~\cite{Erickson2001}.
+It can polymerize and form filaments which behave similar to actin microfilaments~\cite{Dersch2020}.
+The effect of MreB on the shape of cells during growth was shown in more detail
+by~\cite{Ursell2014}.
+They found that MreB localizes specifically at regions of negative curvature and thus introduces
+heterogeneous cell growth which results in a bending force during the growth of cells.
+It also means that the cells are able to sense the curvature of the cell wall through cytoskeleteal
+MreB filaments during growth.
+\cite{Bratton2018} showed that the trans-membrane protein RodZ can modulate MreB density and
+facilitates local MreB assembly.
+This feedback mechanism will result in straight rod-shaped bacteria if not interfered from the
+external environment.
+These results were also confirmed by the studies of~\cite{Wang2010}.
+In their experiments, a single bacterium was fixed at the bottom pole while an optically trapped
+bead was placed on the upper pole.
+They could now exert a force on the free part and thus study the response of the cell under
+different conditions.
+When treating cells with A22, an antibiotic which disassembles
+MreB~\cite{IWAI2002,Gitai2005,Karczmarek2007,Bean2009}, a higher displacement with identical force
+could be measured, thus indicating that MreB increases mechanical rigidity of the cell.
+
+While some rod-shaped bacteria grow by inserting new material at the ends, \textit{E.Coli} and
+\textit{B.Subtilis} utilize a method where new material is inserted along the cylindrical part of
+the rod.
+The details of the division event (i.e. Z-Ring formation) are very intricate and are heavily
+studied as a subject on their own~\cite{Harry2001}.
+On a higher level view, the rod is split apart at a point close to the center of the cell, thus
+creating two new daughter cells.
+We know that the best predictor for when the division event occurs, is the length of the rod as
+opposed to the age of bacterium~\cite{Robert2014}.
+Furthermore, only the growth of the whole colony but also the individual growth of the bacteria is
+exponential~\cite{Amir2014,Takeuchi2005}.
+
+\paragraph{(CC) Cell-Cell Interactions \& (DC) Domain-Cell Interactions}
+A colony of bacteria is known to form biofilms (Dunne 2002). This strategy is is beneficial for the
+survival of the collective as it allows it to harness growth factors and migrate when necessary and
+also plays an important role in bacterial infections in the biomedical sector~\cite{Ong1999}.
+The formation of biofilms is only possible due to the attractive nature of bacterial interactions
+towards each other and surfaces (Berne et al. 2018). To analyze bacterial adhesion to surfaces,
+\cite{vanLoosdrecht1989} investigated the interactions of various bacteria with negatively charged
+polystyrene.
+They found that the interaction is characterized by a low Gibbs energy of $(2 - 3)kT$ per cell
+which can be described by a secondary minimum of the DLVO-theory~\cite{Verwey1947,Derjaguin1993}
+which is relevant for distances $\geq\SI{1}{\nano\meter}$.
+At these distances, the DLVO potential acts as a generic adhesive potential.
+Particles which stay in the secondary minimum are held together but even weak interactions are
+enough to redisperse them which means that this state is reversible.
+When approaching closer distances, more intricate mechanisms come into play in which the
+heterogeneity of the materials in question needs to be considered.
+\cite{Hori2010} described bacterial adhesion as a “two-phase process including an initial,
+instantaneous and reversible physical phase (phase one) and a time-dependent and irreversible
+molecular and cellular phase (phase two)”.
+
+All these considerations become even more intricate when not considering interactions of bacteria
+with surfaces but bacteria with each other.
+Gram-negative bacteria (eg. E.Coli) express outer membrane proteins (adhesins) which allow them to
+attach to various hosts (Beachey 1981, Vaca et al. 2019).
+In addition, the flagella can play an important role in the direct adhesion between
+cells~\cite{Haiko2013}.
+Thus it is not correct to blindly apply the results for adhesion to surfaces to the interactions
+between bacteria.
+
+\begin{table}[H]
+    \centering
+    \def\arraystretch{1.3}
+    \begin{tabularx}{\textwidth}{c l X}
+        &\textbf{Aspect} & \textbf{Description}\\
+        \toprule
+        &\textbf{(C) Cellular}\\
+        \midrule
+        (1) & Rod-Shaped Mechanics &
+            Rod-shaped bacteria are flexible rods which are able to freely move around (off-lattice
+            approach) \cite{Takeuchi2005,Ursell2014,Amir2014_2}.\\
+        (2) & Growth &
+            Cells grow exponentially by inserting new material either along the circular part of the
+            rod or at the tip~\cite{Robert2014,Takeuchi2005}.\\
+        (3) & Division &
+            Rod-Shaped bacteria divide in the middle of the rod into two new agents.\\
+            % Bacteria can form multilayers during their growth phase \cite{Duvernoy2018}.\\
+        (4) & Individual Parameters &
+            Parameters for individual cells are not fixed values but rather taken from a
+            distribution \cite{Koutsoumanis2013}.\\
+        &\textbf{(CC) Cell-Cell Interactions}\\
+        \midrule
+        (5) & Adhesion &
+            Bacteria attract at longer distances and adhere to each other at shorter
+            distances~\cite{Verwey1947,Trejo2013}.\\
+        \bottomrule
+    \end{tabularx}
+    \label{table:simulation-aspects}
+    \caption{
+        This table lists aspects of cellular behaviour which we consider in our computational model.
+        It is split into cellular aspects (C) which concern only an individual bacterium and
+        interactions between cells (CC).
+        These aspects are generalized in order to fit to as many types of rod-shaped bacteria as
+        possible.
+        These are the assumptions for the basic model that we are presenting here.
+        In order for our methods to work, we are really only required to satisfy the assumption of
+        our spatial representation (see section~\ref{subsec:spatial-representation}) and thus, these
+        assumptions can also be loosened if required.
+    }
+\end{table}
+
+To model the spatial mechanics of elongated bacteria \cite{Billaudeau2017}, we represent them as a
+collection of auxiliary vertices $\{\vec{x}_i\}$ which are connected by springs in
+ascending order.
+Furthermore, we assume that the cells are flexible described by their rigidity.
+A force $\vec{F}$ interacting between cellular agents determines the radius (thickness) of the
+rods and an attractive component can model adhesion between cells.
+
 % --------------------------------------------------------------------------------------------------
-\subsection{Spatial Representation of Rod-Shaped Bacteria}
+\subsection{Spatial Representation}
 \label{subsec:spatial-representation}
 This work makes use of a few but powerfull assumptions concerning the mathematical representation of
 the cells in question.
@@ -335,6 +464,199 @@ of the rod and other more intricate mechanisms.
     }
     \label{fig:mechanics-bacterium}
 \end{figure}
+
+% --------------------------------------------------------------------------------------------------
+\subsection{Mechanics}
+\label{subsection:mechanical-model-mechanics}
+
+We use principles from discrete differential geometry~\cite{bobenko2008discrete} to describe the
+stiffness and flexibility of the bacterial rod.
+As explained previously, MReB will counteract the bending of the rod, resulting in a stiffening
+force.
+In principle, this stress will be dependent on the position inside the cell~\cite{Chatterjee1988}
+but in order to construct a model which can be parametrized and by method of Occam's Razor, we chose
+to model the bacterium as a bending beam, thus utilizing the simplest solution which can still
+produce the desired effects.
+Such a beam can be represented by a collection of vertices $\vec{x}_i$ which are connected by a
+springs of lengths $l_i$.
+We use the notation $\vec{c}_i:=\vec{x}_i-\vec{x}_{i-1}$ with which the resulting force acting
+between two vertices if given by
+
+\begin{align}
+    \vec{F}_{i,\text{springs}} =
+        &-\gamma\left(1 - \frac{l}{\left|\vec{c}_i\right|}\right)
+        \vec{c}_i\\
+        &+ \gamma\left(1 - \frac{l}{\left|\vec{c}_{i+1}\right|}\right)
+        \vec{c}_{i+1}.
+\end{align}
+
+In addition to springs between individual vertices $\vec{x}_i$, we assume that each angle at a
+vertex between edges is subject to a force indiced by curvature.
+% We assume that we can model the mechanical properties of the bacterium as an elastic rod.
+Given the angle $\alpha_i = \sphericalangle(\vec{c}_{i-1},\vec{c}_i)$ between adjacent edges,
+the bending force is proportional to the curvature $\kappa_i$ at each vertex
+$\kappa_i = 2\tan(\alpha_i/2)$.
+The resulting force acts along the angle bisector which can be calculated from the edge vectors.
+Figure~\ref{fig:mechanics-bacterium} shows an elongated rod represented by $6$ vertices.
+The forces acting on vertices $\vec{x}_i,\vec{x}_{i-1},\vec{x}_{i+1}$ are given by
+
+\begin{align}
+    \vec{F}_{i,\text{curvature}} &= \eta\kappa_i
+        \frac{\vec{c}_i - \vec{c}_{i+1}}{|\vec{c}_i-\vec{c}_{i+1}|}\\
+    \vec{F}_{i-1,\text{curvature}} &= -\frac{1}{2}\vec{F}_{i,\text{curvature}}\\
+    \vec{F}_{i+1,\text{curvature}} &= -\frac{1}{2}\vec{F}_{i,\text{curvature}}
+\end{align}
+
+where $\eta_i$ is the rigidity at vertex $\vec{x}_i$ (see Figure~\ref{fig:mechanics-bacterium}).
+We can see that the curvature force does not move the overall center of the rod in space.
+The total force is the sum of external and interal forces.
+
+\begin{equation}
+    \vec{F}_{i,\text{total}} = \vec{F}_{i,\text{springs}}+ \vec{F}_{i,\text{curvature}}
+        + \vec{F}_{i,\text{external}}
+\end{equation}
+
+and are integrated via
+
+\begin{align}
+    \partial_t^2 \vec{x}_i &= \partial_t\vec{x}_i + \sqrt{2D}\vec{\xi}_i\\
+    \partial_t\vec{x}_i &= \vec{F}_{i,\text{total}} - \lambda \partial_t\vec{x}_i
+\end{align}
+
+where $D$ is the diffusion constant and $\vec{\xi}$ is the wiener process.
+Together they determine the stochastic motion of the individual vertices which can arise from
+recurring collisions with small particles of the surrounding medium or other minor fluctuations.
+
+% --------------------------------------------------------------------------------------------------
+\subsection{Physical Interactions}
+\label{subsection:mechanical-model-interactions}
+
+When calculating forces acting between the cells, we can use a simplified model to circumvent the
+numerically expensive integration over the complete length of the rod.
+Given a vertex $\vec{x}_i$ on one cell, we calculate the closest point $\vec{p}$ on the polygonal
+line given by the vertices $\{\vec{w}_j\}$ of the interacting cell.
+Furthermore we determine the value $q\in[0,1]$ such that $\vec{p} = (1-q)\vec{w}_j + q\vec{w}_{j+1}$
+for some specific $j$.
+The force is then calculated between the points $\vec{x}_i$ and $\vec{p}_i$ and acts on
+the vertex $\vec{w}_i,\vec{w}_{i+1}$ with relative strength $(1-q)$ and $q$.
+
+\begin{equation}
+    \vec{F}_{i,\text{External}} = \vec{F}(\vec{x}_i,\vec{p})
+    \label{eq:cell-force-external}
+\end{equation}
+
+The specific choice of interaction potential plays of course a crucial role for the dynamics of the
+agents.
+But we cannot expect to simply know the shape and parameters of this potential.
+Thus, we would like to experiment with various interaction potentials in order to quantify their
+ability to produce accurate results.
+We utilize two distinct potentials that are both able to capture the essence of our interactions by
+providing a short-range repulsive part and a long-ranged attractive component.
+
+\paragraph{Morse Potential}
+The morse potential~\cite{Morse1929} is a common example of numerically inexpensive interaction
+potential.
+It was originally designed to describe the interaction of diatomic molecules but has since found use
+in other areas~\cite{Breitwieser2021}.
+It contains a repulsive and attractive part and is bound from above which makes it particularly
+suitable for numerical simulations since unbound potentials can lead to large numerical deviations
+thus compromising the prediction of the model.
+The potential is of the form
+\begin{equation}
+    V(r) = V_0\left(1-e^{-\lambda(r-(R_1+R_2))}\right)^2
+\end{equation}
+and has 3 parameters.
+The overall potential strength $V_0$, the radii of the particles $R_1,R_2$ and the potential
+stiffness $\lambda$ which controls the rate of change as one travels along the radial axis.
+We employ a spatial cutoff which sets the interaction strength to $0$ when exceeding a distance
+$r\geq\xi$.
+
+\paragraph{Mie Potential}
+The Mie~\cite{Mie1903} potential is the generalization of the well-known
+Lennard-Jones~\cite{Jones1924} potential.
+It was also designed to describe the interactions of molecules but due to the flexible nature of its
+parameters, can be easily adapted to other situations.
+It is able to describe a wider range of shapes compared to the Morse potential but is also stiffer
+and not bound from above.
+In our simulation, we enforce an upper bound to guarantee numerical regularity.
+It has 4 parameters and is given by
+\begin{align}
+    U(r) &= C\epsilon\left[ \left(\frac{\sigma}{r}\right)^n -
+        \left(\frac{\sigma}{r}\right)^m\right]\\
+    C &= \frac{n}{n-m}\left(\frac{n}{m}\right)^{\frac{n}{n-m}}\\
+    V(r) &= \min(U(r), \beta)\theta(r-\zeta)
+\end{align}
+where $C$ is a constant that depends on the two exponents $n,m$ that describe the overall shape of
+the potential.
+The strength is given by $\epsilon$ and the radius is encoded in $\sigma =
+(m/n)^{1/(n-m)}(R_1+R_2)$ where $R_1,R_2$ are the radii of the two interacting particles.
+
+% --------------------------------------------------------------------------------------------------
+\subsection{Cell-Cycle}
+\label{subsection:mechanical-model-cycle}
+
+To simulate proliferation, we introduce a growth term for the spring lengths $l_i$.
+In most of our simulations, we choose to use identical lengths for all segments (i.e. $l_i=l$).
+However, in order to generalize our approach we assume that individual lengths of segments could
+vary.
+We reduce the growth rate with increasing number of neighbors $N$.
+This behaviour can be toggled on or off thus removing the additional term in brackets of
+equation~\ref{eq:growth-rod-lengths}.
+
+\begin{equation}
+    \partial_t l_i = \mu\left(1-\frac{\text{min}(n,N)}{N}\right)l_i
+    \label{eq:growth-rod-lengths}
+\end{equation}
+
+Note that the growth rate is proportional to the rod length $l$ which leads to exponential growth.
+This process will increase the length of the cell indefenitely unless we impose a condition for the
+division event.
+We define a fixed length threshold for the total length of the cell at which it divides.
+To construct a new cell, we cannot simply copy the existing one twice, but we also need to adjust
+internal parameters in the process.
+The following actions need to be taken for the old and new agent.
+We first calculate the new spring lengths of the two resulting rods.
+\begin{equation}
+    \tilde{l} = l_i\left(\frac{1}{2} - \frac{r}{\sum\limits_i l_i}\right)
+    \label{eq:growth-rod-new-lengths}
+\end{equation}
+Afterwards, we start at one endpoint $\vec{x}_0$ and travel along the polygon defined by the
+bacterial rod.
+We stop when we have reached a length that matches the length of the new spring length $\tilde{l}$.
+From here, we continue and iterate this procedure until we have found all new vertices $\vec{w}_i$.
+Equation~\ref{eq:growth-rod-new-lengths} ensures that that the tips of the two new rods are touching
+right after the division event.
+
+% --------------------------------------------------------------------------------------------------
+\subsection{Numerical Implementation}
+
+We implemented the described model in \texttt{cellular\_raza}~\cite{Pleyer2025}.
+Doing so has many benefits.
+Not only, was a more simpler model already available which could be adapted to our needs.
+But furthermore, due to the nature of \texttt{cellular\_raza} in that it does not assume any
+particular cellular representation, we are free to change the underlying model at any time, even
+making fundamental changes.
+It is an \ac{abm} which is able to natively track cells through the course of a numerical simulation
+and also keeps track of parent/daughter relationships.
+This allows us to to experiment with different model implementations and still retain performance.
+By leveraging the strong safety guarantees provided by the Rust programming language, we eliminate a
+whole class of problems from the start.
+% TODO CITATION
+In addition, we are using the \texttt{pyo3} and \texttt{maturin} crates which allow us to easily
+generate python bindings and thus interoperate between the two ecosystems.
+While this particular model is more complex due to the nature of non-trivial (asymmetric)
+interactions, we were still able to properly utilize the speedup from executing simulations in
+parallalel using the built-in parallelization methods of \texttt{cellular\_raza} (see
+Supplementary Material, Figure~\ref{fig:performance}).
+
+%###################################################################################################
+\section{Methodology}
+These sections introduce methods which can be combined in order to estimate the parameters of our
+computational model.
+It has to be noted that they only depend on the spatial representation described in
+section~\ref{subsec:spatial-representation}.
+Therefore, they can be applied to a whole class of mechanical models which could make different
+choices with respect to the cellular details.
 
 % --------------------------------------------------------------------------------------------------
 \subsection{Visualization}
@@ -712,323 +1034,6 @@ process this mask as well as the comparator, it is much more computationally dem
 After all, for each comparison step, we need to run a full 3D visualization pipeline.
 In cases where the simpler approach of comparing positions of the agents is possible, this method
 should be preferred.
-
-%###################################################################################################
-\section{A Computational Model for Rod-Shaped Bacteria}
-\label{sec:computational-model}
-
-The mechanical behaviour of rod-shaped bacteria is governed by a plethora of effects.
-In this work, we aim to establish a model which is abstract enough such that it can be reused for
-many types of rod-shaped bacteria but also explicit enough such that we can quantify its parameters.
-We are thus aiming to work with a set of assumptions that is as general as possible but still
-specific to rod-shaped bacteria.
-With this delicate balance in mind, it is clear that many cellular processes which might be specific
-to one particular celltype or simply not necessary to assume in order to construct our model, will
-be omitted alltogether.
-This concerns effects such as polar interactions~\cite{Duvernoy2018}, extracellular
-reactions~\cite{Wang2010} or differentiation processes~\cite{vanGestel2015,Lpez2010} and many other.
-We restrict ourselves to the aspects presented in table~\ref{table:simulation-aspects}.
-For a collection of other known effects which could be considered, we refer to the supplementary
-section~\ref{section:discussion}, and~\ref{section:supplement-more-simulation-aspects}.
-
-\paragraph{(C) Cellular}
-The key component of this model consists of the cellular representation.
-
-It was long believed that bacteria lack cytoskeletal filaments but with the end of the last century,
-it was discovered that the MreB protein fills this role since it “[..] forms an actin-like
-cytoskeleton in bacteria [..]”~\cite{Erickson2001}.
-It can polymerize and form filaments which behave similar to actin microfilaments~\cite{Dersch2020}.
-The effect of MreB on the shape of cells during growth was shown in more detail
-by~\cite{Ursell2014}.
-They found that MreB localizes specifically at regions of negative curvature and thus introduces
-heterogeneous cell growth which results in a bending force during the growth of cells.
-It also means that the cells are able to sense the curvature of the cell wall through cytoskeleteal
-MreB filaments during growth.
-\cite{Bratton2018} showed that the trans-membrane protein RodZ can modulate MreB density and
-facilitates local MreB assembly.
-This feedback mechanism will result in straight rod-shaped bacteria if not interfered from the
-external environment.
-These results were also confirmed by the studies of~\cite{Wang2010}.
-In their experiments, a single bacterium was fixed at the bottom pole while an optically trapped
-bead was placed on the upper pole.
-They could now exert a force on the free part and thus study the response of the cell under
-different conditions.
-When treating cells with A22, an antibiotic which disassembles
-MreB~\cite{IWAI2002,Gitai2005,Karczmarek2007,Bean2009}, a higher displacement with identical force
-could be measured, thus indicating that MreB increases mechanical rigidity of the cell.
-
-While some rod-shaped bacteria grow by inserting new material at the ends, \textit{E.Coli} and
-\textit{B.Subtilis} utilize a method where new material is inserted along the cylindrical part of
-the rod.
-The details of the division event (i.e. Z-Ring formation) are very intricate and are heavily
-studied as a subject on their own~\cite{Harry2001}.
-On a higher level view, the rod is split apart at a point close to the center of the cell, thus
-creating two new daughter cells.
-We know that the best predictor for when the division event occurs, is the length of the rod as
-opposed to the age of bacterium~\cite{Robert2014}.
-Furthermore, only the growth of the whole colony but also the individual growth of the bacteria is
-exponential~\cite{Amir2014,Takeuchi2005}.
-
-\paragraph{(CC) Cell-Cell Interactions \& (DC) Domain-Cell Interactions}
-A colony of bacteria is known to form biofilms (Dunne 2002). This strategy is is beneficial for the
-survival of the collective as it allows it to harness growth factors and migrate when necessary and
-also plays an important role in bacterial infections in the biomedical sector~\cite{Ong1999}.
-The formation of biofilms is only possible due to the attractive nature of bacterial interactions
-towards each other and surfaces (Berne et al. 2018). To analyze bacterial adhesion to surfaces,
-\cite{vanLoosdrecht1989} investigated the interactions of various bacteria with negatively charged
-polystyrene.
-They found that the interaction is characterized by a low Gibbs energy of $(2 - 3)kT$ per cell
-which can be described by a secondary minimum of the DLVO-theory~\cite{Verwey1947,Derjaguin1993}
-which is relevant for distances $\geq\SI{1}{\nano\meter}$.
-At these distances, the DLVO potential acts as a generic adhesive potential.
-Particles which stay in the secondary minimum are held together but even weak interactions are
-enough to redisperse them which means that this state is reversible.
-When approaching closer distances, more intricate mechanisms come into play in which the
-heterogeneity of the materials in question needs to be considered.
-\cite{Hori2010} described bacterial adhesion as a “two-phase process including an initial,
-instantaneous and reversible physical phase (phase one) and a time-dependent and irreversible
-molecular and cellular phase (phase two)”.
-
-All these considerations become even more intricate when not considering interactions of bacteria
-with surfaces but bacteria with each other.
-Gram-negative bacteria (eg. E.Coli) express outer membrane proteins (adhesins) which allow them to
-attach to various hosts (Beachey 1981, Vaca et al. 2019).
-In addition, the flagella can play an important role in the direct adhesion between
-cells~\cite{Haiko2013}.
-Thus it is not correct to blindly apply the results for adhesion to surfaces to the interactions
-between bacteria.
-
-\begin{table}[H]
-    \centering
-    \def\arraystretch{1.3}
-    \begin{tabularx}{\textwidth}{c l X}
-        &\textbf{Aspect} & \textbf{Description}\\
-        \toprule
-        &\textbf{(C) Cellular}\\
-        \midrule
-        (1) & Rod-Shaped Mechanics &
-            Rod-shaped bacteria are flexible rods which are able to freely move around (off-lattice
-            approach) \cite{Takeuchi2005,Ursell2014,Amir2014_2}.\\
-        (2) & Growth &
-            Cells grow exponentially by inserting new material either along the circular part of the
-            rod or at the tip~\cite{Robert2014,Takeuchi2005}.\\
-        (3) & Division &
-            Rod-Shaped bacteria divide in the middle of the rod into two new agents.\\
-            % Bacteria can form multilayers during their growth phase \cite{Duvernoy2018}.\\
-        (4) & Individual Parameters &
-            Parameters for individual cells are not fixed values but rather taken from a
-            distribution \cite{Koutsoumanis2013}.\\
-        &\textbf{(CC) Cell-Cell Interactions}\\
-        \midrule
-        (5) & Adhesion &
-            Bacteria attract at longer distances and adhere to each other at shorter
-            distances~\cite{Verwey1947,Trejo2013}.\\
-        \bottomrule
-    \end{tabularx}
-    \label{table:simulation-aspects}
-    \caption{
-        This table lists aspects of cellular behaviour which we consider in our computational model.
-        It is split into cellular aspects (C) which concern only an individual bacterium and
-        interactions between cells (CC).
-        These aspects are generalized in order to fit to as many types of rod-shaped bacteria as
-        possible.
-        These are the assumptions for the basic model that we are presenting here.
-        In order for our methods to work, we are really only required to satisfy the assumption of
-        our spatial representation (see section~\ref{subsec:spatial-representation}) and thus, these
-        assumptions can also be loosened if required.
-    }
-\end{table}
-
-To model the spatial mechanics of elongated bacteria \cite{Billaudeau2017}, we represent them as a
-collection of auxiliary vertices $\{\vec{x}_i\}$ which are connected by springs in
-ascending order.
-Furthermore, we assume that the cells are flexible described by their rigidity.
-A force $\vec{F}$ interacting between cellular agents determines the radius (thickness) of the
-rods and an attractive component can model adhesion between cells.
-
-% --------------------------------------------------------------------------------------------------
-\subsection{Mechanics}
-\label{subsection:mechanical-model-mechanics}
-
-We use principles from discrete differential geometry~\cite{bobenko2008discrete} to describe the
-stiffness and flexibility of the bacterial rod.
-As explained previously, MReB will counteract the bending of the rod, resulting in a stiffening
-force.
-In principle, this stress will be dependent on the position inside the cell~\cite{Chatterjee1988}
-but in order to construct a model which can be parametrized and by method of Occam's Razor, we chose
-to model the bacterium as a bending beam, thus utilizing the simplest solution which can still
-produce the desired effects.
-Such a beam can be represented by a collection of vertices $\vec{x}_i$ which are connected by a
-springs of lengths $l_i$.
-We use the notation $\vec{c}_i:=\vec{x}_i-\vec{x}_{i-1}$ with which the resulting force acting
-between two vertices if given by
-
-\begin{align}
-    \vec{F}_{i,\text{springs}} =
-        &-\gamma\left(1 - \frac{l}{\left|\vec{c}_i\right|}\right)
-        \vec{c}_i\\
-        &+ \gamma\left(1 - \frac{l}{\left|\vec{c}_{i+1}\right|}\right)
-        \vec{c}_{i+1}.
-\end{align}
-
-In addition to springs between individual vertices $\vec{x}_i$, we assume that each angle at a
-vertex between edges is subject to a force indiced by curvature.
-% We assume that we can model the mechanical properties of the bacterium as an elastic rod.
-Given the angle $\alpha_i = \sphericalangle(\vec{c}_{i-1},\vec{c}_i)$ between adjacent edges,
-the bending force is proportional to the curvature $\kappa_i$ at each vertex
-$\kappa_i = 2\tan(\alpha_i/2)$.
-The resulting force acts along the angle bisector which can be calculated from the edge vectors.
-Figure~\ref{fig:mechanics-bacterium} shows an elongated rod represented by $6$ vertices.
-The forces acting on vertices $\vec{x}_i,\vec{x}_{i-1},\vec{x}_{i+1}$ are given by
-
-\begin{align}
-    \vec{F}_{i,\text{curvature}} &= \eta\kappa_i
-        \frac{\vec{c}_i - \vec{c}_{i+1}}{|\vec{c}_i-\vec{c}_{i+1}|}\\
-    \vec{F}_{i-1,\text{curvature}} &= -\frac{1}{2}\vec{F}_{i,\text{curvature}}\\
-    \vec{F}_{i+1,\text{curvature}} &= -\frac{1}{2}\vec{F}_{i,\text{curvature}}
-\end{align}
-
-where $\eta_i$ is the rigidity at vertex $\vec{x}_i$ (see Figure~\ref{fig:mechanics-bacterium}).
-We can see that the curvature force does not move the overall center of the rod in space.
-The total force is the sum of external and interal forces.
-
-\begin{equation}
-    \vec{F}_{i,\text{total}} = \vec{F}_{i,\text{springs}}+ \vec{F}_{i,\text{curvature}}
-        + \vec{F}_{i,\text{external}}
-\end{equation}
-
-and are integrated via
-
-\begin{align}
-    \partial_t^2 \vec{x}_i &= \partial_t\vec{x}_i + \sqrt{2D}\vec{\xi}_i\\
-    \partial_t\vec{x}_i &= \vec{F}_{i,\text{total}} - \lambda \partial_t\vec{x}_i
-\end{align}
-
-where $D$ is the diffusion constant and $\vec{\xi}$ is the wiener process.
-Together they determine the stochastic motion of the individual vertices which can arise from
-recurring collisions with small particles of the surrounding medium or other minor fluctuations.
-
-% --------------------------------------------------------------------------------------------------
-\subsection{Physical Interactions}
-\label{subsection:mechanical-model-interactions}
-
-When calculating forces acting between the cells, we can use a simplified model to circumvent the
-numerically expensive integration over the complete length of the rod.
-Given a vertex $\vec{x}_i$ on one cell, we calculate the closest point $\vec{p}$ on the polygonal
-line given by the vertices $\{\vec{w}_j\}$ of the interacting cell.
-Furthermore we determine the value $q\in[0,1]$ such that $\vec{p} = (1-q)\vec{w}_j + q\vec{w}_{j+1}$
-for some specific $j$.
-The force is then calculated between the points $\vec{x}_i$ and $\vec{p}_i$ and acts on
-the vertex $\vec{w}_i,\vec{w}_{i+1}$ with relative strength $(1-q)$ and $q$.
-
-\begin{equation}
-    \vec{F}_{i,\text{External}} = \vec{F}(\vec{x}_i,\vec{p})
-    \label{eq:cell-force-external}
-\end{equation}
-
-The specific choice of interaction potential plays of course a crucial role for the dynamics of the
-agents.
-But we cannot expect to simply know the shape and parameters of this potential.
-Thus, we would like to experiment with various interaction potentials in order to quantify their
-ability to produce accurate results.
-We utilize two distinct potentials that are both able to capture the essence of our interactions by
-providing a short-range repulsive part and a long-ranged attractive component.
-
-\paragraph{Morse Potential}
-The morse potential~\cite{Morse1929} is a common example of numerically inexpensive interaction
-potential.
-It was originally designed to describe the interaction of diatomic molecules but has since found use
-in other areas~\cite{Breitwieser2021}.
-It contains a repulsive and attractive part and is bound from above which makes it particularly
-suitable for numerical simulations since unbound potentials can lead to large numerical deviations
-thus compromising the prediction of the model.
-The potential is of the form
-\begin{equation}
-    V(r) = V_0\left(1-e^{-\lambda(r-(R_1+R_2))}\right)^2
-\end{equation}
-and has 3 parameters.
-The overall potential strength $V_0$, the radii of the particles $R_1,R_2$ and the potential
-stiffness $\lambda$ which controls the rate of change as one travels along the radial axis.
-We employ a spatial cutoff which sets the interaction strength to $0$ when exceeding a distance
-$r\geq\xi$.
-
-\paragraph{Mie Potential}
-The Mie~\cite{Mie1903} potential is the generalization of the well-known
-Lennard-Jones~\cite{Jones1924} potential.
-It was also designed to describe the interactions of molecules but due to the flexible nature of its
-parameters, can be easily adapted to other situations.
-It is able to describe a wider range of shapes compared to the Morse potential but is also stiffer
-and not bound from above.
-In our simulation, we enforce an upper bound to guarantee numerical regularity.
-It has 4 parameters and is given by
-\begin{align}
-    U(r) &= C\epsilon\left[ \left(\frac{\sigma}{r}\right)^n -
-        \left(\frac{\sigma}{r}\right)^m\right]\\
-    C &= \frac{n}{n-m}\left(\frac{n}{m}\right)^{\frac{n}{n-m}}\\
-    V(r) &= \min(U(r), \beta)\theta(r-\zeta)
-\end{align}
-where $C$ is a constant that depends on the two exponents $n,m$ that describe the overall shape of
-the potential.
-The strength is given by $\epsilon$ and the radius is encoded in $\sigma =
-(m/n)^{1/(n-m)}(R_1+R_2)$ where $R_1,R_2$ are the radii of the two interacting particles.
-
-% --------------------------------------------------------------------------------------------------
-\subsection{Cell-Cycle}
-\label{subsection:mechanical-model-cycle}
-
-To simulate proliferation, we introduce a growth term for the spring lengths $l_i$.
-In most of our simulations, we choose to use identical lengths for all segments (i.e. $l_i=l$).
-However, in order to generalize our approach we assume that individual lengths of segments could
-vary.
-We reduce the growth rate with increasing number of neighbors $N$.
-This behaviour can be toggled on or off thus removing the additional term in brackets of
-equation~\ref{eq:growth-rod-lengths}.
-
-\begin{equation}
-    \partial_t l_i = \mu\left(1-\frac{\text{min}(n,N)}{N}\right)l_i
-    \label{eq:growth-rod-lengths}
-\end{equation}
-
-Note that the growth rate is proportional to the rod length $l$ which leads to exponential growth.
-This process will increase the length of the cell indefenitely unless we impose a condition for the
-division event.
-We define a fixed length threshold for the total length of the cell at which it divides.
-To construct a new cell, we cannot simply copy the existing one twice, but we also need to adjust
-internal parameters in the process.
-The following actions need to be taken for the old and new agent.
-We first calculate the new spring lengths of the two resulting rods.
-\begin{equation}
-    \tilde{l} = l_i\left(\frac{1}{2} - \frac{r}{\sum\limits_i l_i}\right)
-    \label{eq:growth-rod-new-lengths}
-\end{equation}
-Afterwards, we start at one endpoint $\vec{x}_0$ and travel along the polygon defined by the
-bacterial rod.
-We stop when we have reached a length that matches the length of the new spring length $\tilde{l}$.
-From here, we continue and iterate this procedure until we have found all new vertices $\vec{w}_i$.
-Equation~\ref{eq:growth-rod-new-lengths} ensures that that the tips of the two new rods are touching
-right after the division event.
-
-% --------------------------------------------------------------------------------------------------
-\subsection{Numerical Implementation}
-
-We implemented the described model in \texttt{cellular\_raza}~\cite{Pleyer2025}.
-Doing so has many benefits.
-Not only, was a more simpler model already available which could be adapted to our needs.
-But furthermore, due to the nature of \texttt{cellular\_raza} in that it does not assume any
-particular cellular representation, we are free to change the underlying model at any time, even
-making fundamental changes.
-It is an \ac{abm} which is able to natively track cells through the course of a numerical simulation
-and also keeps track of parent/daughter relationships.
-This allows us to to experiment with different model implementations and still retain performance.
-By leveraging the strong safety guarantees provided by the Rust programming language, we eliminate a
-whole class of problems from the start.
-% TODO CITATION
-In addition, we are using the \texttt{pyo3} and \texttt{maturin} crates which allow us to easily
-generate python bindings and thus interoperate between the two ecosystems.
-While this particular model is more complex due to the nature of non-trivial (asymmetric)
-interactions, we were still able to properly utilize the speedup from executing simulations in
-parallalel using the built-in parallelization methods of \texttt{cellular\_raza} (see
-Supplementary Material, Figure~\ref{fig:performance}).
 
 %###################################################################################################
 \section{Application to \textit{E.Coli.} growing on Agar}
