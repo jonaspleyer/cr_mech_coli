@@ -325,42 +325,40 @@ def crm_fit_main():
             fig.savefig(iterdir / f"cell-{iteration:06}.pdf")
             plt.close(fig)
 
-        for pos_exact, iter, img in zip(positions_all, iterations_all, imgs):
+        def plot_mask_diff(
+            colors_data, mask_data, iteration, cell_container: crm.CellContainer
+        ):
+            mask_transformed = transform_input_mask(
+                colors_data, mask_data, iteration, cell_container
+            )
+            rs = crm.RenderSettings(pixel_per_micron=1)
+            mask_predicted = crm.render_mask(
+                cell_container.get_cells_at_iteration(iteration),
+                cell_container.cell_to_color,
+                domain_size,
+                rs,
+            )
+
+            mask_diff = crm.parents_diff_mask(
+                mask_predicted, mask_transformed, cell_container, 0.5
+            )
+            odir = out / "celldiffs"
+            cv.imwrite(
+                filename=str(odir / f"diff-{iteration:06}.png"), img=mask_diff * 255.0
+            )
+
+        for colors_data, mask_data, pos_exact, iter, img in zip(
+            colors_all, masks, positions_all, iterations_all, imgs
+        ):
             agents = cell_container.get_cells_at_iteration(iter)
             pos = np.array([c[0].pos for c in agents.values()])
             plot_snapshot(pos, img, "snapshots", f"predicted-{iter:06}")
             plot_snapshot(pos_exact, img, "snapshots", f"exact-{iter:06}")
             plot_position_diff(pos_exact, pos, iter)
+            plot_mask_diff(colors_data, mask_data, iter, cell_container)
 
         print(f"{time.time() - interval:10.4f}s Rendered Masks")
         interval = time.time()
-
-    def plot_mask_diff(
-        colors_data, mask_data, iteration, cell_container: crm.CellContainer
-    ):
-        mask_transformed = transform_input_mask(
-            colors_data, mask_data, iteration, cell_container
-        )
-        rs = crm.RenderSettings(pixel_per_micron=1)
-        mask_predicted = crm.render_mask(
-            cell_container.get_cells_at_iteration(iteration),
-            cell_container.cell_to_color,
-            domain_size,
-            rs,
-        )
-
-        mask_diff = crm.parents_diff_mask(
-            mask_predicted, mask_transformed, cell_container, 0.5
-        )
-        odir = out / "celldiffs"
-        cv.imwrite(
-            filename=str(odir / f"diff-{iteration:06}.png"), img=mask_diff * 255.0
-        )
-
-    for colors_data, mask_data, pos_exact, iter, img in zip(
-        colors_all, masks, positions_all, iterations_all, imgs
-    ):
-        plot_mask_diff(colors_data, mask_data, iter, cell_container)
 
     if not pyargs.skip_distributions:
         plot_distributions(agents_predicted, out)
