@@ -9,6 +9,7 @@ from pathlib import Path
 import multiprocessing as mp
 import argparse
 import scipy as sp
+from tqdm import tqdm
 
 from .plotting import plot_interaction_potential, plot_profile, plot_distributions
 
@@ -204,7 +205,9 @@ def crm_fit_main():
     positions_all = []
     lengths_all = []
     colors_all = []
-    for mask, filename in zip(masks, files_masks):
+    for mask, filename in tqdm(
+        zip(masks, files_masks), total=len(masks), desc="Extract positions"
+    ):
         try:
             pos, length, _, colors = crm.extract_positions(
                 mask, n_vertices, domain_size=domain_size
@@ -276,11 +279,15 @@ def crm_fit_main():
             settings, optimization_result, positions_all.shape[1], out
         )
 
+    settings.others = crm_fit.Others(True)
     cell_container = crm_fit.run_simulation(
         optimization_result.params,
         positions_all[0],
         settings,
     )
+    print()
+    print(f"{time.time() - interval:10.4f} Ran Simulation")
+    interval = time.time()
 
     if cell_container is None:
         raise ValueError("Best fit does not produce valid result.")
@@ -352,8 +359,10 @@ def crm_fit_main():
                 filename=str(odir / f"diff-{iteration:06}.png"), img=mask_diff * 255.0
             )
 
-        for colors_data, mask_data, pos_exact, iter, img in zip(
-            colors_all, masks, positions_all, iterations_all, imgs
+        for colors_data, mask_data, pos_exact, iter, img in tqdm(
+            zip(colors_all, masks, positions_all, iterations_all, imgs),
+            total=len(colors_all),
+            desc="Render masks",
         ):
             agents = cell_container.get_cells_at_iteration(iter)
             pos = np.array([c[0].pos for c in agents.values()])
