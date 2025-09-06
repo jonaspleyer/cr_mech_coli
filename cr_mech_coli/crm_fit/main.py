@@ -223,11 +223,11 @@ def crm_fit_main():
     iterations_all = np.array(iterations_all, dtype=np.uint64) - iterations_all[0]
     settings.constants.n_saves = max(iterations_all)
 
+    growth_rates, _ = estimate_growth_rates(iterations_all, lengths_all, settings, out)
     if pyargs.fit_growth_rates:
-        growth_rates, _ = estimate_growth_rates(
-            iterations_all, lengths_all, settings, out
+        gr_ind, gr_count = settings.parameters.set_growth_rate(
+            list(growth_rates), len(positions_all[0])
         )
-        settings.parameters.growth_rate = list(growth_rates)
 
     print(f"{time.time() - interval:10.4f}s Calculated initial values")
     interval = time.time()
@@ -235,6 +235,12 @@ def crm_fit_main():
     filename = "final_params.toml"
     if (out / filename).exists():
         optimization_result = crm_fit.OptimizationResult.load_from_file(out / filename)
+        if pyargs.fit_growth_rates:
+            # Adjust the parameters of the optimization_result
+            optimization_result.params = [
+                *optimization_result.params[:gr_ind],
+                *optimization_result.params[gr_ind + gr_count :],
+            ]
     else:
         optimization_result = crm_fit.run_optimizer(
             iterations_all, positions_all, settings, pyargs.workers
