@@ -73,7 +73,7 @@ def extract_positions(
     n_vertices: int = 8,
     skel_method="lee",
     domain_size: np.ndarray | tuple[float, float] | float | None = None,
-) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+) -> tuple[np.ndarray, np.ndarray, np.ndarray, list]:
     """
     Extracts positions from a mask for each sub-mask associated to a single cell.
     To read more about the used methods, visit the :ref:`Fitting-Methods` page.
@@ -100,7 +100,7 @@ def extract_positions(
         raise ValueError(
             "We only support masks with shapes (n, m), (n, m, 1) or (n, m, 3)"
         )
-    colors = filter(lambda x: np.sum(x) != 0, np.unique(m, axis=0))
+    colors = list(filter(lambda x: np.sum(x) != 0, np.unique(m, axis=0)))
 
     if len(mask.shape) > 2:
         cell_masks = [np.all(mask == c, axis=2) for c in colors]
@@ -133,7 +133,7 @@ def extract_positions(
     lengths = np.sum(np.linalg.norm(points[:, 1:] - points[:, :-1], axis=2), axis=1)
     areas = np.array([np.sum(c) for c in cell_masks], dtype=np.float32)
     radii = lengths / np.pi * (np.sqrt(1 + np.pi * areas / lengths**2) - 1)
-    return points, lengths, radii
+    return points, lengths, radii, colors
 
 
 def area_diff_mask(mask1, mask2) -> np.ndarray:
