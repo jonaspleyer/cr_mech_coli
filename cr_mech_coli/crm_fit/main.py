@@ -364,11 +364,11 @@ def crm_fit_main():
             )
 
             mask_diff = crm.parents_diff_mask(
-                mask_predicted, mask_transformed, cell_container, 0.5
-            )
+                mask_predicted, mask_transformed, cell_container, 0
+            ).astype(np.uint8)
             odir = out / "celldiffs"
             cv.imwrite(
-                filename=str(odir / f"diff-{iteration:06}.png"), img=mask_diff * 255.0
+                filename=str(odir / f"diff-{iteration:06}.png"), img=mask_diff * 255
             )
 
         for colors_data, mask_data, pos_exact, iter, img in tqdm(
