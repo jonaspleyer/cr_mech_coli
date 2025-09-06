@@ -277,8 +277,7 @@ def crm_fit_main():
     )
 
     if cell_container is None:
-        print("Best fit does not produce valid result.")
-        exit()
+        raise ValueError("Best fit does not produce valid result.")
 
     iterations_all = cell_container.get_all_iterations()
     agents_predicted = cell_container.get_cells_at_iteration(iterations_all[-1])
