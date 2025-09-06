@@ -86,6 +86,13 @@ class Settings:
         n_agents: int,
         agent_index: int,
     ) -> float: ...
+    def get_param(
+        self,
+        param_name: str,
+        optimization_result: OptimizationResult,
+        n_agents: int,
+        agent_index: int,
+    ) -> float: ...
 
 def run_simulation(
     parameters: list[float], positions: np.ndarray, settings: Settings
