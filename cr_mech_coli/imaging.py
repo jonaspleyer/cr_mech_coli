@@ -111,7 +111,9 @@ def __create_cell_surfaces(
             center = 0.5 * (pos1 + pos2)
             direction = pos2 - center
             height = float(np.linalg.norm(pos1 - pos2))
-            cylinder = pv.Cylinder(center, direction, r, height)
+            cylinder = pv.Cylinder(
+                center=center, direction=direction, radius=r, height=height
+            )
             meshes.append(cylinder)
         # Combine all together
         mesh = pv.MultiBlock(meshes).extract_geometry()
