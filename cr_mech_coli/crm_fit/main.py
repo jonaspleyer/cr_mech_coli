@@ -228,6 +228,9 @@ def crm_fit_main():
     settings.constants.n_saves = max(iterations_all)
 
     growth_rates, _ = estimate_growth_rates(iterations_all, lengths_all, settings, out)
+    # Write estimated growth rates to csv file
+    np.savetxt(str(out / "estimate_growth_rates.csv"), growth_rates)
+
     if pyargs.fit_growth_rates:
         gr_ind, gr_count = settings.parameters.set_growth_rate(
             list(growth_rates), len(positions_all[0])
