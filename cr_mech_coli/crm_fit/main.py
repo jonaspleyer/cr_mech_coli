@@ -10,6 +10,7 @@ import multiprocessing as mp
 import argparse
 import scipy as sp
 from tqdm import tqdm
+import warnings
 
 from .plotting import plot_interaction_potential, plot_profile, plot_distributions
 
@@ -257,6 +258,10 @@ def crm_fit_main():
 
     # Plot Cost function against varying parameters
     if not pyargs.skip_profiles:
+        warnings.filterwarnings(
+            "ignore",
+            message="Maximum number of function evaluations has been exceeded.",
+        )
         for n in range(len(optimization_result.params)):
             fig_ax = None
             fig_ax = plot_profile(
@@ -271,6 +276,10 @@ def crm_fit_main():
             fig, _ = fig_ax
             plt.close(fig)
 
+        warnings.filterwarnings(
+            "default",
+            message="Maximum number of function evaluations has been exceeded.",
+        )
         print(f"{time.time() - interval:10.4f} Plotted Profiles")
         interval = time.time()
 
