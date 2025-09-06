@@ -116,30 +116,102 @@ pub struct Parameters {
 }
 
 macro_rules! impl_setters(
-    (@single $struct_name:ident $name:ident $setter:ident) => {
+    (@single $struct_name:ident $name:ident $setter:ident $counter:ident) => {
         #[pymethods]
         impl $struct_name {
-            #[setter]
-            fn $setter (&mut self, obj: &Bound<PyAny>) -> PyResult<()> {
+            fn $setter (&mut self, obj: &Bound<PyAny>, n_agents: usize) -> PyResult<(usize, usize)> {
                 let param = parameter_from_obj(obj)?;
+                let n_params = param_counter!(self, $name, n_agents);
+                let n_before = self. $counter(n_agents);
+
                 self.$name = param;
-                Ok(())
+                Ok((n_before, n_params))
             }
         }
     };
-    ($struct_name:ident; $($name:ident $setter:ident;)*) => {
-        $(impl_setters!{@single $struct_name $name $setter})*
+    ($struct_name:ident; $($name:ident $setter:ident $counter:ident;)*) => {
+        $(impl_setters!{@single $struct_name $name $setter $counter})*
     };
+);
+
+macro_rules! param_counter(
+    ($self:ident, $pname:ident, $n_agents:ident) => {
+        match &$self . $pname {
+            Parameter::SampledFloat(sf) => {
+                if sf.individual == Some(true) {
+                    $n_agents
+                } else {
+                    1
+                }
+            }
+            Parameter::Float(_) => 0,
+            Parameter::List(_) => 0,
+        }
+    };
+);
+
+macro_rules! impl_count_before(
+    ($counter_name:ident $(,$before:ident)*) => {
+        #[pymethods]
+        impl Parameters {
+            #[allow(unused)]
+            fn $counter_name (&self, n_agents: usize) -> usize {
+                0 $( + param_counter!(self, $before, n_agents))*
+            }
+        }
+    };
+    (@pot $counter_name:ident, $pot:ident $(,$before:ident)*) => {
+        #[pymethods]
+        impl Parameters {
+            #[allow(unused)]
+            fn $counter_name (&self, n_agents: usize) -> usize {
+                let mut counter = 0 $( + param_counter!(self, $before, n_agents))*;
+                counter += match &self.potential_type {
+                    PotentialType::Mie(mie) => {0
+                        + param_counter!(mie, en, n_agents)
+                        + param_counter!(mie, em, n_agents)
+                    },
+                    PotentialType::Morse(morse) => {
+                        param_counter!(morse, potential_stiffness, n_agents)
+                    }
+                };
+                counter
+            }
+        }
+    };
+);
+
+impl_count_before!(count_radius);
+impl_count_before!(count_rigidity, radius);
+impl_count_before!(count_spring_tension, radius, rigidity);
+impl_count_before!(count_damping, radius, rigidity, spring_tension);
+impl_count_before!(count_strength, radius, rigidity, spring_tension, damping);
+impl_count_before!(
+    count_growth_rate,
+    radius,
+    rigidity,
+    spring_tension,
+    damping,
+    strength
+);
+impl_count_before!(
+    count_potential_type,
+    radius,
+    rigidity,
+    spring_tension,
+    damping,
+    strength,
+    growth_rate
 );
 
 impl_setters!(
     Parameters;
-    radius set_radius;
-    rigidity set_rigidity;
-    spring_tension set_spring_tension;
-    damping set_damping;
-    strength set_strength;
-    growth_rate set_growth_rate;
+    radius set_radius count_radius;
+    rigidity set_rigidity count_rigidity;
+    spring_tension set_spring_tension count_spring_tension;
+    damping set_damping count_damping;
+    strength set_strength count_strength;
+    growth_rate set_growth_rate count_growth_rate;
 );
 
 /// TODO
