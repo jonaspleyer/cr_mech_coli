@@ -189,14 +189,16 @@ def crm_fit_main():
     iterations_all = []
     positions_all = []
     lengths_all = []
+    colors_all = []
     for mask, filename in zip(masks, files_masks):
         try:
-            pos, length, _ = crm.extract_positions(
+            pos, length, _, colors = crm.extract_positions(
                 mask, n_vertices, domain_size=domain_size
             )
             positions_all.append(pos)
             lengths_all.append(length)
             iterations_all.append(int(Path(filename).stem.split("-")[0]))
+            colors_all.append(colors)
         except ValueError as e:
             print("Encountered Error during extraction of positions:")
             print(filename)
@@ -318,6 +320,35 @@ def crm_fit_main():
 
         print(f"{time.time() - interval:10.4f}s Rendered Masks")
         interval = time.time()
+
+    def plot_mask_diff(colors_data, iteration, cells, mask_data):
+        z8 = np.uint8(0)
+        color_mapping = {np.uint8(0): (z8, z8, z8)}
+        for color_old, id in zip(colors_data, sorted(cells.keys())):
+            color_new = cell_container.get_color(id)
+            color_mapping[np.uint8(color_old)] = color_new
+
+        def mapping(ns):
+            return np.array([color_mapping[n] for n in ns])
+
+        mask_new = np.apply_along_axis(mapping, -1, mask_data.astype(int))
+
+        rs = crm.RenderSettings(pixel_per_micron=1)
+        mask_predicted = crm.render_mask(
+            agents, cell_container.cell_to_color, domain_size, rs
+        )
+
+        mask_diff = crm.parents_diff_mask(mask_predicted, mask_new, cell_container, 0.5)
+        odir = out / "celldiffs"
+        cv.imwrite(
+            filename=str(odir / f"diff-{iteration:06}.png"), img=mask_diff * 255.0
+        )
+
+    for colors_data, mask, pos_exact, iter, img in zip(
+        colors_all, masks, positions_all, iterations_all, imgs
+    ):
+        agents = cell_container.get_cells_at_iteration(iter)
+        plot_mask_diff(colors_data, iter, agents, mask)
 
     if not pyargs.skip_distributions:
         plot_distributions(agents_predicted, out)
