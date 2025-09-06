@@ -161,6 +161,11 @@ macro_rules! impl_count_before(
         }
     };
     (@pot $counter_name:ident, $pot:ident $(,$before:ident)*) => {
+        /// Sets this variable
+        ///
+        /// This also returns the number of optimizable parameters before and how many parameters
+        /// would be changed.
+        /// This allows adjusting a vector of parameters such as in the :class`OptimizationResult`
         #[pymethods]
         impl Parameters {
             #[allow(unused)]
@@ -480,7 +485,7 @@ pub struct Settings {
     /// See :class:`Parameters`
     #[approx(map = |b| Python::with_gil(|py| Some(get_inner(b, py))))]
     pub parameters: Py<Parameters>,
-    /// See :class:`OptimizationParameters`
+    /// See :class:`OptimizationMethod`
     #[approx(map = |b| Python::with_gil(|py| Some(get_inner(b, py))))]
     pub optimization: Py<OptimizationMethod>,
     /// See :class:`Others`
