@@ -86,6 +86,20 @@ def estimate_growth_rates(iterations, lengths, settings, out_path):
     return growth_rates, growth_rates_err
 
 
+def transform_input_mask(colors_data, mask_data, iteration, cell_container):
+    z8 = np.uint8(0)
+    cells_at_iter = cell_container.get_cells_at_iteration(iteration)
+    color_mapping = {np.uint8(0): (z8, z8, z8)}
+    for color_old, id in zip(colors_data, sorted(cells_at_iter.keys())):
+        color_new = cell_container.get_color(id)
+        color_mapping[np.uint8(color_old)] = color_new
+
+    def mapping(ns):
+        return np.array([color_mapping[n] for n in ns])
+
+    return np.apply_along_axis(mapping, -1, mask_data.astype(int))
+
+
 def crm_fit_main():
     parser = argparse.ArgumentParser(
         description="Fits the Bacterial Rods model to a system of cells."
@@ -321,34 +335,32 @@ def crm_fit_main():
         print(f"{time.time() - interval:10.4f}s Rendered Masks")
         interval = time.time()
 
-    def plot_mask_diff(colors_data, iteration, cells, mask_data):
-        z8 = np.uint8(0)
-        color_mapping = {np.uint8(0): (z8, z8, z8)}
-        for color_old, id in zip(colors_data, sorted(cells.keys())):
-            color_new = cell_container.get_color(id)
-            color_mapping[np.uint8(color_old)] = color_new
-
-        def mapping(ns):
-            return np.array([color_mapping[n] for n in ns])
-
-        mask_new = np.apply_along_axis(mapping, -1, mask_data.astype(int))
-
+    def plot_mask_diff(
+        colors_data, mask_data, iteration, cell_container: crm.CellContainer
+    ):
+        mask_transformed = transform_input_mask(
+            colors_data, mask_data, iteration, cell_container
+        )
         rs = crm.RenderSettings(pixel_per_micron=1)
         mask_predicted = crm.render_mask(
-            agents, cell_container.cell_to_color, domain_size, rs
+            cell_container.get_cells_at_iteration(iteration),
+            cell_container.cell_to_color,
+            domain_size,
+            rs,
         )
 
-        mask_diff = crm.parents_diff_mask(mask_predicted, mask_new, cell_container, 0.5)
+        mask_diff = crm.parents_diff_mask(
+            mask_predicted, mask_transformed, cell_container, 0.5
+        )
         odir = out / "celldiffs"
         cv.imwrite(
             filename=str(odir / f"diff-{iteration:06}.png"), img=mask_diff * 255.0
         )
 
-    for colors_data, mask, pos_exact, iter, img in zip(
+    for colors_data, mask_data, pos_exact, iter, img in zip(
         colors_all, masks, positions_all, iterations_all, imgs
     ):
-        agents = cell_container.get_cells_at_iteration(iter)
-        plot_mask_diff(colors_data, iter, agents, mask)
+        plot_mask_diff(colors_data, mask_data, iter, cell_container)
 
     if not pyargs.skip_distributions:
         plot_distributions(agents_predicted, out)
