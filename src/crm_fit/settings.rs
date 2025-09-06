@@ -57,6 +57,30 @@ pub enum Parameter {
     List(Vec<f32>),
 }
 
+#[pymethods]
+impl Parameter {
+    fn __repr__(&self) -> String {
+        use Parameter::*;
+        match self {
+            SampledFloat(s) => format!("{:#?}", s),
+            Float(f) => format!("{:#?}", f),
+            List(l) => format!("{:?}", l),
+        }
+    }
+
+    /// Obtains the inner value of the enum
+    ///
+    /// This will cast to a dict, list or float.
+    pub fn get_inner(&self, py: Python) -> PyResult<Py<PyAny>> {
+        use Parameter::*;
+        match self {
+            SampledFloat(s) => s.clone().into_py_any(py),
+            Float(f) => f.into_py_any(py),
+            List(l) => l.into_py_any(py),
+        }
+    }
+}
+
 fn parameter_from_obj(obj: &Bound<PyAny>) -> PyResult<Parameter> {
     if let Ok(value) = obj.extract() {
         Ok(Parameter::Float(value))
