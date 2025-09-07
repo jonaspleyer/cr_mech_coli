@@ -104,6 +104,7 @@ class OptimizationResult:
     success: bool | None
     neval: int | None
     niter: int | None
+    evals: list[int]
 
     def save_to_file(self, filename: Path): ...
     @staticmethod

@@ -17,6 +17,7 @@ pub struct OptimizationResult {
     pub success: Option<bool>,
     pub neval: Option<usize>,
     pub niter: Option<usize>,
+    pub evals: Vec<f32>,
 }
 
 #[pymethods]
@@ -50,7 +51,7 @@ fn lhs_optimization(
     iterations_images: &[usize],
     positions_all: numpy::ndarray::ArrayView4<f32>,
     settings: &Settings,
-) -> PyResult<Option<(Vec<f32>, f32)>> {
+) -> PyResult<Option<(Vec<f32>, f32, Vec<f32>)>> {
     use kdam::{term::Colorizer, *};
     use rayon::prelude::*;
 
@@ -81,12 +82,12 @@ fn lhs_optimization(
             iterations_images,
         )
         .ok()
-        .map(|x| (parameters.to_vec(), x))
+        .map(|x| (parameters.to_vec(), x, vec![x]))
     })
     .filter(|x| x.1.is_finite())
     .reduce_with(|x, y| if x.1 < y.1 { x } else { y });
 
-    if let Some((_, cost)) = result {
+    if let Some((_, cost, _)) = result {
         println!("Final cost: {}", format!("{cost}").colorize("blue"));
     }
 
@@ -102,7 +103,7 @@ fn lhs_optimization_iter(
     positions_all: numpy::ndarray::ArrayView4<f32>,
     settings: &Settings,
     relative_reduction: f32,
-) -> PyResult<Option<(Vec<f32>, f32)>> {
+) -> PyResult<Option<(Vec<f32>, f32, Vec<f32>)>> {
     // Do lowering via repeated applications of LatinHypercube algorithm
     let mut bounds = bounds.clone();
     let mut result = None;
@@ -121,13 +122,16 @@ fn lhs_optimization_iter(
         // This will still decrease the overall size
         if result.is_none() && new_result.is_some() {
             result = new_result;
-        } else if let (Some((_, c0)), Some((p1, c1))) = (&result, new_result) {
+        } else if let (Some((_, c0, evals_old)), Some((p1, c1, evals_new))) = (&result, new_result)
+        {
             if c1 < *c0 {
-                result = Some((p1, c1));
+                let mut evals_combined = evals_old.clone();
+                evals_combined.extend(evals_new);
+                result = Some((p1, c1, evals_combined));
             }
         }
 
-        if let Some((params, _)) = &result {
+        if let Some((params, _, _)) = &result {
             let dists = &bounds.column(1) - &bounds.column(0);
             for i in 0..params.len() {
                 let d = dists[i];
@@ -185,6 +189,7 @@ pub fn run_optimizer(
     match settings.optimization.borrow(py).deref() {
         OptimizationMethod::DifferentialEvolution(de) => {
             let locals = pyo3::types::PyDict::new(py);
+            let globals = pyo3::types::PyDict::new(py);
 
             // Required
             locals.set_item("bounds", bounds.to_pyarray(py))?;
@@ -205,6 +210,14 @@ from cr_mech_coli.crm_fit import predict_calculate_cost
 
 args = (positions_all, iterations_images, settings)
 
+evals = []
+
+def callback(intermediate_result):
+    fun = intermediate_result.fun
+    global evals
+    evals.append(float(fun))
+    print(evals)
+
 res = sp.optimize.differential_evolution(
     predict_calculate_cost,
     bounds=bounds,
@@ -219,10 +232,13 @@ res = sp.optimize.differential_evolution(
     popsize=optimization.pop_size,
     polish=optimization.polish,
     rng=optimization.seed,
+    callback=callback,
 )
+
+print(evals)
 "#
                 ),
-                None,
+                Some(&globals),
                 Some(&locals),
             )?;
             let res = locals.get_item("res")?.unwrap();
@@ -231,12 +247,25 @@ res = sp.optimize.differential_evolution(
             let success: Option<bool> = res.get_item("success").ok().and_then(|x| x.extract().ok());
             let neval: Option<usize> = res.get_item("nfev").ok().and_then(|x| x.extract().ok());
             let niter: Option<usize> = res.get_item("nit").ok().and_then(|x| x.extract().ok());
+            let evals: Vec<f32> = locals
+                .get_item("evals")?
+                .and_then(|x| x.extract().ok())
+                .unwrap_or(
+                    globals
+                        .get_item("evals")?
+                        .and_then(|x| x.extract().ok())
+                        .unwrap(),
+                );
+
+            println!("{:?}", evals);
+
             Ok(OptimizationResult {
                 params,
                 cost,
                 success,
                 neval,
                 niter,
+                evals,
             })
         }
         OptimizationMethod::LatinHypercube(lhs) => {
@@ -264,13 +293,14 @@ res = sp.optimize.differential_evolution(
                 *relative_reduction,
             )?;
 
-            if let Some((params, cost)) = result {
+            if let Some((params, cost, evals)) = result {
                 Ok(OptimizationResult {
                     params,
                     cost,
                     success: Some(true),
                     neval: Some(n_steps * n_points),
                     niter: Some(*n_steps),
+                    evals,
                 })
             } else {
                 Ok(OptimizationResult {
@@ -279,6 +309,7 @@ res = sp.optimize.differential_evolution(
                     success: Some(false),
                     neval: None,
                     niter: None,
+                    evals: vec![],
                 })
             }
         }
@@ -304,10 +335,10 @@ res = sp.optimize.differential_evolution(
                     *relative_reduction,
                 )?
             } else {
-                Some((initial_values.clone(), f32::MAX))
+                Some((initial_values.clone(), f32::MAX, vec![]))
             };
 
-            let params = if let Some((params, _)) = result {
+            let params = if let Some((params, _, _)) = result {
                 params
             } else {
                 return Ok(OptimizationResult {
@@ -316,6 +347,7 @@ res = sp.optimize.differential_evolution(
                     success: Some(false),
                     neval: None,
                     niter: None,
+                    evals: vec![],
                 });
             };
 
@@ -340,9 +372,13 @@ from cr_mech_coli.crm_fit import predict_calculate_cost
 
 args = (positions_all, iterations, settings)
 
+evals = []
+
 def callback(intermediate_result):
     # nit = intermediate_result.nit
     fun = intermediate_result.fun
+    global evals
+    evals.append(fun)
     print(f"Objective Function: {fun}")
 
 print("Starting Nelder-Mead Optimization")
@@ -374,6 +410,10 @@ res = sp.optimize.minimize(
                 .and_then(|x| x.extract().ok())
                 .unwrap_or(0);
             let niter = res.get_item("nit").ok().and_then(|x| x.extract().ok());
+            let evals = locals
+                .get_item("evals")?
+                .and_then(|x| x.extract().ok())
+                .unwrap_or_default();
 
             Ok(OptimizationResult {
                 params,
@@ -381,6 +421,7 @@ res = sp.optimize.minimize(
                 success,
                 neval: Some(neval),
                 niter,
+                evals,
             })
         }
     }
