@@ -189,6 +189,7 @@ pub fn run_optimizer(
     match settings.optimization.borrow(py).deref() {
         OptimizationMethod::DifferentialEvolution(de) => {
             let locals = pyo3::types::PyDict::new(py);
+            let globals = pyo3::types::PyDict::new(py);
 
             // Required
             locals.set_item("bounds", bounds.to_pyarray(py))?;
@@ -234,7 +235,7 @@ res = sp.optimize.differential_evolution(
 )
 "#
                 ),
-                None,
+                Some(&globals),
                 Some(&locals),
             )?;
             let res = locals.get_item("res")?.unwrap();
@@ -246,7 +247,12 @@ res = sp.optimize.differential_evolution(
             let evals: Vec<f32> = locals
                 .get_item("evals")?
                 .and_then(|x| x.extract().ok())
-                .unwrap_or_default();
+                .unwrap_or(
+                    globals
+                        .get_item("evals")?
+                        .and_then(|x| x.extract().ok())
+                        .unwrap(),
+                );
 
             Ok(OptimizationResult {
                 params,
