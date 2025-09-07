@@ -263,13 +263,19 @@ def crm_fit_main():
         fig, ax = plt.subplots(figsize=(8, 8))
         crm.plotting.configure_ax(ax)
         evals = np.sort(evals)[::-1]
-        ax.plot(np.arange(len(evals)), evals, label="Cost Function")
+        ax.plot(
+            np.arange(len(evals)),
+            evals,
+            label="Cost Function",
+            color=crm.plotting.COLOR3,
+        )
         ax.legend(
             loc="upper center",
             bbox_to_anchor=(0.5, 1.1),
             ncol=1,
             frameon=False,
         )
+        ax.set_xlabel("Iterations")
         fig.savefig(out / "optimization-progression.png")
         fig.savefig(out / "optimization-progression.pdf")
         plt.close(fig)
