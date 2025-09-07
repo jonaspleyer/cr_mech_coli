@@ -372,6 +372,7 @@ def crm_fit_main():
             cv.imwrite(
                 filename=str(odir / f"diff-{iteration:06}.png"), img=mask_diff * 255
             )
+            return mask_predicted
 
         for colors_data, mask_data, pos_exact, iter, img in tqdm(
             zip(colors_all, masks, positions_all, iterations_all, imgs),
