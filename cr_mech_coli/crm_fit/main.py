@@ -339,10 +339,12 @@ def crm_fit_main():
                 handles[:2],
                 labels[:2],
                 loc="upper center",
-                bbox_to_anchor=(0.5, 1.10),
+                bbox_to_anchor=(0.5, 1.15),
                 ncol=3,
                 frameon=False,
             )
+            ax.set_xlim(0, domain_size[0])
+            ax.set_ylim(0, domain_size[1])
             iterdir = out / "celldiffs"
             iterdir.mkdir(parents=True, exist_ok=True)
             fig.savefig(iterdir / f"cell-{iteration:06}.png")
