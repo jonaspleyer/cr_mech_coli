@@ -323,8 +323,9 @@ def crm_fit_main():
             odir.mkdir(parents=True, exist_ok=True)
             cv.imwrite(f"{odir}/{name}.png", img)
 
-        def plot_position_diff(p_exact, p_fit, iteration):
-            fig, ax = plt.subplots(figsize=(8, 8))
+        def plot_position_diff(p_exact, p_fit, iteration, shape):
+            width_to_height = shape[0] / shape[1]
+            fig, ax = plt.subplots(figsize=(8, width_to_height * 8))
             for p1i, p2i in zip(p_exact, p_fit):
                 crm.plotting.configure_ax(ax)
                 x1 = p1i[:, 0]
