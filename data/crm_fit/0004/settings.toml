@@ -11,8 +11,8 @@ n_vertices=8
 [parameters]
 radius = { min = 0.05, max=15.0, initial=2.5, individual=false }
 # radius = [5.630516, 5.445153, 4.7796803, 5.580657, 5.963134, 6.2007318]
-# rigidity = 10.0
-rigidity = { min = 5.0, max = 16.0, initial=10.0, individual=false }
+rigidity = 10.0
+# rigidity = { min = 5.0, max = 16.0, initial=10.0, individual=false }
 damping = { min=2.0, max=15.0, initial=2.5 }
 # damping = 10.0
 strength = { min=0.1, max=15.0, initial=1.0 }
