@@ -309,7 +309,12 @@ def crm_fit_main():
 
     if not pyargs.skip_masks:
 
-        def plot_snapshot(pos, img, snapshot_dir, name):
+        def plot_snapshot(pos, img, snapshot_dir, name, pred=None):
+            if pred is not None:
+                alpha_mask = np.all(pred == np.array([0, 0, 0]), axis=2)
+                alpha_mask = np.repeat(np.expand_dims(alpha_mask, axis=2), 3, axis=2)
+                img = alpha_mask * img + (1 - alpha_mask) * (0.5 * img + 0.5 * pred)
+                img = img.astype(np.uint8)
             for p in pos:
                 p = crm.convert_cell_pos_to_pixels(p, domain_size, img.shape[:2])
                 img = cv.polylines(
@@ -382,10 +387,14 @@ def crm_fit_main():
         ):
             agents = cell_container.get_cells_at_iteration(iter)
             pos = np.array([c[0].pos for c in agents.values()])
-            plot_snapshot(pos, img, "snapshots", f"predicted-{iter:06}")
+            mask_predicted = plot_mask_diff(
+                colors_data, mask_data, iter, cell_container
+            )
+            plot_snapshot(
+                pos, img, "snapshots", f"predicted-{iter:06}", pred=mask_predicted
+            )
             plot_snapshot(pos_exact, img, "snapshots", f"exact-{iter:06}")
-            plot_position_diff(pos_exact, pos, iter)
-            plot_mask_diff(colors_data, mask_data, iter, cell_container)
+            plot_position_diff(pos_exact, pos, iter, img.shape)
 
         print(f"{time.time() - interval:10.4f}s Rendered Masks")
         interval = time.time()
