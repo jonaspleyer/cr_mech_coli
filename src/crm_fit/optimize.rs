@@ -189,7 +189,6 @@ pub fn run_optimizer(
     match settings.optimization.borrow(py).deref() {
         OptimizationMethod::DifferentialEvolution(de) => {
             let locals = pyo3::types::PyDict::new(py);
-            let globals = pyo3::types::PyDict::new(py);
 
             // Required
             locals.set_item("bounds", bounds.to_pyarray(py))?;
@@ -216,7 +215,6 @@ def callback(intermediate_result):
     fun = intermediate_result.fun
     global evals
     evals.append(float(fun))
-    print(evals)
 
 res = sp.optimize.differential_evolution(
     predict_calculate_cost,
@@ -234,11 +232,9 @@ res = sp.optimize.differential_evolution(
     rng=optimization.seed,
     callback=callback,
 )
-
-print(evals)
 "#
                 ),
-                Some(&globals),
+                None,
                 Some(&locals),
             )?;
             let res = locals.get_item("res")?.unwrap();
@@ -250,14 +246,7 @@ print(evals)
             let evals: Vec<f32> = locals
                 .get_item("evals")?
                 .and_then(|x| x.extract().ok())
-                .unwrap_or(
-                    globals
-                        .get_item("evals")?
-                        .and_then(|x| x.extract().ok())
-                        .unwrap(),
-                );
-
-            println!("{:?}", evals);
+                .unwrap_or_default();
 
             Ok(OptimizationResult {
                 params,
