@@ -259,6 +259,23 @@ def crm_fit_main():
 
     interval = time.time()
 
+    def plot_optimization_progression(evals):
+        fig, ax = plt.subplots(figsize=(8, 8))
+        crm.plotting.configure_ax(ax)
+        evals = np.sort(evals)[::-1]
+        ax.plot(np.arange(len(evals)), evals, label="Cost Function")
+        ax.legend(
+            loc="upper center",
+            bbox_to_anchor=(0.5, 1.1),
+            ncol=1,
+            frameon=False,
+        )
+        fig.savefig(out / "optimization-progression.png")
+        fig.savefig(out / "optimization-progression.pdf")
+        plt.close(fig)
+
+    plot_optimization_progression(optimization_result.evals)
+
     # Plot Cost function against varying parameters
     if not pyargs.skip_profiles:
         warnings.filterwarnings(
