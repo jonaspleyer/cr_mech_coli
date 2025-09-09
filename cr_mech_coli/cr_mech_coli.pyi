@@ -23,7 +23,9 @@ class MiePotentialF32:
     strength: float
 
     @staticmethod
-    def __new__(cls, **kwargs) -> MorsePotentialF32: ...
+    def __new__(
+        cls, radius: float, strength: float, bound: float, cutoff: float, en: float, em
+    ) -> MorsePotentialF32: ...
 
 class MorsePotentialF32:
     """\
@@ -67,11 +69,17 @@ class CellIdentifier:
     """
 
     ...
+    @staticmethod
+    def __new__(cls, voxel_index, index) -> CellIdentifier: ...
+    @staticmethod
+    def new_initial(index: int) -> CellIdentifier: ...
 
 class VoxelPlainIndex:
     """\
     Identifier for voxels used internally to get rid of user-defined ones.
     """
+    @staticmethod
+    def __new__(cls, index) -> VoxelPlainIndex: ...
 
 class Configuration:
     """\
@@ -130,7 +138,9 @@ class RodAgent:
         spring_length=3.0,
         damping=1.0,
         growth_rate=0.01,
+        growth_rate_distr=(0.01, 0.0),
         spring_length_threshold=6.0,
+        neighbor_reduction=None,
     ): ...
     def __repr__(self) -> str: ...
 
@@ -248,7 +258,7 @@ def sort_cellular_identifiers(
     """
     ...
 
-def counter_to_color(counter: int) -> list[int]:
+def counter_to_color(counter: int) -> tuple[np.uint8, np.uint8, np.uint8]:
     """\
     Converts an integer counter between 0 and 251^3-1 to an RGB value.
     The reason why 251 was chosen is due to the fact that it is the highest prime number which is
@@ -273,7 +283,7 @@ def counter_to_color(counter: int) -> list[int]:
         list[int]: A list with exactly 3 entries containing the calculated color."""
     ...
 
-def color_to_counter(color: list[int]) -> int:
+def color_to_counter(color: tuple[np.uint8, np.uint8, np.uint8]) -> int:
     """\
     Converts a given color back to the counter value.
 
@@ -298,7 +308,8 @@ def color_to_counter(color: list[int]) -> int:
 def parents_diff_mask(
     mask1: np.ndarray,
     mask2: np.ndarray,
-    cell_container: CellContainer,
+    color_to_cell: dict,
+    parent_map: dict,
     parent_penalty: float,
 ) -> np.ndarray:
     """Calculates the difference between two masks and applies a lower value where one cell is the
