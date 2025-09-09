@@ -20,8 +20,8 @@ approx = { package = "approxim", version = "0.6.6", features = ["tuple_impl"] }
 itertools = "0.14.0"
 nalgebra = { version = "0.34", features = ["serde", "serde-serialize"] }
 num = { version = "0.4.3", features = ["rand", "serde"] }
-numpy = { version = "0.25.0", features = ["half", "nalgebra"] }
-pyo3 = { version = "0.25", features = ["serde", "py-clone", "multiple-pymethods"] }
+numpy = { version = "0.26.0", features = ["half", "nalgebra"] }
+pyo3 = { version = "0.26", features = ["serde", "py-clone", "multiple-pymethods"] }
 rand = { version = "0.9", features = ["serde"] }
 rand_chacha = { version = "0.9", features = ["serde"] }
 rayon = "1.11.0"
