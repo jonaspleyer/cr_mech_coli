@@ -11,9 +11,6 @@ crate-type = ["cdylib", "rlib"]
 # Due to python docstrings
 doctest = false
 
-[patch.crates-io]
-numpy = { git="https://github.com/Icxolu/rust-numpy/", branch="ndarray" }
-
 [dependencies]
 cellular_raza = { version="0.3.0", features = ["pyo3", "approx"] }
 approx = { package = "approxim", version = "0.6.6", features = ["tuple_impl"] }
