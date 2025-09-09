@@ -1,0 +1,314 @@
+\documentclass{article}
+
+\usepackage{arxiv}
+
+\usepackage[utf8]{inputenc} % allow utf-8 input
+\usepackage[T1]{fontenc}    % use 8-bit T1 fonts
+\usepackage[hidelinks]{hyperref}       % hyperlinks
+\usepackage{url}            % simple URL typesetting
+\usepackage{booktabs}       % professional-quality tables
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{amsfonts}       % blackboard math symbols
+\usepackage{float}
+\usepackage{nicefrac}       % compact symbols for 1/2, etc.
+\usepackage{microtype}      % microtypography
+\usepackage{mathrsfs}
+\usepackage{onimage}
+\usepackage{graphicx}
+\usepackage{doi}
+\usepackage{acronym}
+\usepackage{listings}
+\usepackage[mode=buildnew]{standalone}
+\usepackage{tikz}
+\usepackage{tabularx}
+\usepackage{siunitx}
+\usepackage{cite}
+\usepackage{acronym}
+\usepackage{xcolor}
+
+\title{Improving Cell Segmentation and Tracking via Mechanistic Models of
+Rod-Shaped Bacteria}
+
+%\date{September 9, 1985}	% Here you can change the date presented in the paper title
+%\date{} 					% Or removing it
+
+\author{
+    \href{https://orcid.org/0009-0001-0613-7978}{
+        \includegraphics[scale=0.06]{figures/orcid.pdf}
+        \hspace{1mm}Jonas Pleyer
+    }$^1$
+	% \texttt{jonas.pleyer@fdm.uni-freiburg.de} \\
+	%% examples of more authors
+	\href{https://orcid.org/0000-0002-6371-4495}{
+        \includegraphics[scale=0.06]{figures/orcid.pdf}
+        \hspace{1mm}Christian Fleck
+    }$^1$\\\\
+    $^1$Freiburg Center for Data Analysis, Modeling and AI, University of Freiburg\\
+}
+
+\newacro{abm}[ABM]{Agent-Based Model}
+\newacro{ode}[ODE]{Ordinary Differential Equation}
+\newacro{pbr}[PBR]{Physically-Based Rendering}
+
+% Uncomment to remove the date
+%\date{}
+
+% Uncomment to override  the `A preprint' in the header
+\renewcommand{\headeright}{Preprint}
+%\renewcommand{\undertitle}{Technical Report}
+\renewcommand{\shorttitle}{Improving Cell Segmentation and Tracking via Mechanistic Models of
+Rod-Shaped Bacteria}
+
+\usepackage{enumitem}
+\setlist{nolistsep}
+
+%%% Add PDF metadata to help others organize their library
+%%% Once the PDF is generated, you can check the metadata with
+%%% $ pdfinfo template.pdf
+\hypersetup{
+pdftitle={% TODO
+},
+pdfsubject={q-bio.NC, q-bio.QM},
+pdfauthor={Jonas Pleyer, Christian Fleck},
+pdfkeywords={},
+}
+
+% Change numbering of equations
+% \numberwithin{equation}{section}
+
+% MAKE TITLES IN THEOREMS BOLD
+\makeatletter
+\def\th@plain{%
+  \thm@notefont{}% same as heading font
+  \itshape % body font
+}
+\def\th@definition{%
+  \thm@notefont{}% same as heading font
+  \normalfont % body font
+}
+\makeatother
+
+\begin{document}
+\maketitle
+
+%###################################################################################################
+\begin{abstract}
+\end{abstract}
+
+% keywords can be removed
+\keywords{Cell Segmentation, Cell Tracking, Mechanistic Modeling, Data Augmentation, Single-Cell}
+
+\pagebreak
+\renewcommand{\contentsname}{Table of Contents (remove before submission)}
+\tableofcontents
+\vfill
+\pagebreak
+
+%###################################################################################################
+\section{(40\%) Introduction}
+
+The field of biology has become increasingly intertwined with other disciplines such as mathematics,
+physics and computation.
+With their introduction, many processes have become increasingly automated, thus advancing our
+capacity to analyse data at scale.
+Many analysis schemes are based on microscopic images of cells which are being observed and possibly
+tracked through time and space.
+Often, these cells are genetically altered so that effects such as internal production parameters
+can be observed from the outside via visual clues.
+In order to be able to quantify single-cell effects, it is necessary that we can segment microscopic
+images to obtain the location of individual cells.
+This challenge of segmenting individual cells is a static problem by nature.
+However by considering multiple microscopic images in succession, it is turned into a dynamic
+problem of tracking single cells through time and space.
+Going even further, we can include division events, thus again increasing the overall complexity of
+the problem at hand.
+
+Many algorithms have been conceived that are capable of dealing with these topics and they are being
+applied actively within realms such as.
+While many earlier iterations targeted 2D situations exclusively, more recent developments are
+capable of processing 3D data as well.
+Especially this latter subproblem is difficult to tackle since it allows for much larger
+complexities within the analyzed dataset.
+Furthermore, data in this case is often sparse, thus further complicating efficient training.
+But while these tools are essential to get the task done, they can only be as good as the data with
+which they are trained.
+So far, these datasets are almost exclusively of experimental nature which requires lots of manual
+labor in their construction.
+The importance of data was also shown in various cases such as \textbf{TODO}.
+
+\begin{itemize}
+    \item Compare existing Cell Segmentation+Tracking tools (Cellpose, Omnipose, ..)
+\end{itemize}
+
+The goal of this study is to inspect if the process of data generation can be augmented by a
+mechanistic single-cell model.
+We will study this question along the example of rod-shaped bacteria.
+With our recent developments, we have shown how \acp{abm} of rod-shaped bacteria can be fit to
+microscopic image time-series, thus allowing us to construct mechanistic models.
+From these single-cell models, we will first generate "sterile" snapshots which can then be used to
+construct near-realistic brightfield microscopic images and perfect cell masks.
+We will mimick known microscopic defects in order to provide realistic images variability that would
+also ocurr naturally.
+This data will be used to augment existing datasets and asses the effectivenss of this approach when
+training existing cell-segmentation and cell-tracking tools on the expanded dataset.
+With this procedure we also able to systematically study which of the introduced image defects poses
+the biggest challenge for the investigated cell-tracking algorithms.
+Furthermore, it will provide experimentalists with information, on which variables are most
+important to control within their experimental setup in order to provide the best cell-segmentation
+and cell-tracking results.
+
+%###################################################################################################
+\section{(70\%) Data Augmentation Strategy}
+% --------------------------------------------------------------------------------------------------
+\subsection{(90\%) Modeling Approach \& Parameter Estimation}
+
+\begin{itemize}
+    \item summarize contents from the other paper which I am preparing
+    \item explain on which datasets we fitted the model
+\end{itemize}
+
+% --------------------------------------------------------------------------------------------------
+\subsection{(80\%) Image Generation}
+Using the model of the previous section, we can generate visualizations from its numerical results.
+Figure~\ref{fig:progression-image-generation} shows intermediate steps and final results of a
+particular generated image.
+In the first step (subfigure A), we generate a 3D render which is a collection of meshes and
+properties that can be rendered given a set of light sources and a particular view angle.
+Using a parallel projection and by assigning uniue colors to individual agents, we can generate cell
+masks similar to which would have been generated by a segmentation tool (subfigure B).
+Due to the fact that we are utilizing a mechanistic model, we ensure that cells are colored
+correctly and that our generated masks are in this sense "perfect".
+This is one of the key foundations which allows this investigation in the first place.
+Furthermore, since individual agents do not change their labels, the color values of cells are also
+carried over correctly between individual time snapshots.
+The last image (subfigure C) shows an example of a render where noise effects have been introduced.
+These effects are the result of properties of the microscopic appartus, the cellular nature or other
+external effects and ocurr naturally within most experimental setups.
+We utilize various effects and implement their effect on the resulting image as summarized in
+Table~\ref{tabular:microscopic-image-defects}.
+
+Use various effects to make images realistic; mimick real microscopic effects for that
+\begin{itemize}
+    \item General (white) Noise
+    \item Distort Images (lens distortion)
+    \item Lighting for rendering in 3D
+    \item Shaking for time-series
+    \item ...
+\end{itemize}
+
+\begin{figure}
+    \centering
+    % \begin{tikzonimage}[width=0.9\textwidth]{visualization.pdf}
+    %     \node at (0.025, 0.975)[anchor=north west, rectangle, draw, minimum width=15pt, minimum height=15pt]{\textbf{A}};
+    % \end{tikzonimage}
+    \begin{tikzonimage}[width=0.3\textwidth]
+        {docs/source/_static/09395645494836445480/raw_pv/000000400.png}
+        \node at (0.025, 0.975)[anchor=north west, rectangle, draw, white, minimum width=15pt, minimum height=15pt]{\textbf{A}};
+    \end{tikzonimage}
+    \begin{tikzonimage}[width=0.3\textwidth]
+        {docs/source/_static/09395645494836445480/masks/000000400.png}
+        \node at (0.025, 0.975)[anchor=north west, rectangle, draw, white, minimum width=15pt, minimum height=15pt]{\textbf{B}};
+    \end{tikzonimage}
+    \begin{tikzonimage}[width=0.3\textwidth]
+        {docs/source/_static/09395645494836445480/images/000000400.png}
+        \node at (0.025, 0.975)[anchor=north west, rectangle, draw, white, minimum width=15pt, minimum height=15pt]{\textbf{C}};
+    \end{tikzonimage}
+    \caption{
+        (A) shows the result from combining sphere and cylinder meshes to obtain the shape of a
+        bacterial rod.
+        This render contains lighting coming from 2 light sources which thus produces a small glow
+        on the upper part of the meshes.
+        (B) Unique color values are assigned to each agent and light sources are removed.
+        Afterwards, the image is rendered by projecting along the z-axis.
+        (C) We use physically-based rendering and assign properties such as roughness and
+        reflectivity to generate an initial render.
+        Afterwards, we apply white noise to the pixel values of image.
+        In the future, we hope to extend this approach in order to construct near-realistic
+        microscopic images from synthetic data.
+    }
+    \label{fig:progression-image-generation}
+\end{figure}
+
+\begin{table}[H]
+    \begin{tabularx}{\columnwidth}{l l}
+        \toprule
+        Microscopic effect & Image Transformation\\
+        \midrule
+        Sensor Noise & White noise on pixel level\\
+        Shaking Apparatus & Random spatial translations between time-steps\\
+        Lighting & 3D Rendering: Introcue light sources; modify surface of cells; use \ac{pbr}\\
+        Cellular Translucency & Make cells partially transparent\\
+        Depth of Field & Included in \ac{pbr}\\
+        \bottomrule
+    \end{tabularx}
+    \label{tabular:microscopic-image-defects}
+\end{table}
+
+%###################################################################################################
+\section{(10\%) Methods}
+% --------------------------------------------------------------------------------------------------
+\subsection{Data Acquisition}
+\begin{itemize}
+    \item Use datasets from celltracking challenge
+    \item possibly restrict to rod-shaped bacteria for now
+\end{itemize}
+% --------------------------------------------------------------------------------------------------
+\subsection{Testing Methodology}
+\begin{enumerate}
+    \item Test model on Dataset
+    \item Train model on additional data (possibly various configurations)
+    \item Test again for same Dataset
+\end{enumerate}
+
+%###################################################################################################
+\section{(0\%) Results}
+% --------------------------------------------------------------------------------------------------
+\subsection{Cell Segmentation}
+\begin{itemize}
+    \item Compare improvement from Cellpose -> Omnipose (generational improvement) with improvement
+        in more (augmented) data
+    \item Compare how various tools benefit from this approach
+    \item How can the variation of generated data improve results?
+    \item What is the impact of "noise introduction"? Which effects are more important than others?
+\end{itemize}
+
+% --------------------------------------------------------------------------------------------------
+\subsection{Cell Tracking}
+\begin{itemize}
+    \item Use various "graining" of time-series data (larger time-steps between images) to asses the
+        importance of this detail
+    \item Can the improved ability to track cells through space be generalized to non-rod-shaped
+        bacterial tracking?
+\end{itemize}
+
+%###################################################################################################
+\section{(0\%) Discussion}
+\begin{itemize}
+    \item How can this be abstracted to other models (such as human stem cells, cocci, etc.)? Refer
+        to "blueprint" which was talked about in previous paper
+    \item 
+\end{itemize}
+\section{(0\%) Conclusion}
+
+%###################################################################################################
+\section{Data and Code Availability}
+All data and code which has been used in this study is available at the github repository
+\url{https://github.com/jonaspleyer/cr\_mech\_coli}.
+It includes detailed descriptions of how to obtain the used data and bring it into a usable format.
+The package which bundles the developed funtionality is published at
+\url{https://pypi.org/project/cr-mech-coli/} from which it is readily available as a python
+dependency.
+
+\bibliographystyle{IEEEtran}
+\bibliography{references}
+
+\appendix
+%###################################################################################################
+\renewcommand{\thesection}{}
+\renewcommand{\thesubsection}{S\arabic{subsection}}
+\section{Supplementary Material}
+
+%###################################################################################################
+\subsection{Data Preparation}
+
+\end{document}
