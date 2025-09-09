@@ -144,10 +144,10 @@ impl Default for RodMechanicsSettings {
 #[approx(epsilon_type = f32)]
 pub struct AgentSettings {
     /// Settings for the mechanics part of :class:`RodAgent`. See also :class:`RodMechanicsSettings`.
-    #[approx(map = |b| Python::with_gil(|py| Some(crate::crm_fit::get_inner(b, py))))]
+    #[approx(map = |b| Python::attach(|py| Some(crate::crm_fit::get_inner(b, py))))]
     pub mechanics: Py<RodMechanicsSettings>,
     /// Settings for the interaction part of :class:`RodAgent`. See also :class:`MorsePotentialF32`.
-    #[approx(map = |b| Python::with_gil(|py| Some(crate::crm_fit::get_inner(b, py))))]
+    #[approx(map = |b| Python::attach(|py| Some(crate::crm_fit::get_inner(b, py))))]
     pub interaction: Py<PhysicalInteraction>,
     /// Rate with which the length of the bacterium grows
     pub growth_rate: f32,
@@ -172,7 +172,7 @@ impl PartialEq for AgentSettings {
             spring_length_threshold,
             neighbor_reduction,
         } = &self;
-        Python::with_gil(|py| {
+        Python::attach(|py| {
             use core::ops::Deref;
             mechanics.borrow(py).deref().eq(&other.mechanics.borrow(py))
                 && interaction
@@ -189,7 +189,7 @@ impl PartialEq for AgentSettings {
 
 impl From<AgentSettings> for RodAgent {
     fn from(value: AgentSettings) -> Self {
-        Python::with_gil(|py| {
+        Python::attach(|py| {
             let AgentSettings {
                 mechanics,
                 interaction,
@@ -527,7 +527,7 @@ mod test_config {
     fn test_hashing() {
         use super::*;
         pyo3::prepare_freethreaded_python();
-        Python::with_gil(|py| {
+        Python::attach(|py| {
             let c1 = Configuration::new(py, None).unwrap();
             let c2 = Configuration::new(py, None).unwrap();
             c2.setattr(py, "n_saves", 100).unwrap();

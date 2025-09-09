@@ -480,13 +480,13 @@ pub struct OptimizationInfos {
 #[approx(epsilon_type = f32)]
 pub struct Settings {
     /// See :class:`Constants`
-    #[approx(map = |b| Python::with_gil(|py| Some(get_inner(b, py))))]
+    #[approx(map = |b| Python::attach(|py| Some(get_inner(b, py))))]
     pub constants: Py<Constants>,
     /// See :class:`Parameters`
-    #[approx(map = |b| Python::with_gil(|py| Some(get_inner(b, py))))]
+    #[approx(map = |b| Python::attach(|py| Some(get_inner(b, py))))]
     pub parameters: Py<Parameters>,
     /// See :class:`OptimizationMethod`
-    #[approx(map = |b| Python::with_gil(|py| Some(get_inner(b, py))))]
+    #[approx(map = |b| Python::attach(|py| Some(get_inner(b, py))))]
     pub optimization: Py<OptimizationMethod>,
     /// See :class:`Others`
     #[approx(skip)]
@@ -501,7 +501,7 @@ impl PartialEq for Settings {
             optimization,
             others,
         } = &self;
-        Python::with_gil(|py| {
+        Python::attach(|py| {
             constants.borrow(py).eq(&other.constants.borrow(py))
                 && parameters.borrow(py).eq(&other.parameters.borrow(py))
                 && optimization.borrow(py).eq(&other.optimization.borrow(py))
@@ -814,7 +814,7 @@ mod test {
 
     fn generate_test_settings() -> PyResult<(Settings, String)> {
         pyo3::prepare_freethreaded_python();
-        Python::with_gil(|py| -> PyResult<(Settings, String)> {
+        Python::attach(|py| -> PyResult<(Settings, String)> {
             let potential_type = PotentialType::Mie(Mie {
                 en: Parameter::SampledFloat(SampledFloat {
                     min: 0.2,
@@ -943,7 +943,7 @@ show_progressbar = false
 
         for n_agents in 1..10 {
             let infos =
-                Python::with_gil(|py| settings.generate_optimization_infos(py, n_agents)).unwrap();
+                Python::attach(|py| settings.generate_optimization_infos(py, n_agents)).unwrap();
             let lower = infos.bounds_lower;
             let upper = infos.bounds_upper;
             assert_eq!(lower.len(), n_agents + 5);

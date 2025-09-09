@@ -15,10 +15,10 @@ use serde::{Deserialize, Serialize};
 #[approx(epsilon_type = f32)]
 pub struct MultilayerConfig {
     /// Contains base configuration. See :class:`Configuration`
-    #[approx(map = |b| Python::with_gil(|py| Some(crate::crm_fit::get_inner(b, py))))]
+    #[approx(map = |b| Python::attach(|py| Some(crate::crm_fit::get_inner(b, py))))]
     pub config: Py<Configuration>,
     /// Contains settings for the Agents of the simulation. See :class:`AgentSettings`
-    #[approx(map = |b| Python::with_gil(|py| Some(crate::crm_fit::get_inner(b, py))))]
+    #[approx(map = |b| Python::attach(|py| Some(crate::crm_fit::get_inner(b, py))))]
     pub agent_settings: Py<AgentSettings>,
     /// Random seed for position generation
     #[approx(equal)]
@@ -43,7 +43,7 @@ impl PartialEq for MultilayerConfig {
             randomize_positions,
             n_vertices,
         } = &self;
-        Python::with_gil(|py| {
+        Python::attach(|py| {
             use core::ops::Deref;
             config.borrow(py).deref().eq(&other.config.borrow(py))
                 && agent_settings
