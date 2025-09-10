@@ -295,7 +295,6 @@ def optimize(
     return_all=False,
 ):
     spring_length_thresholds = spring_length_thresholds_and_new_growth_rates[:4]
-    print(spring_length_thresholds_and_new_growth_rates)
     new_growth_rates = [
         *spring_length_thresholds_and_new_growth_rates[4:],
         # These should not come into effect at all
@@ -442,7 +441,9 @@ def plot_time_evolution(
     )
     ax.set_ylabel("Cost Function")
     ax.set_xlabel("Time [h]")
-    return fig
+    fig.savefig("paper/figures/crm_divide.pdf")
+    fig.savefig("paper/figures/crm_divide.png")
+    plt.close(fig)
 
 
 def main():
@@ -496,7 +497,7 @@ def main():
         penalties,
     ) = optimize(res.x, *args, return_all=True)
 
-    fig = plot_time_evolution(
+    plot_time_evolution(
         masks_predicted,
         new_masks,
         color_to_cell,
@@ -505,8 +506,3 @@ def main():
         iterations_data,
         settings,
     )
-
-    plt.show()
-    fig.savefig("paper/figures/crm_divide.pdf")
-    fig.savefig("paper/figures/crm_divide.png")
-    plt.close(fig)
