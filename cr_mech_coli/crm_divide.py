@@ -3,6 +3,7 @@ from glob import glob
 from pathlib import Path
 from tqdm import tqdm
 import matplotlib.pyplot as plt
+import scipy as sp
 
 import cr_mech_coli as crm
 from cr_mech_coli import crm_fit
@@ -12,7 +13,9 @@ data_dir = Path("data/crm_divide/0001/")
 crm.plotting.set_mpl_rc_params()
 
 
-def adjust_masks(masks, mask_iters, container: crm.CellContainer, settings):
+def adjust_masks(
+    masks, mask_iters, container: crm.CellContainer, settings, show_progress=False
+):
     idents = container.cell_to_color.keys()
     iterations = container.get_all_iterations()
     idents_initial = container.get_cells_at_iteration(iterations[0]).keys()
@@ -176,7 +179,11 @@ def adjust_masks(masks, mask_iters, container: crm.CellContainer, settings):
 
     # Create new masks with updated colors
     new_masks = []
-    for m in tqdm(masks, total=len(masks), desc="Adjusting Data Masks"):
+    if show_progress:
+        iterator = tqdm(masks, total=len(masks), desc="Adjusting Data Masks")
+    else:
+        iterator = masks
+    for m in iterator:
         new_mask = np.array(
             [color_data_transform[c] for c in m.reshape(-1)], dtype=np.uint8
         ).reshape((*m.shape, 3))
@@ -190,18 +197,25 @@ def adjust_masks(masks, mask_iters, container: crm.CellContainer, settings):
 def predict(
     initial_positions,
     settings,
-    radius=0.5,
-    strength=0.1,
+    radius=8.059267,
+    strength=10.584545,
     bound=10,
     cutoff=100,
-    en=2.0,
-    em=1.0,
+    en=0.50215733,
+    em=0.21933548,
     diffusion_constant=0.0,
     spring_tension=3.0,
     rigidity=10.0,
     spring_length=3.0,
-    damping=2.5,
-    growth_rate=0.02,
+    damping=2.5799131,
+    growth_rates=[
+        0.001152799,
+        0.001410604,
+        0.0018761827,
+        0.0016834959,
+        0.0036106023,
+        0.0015209642,
+    ],
     spring_length_thresholds: float | list[float] = [
         200.0,
         200.0,
@@ -210,7 +224,13 @@ def predict(
         200.0,
         200.0,
     ],
-    growth_rate_distrs=None,
+    growth_rate_distrs=[
+        (0.001152799, 0),
+        (0.001410604, 0),
+        (0.0018761827, 0),
+        (0.0016834959, 0),
+    ],
+    show_progress=False,
 ):
     # Define agents
     interaction = crm.MiePotentialF32(
@@ -227,10 +247,10 @@ def predict(
     elif type(spring_length_thresholds) is list:
         pass
     else:
-        raise TypeError("")
+        raise TypeError("Expected float or list")
 
     if growth_rate_distrs is None:
-        growth_rate_distrs = [(0.0, 0.0)] * len(initial_positions)
+        growth_rate_distrs = [(growth_rate, 0.0) for growth_rate in growth_rates[:4]]
     agents = [
         crm.RodAgent(
             pos,
@@ -246,18 +266,87 @@ def predict(
             spring_length_threshold=spring_length_threshold,
             neighbor_reduction=None,
         )
-        for spring_length_threshold, pos, growth_rate_distr in zip(
-            spring_length_thresholds, initial_positions, growth_rate_distrs
+        for spring_length_threshold, pos, growth_rate, growth_rate_distr in zip(
+            spring_length_thresholds,
+            initial_positions,
+            growth_rates,
+            growth_rate_distrs,
         )
     ]
 
     # define config
     config = settings.to_config()
-    config.show_progressbar = True
+    config.show_progressbar = show_progress
+    if show_progress:
+        print()
 
     container = crm.run_simulation_with_agents(config, agents)
-    print()
     return container
+
+
+def optimize(
+    spring_length_thresholds_and_new_growth_rates,
+    positions_initial,
+    settings,
+    masks_data,
+    mask_iters,
+    iterations_data,
+    parent_penalty=1.0,
+    return_all=False,
+):
+    spring_length_thresholds = spring_length_thresholds_and_new_growth_rates[:4]
+    print(spring_length_thresholds_and_new_growth_rates)
+    new_growth_rates = [
+        *spring_length_thresholds_and_new_growth_rates[4:],
+        # These should not come into effect at all
+        0.0,
+        0.0,
+    ]
+    container = predict(
+        positions_initial,
+        settings,
+        spring_length_thresholds=[*spring_length_thresholds, 200.0, 200.0],
+        growth_rate_distrs=[(g, 0) for g in new_growth_rates],
+    )
+    iterations_simulation = np.array(container.get_all_iterations()).astype(int)
+
+    new_masks, parent_map, cell_to_color, color_to_cell = adjust_masks(
+        masks_data, mask_iters, container, settings
+    )
+
+    masks_predicted = [
+        crm.render_mask(
+            container.get_cells_at_iteration(iter),
+            cell_to_color,
+            settings.constants.domain_size,
+            render_settings=crm.RenderSettings(pixel_per_micron=1),
+        )
+        for iter in iterations_simulation
+    ]
+
+    penalties = [
+        crm.penalty_area_diff_account_parents(
+            new_mask,
+            masks_predicted[iter],
+            color_to_cell,
+            parent_map,
+            parent_penalty,
+        )
+        for iter, new_mask in zip(iterations_data, new_masks)
+    ]
+
+    if return_all:
+        return (
+            new_masks,
+            parent_map,
+            cell_to_color,
+            color_to_cell,
+            container,
+            masks_predicted,
+            penalties,
+        )
+
+    return np.sum(penalties)
 
 
 def preprocessing():
@@ -361,35 +450,63 @@ def main():
         preprocessing()
     )
 
-    container = predict(
-        positions_initial, settings, np.max(iterations_data) - np.min(iterations_data)
-    )
-    iterations_simulation = np.array(container.get_all_iterations()).astype(int)
-
-    new_masks, parent_map, cell_to_color, color_to_cell = adjust_masks(
-        masks_data, mask_iters, container, settings
-    )
-
-    masks_predicted = [
-        crm.render_mask(
-            container.get_cells_at_iteration(iter),
-            cell_to_color,
-            settings.constants.domain_size,
-            render_settings=crm.RenderSettings(pixel_per_micron=1),
-        )
-        for iter in tqdm(
-            iterations_simulation, total=len(iterations_simulation), desc="Render Masks"
-        )
+    spring_length_thresholds = [12.0] * 4
+    new_growth_rates = [
+        0.001152799,
+        0.001410604,
+        0.0018761827,
+        0.0016834959,
     ]
+    spring_length_thresholds_and_new_growth_rates = [
+        *spring_length_thresholds,
+        *new_growth_rates,
+    ]
+    bounds = [(5.0, 30.0)] * 4 + [(0.001, 0.002)] * 4
+    parent_penalty = 0.5
+    args = (
+        positions_initial,
+        settings,
+        masks_data,
+        mask_iters,
+        iterations_data,
+        parent_penalty,
+    )
+
+    res = sp.optimize.differential_evolution(
+        optimize,
+        x0=spring_length_thresholds_and_new_growth_rates,
+        bounds=bounds,
+        args=args,
+        disp=True,
+        maxiter=20,
+        popsize=30,
+        mutation=(0.6, 1),
+        recombination=0.5,
+        workers=14,
+        updating="deferred",
+    )
+
+    (
+        new_masks,
+        parent_map,
+        cell_to_color,
+        color_to_cell,
+        container,
+        masks_predicted,
+        penalties,
+    ) = optimize(res.x, *args, return_all=True)
 
     fig = plot_time_evolution(
         masks_predicted,
         new_masks,
         color_to_cell,
         parent_map,
-        iterations_simulation,
+        container.get_all_iterations(),
         iterations_data,
         settings,
     )
+
     plt.show()
+    fig.savefig("paper/figures/crm_divide.pdf")
+    fig.savefig("paper/figures/crm_divide.png")
     plt.close(fig)
