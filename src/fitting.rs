@@ -1,4 +1,3 @@
-use crate::CellContainer;
 use pyo3::prelude::*;
 
 /// Checks if both arrays have identical shape and are non-empty
