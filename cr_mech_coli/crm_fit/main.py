@@ -199,7 +199,7 @@ def crm_fit_main():
 
     # Try to read config file
     filename = data_dir / "settings.toml"
-    settings = crm_fit.Settings.from_toml(str(filename))
+    settings = crm_fit.Settings.from_toml(filename)
     potential_type = settings.parameters.potential_type
 
     out = get_out_folder(pyargs.iteration, potential_type)

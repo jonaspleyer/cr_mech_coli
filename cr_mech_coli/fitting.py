@@ -100,6 +100,7 @@ def extract_positions(
         raise ValueError(
             "We only support masks with shapes (n, m), (n, m, 1) or (n, m, 3)"
         )
+
     colors = list(filter(lambda x: np.sum(x) != 0, np.unique(m, axis=0)))
 
     if len(mask.shape) > 2:
