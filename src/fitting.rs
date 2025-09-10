@@ -27,16 +27,19 @@ macro_rules! new_error (
 /// Args:
 ///     mask1(np.ndarray): Mask of segmented cells at one time-point
 ///     mask2(np.ndarray): Mask of segmented cells at other time-point
+///     color_to_cell(dict): Maps colors of type `tuple[u8, u8, u8]` to :class:`CellIdentifier`
+///     parent_map(dict): Maps cellidentifiers to their (optional) parent
 ///     cell_container(CellContainer): See :class:`CellContainer`
 ///     parent_penalty(float): Penalty value when one cell is daughter of other.
 ///         Should be between 0 and 1.
 #[pyfunction]
-#[pyo3(signature = (mask1, mask2, cell_container, parent_penalty = 0.5))]
+#[pyo3(signature = (mask1, mask2, color_to_cell, parent_map, parent_penalty = 0.5))]
 pub fn parents_diff_mask<'py>(
     py: Python<'py>,
     mask1: numpy::PyReadonlyArray3<'py, u8>,
     mask2: numpy::PyReadonlyArray3<'py, u8>,
-    cell_container: &CellContainer,
+    color_to_cell: std::collections::BTreeMap<(u8, u8, u8), crate::CellIdentifier>,
+    parent_map: std::collections::BTreeMap<crate::CellIdentifier, Option<crate::CellIdentifier>>,
     parent_penalty: f32,
 ) -> pyo3::PyResult<Bound<'py, numpy::PyArray2<f32>>> {
     use numpy::*;
@@ -59,24 +62,24 @@ pub fn parents_diff_mask<'py>(
                     let c1 = (c1[0], c1[1], c1[2]);
                     let c2 = (c2[0], c2[1], c2[2]);
 
-                    let i1 = cell_container.color_to_cell.get(&c1).ok_or(new_error!(
+                    let i1 = color_to_cell.get(&c1).ok_or(new_error!(
                         PyKeyError,
                         "could not find color {:?}",
                         c1
                     ))?;
-                    let i2 = cell_container.color_to_cell.get(&c2).ok_or(new_error!(
+                    let i2 = color_to_cell.get(&c2).ok_or(new_error!(
                         PyKeyError,
                         "could not find color {:?}",
                         c2
                     ))?;
 
                     // Check if one is the parent of the other
-                    let p1 = cell_container.parent_map.get(i1).ok_or(new_error!(
+                    let p1 = parent_map.get(i1).ok_or(new_error!(
                         PyKeyError,
                         "could not find cell {:?}",
                         i1
                     ))?;
-                    let p2 = cell_container.parent_map.get(i2).ok_or(new_error!(
+                    let p2 = parent_map.get(i2).ok_or(new_error!(
                         PyKeyError,
                         "could not find cell {:?}",
                         i2

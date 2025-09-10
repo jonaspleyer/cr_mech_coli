@@ -48,7 +48,13 @@ if __name__ == "__main__":
     interval = time.time()
 
     penalties_parents = [
-        crm.penalty_area_diff_account_parents(masks[i - 1], masks[i], cell_container, 0)
+        crm.penalty_area_diff_account_parents(
+            masks[i - 1],
+            masks[i],
+            cell_container.color_to_cell,
+            cell_container.parent_map,
+            0,
+        )
         / save_interval
         for i in range(1, len(iterations))
     ]

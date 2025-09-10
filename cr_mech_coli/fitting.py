@@ -178,7 +178,8 @@ def penalty_area_diff(mask1, mask2) -> np.float32:
 def penalty_area_diff_account_parents(
     mask1: np.ndarray,
     mask2: np.ndarray,
-    cell_container: CellContainer,
+    color_to_cell: dict,
+    parent_map: dict,
     parent_penalty: float = 0.5,
 ) -> float:
     """
@@ -194,7 +195,9 @@ def penalty_area_diff_account_parents(
     Returns:
         np.ndarray: A 2D array containing penalty values between 0 and 1.
     """
-    diff_mask = parents_diff_mask(mask1, mask2, cell_container, parent_penalty)
+    diff_mask = parents_diff_mask(
+        mask1, mask2, color_to_cell, parent_map, parent_penalty
+    )
     return np.mean(diff_mask)
 
 

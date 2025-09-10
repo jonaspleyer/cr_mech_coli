@@ -88,18 +88,34 @@ def estimate_growth_rates(iterations, lengths, settings, out_path):
     return growth_rates, growth_rates_err
 
 
-def transform_input_mask(colors_data, mask_data, iteration, cell_container):
+def transform_input_mask(
+    colors_data, mask_data, iteration, cell_container, return_colors=False
+):
     z8 = np.uint8(0)
     cells_at_iter = cell_container.get_cells_at_iteration(iteration)
     color_mapping = {np.uint8(0): (z8, z8, z8)}
+
     for color_old, id in zip(colors_data, sorted(cells_at_iter.keys())):
         color_new = cell_container.get_color(id)
         color_mapping[np.uint8(color_old)] = color_new
 
     def mapping(ns):
-        return np.array([color_mapping[n] for n in ns])
+        res = []
+        for n in ns:
+            if n in color_mapping:
+                res.append(color_mapping[n])
+            else:
+                new_color = crm.counter_to_color(n)
+                color_mapping[n] = new_color
+                res.append(new_color)
 
-    return np.apply_along_axis(mapping, -1, mask_data.astype(int))
+        return np.array(res)
+
+    res = np.apply_along_axis(mapping, -1, mask_data.astype(np.uint8))
+    if return_colors:
+        return res, color_mapping
+    else:
+        return res
 
 
 def crm_fit_main():

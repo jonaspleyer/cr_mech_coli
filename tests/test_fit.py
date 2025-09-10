@@ -45,9 +45,15 @@ def test_area_diff():
 def test_area_diff_parents():
     mask1, mask2, cell_container = produce_masks()
 
-    p1 = crm.penalty_area_diff_account_parents(mask1, mask2, cell_container)
-    p2 = crm.penalty_area_diff_account_parents(mask1, mask1, cell_container)
-    p3 = crm.penalty_area_diff_account_parents(mask2, mask2, cell_container)
+    p1 = crm.penalty_area_diff_account_parents(
+        mask1, mask2, cell_container.color_to_cell, cell_container.parent_map
+    )
+    p2 = crm.penalty_area_diff_account_parents(
+        mask1, mask1, cell_container.color_to_cell, cell_container.parent_map
+    )
+    p3 = crm.penalty_area_diff_account_parents(
+        mask2, mask2, cell_container.color_to_cell, cell_container.parent_map
+    )
 
     assert p1 > 0
     assert p2 == 0
@@ -62,7 +68,9 @@ def test_area_diff_comparison():
     mask1, mask2, cell_container = produce_masks()
 
     q1 = crm.penalty_area_diff(mask1, mask2)
-    p1 = crm.penalty_area_diff_account_parents(mask1, mask2, cell_container)
+    p1 = crm.penalty_area_diff_account_parents(
+        mask1, mask2, cell_container.color_to_cell, cell_container.parent_map
+    )
 
     assert p1 < q1
 
