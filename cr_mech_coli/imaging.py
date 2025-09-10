@@ -54,12 +54,14 @@ class RenderSettings:
     Others are used by :mod:`cv2`.
     """
 
-    pixel_per_micron: float = 12.8  #: Determines Resolution of the generated image
-    diffuse: float = 0.5  #: Value Between 0 and 1.
-    ambient: float = 0.5  #: Value between 0 and 1.
-    specular: float = 0.5  #: Value between 0 and 1.
-    specular_power: float = 10.0  #: Value between 0 and 250.
-    metallic: float = 1.0  #: Value between 0 and 1
+    pixel_per_micron: float | np.float32 = (
+        12.8  #: Determines Resolution of the generated image
+    )
+    diffuse: float | np.float32 = 0.5  #: Value Between 0 and 1.
+    ambient: float | np.float32 = 0.5  #: Value between 0 and 1.
+    specular: float | np.float32 = 0.5  #: Value between 0 and 1.
+    specular_power: float | np.float32 = 10.0  #: Value between 0 and 250.
+    metallic: float | np.float32 = 1.0  #: Value between 0 and 1
     noise: int = 50  #: RGB values per pixel
     bg_brightness: int = 100  #: Background brightness
     cell_brightness: int = 30  #: Brightness of the individual cells
@@ -124,7 +126,7 @@ def __create_cell_surfaces(
 def render_pv_image(
     cells: dict[CellIdentifier, tuple[RodAgent, CellIdentifier | None]],
     render_settings: RenderSettings,
-    domain_size: tuple[float, float],
+    domain_size: tuple[np.float32, np.float32],
     colors: dict[CellIdentifier, list[int]] | None = None,
     filename: str | Path | None = None,
 ) -> np.ndarray:
@@ -210,7 +212,7 @@ def render_pv_image(
 def render_mask(
     cells: dict[CellIdentifier, tuple[RodAgent, CellIdentifier | None]],
     colors: dict[CellIdentifier, list[int]],
-    domain_size: tuple[float, float],
+    domain_size: tuple[np.float32, np.float32],
     render_settings: RenderSettings | None = None,
     filename: str | Path | None = None,
 ) -> np.ndarray:
@@ -222,7 +224,7 @@ def render_mask(
     Args:
         cells: See :func:`render_pv_image`.
         render_settings (RenderSettings): See :func:`render_pv_image`.
-        domain_size (tuple[float, float]): See :func:`render_pv_image`.
+        domain_size (tuple[np.float32, np.float32]): See :func:`render_pv_image`.
         colors (dict[CellIdentifier, tuple[int, int, int]]): See :func:`render_pv_image`.
         filename: See :func:`render_pv_image`.
 
@@ -238,7 +240,7 @@ def render_mask(
 
 def render_image(
     cells: dict[CellIdentifier, tuple[RodAgent, CellIdentifier | None]],
-    domain_size: tuple[float, float],
+    domain_size: tuple[np.float32, np.float32],
     render_settings: RenderSettings | None = None,
     filename: str | Path | None = None,
 ) -> np.ndarray:
@@ -248,7 +250,7 @@ def render_image(
 
     Args:
         cells: See :func:`render_pv_image`.
-        domain_size (tuple[float, float]): See :func:`render_pv_image`.
+        domain_size (tuple[np.float32, np.float32]): See :func:`render_pv_image`.
         render_settings (RenderSettings): See :func:`render_pv_image`.
         colors (dict): See :func:`render_pv_image`.
         filename: See :func:`render_pv_image`.
@@ -286,7 +288,7 @@ def render_image(
 
 def store_all_images(
     cell_container: CellContainer,
-    domain_size: tuple[float, float],
+    domain_size: tuple[np.float32, np.float32],
     render_settings: RenderSettings | None = None,
     save_dir: str | Path = "out",
     render_raw_pv: bool = False,
@@ -301,7 +303,7 @@ def store_all_images(
 
     Args:
         cell_container: See :func:`cr_mech_coli.simulation.run_simulation`.
-        domain_size (tuple[float, float]): See :func:`render_pv_image`.
+        domain_size (tuple[np.float32, np.float32]): See :func:`render_pv_image`.
         render_settings (RenderSettings): See :func:`render_pv_image`.
         save_dir: Path of the directory where to save all images.
         render_raw_pv (bool): Additionaly render the intermediate image before applying effects

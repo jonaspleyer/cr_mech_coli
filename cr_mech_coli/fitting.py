@@ -72,7 +72,7 @@ def extract_positions(
     mask: np.ndarray,
     n_vertices: int = 8,
     skel_method="lee",
-    domain_size: np.ndarray | tuple[float, float] | float | None = None,
+    domain_size: np.ndarray | tuple[np.float32, np.float32] | np.float32 | None = None,
 ) -> tuple[np.ndarray, np.ndarray, np.ndarray, list]:
     """
     Extracts positions from a mask for each sub-mask associated to a single cell.
@@ -151,7 +151,7 @@ def area_diff_mask(mask1, mask2) -> np.ndarray:
     return (p != np.array([0, 0, 0]).T).reshape(s)[:, :, 0]
 
 
-def penalty_area_diff(mask1, mask2) -> float:
+def penalty_area_diff(mask1, mask2) -> np.float32:
     """
     Calculates the penalty between two masks based on differences in color values (See also:
     :func:`area_diff_mask`).
