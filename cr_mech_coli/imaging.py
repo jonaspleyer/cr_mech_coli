@@ -211,7 +211,7 @@ def render_pv_image(
 
 def render_mask(
     cells: dict[CellIdentifier, tuple[RodAgent, CellIdentifier | None]],
-    colors: dict[CellIdentifier, list[int]],
+    colors: dict[CellIdentifier, tuple[np.uint8, np.uint8, np.uint8]],
     domain_size: tuple[np.float32, np.float32],
     render_settings: RenderSettings | None = None,
     filename: str | Path | None = None,
