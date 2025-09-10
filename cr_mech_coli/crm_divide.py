@@ -73,6 +73,8 @@ def adjust_masks(masks, mask_iters, container: crm.CellContainer, settings):
     # mask_color_to_ident = {i: crm.CellIdentifier.new_initial(i) for i in range(1, 7)}
     # parent_map = {mask_color_to_ident[k]: None for k in range(1, 7)}
 
+    cell_to_mask_color = {}
+
     # Calculate the average pixel for each color
     color_means = [
         {c: np.mean(np.where(m == c), axis=1) for c in np.unique(m)} for m in masks
@@ -123,8 +125,19 @@ def adjust_masks(masks, mask_iters, container: crm.CellContainer, settings):
 
             # We choose the child with the smaller distance as the correct one
             child_color = child_colors[np.argmin(distances)]
+            cell_to_mask_color[id] = child_color
 
-            # Extend the cell_to_color map and parent_map
+    # Now we extend the cell_to_color map and parent_map
+    # Basically, we have to insert all cells that are not
+    # results of the numerical simulation
+
+    # We also adjust the masks such that the colors are
+    # now matching.
+    # For this, we must ensure that the colors which have
+    # been assigned as noted in the CellContainer type
+    # are correctly present.
+    # This means, we use our various maps from above to
+    # convert from mask colors to simulation colors
 
     return masks
 
