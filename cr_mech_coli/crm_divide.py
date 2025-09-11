@@ -699,16 +699,17 @@ def main():
         penalties,
     ) = objective_function(final_parameters, *args, return_all=True)
 
-    plot_time_evolution(
-        masks_predicted,
-        new_masks,
-        color_to_cell,
-        parent_map,
-        container.get_all_iterations(),
-        iterations_data,
-        settings,
-        output_dir,
-    )
+    if not pyargs.skip_time_evolution:
+        plot_time_evolution(
+            masks_predicted,
+            new_masks,
+            color_to_cell,
+            parent_map,
+            container.get_all_iterations(),
+            iterations_data,
+            settings,
+            output_dir,
+        )
 
     if not pyargs.skip_profiles:
         plot_profiles(
