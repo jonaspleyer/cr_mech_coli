@@ -293,7 +293,7 @@ def predict(
     return container
 
 
-def optimize(
+def objective_function(
     spring_length_thresholds_and_new_growth_rates,
     positions_initial,
     settings,
@@ -547,20 +547,29 @@ def main():
         parent_penalty,
     )
 
-    res = sp.optimize.differential_evolution(
-        optimize,
-        x0=spring_length_thresholds_and_new_growth_rates,
-        bounds=bounds,
-        args=args,
-        disp=True,
-        maxiter=100,
-        popsize=40,
-        mutation=(0.6, 1),
-        recombination=0.5,
-        workers=14,
-        updating="deferred",
-    )
-
+    # Try loading data
+    if pyargs.iteration is not None:
+        result = np.loadtxt(output_dir / "optimize_result.csv")
+        final_parameters = result[:-1]
+        final_cost = result[-1]
+    else:
+        res = sp.optimize.differential_evolution(
+            objective_function,
+            x0=spring_length_thresholds_and_new_growth_rates,
+            bounds=bounds,
+            args=args,
+            disp=True,
+            maxiter=4,
+            popsize=20,
+            mutation=(0.6, 1),
+            recombination=0.5,
+            workers=n_workers,
+            updating="deferred",
+            polish=True,
+        )
+        final_parameters = res.x
+        final_cost = res.fun
+        np.savetxt(output_dir / "optimize_result.csv", [*final_parameters, final_cost])
     (
         new_masks,
         parent_map,
@@ -569,7 +578,7 @@ def main():
         container,
         masks_predicted,
         penalties,
-    ) = optimize(res.x, *args, return_all=True)
+    ) = objective_function(final_parameters, *args, return_all=True)
 
     plot_time_evolution(
         masks_predicted,
