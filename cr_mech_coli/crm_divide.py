@@ -427,6 +427,7 @@ def plot_time_evolution(
     iterations_simulation,
     iterations_data,
     settings,
+    output_dir,
 ):
     fig, ax = plt.subplots(figsize=(8, 8))
     crm.plotting.configure_ax(ax)
@@ -467,8 +468,8 @@ def plot_time_evolution(
     )
     ax.set_ylabel("Cost Function")
     ax.set_xlabel("Time [h]")
-    fig.savefig("paper/figures/crm_divide.pdf")
-    fig.savefig("paper/figures/crm_divide.png")
+    fig.savefig(output_dir / "crm_divide.pdf")
+    fig.savefig(output_dir / "crm_divide.png")
     plt.close(fig)
 
 
@@ -531,4 +532,5 @@ def main():
         container.get_all_iterations(),
         iterations_data,
         settings,
+        output_dir,
     )
