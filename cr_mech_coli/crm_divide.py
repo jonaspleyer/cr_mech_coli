@@ -484,6 +484,48 @@ def plot_time_evolution(
     plt.close(fig)
 
 
+def plot_timings(
+    parameters,
+    positions_initial,
+    settings,
+    masks_data,
+    mask_iters,
+    iterations_data,
+    output_dir,
+    n_samples: int = 3,
+):
+    times = []
+    for _ in tqdm(range(n_samples), total=n_samples, desc="Measure Timings"):
+        times.append(
+            # [("p0", 1 * n), ("p1", 2 * n), ("p2", 3 * n)]
+            objective_function(
+                parameters,
+                positions_initial,
+                settings,
+                masks_data,
+                mask_iters,
+                iterations_data,
+                parent_penalty=1.0,
+                return_times=True,
+            )
+        )
+
+    data = np.array(
+        [[times[i][j][0] for j in range(len(times[0]))] for i in range(len(times))]
+    )
+    data = (data[:, 1:] - data[:, :-1]) / 1e6
+    mean = np.mean(data, axis=0)
+    labels = [t[1] for t in times[0][1:]]
+
+    fig, ax = plt.subplots(figsize=(8, 8))
+    crm.configure_ax(ax)
+    ax.bar(labels, mean, color=crm.plotting.COLOR3)
+    ax.set_yscale("log")
+    ax.set_ylabel("Time [ms]")
+    fig.savefig(output_dir / "timings.pdf")
+    fig.savefig(output_dir / "timings.png")
+
+
 def main():
     parser = argparse.ArgumentParser(
         description="Fits the Bacterial Rods model to a system of cells."
@@ -505,6 +547,11 @@ def main():
         "--skip-time-evolution",
         action="store_true",
         help="Skip plotting of the time evolution of costs",
+    )
+    parser.add_argument(
+        "--skip-timings",
+        action="store_true",
+        help="Skip plotting of the timings",
     )
     pyargs = parser.parse_args()
 
@@ -590,3 +637,14 @@ def main():
         settings,
         output_dir,
     )
+
+    if not pyargs.skip_timings:
+        plot_timings(
+            final_parameters,
+            positions_initial,
+            settings,
+            masks_data,
+            mask_iters,
+            iterations_data,
+            output_dir,
+        )
