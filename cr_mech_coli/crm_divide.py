@@ -5,6 +5,7 @@ from tqdm import tqdm
 import matplotlib.pyplot as plt
 import scipy as sp
 import time
+import argparse
 
 import cr_mech_coli as crm
 from cr_mech_coli import crm_fit
@@ -474,6 +475,42 @@ def plot_time_evolution(
 
 
 def main():
+    parser = argparse.ArgumentParser(
+        description="Fits the Bacterial Rods model to a system of cells."
+    )
+    parser.add_argument(
+        "-i",
+        "--iteration",
+        type=int,
+        default=None,
+        help="Use existing output folder instead of creating new one",
+    )
+    parser.add_argument(
+        "--output-dir",
+        type=str,
+        default="out/crm_divide/",
+        help="Directory where to store results",
+    )
+    parser.add_argument(
+        "--skip-time-evolution",
+        action="store_true",
+        help="Skip plotting of the time evolution of costs",
+    )
+    pyargs = parser.parse_args()
+
+    iteration = pyargs.iteration
+    if pyargs.iteration is None:
+        existing = glob(f"{pyargs.output_dir}/*")
+        if len(existing) == 0:
+            iteration = 0
+        else:
+            iteration = max([int(Path(i).name) for i in existing]) + 1
+    output_dir = Path(f"{pyargs.output_dir}/{iteration:06}")
+
+    # Create the directory if we had to choose a new one
+    if pyargs.iteration is None:
+        output_dir.mkdir(parents=True)
+
     masks_data, positions_initial, settings, iterations_data, mask_iters = (
         preprocessing()
     )
