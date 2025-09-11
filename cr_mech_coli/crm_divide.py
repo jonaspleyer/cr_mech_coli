@@ -318,18 +318,28 @@ def optimize(
         0.0,
         0.0,
     ]
-    container = predict(
-        positions_initial,
-        settings,
-        spring_length_thresholds=[*spring_length_thresholds, 200.0, 200.0],
-        growth_rate_distrs=[(g, 0) for g in new_growth_rates],
-    )
+
+    try:
+        container = predict(
+            positions_initial,
+            settings,
+            spring_length_thresholds=[*spring_length_thresholds, 200.0, 200.0],
+            growth_rate_distrs=[(g, 0) for g in new_growth_rates],
+        )
+    except ValueError as e:
+        if return_all:
+            raise e
+        return np.inf
     iterations_simulation = np.array(container.get_all_iterations()).astype(int)
 
     update_time("Prediction")
-    new_masks, parent_map, cell_to_color, color_to_cell = adjust_masks(
-        masks_data, mask_iters, container, settings
-    )
+
+    try:
+        new_masks, parent_map, cell_to_color, color_to_cell = adjust_masks(
+            masks_data, mask_iters, container, settings
+        )
+    except:
+        return np.inf
 
     masks_predicted = [
         crm.render_mask(
