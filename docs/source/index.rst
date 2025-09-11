@@ -71,11 +71,11 @@ The images below show the steps outlined above.
     :subcaptions: below
     :class-grid: outline
 
-    .. image:: _static/11571737453049821261/raw_pv/000000400.png
-    .. image:: _static/11571737453049821261/images/000000400.png
-    .. image:: _static/11571737453049821261/masks/000000400.png
+    .. image:: _static/11571737453049821261/raw_pv/000000600.png
+    .. image:: _static/11571737453049821261/images/000000600.png
+    .. image:: _static/11571737453049821261/masks/000000600.png
 
-    Snapshots at `t=40min`.
+    Snapshots at `t=60min`.
 
 .. subfigure:: ABC
     :layout-sm: A|B|C
@@ -83,11 +83,11 @@ The images below show the steps outlined above.
     :subcaptions: below
     :class-grid: outline
 
-    .. image:: _static/11571737453049821261/raw_pv/000000600.png
-    .. image:: _static/11571737453049821261/images/000000600.png
-    .. image:: _static/11571737453049821261/masks/000000600.png
+    .. image:: _static/11571737453049821261/raw_pv/000001000.png
+    .. image:: _static/11571737453049821261/images/000001000.png
+    .. image:: _static/11571737453049821261/masks/000001000.png
 
-    Snapshots at `t=60min`.
+    Snapshots at `t=100min`.
 
 .. toctree::
    :maxdepth: 4
