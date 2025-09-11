@@ -485,6 +485,61 @@ def plot_time_evolution(
     plt.close(fig)
 
 
+def optimize_around_single(params, param_single, n, args):
+    all_params = np.array([*params[:n], param_single, *params[n + 1 :]])
+    return objective_function(all_params, *args)
+
+
+def plot_profiles(
+    parameters,
+    bounds,
+    final_cost: float,
+    args,
+    n_workers: int,
+):
+    for n, (p, (b_lower, b_upper)) in tqdm(
+        enumerate(zip(parameters, bounds)),
+        total=len(parameters),
+        desc="Plotting Profiles",
+    ):
+        costs = []
+        index = np.arange(len(parameters)) != n
+        dx = (b_upper - b_lower) / 40
+        x = (p + np.arange(-3, 3) * dx)[np.arange(-3, 3) != 0]
+        for xi in x:
+            x0 = np.array(parameters)[index]
+            bounds = np.array(bounds)[index]
+            assert len(x0) + 1 == len(parameters)
+
+            res = sp.optimize.differential_evolution(
+                optimize_around_single,
+                x0=x0,
+                bounds=bounds,
+                args=(p, n, args),
+                disp=False,
+                maxiter=2,
+                popsize=4,
+                mutation=(0.6, 1),
+                recombination=0.5,
+                workers=n_workers,
+                updating="deferred",
+            )
+
+            costs.append((xi, res.fun))
+
+        fig, ax = plt.subplots(figsize=(8, 8))
+        crm.configure_ax(ax)
+        x = np.array([parameters[n], *x])
+        y = np.array([final_cost, *costs])
+        inds = np.argsort(x)
+        x = x[inds]
+        y = y[inds]
+
+        ax.plot(x, y)
+        fig.savefig("asdf.png")
+        exit()
+
+
 def plot_timings(
     parameters,
     positions_initial,
@@ -543,6 +598,11 @@ def main():
         type=str,
         default="out/crm_divide/",
         help="Directory where to store results",
+    )
+    parser.add_argument(
+        "--skip-profiles",
+        action="store_true",
+        help="Skip plotting of profiles",
     )
     parser.add_argument(
         "--skip-time-evolution",
@@ -649,6 +709,15 @@ def main():
         settings,
         output_dir,
     )
+
+    if not pyargs.skip_profiles:
+        plot_profiles(
+            final_parameters,
+            bounds,
+            final_cost,
+            args,
+            n_workers,
+        )
 
     if not pyargs.skip_timings:
         plot_timings(
