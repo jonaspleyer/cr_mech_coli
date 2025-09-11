@@ -644,7 +644,7 @@ def main():
         preprocessing()
     )
 
-    spring_length_thresholds = [12.0] * 4
+    spring_length_thresholds = [10] * 4
     new_growth_rates = [
         0.001152799,
         0.001410604,
@@ -655,7 +655,7 @@ def main():
         *spring_length_thresholds,
         *new_growth_rates,
     ]
-    bounds = [(5.0, 30.0)] * 4 + [(0.001, 0.002)] * 4
+    bounds = [(9, 25)] * 4 + [(0.001, 0.002)] * 4
     parent_penalty = 0.5
     args = (
         positions_initial,
