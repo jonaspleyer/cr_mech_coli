@@ -95,8 +95,7 @@ class RenderSettings:
 
 def __create_cell_surfaces(
     cells: dict[CellIdentifier, tuple[RodAgent, CellIdentifier | None]],
-) -> list:
-    cell_surfaces = []
+):
     for ident in cells.keys():
         meshes = []
         p = cells[ident][0].pos
@@ -119,8 +118,7 @@ def __create_cell_surfaces(
             meshes.append(cylinder)
         # Combine all together
         mesh = pv.MultiBlock(meshes).extract_geometry()
-        cell_surfaces.append((ident, mesh))
-    return cell_surfaces
+        yield (ident, mesh)
 
 
 def render_pv_image(
@@ -170,9 +168,7 @@ def render_pv_image(
 
     pv.Plotter.set_background(plotter, [render_settings.bg_brightness] * 3)
 
-    cell_surfaces = __create_cell_surfaces(cells)
-
-    for ident, cell in cell_surfaces:
+    for ident, cell in __create_cell_surfaces(cells):
         color = [render_settings.cell_brightness] * 3
         if colors is not None:
             color = colors[ident]
