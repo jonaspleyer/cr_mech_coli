@@ -4,6 +4,7 @@ from pathlib import Path
 from tqdm import tqdm
 import matplotlib.pyplot as plt
 import scipy as sp
+import time
 
 import cr_mech_coli as crm
 from cr_mech_coli import crm_fit
@@ -293,7 +294,15 @@ def optimize(
     iterations_data,
     parent_penalty=1.0,
     return_all=False,
+    return_times=False,
 ):
+    times = [(time.perf_counter_ns(), "Start")]
+
+    def update_time(message):
+        if return_times:
+            now = time.perf_counter_ns()
+            times.append((now, message))
+
     spring_length_thresholds = spring_length_thresholds_and_new_growth_rates[:4]
     new_growth_rates = [
         *spring_length_thresholds_and_new_growth_rates[4:],
@@ -309,6 +318,7 @@ def optimize(
     )
     iterations_simulation = np.array(container.get_all_iterations()).astype(int)
 
+    update_time("Prediction")
     new_masks, parent_map, cell_to_color, color_to_cell = adjust_masks(
         masks_data, mask_iters, container, settings
     )
@@ -323,6 +333,8 @@ def optimize(
         for iter in iterations_simulation
     ]
 
+    update_time("Masks")
+
     penalties = [
         crm.penalty_area_diff_account_parents(
             new_mask,
@@ -333,6 +345,8 @@ def optimize(
         )
         for iter, new_mask in zip(iterations_data, new_masks)
     ]
+
+    update_time("Penalties")
 
     if return_all:
         return (
@@ -345,7 +359,12 @@ def optimize(
             penalties,
         )
 
-    return np.sum(penalties)
+    cost = np.sum(penalties)
+
+    if return_times:
+        return times
+
+    return cost
 
 
 def preprocessing():
