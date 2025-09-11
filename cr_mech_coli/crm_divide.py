@@ -207,7 +207,6 @@ def predict(
     diffusion_constant=0.0,
     spring_tension=3.0,
     rigidity=10.0,
-    spring_length=3.0,
     damping=2.5799131,
     growth_rates=[
         0.001152799,
@@ -233,6 +232,9 @@ def predict(
     ],
     show_progress=False,
 ):
+    if np.any(np.array(spring_length_thresholds) <= radius):
+        raise ValueError
+
     # Define agents
     interaction = crm.MiePotentialF32(
         radius,
@@ -252,6 +254,11 @@ def predict(
 
     if growth_rate_distrs is None:
         growth_rate_distrs = [(growth_rate, 0.0) for growth_rate in growth_rates[:4]]
+
+    def spring_length(pos):
+        dx = np.linalg.norm(pos[1:] - pos[:-1], axis=1)
+        return np.mean(dx)
+
     agents = [
         crm.RodAgent(
             pos,
@@ -260,7 +267,7 @@ def predict(
             diffusion_constant=diffusion_constant,
             spring_tension=spring_tension,
             rigidity=rigidity,
-            spring_length=spring_length,
+            spring_length=spring_length(pos),
             damping=damping,
             growth_rate=growth_rate,
             growth_rate_distr=growth_rate_distr,
