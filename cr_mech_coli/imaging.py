@@ -125,7 +125,7 @@ def render_pv_image(
     cells: dict[CellIdentifier, tuple[RodAgent, CellIdentifier | None]],
     render_settings: RenderSettings,
     domain_size: tuple[np.float32, np.float32],
-    colors: dict[CellIdentifier, list[int]] | None = None,
+    colors: dict[CellIdentifier, tuple[np.uint8, np.uint8, np.uint8]] | None = None,
     filename: str | Path | None = None,
 ) -> np.ndarray:
     """
