@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 import scipy as sp
 import time
 import argparse
+import multiprocessing as mp
 
 import cr_mech_coli as crm
 from cr_mech_coli import crm_fit
@@ -553,7 +554,18 @@ def main():
         action="store_true",
         help="Skip plotting of the timings",
     )
+    parser.add_argument(
+        "-w",
+        "--workers",
+        type=int,
+        default=-1,
+        help="Number of threads to utilize",
+    )
     pyargs = parser.parse_args()
+
+    n_workers = pyargs.workers
+    if n_workers <= 0:
+        n_workers = mp.cpu_count()
 
     iteration = pyargs.iteration
     if pyargs.iteration is None:
