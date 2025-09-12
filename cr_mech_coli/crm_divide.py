@@ -301,6 +301,7 @@ def objective_function(
     parent_penalty=1.0,
     return_all=False,
     return_times=False,
+    error_cost=10.0,
 ):
     times = [(time.perf_counter_ns(), "Start")]
 
@@ -324,10 +325,10 @@ def objective_function(
             spring_length_thresholds=[*spring_length_thresholds, 200.0, 200.0],
             growth_rate_distrs=[(g, 0) for g in new_growth_rates],
         )
-    except ValueError as e:
+    except ValueError or KeyError as e:
         if return_all:
             raise e
-        return np.inf
+        return error_cost
     iterations_simulation = np.array(container.get_all_iterations()).astype(int)
 
     update_time("Prediction")
@@ -337,7 +338,7 @@ def objective_function(
             masks_data, mask_iters, container, settings
         )
     except:
-        return np.inf
+        return error_cost
 
     masks_predicted = [
         crm.render_mask(
