@@ -496,6 +496,7 @@ def plot_profiles(
     bounds,
     final_cost: float,
     args,
+    output_dir,
     n_workers: int,
 ):
     for n, (p, (b_lower, b_upper)) in tqdm(
@@ -536,9 +537,10 @@ def plot_profiles(
         x = x[inds]
         y = y[inds]
 
-        ax.plot(x, y)
-        fig.savefig("asdf.png")
-        exit()
+        ax.plot(x, y, c=crm.plotting.COLOR3, marker="x")
+        ax.scatter([parameters[n]], [final_cost], c=crm.plotting.COLOR5)
+        fig.savefig(output_dir / f"profile-{n:010}.png")
+        plt.close(fig)
 
 
 def plot_timings(
