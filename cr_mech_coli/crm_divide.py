@@ -506,18 +506,23 @@ def plot_profiles(
     ):
         costs = []
         index = np.arange(len(parameters)) != n
-        dx = (b_upper - b_lower) / 40
-        x = (p + np.arange(-3, 3) * dx)[np.arange(-3, 3) != 0]
+        dx = (b_upper - b_lower) / 50
+        n_samples = 10
+        # x = (p + np.arange(-3, 3) * dx)[np.arange(-3, 3) != 0]
+        x = np.linspace(
+            max(p - dx, b_lower), min(p + dx, b_upper), n_samples, endpoint=True
+        )
         for xi in x:
             x0 = np.array(parameters)[index]
-            bounds = np.array(bounds)[index]
+            bounds_reduced = np.array(bounds)[index]
             assert len(x0) + 1 == len(parameters)
+            assert len(bounds_reduced) + 1 == len(bounds)
 
             res = sp.optimize.differential_evolution(
                 optimize_around_single,
                 x0=x0,
-                bounds=bounds,
-                args=(p, n, args),
+                bounds=bounds_reduced,
+                args=(xi, n, args),
                 disp=False,
                 maxiter=2,
                 popsize=4,
@@ -527,7 +532,7 @@ def plot_profiles(
                 updating="deferred",
             )
 
-            costs.append((xi, res.fun))
+            costs.append(res.fun)
 
         fig, ax = plt.subplots(figsize=(8, 8))
         crm.configure_ax(ax)
