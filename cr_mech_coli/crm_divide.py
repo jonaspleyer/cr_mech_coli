@@ -600,6 +600,60 @@ def plot_timings(
     fig.savefig(output_dir / "timings.png")
 
 
+def calculate_single(args):
+    return (args[0], objective_function(*args))
+
+
+def run_optimizer(
+    spring_length_thresholds_and_new_growth_rates,
+    bounds,
+    output_dir,
+    iteration,
+    args,
+    n_workers,
+):
+    # Try loading data
+    if iteration is not None:
+        result = np.loadtxt(output_dir / "optimize_result.csv")
+        final_parameters = result[:-1]
+        final_cost = result[-1]
+    else:
+        # lhs = sp.stats.qmc.LatinHypercube(
+        #     d=len(spring_length_thresholds_and_new_growth_rates)
+        # )
+        # b = np.array(bounds)
+        # samples = b[:, 0] + lhs.random(n=50) * (b[:, 1] - b[:, 0])
+
+        # pool_args = [(s, *args) for s in samples]
+        # costs = process_map(
+        #     calculate_single,
+        #     pool_args,
+        #     max_workers=n_workers,
+        #     desc="Finding Global Optimum",
+        # )
+        # final_parameters, final_cost = min(costs, key=lambda x: x[1])
+
+        res = sp.optimize.differential_evolution(
+            objective_function,
+            x0=spring_length_thresholds_and_new_growth_rates,
+            bounds=bounds,
+            args=args,
+            disp=True,
+            maxiter=4,
+            popsize=20,
+            mutation=(0.6, 1),
+            recombination=0.5,
+            workers=n_workers,
+            updating="deferred",
+            polish=True,
+        )
+        final_parameters = res.x
+        final_cost = res.fun
+        np.savetxt(output_dir / "optimize_result.csv", [*final_parameters, final_cost])
+
+    return final_parameters, final_cost
+
+
 def main():
     parser = argparse.ArgumentParser(
         description="Fits the Bacterial Rods model to a system of cells."
@@ -684,29 +738,15 @@ def main():
         parent_penalty,
     )
 
-    # Try loading data
-    if pyargs.iteration is not None:
-        result = np.loadtxt(output_dir / "optimize_result.csv")
-        final_parameters = result[:-1]
-        final_cost = result[-1]
-    else:
-        res = sp.optimize.differential_evolution(
-            objective_function,
-            x0=spring_length_thresholds_and_new_growth_rates,
-            bounds=bounds,
-            args=args,
-            disp=True,
-            maxiter=4,
-            popsize=20,
-            mutation=(0.6, 1),
-            recombination=0.5,
-            workers=n_workers,
-            updating="deferred",
-            polish=True,
-        )
-        final_parameters = res.x
-        final_cost = res.fun
-        np.savetxt(output_dir / "optimize_result.csv", [*final_parameters, final_cost])
+    final_parameters, final_cost = run_optimizer(
+        spring_length_thresholds_and_new_growth_rates,
+        bounds,
+        output_dir,
+        pyargs.iteration,
+        args,
+        n_workers,
+    )
+
     (
         new_masks,
         parent_map,
