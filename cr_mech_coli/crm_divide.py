@@ -2,6 +2,7 @@ import numpy as np
 from glob import glob
 from pathlib import Path
 from tqdm import tqdm
+from tqdm.contrib.concurrent import process_map
 import matplotlib.pyplot as plt
 import scipy as sp
 import time
@@ -556,7 +557,7 @@ def plot_timings(
     mask_iters,
     iterations_data,
     output_dir,
-    n_samples: int = 3,
+    n_samples: int = 2,
 ):
     times = []
     for _ in tqdm(range(n_samples), total=n_samples, desc="Measure Timings"):
@@ -716,7 +717,7 @@ def main():
         preprocessing()
     )
 
-    spring_length_thresholds = [10] * 4
+    spring_length_thresholds = [5] * 4
     new_growth_rates = [
         0.001152799,
         0.001410604,
@@ -727,7 +728,7 @@ def main():
         *spring_length_thresholds,
         *new_growth_rates,
     ]
-    bounds = [(9, 25)] * 4 + [(0.001, 0.002)] * 4
+    bounds = [(4.3, 10)] * 4 + [(0.001, 0.002)] * 4
     parent_penalty = 0.5
     args = (
         positions_initial,
@@ -775,6 +776,7 @@ def main():
             bounds,
             final_cost,
             args,
+            output_dir,
             n_workers,
         )
 
