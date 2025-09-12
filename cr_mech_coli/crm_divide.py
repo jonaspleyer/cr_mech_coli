@@ -234,9 +234,6 @@ def predict(
     ],
     show_progress=False,
 ):
-    if np.any(np.array(spring_length_thresholds) <= radius):
-        raise ValueError
-
     # Define agents
     interaction = crm.MiePotentialF32(
         radius,
