@@ -579,11 +579,21 @@ def plot_timings(
     )
     data = (data[:, 1:] - data[:, :-1]) / 1e6
     mean = np.mean(data, axis=0)
-    labels = [t[1] for t in times[0][1:]]
+    ind = np.argsort(mean)[::-1]
+    mean = mean[ind]
+    labels = np.array([t[1] for t in times[0][1:]])[ind]
+    perc = mean / np.sum(mean)
 
     fig, ax = plt.subplots(figsize=(8, 8))
     crm.configure_ax(ax)
-    ax.bar(labels, mean, color=crm.plotting.COLOR3)
+    b = ax.bar(labels, mean, color=crm.plotting.COLOR3)
+    ax.bar_label(
+        b,
+        [f"{100 * p:5.3}%" for p in perc],
+        label_type="center",
+        color=crm.plotting.COLOR5,
+        weight="bold",
+    )
     ax.set_yscale("log")
     ax.set_ylabel("Time [ms]")
     fig.savefig(output_dir / "timings.pdf")
