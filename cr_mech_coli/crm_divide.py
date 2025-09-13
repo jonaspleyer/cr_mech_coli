@@ -760,14 +760,14 @@ def main():
         preprocessing()
     )
 
-    spring_length_thresholds = [5] * 4
+    spring_length_thresholds = [9] * 4
     new_growth_rates = [
         0.001152799,
         0.001410604,
         0.0018761827,
         0.0016834959,
     ]
-    spring_length_thresholds_and_new_growth_rates = [
+    x0 = [
         *spring_length_thresholds,
         *new_growth_rates,
     ]
@@ -782,14 +782,7 @@ def main():
         parent_penalty,
     )
 
-    final_parameters, final_cost = run_optimizer(
-        spring_length_thresholds_and_new_growth_rates,
-        bounds,
-        output_dir,
-        pyargs.iteration,
-        args,
-        n_workers,
-    )
+        x0,
 
     (
         masks_adjusted,
