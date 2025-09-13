@@ -285,10 +285,10 @@ def predict(
     # define config
     config = settings.to_config()
     config.progressbar = "Run Simulation"
+    container = crm.run_simulation_with_agents(config, agents)
     if show_progress:
         print()
 
-    container = crm.run_simulation_with_agents(config, agents)
     return container
 
 
