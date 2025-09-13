@@ -526,7 +526,7 @@ mod test_config {
     #[test]
     fn test_hashing() {
         use super::*;
-        pyo3::prepare_freethreaded_python();
+        Python::initialize();
         Python::attach(|py| {
             let c1 = Configuration::new(py, None).unwrap();
             let c2 = Configuration::new(py, None).unwrap();
@@ -540,7 +540,7 @@ mod test_config {
     #[test]
     fn test_parse_toml() {
         use super::*;
-        pyo3::prepare_freethreaded_python();
+        Python::initialize();
         let toml_string = "
 n_threads=1
 t0=0.0

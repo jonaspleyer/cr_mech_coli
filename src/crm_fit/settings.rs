@@ -805,7 +805,7 @@ mod test {
     use super::*;
 
     fn generate_test_settings() -> PyResult<(Settings, String)> {
-        pyo3::prepare_freethreaded_python();
+        Python::initialize();
         Python::attach(|py| -> PyResult<(Settings, String)> {
             let potential_type = PotentialType::Mie(Mie {
                 en: Parameter::SampledFloat(SampledFloat {
@@ -925,7 +925,7 @@ progressbar = false
 
     #[test]
     fn test_bound_generation() {
-        pyo3::prepare_freethreaded_python();
+        Python::initialize();
         let (settings, _) = generate_test_settings().unwrap();
 
         for n_agents in 1..10 {
