@@ -354,26 +354,18 @@ pub struct LHSNelderMead {
 
 /// Other settings which are not related to the outcome of the simulation
 #[pyclass(get_all, set_all, module = "cr_mech_coli.crm_fit")]
-#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize, PartialEq)]
 pub struct Others {
     /// Show/hide progressbar for solving of one single simulation
-    pub show_progressbar: bool,
+    pub progressbar: Option<String>,
 }
 
 #[pymethods]
 impl Others {
     #[new]
-    #[pyo3(signature = (show_progressbar=false))]
-    fn new(show_progressbar: bool) -> Self {
-        Others { show_progressbar }
-    }
-}
-
-impl Default for Others {
-    fn default() -> Self {
-        Others {
-            show_progressbar: false,
-        }
+    #[pyo3(signature = (progressbar=None))]
+    fn new(progressbar: Option<String>) -> Self {
+        Others { progressbar }
     }
 }
 
@@ -589,7 +581,7 @@ impl Settings {
             n_vertices: _,
             n_saves,
         } = constants.extract(py)?;
-        let Others { show_progressbar } = if let Some(o) = others {
+        let Others { progressbar } = if let Some(o) = others {
             o.borrow(py).deref().clone()
         } else {
             Others::default()
@@ -601,7 +593,7 @@ impl Settings {
             dt,
             t_max,
             n_saves,
-            show_progressbar,
+            progressbar,
             domain_size,
             n_voxels: [n_voxels[0].get(), n_voxels[1].get()],
             rng_seed,
@@ -887,12 +879,7 @@ mod test {
                         polish: default_polish(),
                     }),
                 )?,
-                others: Some(Py::new(
-                    py,
-                    Others {
-                        show_progressbar: false,
-                    },
-                )?),
+                others: Some(Py::new(py, Others { progressbar: None })?),
             };
             let toml_string = "
 [constants]
@@ -922,7 +909,7 @@ seed = 0
 tol = 1e-3
 
 [other]
-show_progressbar = false
+progressbar = false
 "
             .to_string();
             Ok((settings1, toml_string))

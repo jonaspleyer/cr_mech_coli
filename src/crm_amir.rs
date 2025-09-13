@@ -47,7 +47,7 @@ short_default::default! {
         n_vertices: usize = 8,
         /// Show/hide progressbar during solving of simulation
         #[approx(equal)]
-        show_progressbar: bool = false,
+        progressbar: Option<String> = None,
     }
 }
 
@@ -296,7 +296,7 @@ fn run_sim(
         n_threads: 1.try_into().unwrap(),
         time,
         storage,
-        show_progressbar: parameters.show_progressbar,
+        progressbar: parameters.progressbar,
     };
 
     let domain_size = [domain_size, 0.1, domain_size];

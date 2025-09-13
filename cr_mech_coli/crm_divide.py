@@ -284,7 +284,7 @@ def predict(
 
     # define config
     config = settings.to_config()
-    config.show_progressbar = show_progress
+    config.progressbar = "Run Simulation"
     if show_progress:
         print()
 

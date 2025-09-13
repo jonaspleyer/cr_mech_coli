@@ -11,7 +11,7 @@ fn main() {
 
     let config = Configuration {
         storage_options: vec![StorageOption::Memory],
-        show_progressbar: true,
+        progressbar: Some(String::new()),
         n_threads: 4.try_into().unwrap(),
         domain_size: [domain_size; 2],
         n_voxels: [4, 4],

@@ -248,7 +248,7 @@ pub fn run_simulation_with_agents(
         n_threads: config.n_threads,
         time,
         storage,
-        show_progressbar: config.show_progressbar,
+        progressbar: config.progressbar.clone(),
     };
 
     let domain_size = [

@@ -366,7 +366,7 @@ pub struct Configuration {
     pub n_saves: usize,
     /// Specifies if a progress bar should be shown during the solving process.
     #[approx(skip)]
-    pub show_progressbar: bool,
+    pub progressbar: Option<String>,
     /// Overall domain size of the simulation. This may determine an upper bound on the number of
     /// agents which can be put into the simulation.
     #[approx(into_iter)]
@@ -408,7 +408,7 @@ impl Default for Configuration {
             dt: 0.1,      // MIN
             t_max: 100.0, // MIN
             n_saves: 10,  // N_Samples
-            show_progressbar: false,
+            progressbar: None,
             domain_size: [100.0; 2], // MICROMETRE
             domain_height: 2.5,      // MICROMETRE
             n_voxels: [1; 2],
@@ -547,7 +547,7 @@ t0=0.0
 dt=0.1
 t_max=100.0
 n_saves=10
-show_progressbar=false
+progressbar=None
 domain_size=[100.0, 100.0]
 domain_height=2.5
 n_voxels=[1, 1]

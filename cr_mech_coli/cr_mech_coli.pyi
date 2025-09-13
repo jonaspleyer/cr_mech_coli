@@ -94,7 +94,7 @@ class Configuration:
     dt: float
     t_max: float
     n_saves: int
-    show_progressbar: bool
+    progressbar: str | None
     domain_size: tuple[float, float]
     domain_height: float
     n_voxels: tuple[int, int]

@@ -19,7 +19,7 @@ class Parameters:
     growth_rate: float
     damping: float
     n_vertices: int
-    show_progressbar: bool
+    progressbar: str | None
 
     def __new__(cls) -> Parameters: ...
 

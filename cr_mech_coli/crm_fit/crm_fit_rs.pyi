@@ -59,9 +59,9 @@ class OptimizationMethod(enum.Enum):
     DifferentialEvolution = DifferentialEvolution()
 
 class Others:
-    show_progressbar: bool
+    progressbar: str | None
     @staticmethod
-    def __new__(cls, show_progressbar: bool = False) -> SampledFloat: ...
+    def __new__(cls, progressbar: str | None = None) -> SampledFloat: ...
 
 class OptimizationInfos:
     bounds_lower: list[np.float32]
