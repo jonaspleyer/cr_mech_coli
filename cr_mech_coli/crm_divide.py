@@ -351,8 +351,8 @@ def objective_function(
             render_settings=crm.RenderSettings(pixel_per_micron=1),
         )
         for iter in tqdm(
-            iterations_simulation,
-            total=len(iterations_simulation),
+            iterations_simulation if return_all else iterations_data,
+            total=len(iterations_simulation if return_all else iterations_data),
             desc="Render predicted Masks",
             disable=not show_progressbar,
         )
@@ -360,15 +360,24 @@ def objective_function(
 
     update_time("Masks")
 
+    def mask_iterator():
+        if return_all:
+            for iter, new_mask in zip(iterations_data, new_masks):
+                yield new_mask, masks_predicted[iter]
+
+        else:
+            for m1, m2 in zip(new_masks, masks_predicted):
+                yield m1, m2
+
     penalties = [
         crm.penalty_area_diff_account_parents(
-            new_mask,
-            masks_predicted[iter],
+            m1,
+            m2,
             color_to_cell,
             parent_map,
             parent_penalty,
         )
-        for iter, new_mask in zip(iterations_data, new_masks)
+        for m1, m2 in mask_iterator()
     ]
 
     update_time("Penalties")
