@@ -672,17 +672,20 @@ def run_optimizer(
 
 
 def plot_snapshots(
-    masks_predicted, masks_adjusted, output_dir, color_to_cell, parent_map
+    iterations_data,
+    masks_predicted,
+    masks_adjusted,
+    output_dir,
+    color_to_cell,
+    parent_map,
 ):
     (output_dir / "masks_predicted").mkdir(parents=True, exist_ok=True)
     (output_dir / "masks_adjusted").mkdir(parents=True, exist_ok=True)
     (output_dir / "masks_diff").mkdir(parents=True, exist_ok=True)
-    for n, m1, m2 in tqdm(
-        zip(range(len(masks_predicted)), masks_predicted, masks_adjusted),
-        total=len(masks_predicted),
-        desc="Saving Masks",
-    ):
-        cv.imwrite(f"{output_dir}/masks_predicted/{n:06}.png", m1)
+    for n, m in enumerate(masks_predicted):
+        cv.imwrite(f"{output_dir}/masks_predicted/{n:06}.png", m)
+    for n, m2 in zip(iterations_data, masks_adjusted):
+        m1 = masks_predicted[n]
         cv.imwrite(f"{output_dir}/masks_adjusted/{n:06}.png", m2)
         diff = (
             crm.parents_diff_mask(m1, m2, color_to_cell, parent_map, 0.5) * 255
