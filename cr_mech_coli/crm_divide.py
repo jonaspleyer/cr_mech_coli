@@ -303,6 +303,7 @@ def objective_function(
     return_all=False,
     return_times=False,
     error_cost=10.0,
+    show_progressbar=False,
 ):
     times = [(time.perf_counter_ns(), "Start")]
 
@@ -325,6 +326,7 @@ def objective_function(
             settings,
             spring_length_thresholds=[*spring_length_thresholds, 200.0, 200.0],
             growth_rate_distrs=[(g, 0) for g in new_growth_rates],
+            show_progress=show_progressbar,
         )
     except ValueError or KeyError as e:
         if return_all:
@@ -348,7 +350,12 @@ def objective_function(
             settings.constants.domain_size,
             render_settings=crm.RenderSettings(pixel_per_micron=1),
         )
-        for iter in iterations_simulation
+        for iter in tqdm(
+            iterations_simulation,
+            total=len(iterations_simulation),
+            desc="Render predicted Masks",
+            disable=not show_progressbar,
+        )
     ]
 
     update_time("Masks")
@@ -756,7 +763,9 @@ def main():
         container,
         masks_predicted,
         penalties,
-    ) = objective_function(final_parameters, *args, return_all=True)
+    ) = objective_function(
+        final_parameters, *args, return_all=True, show_progressbar=True
+    )
 
     if not pyargs.skip_time_evolution:
         plot_time_evolution(
