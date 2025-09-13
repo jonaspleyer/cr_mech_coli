@@ -8,6 +8,7 @@ import scipy as sp
 import time
 import argparse
 import multiprocessing as mp
+import cv2 as cv
 
 import cr_mech_coli as crm
 from cr_mech_coli import crm_fit
@@ -662,6 +663,25 @@ def run_optimizer(
     return final_parameters, final_cost
 
 
+def plot_snapshots(
+    masks_predicted, masks_adjusted, output_dir, color_to_cell, parent_map
+):
+    (output_dir / "masks_predicted").mkdir(parents=True, exist_ok=True)
+    (output_dir / "masks_adjusted").mkdir(parents=True, exist_ok=True)
+    (output_dir / "masks_diff").mkdir(parents=True, exist_ok=True)
+    for n, m1, m2 in tqdm(
+        zip(range(len(masks_predicted)), masks_predicted, masks_adjusted),
+        total=len(masks_predicted),
+        desc="Saving Masks",
+    ):
+        cv.imwrite(f"{output_dir}/masks_predicted/{n:06}.png", m1)
+        cv.imwrite(f"{output_dir}/masks_adjusted/{n:06}.png", m2)
+        diff = (
+            crm.parents_diff_mask(m1, m2, color_to_cell, parent_map, 0.5) * 255
+        ).astype(np.uint8)
+        cv.imwrite(f"{output_dir}/masks_diff/{n:06}.png", diff)
+
+
 def main():
     parser = argparse.ArgumentParser(
         description="Fits the Bacterial Rods model to a system of cells."
@@ -688,6 +708,11 @@ def main():
         "--skip-time-evolution",
         action="store_true",
         help="Skip plotting of the time evolution of costs",
+    )
+    parser.add_argument(
+        "--skip-snapshots",
+        action="store_true",
+        help="Skip plotting of snapshots and masks",
     )
     parser.add_argument(
         "--skip-timings",
@@ -756,7 +781,7 @@ def main():
     )
 
     (
-        new_masks,
+        masks_adjusted,
         parent_map,
         cell_to_color,
         color_to_cell,
@@ -767,10 +792,15 @@ def main():
         final_parameters, *args, return_all=True, show_progressbar=True
     )
 
+    if not pyargs.skip_snapshots:
+        plot_snapshots(
+            masks_predicted, masks_adjusted, output_dir, color_to_cell, parent_map
+        )
+
     if not pyargs.skip_time_evolution:
         plot_time_evolution(
             masks_predicted,
-            new_masks,
+            masks_adjusted,
             color_to_cell,
             parent_map,
             container.get_all_iterations(),
