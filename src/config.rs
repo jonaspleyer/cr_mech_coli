@@ -547,7 +547,6 @@ t0=0.0
 dt=0.1
 t_max=100.0
 n_saves=10
-progressbar=None
 domain_size=[100.0, 100.0]
 domain_height=2.5
 n_voxels=[1, 1]
