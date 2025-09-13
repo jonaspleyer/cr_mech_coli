@@ -798,7 +798,12 @@ def main():
 
     if not pyargs.skip_snapshots:
         plot_snapshots(
-            masks_predicted, masks_adjusted, output_dir, color_to_cell, parent_map
+            iterations_data,
+            masks_predicted,
+            masks_adjusted,
+            output_dir,
+            color_to_cell,
+            parent_map,
         )
 
     if not pyargs.skip_time_evolution:
