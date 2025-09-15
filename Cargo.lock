@@ -207,6 +207,8 @@ dependencies = [
 [[package]]
 name = "cellular_raza"
 version = "0.3.2-rc1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5ca67adf1a953114b44c44165e31835ced379d6f4fedd0bc1b611c1946fa10ad"
 dependencies = [
  "cellular_raza-building-blocks",
  "cellular_raza-concepts",
@@ -216,6 +218,8 @@ dependencies = [
 [[package]]
 name = "cellular_raza-building-blocks"
 version = "0.3.2-rc1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f0b3ac0e85e4e8413d51a1b6e09fd5baca3581a6ee1a123ea36107a566a8aa96"
 dependencies = [
  "approxim",
  "cellular_raza-concepts",
@@ -234,6 +238,8 @@ dependencies = [
 [[package]]
 name = "cellular_raza-concepts"
 version = "0.3.2-rc1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "85620bc18fe6658ed28eb15c0f363ddfa0b6fa6b91624b776967e2b2932bf6b3"
 dependencies = [
  "cellular_raza-concepts-derive",
  "num",
@@ -245,6 +251,8 @@ dependencies = [
 [[package]]
 name = "cellular_raza-concepts-derive"
 version = "0.3.2-rc1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "4042d2ceffabed10ece3b859503a83e1629fbfa7d1575fb343a450e3f5d547b9"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -254,6 +262,8 @@ dependencies = [
 [[package]]
 name = "cellular_raza-core"
 version = "0.3.2-rc1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "045cd8d1f26e33dc1d28ba96666c035aeddd2b34cc50a7acede9ee980df4eb93"
 dependencies = [
  "bincode",
  "cellular_raza-concepts",
@@ -280,6 +290,8 @@ dependencies = [
 [[package]]
 name = "cellular_raza-core-proc-macro"
 version = "0.3.2-rc1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "8b568616947a3737aa8643f5eda68bb731bef564d57bc0831261c6de0b563786"
 dependencies = [
  "itertools 0.14.0",
  "proc-macro2",
@@ -379,7 +391,7 @@ checksum = "773648b94d0e5d620f64f280777445740e61fe701025087ec8b57f45c791888b"
 
 [[package]]
 name = "cr_mech_coli"
-version = "0.6.1"
+version = "0.6.0"
 dependencies = [
  "approxim",
  "cellular_raza",
@@ -1762,10 +1774,11 @@ checksum = "388a1df253eca08550bef6c72392cfe7c30914bf41df5269b68cbd6ff8f570a3"
 
 [[package]]
 name = "serde"
-version = "1.0.219"
+version = "1.0.224"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5f0e2c6ed6606019b4e29e69dbaba95b11854410e5347d525002456dbbb786b6"
+checksum = "6aaeb1e94f53b16384af593c71e20b095e958dab1d26939c1b70645c5cfbcc0b"
 dependencies = [
+ "serde_core",
  "serde_derive",
 ]
 
@@ -1783,10 +1796,19 @@ dependencies = [
 ]
 
 [[package]]
-name = "serde_derive"
-version = "1.0.219"
+name = "serde_core"
+version = "1.0.224"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5b0276cf7f2c73365f7157c8123c21cd9a50fbbd844757af28ca1f5925fc2a00"
+checksum = "32f39390fa6346e24defbcdd3d9544ba8a19985d0af74df8501fbfe9a64341ab"
+dependencies = [
+ "serde_derive",
+]
+
+[[package]]
+name = "serde_derive"
+version = "1.0.224"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "87ff78ab5e8561c9a675bfc1785cb07ae721f0ee53329a595cefd8c04c2ac4e0"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -1795,15 +1817,16 @@ dependencies = [
 
 [[package]]
 name = "serde_json"
-version = "1.0.143"
+version = "1.0.145"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d401abef1d108fbd9cbaebc3e46611f4b1021f714a0597a71f41ee463f5f4a5a"
+checksum = "402a6f66d8c709116cf22f558eab210f5a50187f702eb4d7e5ef38d9a7f1c79c"
 dependencies = [
  "indexmap 2.11.1",
  "itoa",
  "memchr",
  "ryu",
  "serde",
+ "serde_core",
 ]
 
 [[package]]
