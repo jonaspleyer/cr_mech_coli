@@ -4,6 +4,7 @@ import cr_mech_coli as crm
 
 
 def configure_ax(ax):
+    crm.set_mpl_rc_params()
     crm.configure_ax(ax)
     ax.text(
         0.5,
@@ -16,6 +17,8 @@ def configure_ax(ax):
         ha="center",
         va="center",
         rotation=30,
+        fontfamily="sans-serif",
+        fontweight="bold",
     )
 
 
@@ -49,7 +52,14 @@ if __name__ == "__main__":
     ax.set_xticks(np.arange(len(fake_data)), fake_data.keys())
     ax.set_ylim(0, 1.1)
     handles, labels = ax.get_legend_handles_labels()
-    ax.legend(handles[: len(colors)], labels[: len(colors)])
+    ax.legend(
+        handles[: len(colors)],
+        labels[: len(colors)],
+        loc="upper center",
+        bbox_to_anchor=(0.5, 1.1),
+        ncol=2,
+        frameon=False,
+    )
 
     fig.savefig("paper_segmentation_tracking/fake-figures/segmentation-benchmark.pdf")
     plt.close(fig)
@@ -81,7 +91,14 @@ if __name__ == "__main__":
     ax.set_xticks(np.arange(len(fake_data)) + width / 2, fake_data.keys())
     ax.set_ylabel("Relative Impact [%]")
     handles, labels = ax.get_legend_handles_labels()
-    ax.legend(handles[: len(colors)], labels[: len(colors)])
+    ax.legend(
+        handles[: len(colors)],
+        labels[: len(colors)],
+        loc="upper center",
+        bbox_to_anchor=(0.5, 1.1),
+        ncol=3,
+        frameon=False,
+    )
 
     fig.savefig("paper_segmentation_tracking/fake-figures/tracking-defects.pdf")
     plt.close(fig)
