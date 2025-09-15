@@ -213,6 +213,22 @@ external effects and ocurr naturally within most experimental setups.
 We utilize various effects and implement their effect on the resulting image as summarized in
 Table~\ref{tabular:microscopic-image-defects}.
 
+\begin{table}[H]
+    \begin{tabularx}{\textwidth}{l l}
+        \toprule
+        Microscopic effect & Image Transformation\\
+        \midrule
+        Sensor Noise & White noise on pixel level\\
+        Shaking Apparatus & Random spatial translations between time-steps\\
+        Smudges & Custom overlays (Rotations, Mirrors, Combinations, etc.)\\
+        Lighting & 3D Rendering: Introcue light sources; modify surface of cells; use \ac{pbr}\\
+        Cellular Translucency & Make cells partially transparent\\
+        Depth of Field & Included in \ac{pbr}\\
+        \bottomrule
+    \end{tabularx}
+    \label{tabular:microscopic-image-defects}
+\end{table}
+
 Use various effects to make images realistic; mimick real microscopic effects for that
 \begin{itemize}
     \item General (white) Noise
@@ -254,21 +270,6 @@ Use various effects to make images realistic; mimick real microscopic effects fo
     }
     \label{fig:progression-image-generation}
 \end{figure}
-
-\begin{table}[H]
-    \begin{tabularx}{\columnwidth}{l l}
-        \toprule
-        Microscopic effect & Image Transformation\\
-        \midrule
-        Sensor Noise & White noise on pixel level\\
-        Shaking Apparatus & Random spatial translations between time-steps\\
-        Lighting & 3D Rendering: Introcue light sources; modify surface of cells; use \ac{pbr}\\
-        Cellular Translucency & Make cells partially transparent\\
-        Depth of Field & Included in \ac{pbr}\\
-        \bottomrule
-    \end{tabularx}
-    \label{tabular:microscopic-image-defects}
-\end{table}
 
 %###################################################################################################
 \section{(10\%) Methods}
