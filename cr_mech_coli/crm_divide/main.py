@@ -11,13 +11,14 @@ import cv2 as cv
 
 import cr_mech_coli as crm
 from cr_mech_coli import crm_fit
+from cr_mech_coli.crm_divide.crm_divide_rs import adjust_masks
 
 data_dir = Path("data/crm_divide/0001/")
 
 crm.plotting.set_mpl_rc_params()
 
 
-def adjust_masks(
+def adjust_masks2(
     masks, mask_iters, container: crm.CellContainer, settings, show_progress=False
 ):
     idents = container.cell_to_color.keys()
@@ -284,7 +285,8 @@ def predict(
 
     # define config
     config = settings.to_config()
-    config.progressbar = "Run Simulation"
+    if show_progress:
+        config.progressbar = "Run Simulation"
     container = crm.run_simulation_with_agents(config, agents)
     if show_progress:
         print()
@@ -299,7 +301,7 @@ def objective_function(
     masks_data,
     mask_iters,
     iterations_data,
-    parent_penalty=1.0,
+    parent_penalty=0.5,
     return_all=False,
     return_times=False,
     error_cost=10.0,
@@ -338,10 +340,12 @@ def objective_function(
 
     try:
         new_masks, parent_map, cell_to_color, color_to_cell = adjust_masks(
-            masks_data, mask_iters, container, settings
+            masks_data, positions_initial, mask_iters, container, settings
         )
     except:
         return error_cost
+
+    exit()
 
     masks_predicted = [
         crm.render_mask(
@@ -395,18 +399,22 @@ def objective_function(
 
     n_cells = len(container.get_cells_at_iteration(iterations_simulation[-1]))
 
-    cost = np.sum(penalties) * (n_cells - 10) ** 2
+    cost = np.sum(penalties) * (1 + (n_cells - 10) ** 2) ** 0.5
 
     if return_times:
         return times
 
-    print(f"f(x)={cost:7.4}  Final Cells: {n_cells}")
+    print(f"f(x)={cost:12.7}  Final Cells: {n_cells}")
     return cost
 
 
-def preprocessing():
-    files_images = sorted(glob(str(data_dir / "images/*")))
-    files_masks = sorted(glob(str(data_dir / "masks/*.csv")))
+def preprocessing(n_masks=None):
+    if n_masks is None:
+        files_images = sorted(glob(str(data_dir / "images/*")))
+        files_masks = sorted(glob(str(data_dir / "masks/*.csv")))
+    else:
+        files_images = list(sorted(glob(str(data_dir / "images/*"))))[:n_masks]
+        files_masks = list(sorted(glob(str(data_dir / "masks/*.csv"))))[:n_masks]
     masks = [np.loadtxt(fm, delimiter=",", dtype=np.uint8) for fm in files_masks]
     mask_iters = np.array([int(s[-10:-4]) for s in files_images])
     mask_iters = mask_iters - np.min(mask_iters)
@@ -447,6 +455,93 @@ def preprocessing():
     ).astype(np.float32)
 
     return masks, positions_initial, settings, iterations_all, mask_iters
+
+
+def test_adjust_masks():
+    masks_data, positions_initial, settings, iterations_data, mask_iters = (
+        preprocessing(1)
+    )
+
+    spring_length_thresholds = [9] * 4
+    new_growth_rates = [
+        0.001152799,
+        0.001410604,
+        0.0018761827,
+        0.0016834959,
+    ]
+    x0 = [
+        *spring_length_thresholds,
+        *new_growth_rates,
+    ]
+
+    args = (
+        positions_initial,
+        settings,
+        masks_data,
+        mask_iters,
+        iterations_data,
+        0.5,
+    )
+
+    (
+        masks_adjusted,
+        parent_map,
+        cell_to_color,
+        color_to_cell,
+        container,
+        masks_predicted,
+        penalties,
+    ) = objective_function(x0, *args, return_all=True, show_progressbar=True)
+
+    fig, axs = plt.subplots(2, 2, figsize=(10, 8))
+
+    axs[0, 0].set_axis_off()
+    axs[0, 0].set_title("Mask Data")
+    axs[0, 1].set_axis_off()
+    axs[0, 1].set_title("Mask Predicted")
+    axs[1, 0].set_axis_off()
+    axs[1, 0].set_title("Mask Adjusted")
+    axs[1, 1].set_axis_off()
+    axs[1, 1].set_title("Diff")
+
+    diff = crm.parents_diff_mask(
+        masks_predicted[0], masks_adjusted[0], color_to_cell, parent_map, 0.5
+    )
+
+    axs[0, 0].imshow(masks_data[0])
+
+    m = masks_data[0]
+    colors = np.unique(m)
+    for n, v in enumerate(colors):
+        x, y = np.where(m == v)
+        pos = np.mean([x, y], axis=1)
+        axs[0, 0].text(
+            pos[1], pos[0], n, color="gray", fontfamily="sans-serif", size=20
+        )
+
+    m = masks_predicted[0]
+    for k, v in container.cell_to_color.items():
+        x, y = np.where(np.all(m == v, axis=2))
+        pos = np.mean([x, y], axis=1)
+        axs[0, 1].text(
+            pos[1], pos[0], k, color="white", fontfamily="sans-serif", size=10
+        )
+
+    axs[0, 1].imshow(masks_predicted[0])
+
+    m = masks_adjusted[0]
+    for k, v in cell_to_color.items():
+        x, y = np.where(np.all(m == v, axis=2))
+        pos = np.mean([x, y], axis=1)
+        axs[1, 0].text(
+            pos[1], pos[0], k, color="white", fontfamily="sans-serif", size=10
+        )
+
+    axs[1, 0].imshow(masks_adjusted[0])
+    axs[1, 1].imshow(1 - diff, cmap="Grays")
+
+    fig.savefig("tmp.png")
+    exit()
 
 
 def plot_time_evolution(
@@ -541,8 +636,8 @@ def plot_profiles(
                 bounds=bounds_reduced,
                 args=(xi, n, args),
                 disp=False,
-                maxiter=2,
-                popsize=4,
+                maxiter=50,
+                popsize=20,
                 mutation=(0.6, 1),
                 recombination=0.5,
                 workers=n_workers,
@@ -611,7 +706,7 @@ def plot_timings(
         color=crm.plotting.COLOR5,
         weight="bold",
     )
-    ax.set_yscale("log")
+    # ax.set_yscale("log")
     ax.set_ylabel("Time [ms]")
     fig.savefig(output_dir / "timings.pdf")
     fig.savefig(output_dir / "timings.png")
@@ -656,10 +751,10 @@ def run_optimizer(
             bounds=bounds,
             args=args,
             disp=True,
-            maxiter=4,
+            maxiter=200,
             popsize=20,
-            mutation=(0.6, 1),
-            recombination=0.5,
+            mutation=(0.3, 1.8),
+            recombination=0.25,
             workers=n_workers,
             updating="deferred",
             polish=True,
@@ -693,7 +788,10 @@ def plot_snapshots(
         cv.imwrite(f"{output_dir}/masks_diff/{n:06}.png", diff)
 
 
-def main():
+def crm_divide_main():
+    test_adjust_masks()
+    exit()
+
     parser = argparse.ArgumentParser(
         description="Fits the Bacterial Rods model to a system of cells."
     )
@@ -782,7 +880,14 @@ def main():
         parent_penalty,
     )
 
+    final_parameters, final_cost = run_optimizer(
         x0,
+        bounds,
+        output_dir,
+        pyargs.iteration,
+        args,
+        n_workers,
+    )
 
     (
         masks_adjusted,
