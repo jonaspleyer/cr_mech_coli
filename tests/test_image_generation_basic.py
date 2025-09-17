@@ -34,6 +34,6 @@ def test_store_iamges():
     )
 
     # Check that the files exist
-    assert len(glob(f"{save_dir}images/*.png")) == 2
-    assert len(glob(f"{save_dir}masks/*.png")) == 2
-    assert len(glob(f"{save_dir}raw_pv/*.png")) == 2
+    assert len(glob(f"{save_dir}images/*.png")) == 3
+    assert len(glob(f"{save_dir}masks/*.png")) == 3
+    assert len(glob(f"{save_dir}raw_pv/*.png")) == 3
