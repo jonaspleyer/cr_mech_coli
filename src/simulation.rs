@@ -284,6 +284,7 @@ pub fn run_simulation_with_agents(
         zero_force_default: |c: &RodAgent| {
             nalgebra::MatrixXx3::zeros(c.mechanics.pos().nrows())
         },
+        parallelizer: Rayon,
     )?;
     let cells = storage
         .cells
