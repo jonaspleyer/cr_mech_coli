@@ -240,6 +240,19 @@ impl CellContainer {
         self.parent_map.clone()
     }
 
+    /// A dictionary mapping each cell to its daughters
+    pub fn get_daughter_map(&self) -> BTreeMap<CellIdentifier, Vec<CellIdentifier>> {
+        self.parent_map
+            .iter()
+            .fold(BTreeMap::new(), |mut acc, (daughter, parent)| {
+                if let Some(parent) = parent {
+                    let entry = acc.entry(*parent).or_default();
+                    entry.push(*daughter);
+                }
+                acc
+            })
+    }
+
     /// A dictionary mapping each cell to its children
     pub fn get_child_map(&self) -> BTreeMap<CellIdentifier, Vec<CellIdentifier>> {
         self.child_map.clone()
