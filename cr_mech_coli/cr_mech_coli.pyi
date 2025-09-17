@@ -73,7 +73,7 @@ class CellIdentifier:
     def __new__(cls, voxel_index, index) -> CellIdentifier: ...
     @staticmethod
     def new_initial(index: int) -> CellIdentifier: ...
-    def __getitem__(self) -> int: ...
+    def __getitem__(self, index) -> int: ...
 
 class VoxelPlainIndex:
     """\
@@ -167,7 +167,7 @@ class CellContainer:
     parent_map: dict[CellIdentifier, CellIdentifier | None]
     child_map: dict[CellIdentifier, list[CellIdentifier]]
     cell_to_color: dict[CellIdentifier, tuple[np.uint8, np.uint8, np.uint8]]
-    color_to_cell: dict[list[int], CellIdentifier]
+    color_to_cell: dict[tuple[np.uint8, np.uint8, np.uint8], CellIdentifier]
     path: Path | None
 
     def get_cells(
@@ -192,6 +192,7 @@ class CellContainer:
         self, ident1: CellIdentifier, ident2: CellIdentifier
     ) -> bool: ...
     def get_parent_map(self) -> dict[CellIdentifier, CellIdentifier | None]: ...
+    def get_daughter_map(self) -> dict[CellIdentifier, list[CellIdentifier]]: ...
     def get_child_map(self) -> dict[CellIdentifier, list[CellIdentifier]]: ...
     def get_all_identifiers(self) -> list[CellIdentifier]: ...
     def assign_colors_to_cells(
@@ -287,7 +288,7 @@ def counter_to_color(counter: int) -> tuple[np.uint8, np.uint8, np.uint8]:
             of simple incremental one.
 
     Returns:
-        list[int]: A list with exactly 3 entries containing the calculated color."""
+        tuple[int, int, int]: A list with exactly 3 entries containing the calculated color."""
     ...
 
 def color_to_counter(color: tuple[np.uint8, np.uint8, np.uint8]) -> int:
