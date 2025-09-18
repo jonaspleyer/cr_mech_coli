@@ -1,5 +1,5 @@
 use cellular_raza::prelude::{
-    CellBox, CellIdentifier, SimulationError, StorageBuilder, StorageInterfaceLoad,
+    CellBox, CellIdentifier, SimulationError, StorageBuilder, StorageInterfaceLoad, VoxelPlainIndex,
 };
 use pyo3::prelude::*;
 use serde::{Deserialize, Serialize};
@@ -356,6 +356,24 @@ impl CellContainer {
             })
             .collect();
         Ok(CellContainer::new(cells, Some(path)))
+    }
+
+    /// Inserts a new identifier with given parent ident and returns the current counter if the
+    /// ident was not already present.
+    #[pyo3(signature = (parent=None))]
+    pub fn add_ident_divided(&mut self, parent: Option<CellIdentifier>) -> CellIdentifier {
+        let new_counter = self.parent_map.len() + 1;
+        let ident = CellIdentifier::new(VoxelPlainIndex::new(0), new_counter as u64);
+        assert!(!self.parent_map.contains_key(&ident));
+        self.parent_map.insert(ident, parent);
+        if let Some(parent) = parent {
+            self.child_map.entry(parent).or_default().push(ident);
+        }
+        let new_color = crate::counter_to_color(new_counter as u32);
+        assert!(self.cell_to_color.insert(ident, new_color).is_none());
+        assert!(self.color_to_cell.insert(new_color, ident).is_none());
+
+        ident
     }
 }
 
