@@ -21,13 +21,13 @@ crm.plotting.set_mpl_rc_params()
 def adjust_masks(
     masks_data: list[np.ndarray[tuple[int, int], np.dtype[np.uint8]]],
     positions_all: list[np.ndarray[tuple[int, int, int], np.dtype[np.float32]]],
-    mask_iters: list[int],
+    iterations_data: list[int],
     container: crm.CellContainer,
     settings: crm_fit.Settings,
     show_progress=False,
 ):
     sim_iterations = np.array(container.get_all_iterations())
-    sim_iterations_subset = np.array([sim_iterations[i] for i in mask_iters])
+    sim_iterations_subset = np.array([sim_iterations[i] for i in iterations_data])
     sim_idents_initial = container.get_cells_at_iteration(sim_iterations[0]).keys()
     sim_idents_all = container.get_all_identifiers()
     sim_daughter_map = container.get_daughter_map()
@@ -47,46 +47,45 @@ def adjust_masks(
 
     # Mapping to give masks after iteration 7 new colors
     # such that they do not overlap with previous results.
+    # WARNING MAGIC NUMBERS
     align_mask_data_color = {
-        1: 20,
-        2: 21,
-        3: 22,
-        4: 23,
-        5: 24,
-        6: 25,
-        7: 26,
-        8: 5,
-        9: 27,
-        10: 6,
+        np.uint8(1): np.uint8(20),
+        np.uint8(2): np.uint8(21),
+        np.uint8(3): np.uint8(22),
+        np.uint8(4): np.uint8(23),
+        np.uint8(5): np.uint8(24),
+        np.uint8(6): np.uint8(25),
+        np.uint8(7): np.uint8(26),
+        np.uint8(8): np.uint8(5),
+        np.uint8(9): np.uint8(27),
+        np.uint8(10): np.uint8(6),
     }
     align_mask_data_color_invert = {v: k for k, v in align_mask_data_color.items()}
 
     # Tranform the data masks with the above mapping
-    masks_data_new = []
-    for m in masks_data[7:]:
-        new_mask = m
+    # WARNING MAGIC NUMBERS
+    masks_data_new = [np.array(m) for m in masks_data]
+    for m in masks_data_new[8:]:
         colors = list(sorted(np.unique(m)))[1:]
         for c in colors:
-            new_mask[m == c] = align_mask_data_color[c]
-        masks_data_new.append(new_mask)
+            m[m == c] = align_mask_data_color[c]
 
-    masks_data[7:] = masks_data_new
-
+    # WARNING MAGIC NUMBERS
     data_color_parent_map = {
-        1: None,
-        2: None,
-        3: None,
-        4: None,
-        5: None,
-        6: None,
-        21: 1,
-        23: 1,
-        20: 2,
-        22: 2,
-        24: 3,
-        26: 3,
-        25: 4,
-        27: 4,
+        np.uint8(1): None,
+        np.uint8(2): None,
+        np.uint8(3): None,
+        np.uint8(4): None,
+        np.uint8(5): None,
+        np.uint8(6): None,
+        np.uint8(21): 1,
+        np.uint8(23): 1,
+        np.uint8(20): 2,
+        np.uint8(22): 2,
+        np.uint8(24): 3,
+        np.uint8(26): 3,
+        np.uint8(25): 4,
+        np.uint8(27): 4,
     }
     data_color_daughter_map = {
         parent_color: [k for k, v in data_color_parent_map.items() if v == parent_color]
@@ -95,12 +94,12 @@ def adjust_masks(
     }
 
     data_color_to_ident = {
-        1: crm.CellIdentifier.new_initial(0),
-        2: crm.CellIdentifier.new_initial(1),
-        3: crm.CellIdentifier.new_initial(2),
-        4: crm.CellIdentifier.new_initial(3),
-        5: crm.CellIdentifier.new_initial(4),
-        6: crm.CellIdentifier.new_initial(5),
+        np.uint8(1): crm.CellIdentifier.new_initial(0),
+        np.uint8(2): crm.CellIdentifier.new_initial(1),
+        np.uint8(3): crm.CellIdentifier.new_initial(2),
+        np.uint8(4): crm.CellIdentifier.new_initial(3),
+        np.uint8(5): crm.CellIdentifier.new_initial(4),
+        np.uint8(6): crm.CellIdentifier.new_initial(5),
     }
 
     for ident in sim_idents_all:
@@ -119,12 +118,16 @@ def adjust_masks(
         daughter_hists = [container.get_cell_history(d)[0] for d in sim_daughters]
         # Extract the first iteration at which the daughters are present and data is there
         daughter_iters = [
-            [k for k in hist.keys() if k in sim_iterations_subset]
+            # WARNING MAGIC NUMBER                               \|/
+            [k for k in hist.keys() if k in sim_iterations_subset[8:]]
             for hist in daughter_hists
         ]
+
         first_shared_iter = np.max([np.min(i) for i in daughter_iters])
         n_first_shared = np.argmin(first_shared_iter > sim_iterations)
-        (n_first_shared_data,) = np.where(n_first_shared == np.array(mask_iters))[0]
+        (n_first_shared_data,) = np.where(n_first_shared == np.array(iterations_data))[
+            0
+        ]
 
         # The parent color can be obtained from the CellIdentifier::Initial(n) value (plus 1)
         parent_color = sim_parent[0] + 1
@@ -150,306 +153,39 @@ def adjust_masks(
         daughter_color = daughter_colors[i]
         data_color_to_ident[daughter_color] = ident
 
-        # fig, ax = plt.subplots(figsize=(15, 12))
-        # ax.imshow(masks_data[n_first_shared_data][::-1])
-        # ax.set_xlim(0, settings.constants.domain_size[0])
-        # ax.set_ylim(0, settings.constants.domain_size[1])
-        # ax.plot(
-        #     sim_position[:, 0], sim_position[:, 1], color="red", marker="x", alpha=0.5
-        # )
-
-        # print(ident)
-        # m = masks_data[n_first_shared_data]
-        # for color in np.unique(m)[1:]:
-        #     x, y = np.where(m == color)
-        #     pos_mean = np.mean([x, y], axis=1)
-        #     color_original = align_mask_data_color_invert[color]
-        #     color_parent = data_color_parent_map[color]
-        #     color_parent = "" if color_parent is None else color_parent
-        #     ax.text(
-        #         pos_mean[1],
-        #         m.shape[0] - pos_mean[0],
-        #         f"{color}:{color_original}:{color_parent}",
-        #         color="white",
-        #     )
-
-        # for j, pi in enumerate(daughter_positions):
-        #     ax.plot(pi[:, 0], pi[:, 1], color="blue" if i == j else "gray", marker="+")
-        # plt.show()
-        # plt.close(fig)
-
     # We have now matched all CellIdentifiers which are present
     # in the simulation and also in the data masks. Now we will
     # go on to insert relations for the remaining colors which
     # are present in the data but not in the simulation.
 
-    parent_map = container.get_parent_map()
-    color_to_cell = container.color_to_cell
-    cell_to_color = container.cell_to_color
-
-    ident_counter = len(data_color_to_ident) - len(sim_idents_initial) + 1
-    data_colors_all = np.unique(masks_data)
+    data_colors_all = np.unique(masks_data_new)
     for new_color in data_colors_all[1:]:
         if new_color not in data_color_to_ident.keys():
             # Obtain parent color and ident
             parent_color = data_color_parent_map[new_color]
             parent_ident = crm.CellIdentifier.new_initial(parent_color - 1)
 
-            # Create new artificial ident and obtain color for ident
-            new_ident = crm.CellIdentifier(crm.VoxelPlainIndex(0), ident_counter)
-            sim_color = crm.counter_to_color(ident_counter + len(sim_idents_initial))
-
-            # Extend parent map
-            ident_counter += 1
+            # Use CellContainer to create new ident and update map
+            new_ident = container.add_ident_divided(parent_ident)
             data_color_to_ident[new_color] = new_ident
-            parent_map[new_ident] = parent_ident
-            color_to_cell[sim_color] = new_ident
-            cell_to_color[new_ident] = sim_color
+
+    parent_map = container.get_parent_map()
+    color_to_cell = container.color_to_cell
+    cell_to_color = container.cell_to_color
 
     # Finally we build a dictionary which can
     # convert every data_color to sim_color
-    data_color_to_sim_color = {0: crm.counter_to_color(0)}
+    data_color_to_sim_color = {np.uint8(0): crm.counter_to_color(0)}
     for k, ident in data_color_to_ident.items():
         sim_color = cell_to_color[ident]
         data_color_to_sim_color[k] = sim_color
 
     new_masks = []
-    for mask in masks_data:
+    for mask in masks_data_new:
         new_mask = np.array(
             [data_color_to_sim_color[c] for c in mask.reshape(-1)], dtype=np.uint8
         ).reshape((*mask.shape, 3))
         new_masks.append(new_mask)
-
-    print(len(parent_map))
-    print(len(color_to_cell))
-    print(len(cell_to_color))
-    exit()
-
-    return None
-
-    # Define mappings for colors of the data masks at each iteration
-    color_mappings_at_iteration = [
-        {i: crm.CellIdentifier.new_initial(i) for i in range(1, 7)}
-    ] * 8
-    color_mappings_at_iteration += [
-        {i: crm.CellIdentifier.new_initial(i - 1) for i in range(1, 3)}
-    ] * 5
-
-    def get_closest_pos(n, pos_cell):
-        min_ind = 0
-        min_pos = np.array(0)
-        min_dist = np.inf
-        for i, p in enumerate(positions_all[n]):
-            d1 = np.linalg.norm(p - pos_cell)
-            d2 = np.linalg.norm(p - pos_cell[::-1])
-
-            if d1 < min_dist:
-                min_pos = p
-                min_ind = i
-                min_dist = d1
-            if d2 < min_dist:
-                min_pos = p
-                min_ind = i
-                min_dist = d2
-
-        return (min_ind, min_pos, min_dist)
-
-    for n in range(8, 8 + 5):
-        iter = container.get_all_iterations()[mask_iters[n]]
-        cells = container.get_cells_at_iteration(iter)
-
-        data_color_to_ident = {}
-        for ident, (c, sim_parent) in cells.items():
-            pos = c.pos
-            # This index is now the color of the unaltered data mask
-            (min_ind, min_pos, min_dist) = get_closest_pos(n, pos)
-            # We can thus map the identifier of the cell to this data-color
-            data_color_to_ident[min_ind] = ident
-            print(min_ind)
-
-        print(data_color_to_ident.keys(), color_mappings_at_iteration[n].keys())
-        color_mappings_at_iteration[n] = (
-            color_mappings_at_iteration[n] | data_color_to_ident
-        )
-        print(len(color_mappings_at_iteration[n]))
-
-    for mapping in color_mappings_at_iteration:
-        print(len(mapping))
-
-    exit()
-
-    # 1. Identify new cells from simulation
-    # 2. Link new cells with colors from later masks
-    # 3. Extend cell_to_color and parent map
-
-    # Map colors such that the cells which have not divided match with the previous masks
-    # Mask color
-    # 8 -> 5
-    # 10 -> 6
-    # In order to avoid collisions we also map divided cells to colors of value >= 20
-    align_mask_data_color = {
-        1: 20,
-        2: 21,
-        3: 22,
-        4: 23,
-        5: 24,
-        6: 25,
-        7: 26,
-        9: 27,
-        8: 5,
-        10: 6,
-    }
-    # Since we know the explicit simulation snapshots,
-    # we can write down the parent map directly
-    parent_map_colors = {
-        1: None,
-        2: None,
-        3: None,
-        4: None,
-        5: None,
-        6: None,
-        21: 1,
-        23: 1,
-        20: 2,
-        22: 2,
-        24: 3,
-        26: 3,
-        25: 4,
-        27: 4,
-    }
-
-    def map_colors(m):
-        for k, v in align_mask_data_color.items():
-            m[m == k] = v
-        return m
-
-    x = np.array([len(np.unique(m)) - 1 for m in masks_data])
-    n_divide = np.argmin(x < x[-1])
-
-    masks_data = [
-        m if n < n_divide else map_colors(m) for n, m in enumerate(masks_data)
-    ]
-
-    # Map colors to Idents which are there initially
-    # These idents do not change
-    # mask_color_to_ident = {i: crm.CellIdentifier.new_initial(i) for i in range(1, 7)}
-    # parent_map = {mask_color_to_ident[k]: None for k in range(1, 7)}
-
-    mask_color_to_cell = {}
-
-    # Calculate the average pixel for each color
-    color_means = [
-        {c: np.mean(np.where(m == c), axis=1) for c in np.unique(m)} for m in masks_data
-    ]
-    for id in sim_idents_all:
-        if id not in sim_idents_initial:
-            # Get history of cell
-            cell_hist, parent_id = container.get_cell_history(id)
-            # Obtain the first iteration at which the new cell appears
-            first_iter = min(cell_hist.keys())
-            # Obtain the very first position of this cell
-            # and convert the position to pixel units
-            first_pos = cell_hist[first_iter].pos
-            first_pos = crm.convert_cell_pos_to_pixels(
-                first_pos, settings.constants.domain_size, masks_data[0].shape
-            )
-
-            # Calculate the average of all vertices
-            pos_mean = np.mean(first_pos, axis=0)[:2]
-
-            # Obtain color for parent
-            # This is identical to the CellIdentifier for initially constructed cells
-            # with an offset of 1 since the color 0 is the background
-            # Thus this code works (do not worry about type checking here)
-            parent_color = parent_id[0] + 1
-
-            # Since we have found the parent, we can see what colors its children have
-            child_colors = list(
-                filter(
-                    lambda x: x is not None,
-                    [
-                        c if p == parent_color else None
-                        for c, p in parent_map_colors.items()
-                    ],
-                )
-            )
-
-            # We obtain the index at which the first mask contains
-            # the first ocurrance of the new CellIdentifier
-            n_iter = np.argmax(first_iter < np.array(container.get_all_iterations()))
-            n_ind = np.min(np.where(n_iter <= mask_iters))
-
-            # We can now obtain the mean values of the children
-            child_means = [color_means[n_ind][c] for c in child_colors]
-            # Now we calculate the distance between the mean position of our agent
-            # and the position of the candidates which is identical to the children
-            # of the parent of the agent
-            distances = [np.sum((pos_mean - cm) ** 2) ** 0.5 for cm in child_means]
-
-            # We choose the child with the smaller distance as the correct one
-            child_color = child_colors[np.argmin(distances)]
-            mask_color_to_cell[child_color] = id
-
-    cell_to_color = container.cell_to_color
-    parent_map = container.parent_map
-
-    # Now we extend the cell_to_color map and parent_map
-    # Basically, we have to insert all cells that are not
-    # results of the numerical simulation
-
-    # We also adjust the masks such that the colors are
-    # now matching.
-    # For this, we must ensure that the colors which have
-    # been assigned as noted in the CellContainer type
-    # are correctly present.
-    # This means, we use our various maps from above to
-    # convert from mask colors to simulation colors
-
-    color_data_transform = {np.uint8(0): (np.uint8(0), np.uint8(0), np.uint8(0))}
-
-    process_later = []
-    for color_flat in sorted(parent_map_colors.keys()):
-        color_parent = parent_map_colors[color_flat]
-        # Identify the cells which are not present in the simulation
-        if (
-            color_flat not in mask_color_to_cell.keys()
-            and color_parent not in cell_to_color.keys()
-            and color_parent is not None
-        ):
-            # By the condition above, we know that parent is not None
-            # and thus the cell was newly created but is also not already
-            # in the container. Thus we need to add the corresponding cell can obtain
-            id = crm.CellIdentifier(crm.VoxelPlainIndex(0), color_flat)
-            new_color = crm.counter_to_color(len(cell_to_color) + 1)
-            cell_to_color[id] = new_color
-            parent_map[id] = crm.CellIdentifier.new_initial(color_parent - 1)
-            color_data_transform[color_flat] = new_color
-        else:
-            process_later.append(color_flat)
-
-    for color_flat in process_later:
-        color_data_transform[color_flat] = crm.counter_to_color(
-            len(color_data_transform)
-        )
-
-    # Ensure that the parent_map does now contain all colors except for zero
-    for c in [np.unique(m) for m in masks_data]:
-        for ci in c:
-            assert ci in parent_map_colors.keys() or ci == 0
-
-    # Create new masks with updated colors
-    new_masks = []
-    if show_progress:
-        iterator = tqdm(masks_data, total=len(masks_data), desc="Adjusting Data Masks")
-    else:
-        iterator = masks_data
-    for m in iterator:
-        new_mask = np.array(
-            [color_data_transform[c] for c in m.reshape(-1)], dtype=np.uint8
-        ).reshape((*m.shape, 3))
-        new_masks.append(new_mask)
-
-    color_to_cell = {v: k for k, v in cell_to_color.items()}
 
     return new_masks, parent_map, cell_to_color, color_to_cell
 
@@ -549,12 +285,21 @@ def predict(
     return container
 
 
+def mask_iterator(iterations_data, new_masks, masks_predicted, return_all):
+    if return_all:
+        for iter, new_mask in zip(iterations_data, new_masks):
+            yield new_mask, masks_predicted[iter]
+
+    else:
+        for m1, m2 in zip(new_masks, masks_predicted):
+            yield m1, m2
+
+
 def objective_function(
     spring_length_thresholds_and_new_growth_rates,
     positions_all,
     settings,
     masks_data,
-    mask_iters,
     iterations_data,
     parent_penalty=0.5,
     return_all=False,
@@ -593,32 +338,17 @@ def objective_function(
 
     update_time("Prediction")
 
-    # try:
-    new_masks, parent_map, cell_to_color, color_to_cell = adjust_masks(
-        masks_data, positions_all, mask_iters, container, settings
-    )
-    # except:
-    #     return error_cost
-
-    fig, axs = plt.subplots(2, 2, figsize=(12, 8))
-    axs[0, 0].imshow(new_masks[-1])
-    axs[0, 1].imshow(masks_data[-1])
-
-    m = masks_data[-1]
-    colors = np.unique(m)
-    for n, v in enumerate(colors):
-        x, y = np.where(m == v)
-        pos = np.mean([x, y], axis=1)
-        axs[0, 1].text(
-            pos[1], pos[0], n, color="gray", fontfamily="sans-serif", size=15
+    try:
+        new_masks, parent_map, cell_to_color, color_to_cell = adjust_masks(
+            masks_data, positions_all, iterations_data, container, settings
         )
+    except Exception as e:
+        print(f"Error -> f(x)={error_cost:.20} error: {e}")
+        return error_cost
 
-    # axs[1,0].imshow(masks_predicted[-1])
-    # axs[1,1].imshow(masks_data[-1])
-    fig.savefig("tmp2.png")
+    update_time("Mask (Adjust)")
 
-    exit()
-
+    iters_filtered = np.array([iterations_simulation[i] for i in iterations_data])
     masks_predicted = [
         crm.render_mask(
             container.get_cells_at_iteration(iter),
@@ -627,34 +357,38 @@ def objective_function(
             render_settings=crm.RenderSettings(pixel_per_micron=1),
         )
         for iter in tqdm(
-            iterations_simulation if return_all else iterations_data,
-            total=len(iterations_simulation if return_all else iterations_data),
+            iterations_simulation if return_all else iters_filtered,
+            total=len(iterations_simulation if return_all else iters_filtered),
             desc="Render predicted Masks",
             disable=not show_progressbar,
         )
     ]
 
-    update_time("Masks")
+    update_time("Mask (Render)")
 
-    def mask_iterator():
-        if return_all:
-            for iter, new_mask in zip(iterations_data, new_masks):
-                yield new_mask, masks_predicted[iter]
-
-        else:
-            for m1, m2 in zip(new_masks, masks_predicted):
-                yield m1, m2
-
-    penalties = [
-        crm.penalty_area_diff_account_parents(
-            m1,
-            m2,
-            color_to_cell,
-            parent_map,
-            parent_penalty,
+    # If we return all we need to filter the generated masks
+    if return_all:
+        mask_iterator = zip(
+            [masks_predicted[iter] for iter in iterations_data], new_masks
         )
-        for m1, m2 in mask_iterator()
-    ]
+    # Otherwise we can use the whole list
+    else:
+        mask_iterator = zip(masks_predicted, new_masks)
+
+    diff_masks = np.array(
+        [
+            crm.parents_diff_mask(
+                m1,
+                m2,
+                color_to_cell,
+                parent_map,
+                parent_penalty,
+            )
+            for m1, m2 in mask_iterator
+        ]
+    )
+
+    penalties = np.sum(diff_masks, axis=(1, 2))
 
     update_time("Penalties")
 
@@ -671,12 +405,13 @@ def objective_function(
 
     n_cells = len(container.get_cells_at_iteration(iterations_simulation[-1]))
 
-    cost = np.sum(penalties) * (1 + (n_cells - 10) ** 2) ** 0.5
+    cost = np.sum(penalties)
 
     if return_times:
         return times
 
-    print(f"f(x)={cost:12.7}  Final Cells: {n_cells}")
+    x = np.mean(masks_predicted)
+    print(f"f(x)={cost:.20}  Final Cells: {n_cells} {x}")
     return cost
 
 
@@ -688,13 +423,12 @@ def preprocessing(n_masks=None):
         files_images = list(sorted(glob(str(data_dir / "images/*"))))[:n_masks]
         files_masks = list(sorted(glob(str(data_dir / "masks/*.csv"))))[:n_masks]
     masks = [np.loadtxt(fm, delimiter=",", dtype=np.uint8) for fm in files_masks]
-    mask_iters = np.array([int(s[-10:-4]) for s in files_images])
-    mask_iters = mask_iters - np.min(mask_iters)
+    iterations_data = np.array([int(s[-10:-4]) for s in files_images])
+    iterations_data = iterations_data - np.min(iterations_data)
 
     settings = crm_fit.Settings.from_toml(data_dir / "settings.toml")
     n_vertices = settings.constants.n_vertices
 
-    iterations_all = []
     positions_all = []
     lengths_all = []
     colors_all = []
@@ -707,7 +441,6 @@ def preprocessing(n_masks=None):
             )
             positions_all.append(np.array(pos, dtype=np.float32))
             lengths_all.append(length)
-            iterations_all.append(int(Path(filename).stem.split("-")[0]))
             colors_all.append(colors)
         except ValueError as e:
             print("Encountered Error during extraction of positions:")
@@ -715,8 +448,7 @@ def preprocessing(n_masks=None):
             print(e)
             print("Omitting this particular result.")
 
-    iterations_all = np.array(iterations_all, dtype=np.uint64) - iterations_all[0]
-    settings.constants.n_saves = max(iterations_all)
+    settings.constants.n_saves = max(iterations_data)
 
     domain_height = settings.domain_height
     for n, p in enumerate(positions_all):
@@ -726,12 +458,12 @@ def preprocessing(n_masks=None):
             axis=2,
         ).astype(np.float32)
 
-    return masks, positions_all, settings, iterations_all, mask_iters
+    return masks, positions_all, settings, iterations_data
 
 
-def test_adjust_masks():
-    masks_data, positions_all, settings, iterations_data, mask_iters = preprocessing()
-
+def plot_mask_adjustment(
+    output_dir, masks_data, positions_all, settings, iterations_data
+):
     spring_length_thresholds = [9] * 4
     new_growth_rates = [
         0.001152799,
@@ -748,7 +480,6 @@ def test_adjust_masks():
         positions_all,
         settings,
         masks_data,
-        mask_iters,
         iterations_data,
         0.5,
     )
@@ -762,56 +493,81 @@ def test_adjust_masks():
         masks_predicted,
         penalties,
     ) = objective_function(x0, *args, return_all=True, show_progressbar=True)
+    print(penalties)
 
-    fig, axs = plt.subplots(2, 2, figsize=(10, 8))
+    (output_dir / "mask_adjustments").mkdir(parents=True, exist_ok=True)
+    for mask_predicted, mask_adjusted, mask_data, mask_iter in tqdm(
+        zip(
+            [masks_predicted[i] for i in iterations_data],
+            masks_adjusted,
+            masks_data,
+            iterations_data,
+        ),
+        total=len(masks_adjusted),
+        desc="Plot Adjustments",
+    ):
+        fig, axs = plt.subplots(2, 2, figsize=(10, 8))
 
-    axs[0, 0].set_axis_off()
-    axs[0, 0].set_title("Mask Data")
-    axs[0, 1].set_axis_off()
-    axs[0, 1].set_title("Mask Predicted")
-    axs[1, 0].set_axis_off()
-    axs[1, 0].set_title("Mask Adjusted")
-    axs[1, 1].set_axis_off()
-    axs[1, 1].set_title("Diff")
+        axs[0, 0].set_axis_off()
+        axs[0, 0].set_title("Mask Data")
+        axs[0, 1].set_axis_off()
+        axs[0, 1].set_title("Mask Predicted")
+        axs[1, 0].set_axis_off()
+        axs[1, 0].set_title("Mask Adjusted")
+        axs[1, 1].set_axis_off()
+        axs[1, 1].set_title("Diff")
 
-    diff = crm.parents_diff_mask(
-        masks_predicted[0], masks_adjusted[0], color_to_cell, parent_map, 0.5
-    )
-
-    axs[0, 0].imshow(masks_data[0])
-
-    m = masks_data[0]
-    colors = np.unique(m)
-    for n, v in enumerate(colors):
-        x, y = np.where(m == v)
-        pos = np.mean([x, y], axis=1)
-        axs[0, 0].text(
-            pos[1], pos[0], n, color="gray", fontfamily="sans-serif", size=20
+        diff = crm.parents_diff_mask(
+            mask_predicted, mask_adjusted, color_to_cell, parent_map, 0.5
         )
 
-    m = masks_predicted[0]
-    for k, v in container.cell_to_color.items():
-        x, y = np.where(np.all(m == v, axis=2))
-        pos = np.mean([x, y], axis=1)
-        axs[0, 1].text(
-            pos[1], pos[0], k, color="white", fontfamily="sans-serif", size=10
-        )
+        axs[0, 0].imshow(mask_data)
 
-    axs[0, 1].imshow(masks_predicted[0])
+        def ident_to_text(ident):
+            try:
+                return f"D({ident[1]})"
+            except:
+                return f"I({ident[0]})"
 
-    m = masks_adjusted[0]
-    for k, v in cell_to_color.items():
-        x, y = np.where(np.all(m == v, axis=2))
-        pos = np.mean([x, y], axis=1)
-        axs[1, 0].text(
-            pos[1], pos[0], k, color="white", fontfamily="sans-serif", size=10
-        )
+        colors = list(sorted(np.unique(mask_data)))[1:]
+        for n, v in enumerate(colors):
+            x, y = np.where(mask_data == v)
+            pos = np.mean([x, y], axis=1)
+            axs[0, 0].text(
+                pos[1], pos[0], n + 1, color="white", fontfamily="sans-serif", size=10
+            )
 
-    axs[1, 0].imshow(masks_adjusted[0])
-    axs[1, 1].imshow(1 - diff, cmap="Grays")
+        for k, v in container.cell_to_color.items():
+            x, y = np.where(np.all(mask_predicted == v, axis=2))
+            pos = np.mean([x, y], axis=1)
+            axs[0, 1].text(
+                pos[1],
+                pos[0],
+                ident_to_text(k),
+                color="white",
+                fontfamily="sans-serif",
+                size=10,
+            )
 
-    fig.savefig("tmp.png")
-    exit()
+        axs[0, 1].imshow(mask_predicted)
+        axs[1, 0].imshow(mask_adjusted)
+
+        for k, v in cell_to_color.items():
+            x, y = np.where(np.all(mask_adjusted == v, axis=2))
+            pos = np.mean([x, y], axis=1)
+            axs[1, 0].text(
+                pos[1],
+                pos[0],
+                ident_to_text(k),
+                color="white",
+                fontfamily="sans-serif",
+                size=10,
+            )
+
+        axs[1, 1].imshow(1 - diff, cmap="Grays")
+
+        fig.savefig(output_dir / f"mask_adjustments/{mask_iter:06}.png")
+        plt.close(fig)
 
 
 def plot_time_evolution(
@@ -906,8 +662,8 @@ def plot_profiles(
                 bounds=bounds_reduced,
                 args=(xi, n, args),
                 disp=False,
-                maxiter=50,
-                popsize=20,
+                maxiter=10,
+                popsize=10,
                 mutation=(0.6, 1),
                 recombination=0.5,
                 workers=n_workers,
@@ -935,7 +691,6 @@ def plot_timings(
     positions_all,
     settings,
     masks_data,
-    mask_iters,
     iterations_data,
     output_dir,
     n_samples: int = 2,
@@ -949,9 +704,8 @@ def plot_timings(
                 positions_all,
                 settings,
                 masks_data,
-                mask_iters,
                 iterations_data,
-                parent_penalty=1.0,
+                parent_penalty=0.5,
                 return_times=True,
             )
         )
@@ -1021,8 +775,8 @@ def run_optimizer(
             bounds=bounds,
             args=args,
             disp=True,
-            maxiter=200,
-            popsize=20,
+            maxiter=4,
+            popsize=4,
             mutation=(0.3, 1.8),
             recombination=0.25,
             workers=n_workers,
@@ -1059,8 +813,6 @@ def plot_snapshots(
 
 
 def crm_divide_main():
-    test_adjust_masks()
-
     parser = argparse.ArgumentParser(
         description="Fits the Bacterial Rods model to a system of cells."
     )
@@ -1098,6 +850,16 @@ def crm_divide_main():
         help="Skip plotting of the timings",
     )
     parser.add_argument(
+        "--skip-mask-adjustment",
+        action="store_true",
+        help="Skip plotting of the adjusted masks",
+    )
+    parser.add_argument(
+        "--only-mask-adjustment",
+        action="store_true",
+        help="Only plot adjusted masks",
+    )
+    parser.add_argument(
         "-w",
         "--workers",
         type=int,
@@ -1123,7 +885,14 @@ def crm_divide_main():
     if pyargs.iteration is None:
         output_dir.mkdir(parents=True)
 
-    masks_data, positions_all, settings, iterations_data, mask_iters = preprocessing()
+    masks_data, positions_all, settings, iterations_data = preprocessing()
+
+    if not pyargs.skip_mask_adjustment or pyargs.only_mask_adjustment:
+        plot_mask_adjustment(
+            output_dir, masks_data, positions_all, settings, iterations_data
+        )
+        if pyargs.only_mask_adjustment:
+            exit()
 
     spring_length_thresholds = [9] * 4
     new_growth_rates = [
@@ -1136,13 +905,12 @@ def crm_divide_main():
         *spring_length_thresholds,
         *new_growth_rates,
     ]
-    bounds = [(4.3, 10)] * 4 + [(0.001, 0.002)] * 4
+    bounds = [(5, 15)] * 4 + [(0.0010, 0.0019)] * 4
     parent_penalty = 0.5
     args = (
         positions_all,
         settings,
         masks_data,
-        mask_iters,
         iterations_data,
         parent_penalty,
     )
@@ -1206,7 +974,6 @@ def crm_divide_main():
             positions_all,
             settings,
             masks_data,
-            mask_iters,
             iterations_data,
             output_dir,
         )
