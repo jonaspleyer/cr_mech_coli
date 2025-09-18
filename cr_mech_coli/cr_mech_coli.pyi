@@ -17,10 +17,10 @@ class MiePotentialF32:
     :url:`https://cellular-raza.com/docs/cellular_raza_building_blocks/struct.MiePotentialF32.html`.
     """
 
-    radius: float
-    potential_stiffness: float
-    cutoff: float
-    strength: float
+    radius: np.float32
+    potential_stiffness: np.float32
+    cutoff: np.float32
+    strength: np.float32
 
     @staticmethod
     def __new__(
@@ -34,10 +34,10 @@ class MorsePotentialF32:
     Famous :ref:`Morse <https://doi.org/10.1103/PhysRev.34.57>` potential for diatomic molecules.
     """
 
-    radius: float
-    potential_stiffness: float
-    cutoff: float
-    strength: float
+    radius: np.float32
+    potential_stiffness: np.float32
+    cutoff: np.float32
+    strength: np.float32
 
     @staticmethod
     def __new__(cls, **kwargs) -> MorsePotentialF32: ...
@@ -49,10 +49,10 @@ class AgentSettings:
 
     mechanics: RodMechanicsSettings
     interaction: MorsePotentialF32
-    growth_rate: float
-    growth_rate_distr: tuple[float, float]
-    spring_length_threshold: float
-    neighbor_reduction: tuple[int, float] | None
+    growth_rate: np.float32
+    growth_rate_distr: tuple[np.float32, float]
+    spring_length_threshold: np.float32
+    neighbor_reduction: tuple[int, np.float32] | None
 
     @staticmethod
     def __new__(cls, **kwargs) -> AgentSettings: ...
@@ -90,18 +90,18 @@ class Configuration:
     agent_settings: AgentSettings
     n_agents: int
     n_threads: int
-    t0: float
-    dt: float
-    t_max: float
+    t0: np.float32
+    dt: np.float32
+    t_max: np.float32
     n_saves: int
     progressbar: str | None
-    domain_size: tuple[float, float]
-    domain_height: float
+    domain_size: tuple[np.float32, np.float32]
+    domain_height: np.float32
     n_voxels: tuple[int, int]
     rng_seed: int
-    gel_pressure: float
-    surface_friction: float
-    surface_friction_distance: float
+    gel_pressure: np.float32
+    surface_friction: np.float32
+    surface_friction_distance: np.float32
     storage_options: list[StorageOption]
     storage_location: Path | str
     storage_suffix: Path | str | None = None
@@ -123,10 +123,10 @@ class RodAgent:
 
     pos: np.ndarray
     vel: np.ndarray
-    radius: float
-    growth_rate: float
-    spring_length_threshold: float
-    damping: float
+    radius: np.float32
+    growth_rate: np.float32
+    spring_length_threshold: np.float32
+    damping: np.float32
     @staticmethod
     def __new__(
         cls,
@@ -152,11 +152,11 @@ class RodMechanicsSettings:
 
     pos: np.ndarray
     vel: np.ndarray
-    diffusion_constant: float
-    spring_tension: float
-    rigidity: float
-    spring_length: float
-    damping: float
+    diffusion_constant: np.float32
+    spring_tension: np.float32
+    rigidity: np.float32
+    spring_length: np.float32
+    damping: np.float32
 
 class CellContainer:
     """\
@@ -209,8 +209,8 @@ def generate_positions(
     agent_settings: AgentSettings,
     config: Configuration,
     rng_seed: int = 0,
-    dx: tuple[float, float] = (0.0, 0.0),
-    randomize_positions: float = 0.0,
+    dx: tuple[np.float32, np.float32] = (np.float32(0.0), np.float32(0.0)),
+    randomize_positions: np.float32 = np.float32(0.0),
     n_vertices: int = 8,
 ) -> list[np.ndarray]:
     """\
@@ -221,7 +221,7 @@ def generate_positions(
         agent_settings(AgentSettings): See :class:`AgentSettings`
         config(Configuration): See :class:`Configuration`
         rng_seed(int): Seed for generating the random positions
-        dx(float): Spacing towards the domain boundary.
+        dx(np.float32): Spacing towards the domain boundary.
     """
     ...
 
@@ -230,8 +230,8 @@ def generate_agents(
     agent_settings: AgentSettings,
     config: Configuration,
     rng_seed: int = 0,
-    dx: tuple[float, float] = (0.0, 0.0),
-    randomize_positions: float = 0.0,
+    dx: tuple[np.float32, np.float32] = (np.float32(0.0), np.float32(0.0)),
+    randomize_positions: np.float32 = np.float32(0.0),
     n_vertices: int = 8,
 ) -> list[RodAgent]:
     """\
@@ -318,7 +318,7 @@ def parents_diff_mask(
     mask2: np.ndarray,
     color_to_cell: dict,
     parent_map: dict,
-    parent_penalty: float,
+    parent_penalty: np.float32 | float,
 ) -> np.ndarray:
     """Calculates the difference between two masks and applies a lower value where one cell is the
     daughter of the other.
@@ -327,7 +327,7 @@ def parents_diff_mask(
         mask1(np.ndarray): Mask of segmented cells at one time-point
         mask2(np.ndarray): Mask of segmented cells at other time-point
         cell_container(CellContainer): See :class:`CellContainer`
-        parent_penalty(float): Penalty value when one cell is daughter of other.
+        parent_penalty(np.float32): Penalty value when one cell is daughter of other.
             Should be between 0 and 1.
     """
     ...
