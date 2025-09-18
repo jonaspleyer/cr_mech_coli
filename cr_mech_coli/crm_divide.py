@@ -335,7 +335,7 @@ def objective_function(
     parent_penalty=0.5,
     return_all=False,
     return_times=False,
-    error_cost=10.0,
+    error_cost=1e6,
     show_progressbar=False,
 ):
     times = [(time.perf_counter_ns(), "Start")]
@@ -436,13 +436,12 @@ def objective_function(
 
     n_cells = len(container.get_cells_at_iteration(iterations_simulation[-1]))
 
-    cost = np.sum(penalties)
+    cost = np.sum(penalties) * (1 + (n_cells - 10) ** 2) ** 0.5
 
     if return_times:
         return times
 
-    x = np.mean(masks_predicted)
-    print(f"f(x)={cost:.20}  Final Cells: {n_cells} {x}")
+    print(f"f(x)={cost:>10.1f}  Final Cells: {n_cells:2}")
     return cost
 
 
