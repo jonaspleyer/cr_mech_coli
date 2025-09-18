@@ -43,7 +43,6 @@ import cv2 as cv
 
 import cr_mech_coli as crm
 from cr_mech_coli import crm_fit
-# from cr_mech_coli.crm_divide.crm_divide_rs import adjust_masks
 
 data_dir = Path("data/crm_divide/0001/")
 
