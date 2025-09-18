@@ -8,7 +8,6 @@ mod cell_container;
 mod config;
 mod fitting;
 mod imaging;
-mod simulation;
 
 /// Fit data to publication by (Amir et. al. 2014)
 pub mod crm_amir;
@@ -18,6 +17,8 @@ pub mod crm_estimate_params;
 pub mod crm_fit;
 /// Predict Multilayer Behaviour
 pub mod crm_multilayer;
+/// Functions to execute simulations
+pub mod simulation;
 
 pub use agent::*;
 pub use cell_container::*;
