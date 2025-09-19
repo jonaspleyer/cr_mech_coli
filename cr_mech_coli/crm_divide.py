@@ -339,6 +339,7 @@ def objective_function(
     return_all=False,
     return_times=False,
     show_progressbar=False,
+    print_costs=True,
 ):
     times = [(time.perf_counter_ns(), "Start")]
 
@@ -376,7 +377,8 @@ def objective_function(
             masks_data, positions_all, iterations_data, container, settings
         )
     except Exception as e:
-        print(f"Error -> f(x)={ERROR_COST} error: {e}")
+        if print_costs:
+            print(f"Error -> f(x)={ERROR_COST} error: {e}")
         return ERROR_COST
 
     update_time("Masks\n(Adjust)")
@@ -442,9 +444,10 @@ def objective_function(
     n_cells = len(container.get_cells_at_iteration(iterations_simulation[-1]))
     cost = np.sum(penalties) * (1 + (n_cells - 10) ** 2) ** 0.5
 
-    print(
-        f"f(x)={cost:>10.1f}  Final Cells: {n_cells:2} Penalties: {np.sum(penalties):<10.1f}"
-    )
+    if print_costs:
+        print(
+            f"f(x)={cost:>10.1f}  Final Cells: {n_cells:2} Penalties: {np.sum(penalties):<10.1f}"
+        )
     return cost
 
 
