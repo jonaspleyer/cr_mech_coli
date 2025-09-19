@@ -71,6 +71,19 @@ management.
 
 ```
 uv pip install maturin
+```
+
+To install `cr_mech_coli`, you can either install it directly from pypi.org
+
+```
+uv pip install cr_mech_coli
+```
+
+or by cloning the github repository.
+
+```
+git clone https://github.com/jonaspleyer/cr_mech_coli
+cd cr_mech_coli
 maturin develop -r --uv
 ```
 
