@@ -660,65 +660,92 @@ def plot_time_evolution(
     plt.close(fig)
 
 
-def optimize_around_single(params, param_single, n, args):
-    all_params = np.array([*params[:n], param_single, *params[n + 1 :]])
-    return objective_function(all_params, *args)
+def __optimize_around_single(params, param_single, n, args):
+    all_params = np.array([*params[:n], param_single, *params[n:]])
+    return objective_function(all_params, *args, print_costs=False)
+
+
+def __calculate_single_cost(n, p, parameters, bounds, args):
+    index = np.arange(len(parameters)) != n
+    x0 = np.array(parameters)[index]
+    bounds_reduced = np.array(bounds)[index]
+
+    assert len(x0) + 1 == len(parameters)
+    assert len(bounds_reduced) + 1 == len(bounds)
+
+    res = sp.optimize.minimize(
+        __optimize_around_single,
+        x0=x0,
+        method="Nelder-Mead",
+        bounds=bounds_reduced,
+        args=(p, n, args),
+        options={
+            "disp": False,
+            "maxiter": 3,
+            "maxfev": 3,
+        },
+    )
+
+    return res.fun
 
 
 def plot_profiles(
-    parameters,
+    parameters: list[float],
     bounds,
     final_cost: float,
     args,
     output_dir,
     n_workers: int,
 ):
-    for n, (p, (b_lower, b_upper)) in tqdm(
-        enumerate(zip(parameters, bounds)),
-        total=len(parameters),
-        desc="Plotting Profiles",
+    from itertools import repeat
+
+    pool = mp.Pool(n_workers)
+
+    n_samples = 60
+    b_low = np.array(bounds)[:, 0]
+    b_high = np.array(bounds)[:, 1]
+    n_param = np.repeat([np.arange(len(parameters))], n_samples, axis=0)
+    samples = np.linspace(b_low, b_high, n_samples)
+
+    arglist = tqdm(
+        zip(
+            n_param.flatten(),
+            samples.flatten(),
+            repeat(parameters),
+            repeat(bounds),
+            repeat(args),
+        ),
+        total=int(np.prod(n_param.shape)),
+        desc="Calculating Costs",
+    )
+
+    costs = pool.starmap(__calculate_single_cost, arglist)
+    costs = np.array(costs).reshape((n_samples, len(parameters)))
+
+    for n, p, costs_ind, samples_ind in zip(
+        range(len(parameters)), parameters, costs.T, samples.T
     ):
-        costs = []
-        index = np.arange(len(parameters)) != n
-        dx = (b_upper - b_lower) / 50
-        n_samples = 10
-        # x = (p + np.arange(-3, 3) * dx)[np.arange(-3, 3) != 0]
-        x = np.linspace(
-            max(p - dx, b_lower), min(p + dx, b_upper), n_samples, endpoint=True
-        )
-        for xi in x:
-            x0 = np.array(parameters)[index]
-            bounds_reduced = np.array(bounds)[index]
-            assert len(x0) + 1 == len(parameters)
-            assert len(bounds_reduced) + 1 == len(bounds)
-
-            res = sp.optimize.differential_evolution(
-                optimize_around_single,
-                x0=x0,
-                bounds=bounds_reduced,
-                args=(xi, n, args),
-                disp=False,
-                maxiter=20,
-                popsize=10,
-                mutation=(0.6, 1),
-                recombination=0.5,
-                workers=n_workers,
-                updating="deferred",
-            )
-
-            costs.append(res.fun)
-
         fig, ax = plt.subplots(figsize=(8, 8))
         crm.configure_ax(ax)
-        x = np.array([parameters[n], *x])
-        y = np.array([final_cost, *costs])
+
+        # Add previously calculated results
+        x = np.array([p, *samples_ind])
+        y = np.array([final_cost, *costs_ind])
+
+        # Filter out values that indicate an error
+        x = x[y < ERROR_COST]
+        y = y[y < ERROR_COST]
+
+        # Sort entries by value of the parameter
         inds = np.argsort(x)
         x = x[inds]
         y = y[inds]
 
         ax.plot(x, y, c=crm.plotting.COLOR3, marker="x")
         ax.scatter([parameters[n]], [final_cost], c=crm.plotting.COLOR5)
-        fig.savefig(output_dir / f"profile-{n:010}.png")
+        odir = output_dir / "profiles"
+        odir.mkdir(parents=True, exist_ok=True)
+        fig.savefig(odir / f"profile-{n:06}.png")
         plt.close(fig)
 
 
