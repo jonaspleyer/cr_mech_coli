@@ -326,6 +326,9 @@ def mask_iterator(iterations_data, new_masks, masks_predicted, return_all):
             yield m1, m2
 
 
+ERROR_COST = 1e6
+
+
 def objective_function(
     spring_length_thresholds_and_new_growth_rates,
     positions_all,
@@ -335,7 +338,6 @@ def objective_function(
     parent_penalty=0.5,
     return_all=False,
     return_times=False,
-    error_cost=1e6,
     show_progressbar=False,
 ):
     times = [(time.perf_counter_ns(), "Start")]
@@ -364,7 +366,7 @@ def objective_function(
     except ValueError or KeyError as e:
         if return_all:
             raise e
-        return error_cost
+        return ERROR_COST
     iterations_simulation = np.array(container.get_all_iterations()).astype(int)
 
     update_time("Predict")
@@ -374,8 +376,8 @@ def objective_function(
             masks_data, positions_all, iterations_data, container, settings
         )
     except Exception as e:
-        print(f"Error -> f(x)={error_cost:.20} error: {e}")
-        return error_cost
+        print(f"Error -> f(x)={ERROR_COST} error: {e}")
+        return ERROR_COST
 
     update_time("Masks\n(Adjust)")
 
