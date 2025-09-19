@@ -367,7 +367,7 @@ def objective_function(
         return error_cost
     iterations_simulation = np.array(container.get_all_iterations()).astype(int)
 
-    update_time("Prediction")
+    update_time("Predict")
 
     try:
         new_masks, parent_map, cell_to_color, color_to_cell = adjust_masks(
@@ -377,7 +377,7 @@ def objective_function(
         print(f"Error -> f(x)={error_cost:.20} error: {e}")
         return error_cost
 
-    update_time("Mask (Adjust)")
+    update_time("Masks\n(Adjust)")
 
     iters_filtered = np.array([iterations_simulation[i] for i in iterations_data])
     masks_predicted = [
@@ -395,7 +395,7 @@ def objective_function(
         )
     ]
 
-    update_time("Mask (Render)")
+    update_time("Masks\n(Render)")
 
     # If we return all we need to filter the generated masks
     if return_all:
@@ -421,7 +421,7 @@ def objective_function(
 
     penalties = np.sum(diff_masks, axis=(1, 2))
 
-    update_time("Penalties")
+    update_time("Compare")
 
     if return_all:
         return (
