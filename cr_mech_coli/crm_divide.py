@@ -650,8 +650,8 @@ def plot_time_evolution(
     )
     ax.set_ylabel("Cost Function")
     ax.set_xlabel("Time [h]")
-    fig.savefig(output_dir / "crm_divide.pdf")
-    fig.savefig(output_dir / "crm_divide.png")
+    fig.savefig(output_dir / "time-evolution.pdf")
+    fig.savefig(output_dir / "time-evolution.png")
     plt.close(fig)
 
 
@@ -724,7 +724,7 @@ def plot_timings(
     masks_data,
     iterations_data,
     output_dir,
-    n_samples: int = 2,
+    n_samples: int = 3,
 ):
     times = []
     for _ in tqdm(range(n_samples), total=n_samples, desc="Measure Timings"):
@@ -744,25 +744,29 @@ def plot_timings(
     data = np.array(
         [[times[i][j][0] for j in range(len(times[0]))] for i in range(len(times))]
     )
-    data = (data[:, 1:] - data[:, :-1]) / 1e6
+    data = (data[:, 1:] - data[:, :-1]) / 1e9
     mean = np.mean(data, axis=0)
     ind = np.argsort(mean)[::-1]
     mean = mean[ind]
+    dmean = np.std(data, axis=0)[ind]
     labels = np.array([t[1] for t in times[0][1:]])[ind]
     perc = mean / np.sum(mean)
+    dperc = (
+        (dmean / np.sum(mean)) ** 2 + (np.sum(dmean) * mean / np.sum(mean) ** 2) ** 2
+    ) ** 0.5
 
     fig, ax = plt.subplots(figsize=(8, 8))
+    ax.set_ylim(0, np.max(mean) * 1.15)
     crm.configure_ax(ax)
     b = ax.bar(labels, mean, color=crm.plotting.COLOR3)
     ax.bar_label(
         b,
-        [f"{100 * p:5.3}%" for p in perc],
-        label_type="center",
+        [f"{100 * p:.2f}%\n±{100 * dp:.2f}%" for p, dp in zip(perc, dperc)],
+        label_type="edge",
         color=crm.plotting.COLOR5,
         weight="bold",
     )
-    # ax.set_yscale("log")
-    ax.set_ylabel("Time [ms]")
+    ax.set_ylabel("Time [s]")
     fig.savefig(output_dir / "timings.pdf")
     fig.savefig(output_dir / "timings.png")
 
