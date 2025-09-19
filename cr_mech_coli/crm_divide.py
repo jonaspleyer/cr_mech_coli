@@ -495,12 +495,12 @@ def preprocessing(n_masks=None):
 def plot_mask_adjustment(
     output_dir, masks_data, positions_all, settings, iterations_data
 ):
-    spring_length_thresholds = [9] * 4
+    spring_length_thresholds = [15] * 4
     new_growth_rates = [
-        0.001152799,
-        0.001410604,
-        0.0018761827,
-        0.0016834959,
+        0.0025,
+        0.0025,
+        0.0025,
+        0.0025,
     ]
     x0 = [
         *spring_length_thresholds,
@@ -936,7 +936,7 @@ def crm_divide_main():
         *spring_length_thresholds,
         *new_growth_rates,
     ]
-    bounds = [(5, 15)] * 4 + [(0.0010, 0.0019)] * 4
+    bounds = [(5, 15)] * 4 + [(0.001, 0.01)] * 4
     parent_penalty = 0.5
     args = (
         positions_all,
