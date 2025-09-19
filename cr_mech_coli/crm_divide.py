@@ -434,14 +434,15 @@ def objective_function(
             penalties,
         )
 
-    n_cells = len(container.get_cells_at_iteration(iterations_simulation[-1]))
-
-    cost = np.sum(penalties) * (1 + (n_cells - 10) ** 2) ** 0.5
-
     if return_times:
         return times
 
-    print(f"f(x)={cost:>10.1f}  Final Cells: {n_cells:2}")
+    n_cells = len(container.get_cells_at_iteration(iterations_simulation[-1]))
+    cost = np.sum(penalties) * (1 + (n_cells - 10) ** 2) ** 0.5
+
+    print(
+        f"f(x)={cost:>10.1f}  Final Cells: {n_cells:2} Penalties: {np.sum(penalties):<10.1f}"
+    )
     return cost
 
 
