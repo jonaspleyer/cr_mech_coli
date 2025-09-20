@@ -153,12 +153,12 @@ def render_snapshots():
         green = (np.uint8(44), np.uint8(189), np.uint8(25))
         agent = agents[sp][1].agent
         agent.pos = agent.pos[:, [0, 2, 1]]
-        cells = {(0, 0): (agent, None)}
+        cells = {crm.CellIdentifier.new_initial(0): (agent, None)}
         img = crm.imaging.render_pv_image(
             cells,
             render_settings,
             (parameters.domain_size, parameters.domain_size),
-            colors={(0, 0): green},
+            colors={crm.CellIdentifier.new_initial(0): green},
         )
         block_size = np.round(
             parameters.block_size / parameters.domain_size * img.shape[1]
