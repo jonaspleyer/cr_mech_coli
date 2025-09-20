@@ -689,6 +689,7 @@ def __calculate_single_cost(n, p, parameters, bounds, args):
 def plot_profiles(
     parameters: np.ndarray,
     bounds,
+    labels: list,
     final_cost: float,
     args,
     output_dir,
@@ -740,6 +741,7 @@ def plot_profiles(
 
         ax.plot(x, y, c=crm.plotting.COLOR3, marker="x")
         ax.scatter([parameters[n]], [final_cost], c=crm.plotting.COLOR5)
+        ax.set_title(labels[n])
         odir = output_dir / "profiles"
         odir.mkdir(parents=True, exist_ok=True)
         fig.savefig(odir / f"profile-{n:06}.png")
@@ -1022,9 +1024,20 @@ def crm_divide_main():
         )
 
     if not pyargs.skip_profiles:
+        labels = [
+            "Division Length 1",
+            "Division Length 2",
+            "Division Length 3",
+            "Division Length 4",
+            "Growth Rate 1",
+            "Growth Rate 2",
+            "Growth Rate 3",
+            "Growth Rate 4",
+        ]
         plot_profiles(
             final_parameters,
             bounds,
+            labels,
             final_cost,
             args,
             output_dir,
