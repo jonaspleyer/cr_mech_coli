@@ -1193,6 +1193,109 @@ non-identifiability~\cite{Raue2009} is present.
 % --------------------------------------------------------------------------------------------------
 \subsection{With Division (TODO)}
 
+In the next step, we extend our previously used time-series with additional images, which include
+cell division events which means that we now have to use the imaing-based comparison algorithm (see
+section~\ref{section:parameter-estimation}).
+A practical problem in extending the time series is that the segmentation algorithm was not able to
+properly segment the individual bacteria around the division event which meant that we had to omit
+parts of the snapshots, leaving us with only incomplete data.
+
+Since we have already optimized said system, we can reduce the computational demand by choosing the
+parameters which were obtained by our previous attempts and extend them with the parameters that the
+daughter cells will carry.
+In addition to assigning growth rates individually, but we also need to consider division lengths at
+which the bacteria split.
+Since our simulation involves the division of 4 cells into 8 new ones, in principle, this would lead
+us to a total of $8$ new growth rates and $4$ division lengths.
+But to decrease the size of the parameter space, we assume that the growth rates of the daughter
+cells are identical between every sibling, leaving us at only $4$ new growth rates and a total of
+$8$ parameters.
+Future approaches should aim to loosen this assumption, allowing to optimize every new growth rate.
+To optimize this system, we again used the same optimization approach by seed with samples generated
+by latin-hypercube~\cite{McKay1979}, then applying the differential evolution
+algorithm~\cite{Storn1997} and finally a local minimization with Nelder-Mead~\cite{Powell1973}.
+We used the value $0.5$ for the parent penalty, which aims to provide a smooth transition between
+not accounting for them and assigning full weighting to this difference.
+Figure~\ref{fig:celldiffs-progression-with-division} shows the difference between the cell mask as
+given by the data and the cell mask predicted by the best fit of our model.
+
+We can again calculate likelihood profiles for every optimized parameter.
+The results displayed in Figure~\ref{fig:likelihood-profiles-comparison-with-division} show that the
+values for the division lengths seem exhibit a decrease in steepness of the curve towards the left
+side of the estimated parameter.
+This can be attributed to the missing images which were not able to be segmented in our time series.
+These results highlight a reassuring finding, namely that the method of profile-likelihood is able
+to properly display this obvious lack of data.
+It could be argued that this leads to a non-identifiability for the first division length while the
+reamining parameters are still identifiable.
+Meanwhile, the growth rates of the daughters ...
+
+\begin{figure}
+    \centering
+    \begin{tikzonimage}[width=0.32\textwidth]
+        {figures/crm_divide/masks_diff/000000.png}%
+        \node at (0.025, 0.975)[anchor=north west, rectangle, draw, white, minimum width=15pt, minimum height=15pt]{\textbf{A}};
+    \end{tikzonimage}%
+    \hspace{0.01\textwidth}%
+    \begin{tikzonimage}[width=0.32\textwidth]
+        {figures/crm_divide/masks_diff/000010.png}%
+        \node at (0.025, 0.975)[anchor=north west, rectangle, draw, white, minimum width=15pt, minimum height=15pt]{\textbf{B}};
+    \end{tikzonimage}%
+    \hspace{0.01\textwidth}%
+    \begin{tikzonimage}[width=0.32\textwidth]
+        {figures/crm_divide/masks_diff/000020.png}%
+        \node at (0.025, 0.975)[anchor=north west, rectangle, draw, white, minimum width=15pt, minimum height=15pt]{\textbf{C}};
+    \end{tikzonimage}%
+    \caption{
+        Snapshots of differences between cell masks obtained from the data and predicted by the best
+        fit of our model at (A) the beginning (B) right before the division event (C) right after
+        the division event.
+        The optimization routine was able to fully mitigate the cost assigned due to parental
+        relationships which means that the fully-optimized result contains division lengths that
+        match the data.
+    }
+    \label{fig:celldiffs-progression-with-division}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \begin{tikzonimage}[width=0.25\textwidth]
+        {figures/crm_divide/profiles/profile-000000.png}%
+        \node at (0.15, 0.85)[anchor=north west, rectangle, draw, black, minimum width=15pt, minimum height=15pt]{\textbf{A}};
+    \end{tikzonimage}%
+    \begin{tikzonimage}[width=0.25\textwidth]
+        {figures/crm_divide/profiles/profile-000001.png}%
+        \node at (0.15, 0.85)[anchor=north west, rectangle, draw, black, minimum width=15pt, minimum height=15pt]{\textbf{B}};
+    \end{tikzonimage}%
+    \begin{tikzonimage}[width=0.25\textwidth]
+        {figures/crm_divide/profiles/profile-000002.png}%
+        \node at (0.15, 0.85)[anchor=north west, rectangle, draw, black, minimum width=15pt, minimum height=15pt]{\textbf{C}};
+    \end{tikzonimage}%
+    \begin{tikzonimage}[width=0.25\textwidth]
+        {figures/crm_divide/profiles/profile-000003.png}%
+        \node at (0.15, 0.85)[anchor=north west, rectangle, draw, black, minimum width=15pt, minimum height=15pt]{\textbf{D}};
+    \end{tikzonimage}\\
+    \begin{tikzonimage}[width=0.25\textwidth]
+        {figures/crm_divide/profiles/profile-000004.png}%
+        \node at (0.15, 0.85)[anchor=north west, rectangle, draw, black, minimum width=15pt, minimum height=15pt]{\textbf{E}};
+    \end{tikzonimage}%
+    \begin{tikzonimage}[width=0.25\textwidth]
+        {figures/crm_divide/profiles/profile-000005.png}%
+        \node at (0.15, 0.85)[anchor=north west, rectangle, draw, black, minimum width=15pt, minimum height=15pt]{\textbf{F}};
+    \end{tikzonimage}%
+    \begin{tikzonimage}[width=0.25\textwidth]
+        {figures/crm_divide/profiles/profile-000005.png}%
+        \node at (0.15, 0.85)[anchor=north west, rectangle, draw, black, minimum width=15pt, minimum height=15pt]{\textbf{G}};
+    \end{tikzonimage}%
+    \begin{tikzonimage}[width=0.25\textwidth]
+        {figures/crm_divide/profiles/profile-000005.png}%
+        \node at (0.15, 0.85)[anchor=north west, rectangle, draw, black, minimum width=15pt, minimum height=15pt]{\textbf{H}};
+    \end{tikzonimage}%
+    \caption{TODO}
+    \label{fig:likelihood-profiles-comparison-with-division}
+\end{figure}
+
+
 %###################################################################################################
 \section{Discussion (TODO)}
 \label{section:discussion}
