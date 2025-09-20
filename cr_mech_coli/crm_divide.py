@@ -499,10 +499,10 @@ def plot_mask_adjustment(
 ):
     spring_length_thresholds = [15] * 4
     new_growth_rates = [
-        0.0025,
-        0.0025,
-        0.0025,
-        0.0025,
+        0.001,
+        0.001,
+        0.001,
+        0.001,
     ]
     x0 = [
         *spring_length_thresholds,
@@ -678,8 +678,8 @@ def __calculate_single_cost(n, p, parameters, bounds, args):
         args=(p, n, args),
         options={
             "disp": False,
-            "maxiter": 3,
-            "maxfev": 3,
+            "maxiter": 12,
+            "maxfev": 12,
         },
     )
 
@@ -840,10 +840,11 @@ def run_optimizer(
             bounds=bounds,
             args=args,
             disp=True,
-            maxiter=30,
-            popsize=10,
-            mutation=(0.1, 1.5),
-            recombination=0.4,
+            maxiter=50,
+            popsize=15,
+            mutation=(0.3, 1.2),
+            recombination=0.6,
+            tol=0.0001,
             workers=n_workers,
             updating="deferred",
             polish=True,
@@ -959,18 +960,23 @@ def crm_divide_main():
         if pyargs.only_mask_adjustment:
             exit()
 
-    spring_length_thresholds = [9] * 4
+    spring_length_thresholds = [
+        8.1,
+        9.0,
+        7.2,
+        6.1,
+    ]
     new_growth_rates = [
-        0.001152799,
-        0.001410604,
-        0.0018761827,
-        0.0016834959,
+        0.0023,
+        0.0012,
+        0.0020,
+        0.0025,
     ]
     x0 = [
         *spring_length_thresholds,
         *new_growth_rates,
     ]
-    bounds = [(5, 15)] * 4 + [(0.001, 0.01)] * 4
+    bounds = [(5, 12)] * 4 + [(0.0000, 0.01)] * 4
     parent_penalty = 0.5
     args = (
         positions_all,
