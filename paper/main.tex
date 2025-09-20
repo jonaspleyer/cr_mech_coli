@@ -1016,11 +1016,14 @@ should be preferred.
 
 %###################################################################################################
 \section{Application to \textit{E.Coli.} growing on Agar}
+\label{section:application}
 
-With the previous works of extracting the positions (see section~\ref{section:data-extraction}) for
-individual cell-agents and the methods to estiamte parameters of our agents (see section~\ref{section:parameter-estimation}), we are now ready to apply them to showcase their usefulness.
-
-TODO explain what data we are using
+To show the usefulness of our previously developed methods (see
+section~\ref{section:parameter-estimation}), we will use them to estimate the parameters of a
+sequence of microscopic images of growing \texttt{E.Coli}.
+The data we use~\cite{https://doi.org/10.3203/iwf/k-129} (see
+section~\ref{section:data-code-availability}) has been automatically segmented with the
+omnipose~\cite{Cutler2022} algorithm which provides us with the necessary cell masks.
 
 % --------------------------------------------------------------------------------------------------
 \subsection{Individual Treatment}
