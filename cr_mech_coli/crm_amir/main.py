@@ -150,7 +150,7 @@ def render_snapshots():
     render_settings = crm.RenderSettings()
     render_settings.bg_brightness = 200
     for sp in save_points:
-        green = np.array([44 / 255, 189 / 255, 25 / 255])
+        green = (np.uint8(44), np.uint8(189), np.uint8(25))
         agent = agents[sp][1].agent
         agent.pos = agent.pos[:, [0, 2, 1]]
         cells = {(0, 0): (agent, None)}
