@@ -976,7 +976,7 @@ def crm_divide_main():
         *spring_length_thresholds,
         *new_growth_rates,
     ]
-    bounds = [(5, 12)] * 4 + [(0.0000, 0.01)] * 4
+    bounds = [(5, 12)] * 4 + [(0.0000, 0.006)] * 4
     parent_penalty = 0.5
     args = (
         positions_all,
