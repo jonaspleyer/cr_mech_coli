@@ -313,16 +313,6 @@ def predict(
     return container
 
 
-def mask_iterator(iterations_data, new_masks, masks_predicted, return_all):
-    if return_all:
-        for iter, new_mask in zip(iterations_data, new_masks):
-            yield new_mask, masks_predicted[iter]
-
-    else:
-        for m1, m2 in zip(new_masks, masks_predicted):
-            yield m1, m2
-
-
 ERROR_COST = 1e6
 
 
@@ -432,7 +422,6 @@ def objective_function(
             color_to_cell,
             container,
             masks_predicted,
-            penalties,
         )
 
     if return_times:
@@ -524,9 +513,7 @@ def plot_mask_adjustment(
         color_to_cell,
         container,
         masks_predicted,
-        penalties,
     ) = objective_function(x0, *args, return_all=True, show_progressbar=True)
-    print(penalties)
 
     (output_dir / "mask_adjustments").mkdir(parents=True, exist_ok=True)
     for mask_predicted, mask_adjusted, mask_data, mask_iter in tqdm(
@@ -819,21 +806,6 @@ def run_optimizer(
         final_parameters = result[:-1]
         final_cost = result[-1]
     else:
-        # lhs = sp.stats.qmc.LatinHypercube(
-        #     d=len(spring_length_thresholds_and_new_growth_rates)
-        # )
-        # b = np.array(bounds)
-        # samples = b[:, 0] + lhs.random(n=50) * (b[:, 1] - b[:, 0])
-
-        # pool_args = [(s, *args) for s in samples]
-        # costs = process_map(
-        #     calculate_single,
-        #     pool_args,
-        #     max_workers=n_workers,
-        #     desc="Finding Global Optimum",
-        # )
-        # final_parameters, final_cost = min(costs, key=lambda x: x[1])
-
         res = sp.optimize.differential_evolution(
             objective_function,
             x0=spring_length_thresholds_and_new_growth_rates,
@@ -1002,7 +974,6 @@ def crm_divide_main():
         color_to_cell,
         container,
         masks_predicted,
-        _,
     ) = objective_function(
         final_parameters, *args, return_all=True, show_progressbar=True
     )
