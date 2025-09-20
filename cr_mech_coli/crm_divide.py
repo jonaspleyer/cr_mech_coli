@@ -54,12 +54,9 @@ def adjust_masks(
     positions_all: list[np.ndarray[tuple[int, int, int], np.dtype[np.float32]]],
     iterations_data: list[int],
     container: crm.CellContainer,
-    settings: crm_fit.Settings,
-    show_progress=False,
 ):
     sim_iterations = np.array(container.get_all_iterations())
     sim_iterations_subset = np.array([sim_iterations[i] for i in iterations_data])
-    sim_idents_initial = container.get_cells_at_iteration(sim_iterations[0]).keys()
     sim_idents_all = container.get_all_identifiers()
     sim_daughter_map = container.get_daughter_map()
 
@@ -374,7 +371,7 @@ def objective_function(
 
     try:
         new_masks, parent_map, cell_to_color, color_to_cell = adjust_masks(
-            masks_data, positions_all, iterations_data, container, settings
+            masks_data, positions_all, iterations_data, container
         )
     except Exception as e:
         if print_costs:
@@ -690,7 +687,7 @@ def __calculate_single_cost(n, p, parameters, bounds, args):
 
 
 def plot_profiles(
-    parameters: list[float],
+    parameters: np.ndarray,
     bounds,
     final_cost: float,
     args,
@@ -761,7 +758,6 @@ def plot_timings(
     times = []
     for _ in tqdm(range(n_samples), total=n_samples, desc="Measure Timings"):
         times.append(
-            # [("p0", 1 * n), ("p1", 2 * n), ("p2", 3 * n)]
             objective_function(
                 parameters,
                 positions_all,
@@ -994,11 +990,11 @@ def crm_divide_main():
     (
         masks_adjusted,
         parent_map,
-        cell_to_color,
+        _,
         color_to_cell,
         container,
         masks_predicted,
-        penalties,
+        _,
     ) = objective_function(
         final_parameters, *args, return_all=True, show_progressbar=True
     )
