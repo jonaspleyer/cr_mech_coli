@@ -812,14 +812,16 @@ def run_optimizer(
             bounds=bounds,
             args=args,
             disp=True,
-            maxiter=50,
+            maxiter=100,
             popsize=15,
-            mutation=(0.3, 1.2),
+            mutation=(0.0, 1.5),
             recombination=0.6,
             tol=0.0001,
             workers=n_workers,
             updating="deferred",
             polish=True,
+            init="latinhypercube",
+            strategy="best1bin",
         )
         final_parameters = res.x
         final_cost = res.fun
@@ -933,22 +935,22 @@ def crm_divide_main():
             exit()
 
     spring_length_thresholds = [
-        8.1,
-        9.0,
-        7.2,
-        6.1,
+        9.405841188088112759e00,
+        1.103879179742345329e01,
+        9.277040994277374608e00,
+        7.600778468661159692e00,
     ]
     new_growth_rates = [
-        0.0023,
-        0.0012,
-        0.0020,
-        0.0025,
+        2.186928453188154847e-03,
+        4.834987621055546192e-04,
+        1.669060863394238470e-03,
+        2.300937616285135622e-03,
     ]
     x0 = [
         *spring_length_thresholds,
         *new_growth_rates,
     ]
-    bounds = [(5, 12)] * 4 + [(0.0000, 0.006)] * 4
+    bounds = [(5, 12)] * 4 + [(0.0000, 0.004)] * 4
     parent_penalty = 0.5
     args = (
         positions_all,
