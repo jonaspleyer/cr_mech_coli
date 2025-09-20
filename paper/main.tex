@@ -547,36 +547,8 @@ the vertex $\vec{w}_i,\vec{w}_{i+1}$ with relative strength $(1-q)$ and $q$.
 
 \begin{equation}
     \vec{F}_{i,\text{External}} = \vec{F}(\vec{x}_i,\vec{p})
-    \label{eq:cell-force-external}
 \end{equation}
 
-The specific choice of interaction potential plays of course a crucial role for the dynamics of the
-agents.
-But we cannot expect to simply know the shape and parameters of this potential.
-Thus, we would like to experiment with various interaction potentials in order to quantify their
-ability to produce accurate results.
-We utilize two distinct potentials that are both able to capture the essence of our interactions by
-providing a short-range repulsive part and a long-ranged attractive component.
-
-\paragraph{Morse Potential}
-The morse potential~\cite{Morse1929} is a common example of numerically inexpensive interaction
-potential.
-It was originally designed to describe the interaction of diatomic molecules but has since found use
-in other areas~\cite{Breitwieser2021}.
-It contains a repulsive and attractive part and is bound from above which makes it particularly
-suitable for numerical simulations since unbound potentials can lead to large numerical deviations
-thus compromising the prediction of the model.
-The potential is of the form
-\begin{equation}
-    V(r) = V_0\left(1-e^{-\lambda(r-(R_1+R_2))}\right)^2
-\end{equation}
-and has 3 parameters.
-The overall potential strength $V_0$, the radii of the particles $R_1,R_2$ and the potential
-stiffness $\lambda$ which controls the rate of change as one travels along the radial axis.
-We employ a spatial cutoff which sets the interaction strength to $0$ when exceeding a distance
-$r\geq\xi$.
-
-\paragraph{Mie Potential}
 The Mie~\cite{Mie1903} potential is the generalization of the well-known
 Lennard-Jones~\cite{Jones1924} potential.
 It was also designed to describe the interactions of molecules but due to the flexible nature of its
@@ -595,6 +567,13 @@ where $C$ is a constant that depends on the two exponents $n,m$ that describe th
 the potential.
 The strength is given by $\epsilon$ and the radius is encoded in $\sigma =
 (m/n)^{1/(n-m)}(R_1+R_2)$ where $R_1,R_2$ are the radii of the two interacting particles.
+
+The specific choice of interaction potential plays a crucial role for the dynamics of the agents.
+Since we cannot expect to simply know the correct shape and parameters of this potential, it is
+desirable to experiment with various interaction potentials in order to quantify their
+ability to produce accurate results.
+While this study, only relies on the Mie Potential, our python package \texttt{cr\_mech\_coli}
+also implements the popular Morse potential~\cite{Morse1929} to model physical interactions.
 
 % --------------------------------------------------------------------------------------------------
 \subsection{Cell-Cycle}
@@ -1355,6 +1334,26 @@ dependency.
     \end{tabularx}
     \caption{TODO}
 \end{table}
+
+%###################################################################################################
+\subsection{Alternative Interaction Potential - Morse Potential}
+The morse potential~\cite{Morse1929} is a common example of numerically inexpensive interaction
+potential.
+It was originally designed to describe the interaction of diatomic molecules but has since found use
+in other areas~\cite{Breitwieser2021}.
+It contains a repulsive and attractive part and is bound from above which makes it particularly
+suitable for numerical simulations since unbound potentials can lead to large numerical deviations
+thus compromising the prediction of the model.
+The potential is of the form
+\begin{equation}
+    V(r) = V_0\left(1-e^{-\lambda(r-(R_1+R_2))}\right)^2
+\end{equation}
+and has 3 parameters.
+The overall potential strength $V_0$, the radii of the particles $R_1,R_2$ and the potential
+stiffness $\lambda$ which controls the rate of change as one travels along the radial axis.
+We employ a spatial cutoff which sets the interaction strength to $0$ when exceeding a distance
+$r\geq\xi$.
+
 
 %###################################################################################################
 \subsection{More Simulation Aspects (TODO)}
