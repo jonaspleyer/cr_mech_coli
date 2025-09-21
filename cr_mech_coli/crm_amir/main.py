@@ -175,6 +175,15 @@ def extract_mask(iteration, img, n_vertices: int, output_dir=None):
     return ret
 
 
+def calculate_x_shift(p, block_size):
+    y = p[-1, 0] - p[:, 0]
+    x = block_size <= y
+    ind = np.argmin(x)
+    s = (y[ind] - block_size) / (y[ind + 1] - y[ind])
+    x_pos = (s * p[ind] + (1 - s) * p[ind + 1])[1]
+    return x_pos
+
+
 def objective_function(
     params, parameters, positions, x0_bounds, return_positions=False
 ):
@@ -192,23 +201,23 @@ def objective_function(
     p0 = rods[0][1].agent.pos[:, np.array([0, 2])]
     p1 = rods[-1][1].agent.pos[:, np.array([0, 2])]
 
+    p0[:, 1] = parameters.domain_size - p0[:, 1]
+    p1[:, 1] = parameters.domain_size - p1[:, 1]
+
     # Shift such that start points align
-    pos_initial = np.array(positions[0, -1])
-    pos_initial[0] = parameters.domain_size - pos_initial[0]
 
     positions = np.array(positions)
-    positions[0, :, 0] = parameters.domain_size - positions[0, :, 0]
-    positions[1, :, 0] = parameters.domain_size - positions[1, :, 0]
+    positions = np.array([parameters.domain_size, 0]) - np.array([1, -1]) * positions
     positions = positions[:, ::-1]
-
-    p0[:, 1] *= -1
-    p1[:, 1] *= -1
-    shift_start = p0[0] - pos_initial
-    p0 -= shift_start
-    p1 -= shift_start
+    for i in range(positions.shape[0]):
+        positions[i, 0, 0] -= positions[i, 0, 0]
+    x_shift_positions0 = calculate_x_shift(positions[0], parameters.block_size)
+    x_shift_p0 = calculate_x_shift(p0, parameters.block_size)
+    x_shift_diff = x_shift_positions0 - x_shift_p0
+    positions[:, :, 1] -= x_shift_diff
 
     if return_positions:
-        return p0, p1, pos_initial, positions
+        return p0, p1, positions
 
     diff = p1 - positions[1]
     cost = np.linalg.norm(diff)
@@ -265,7 +274,7 @@ def compare_with_data(n_vertices: int = 20):
         "drag_force": (0.0000, 0.1, 2.0),  # drag_force,
         "damping": (0.000, 1.0, 0.1),  # damping,
         "growth_rate": (0.0, 0.01, 2.0),  # growth_rate,
-        "spring_tension": (0.0000, 0.01, 1.0),  # spring_tension
+        "spring_tension": (0.0000, 0.01, 10.0),  # spring_tension
     }
     # x0 = [x[1] for _, x in x0_bounds.items()]
     bounds = [(x[0], x[2]) for _, x in x0_bounds.items()]
@@ -276,23 +285,16 @@ def compare_with_data(n_vertices: int = 20):
         args=args,
         # method="L-BFGS-B",
         bounds=bounds,
-        maxiter=100,
-        popsize=40,
+        maxiter=50,
+        popsize=15,
         workers=1,
+        tol=0,
         polish=True,
         mutation=(0, 1.2),
     )
 
-    p0, p1, pos_initial, positions = objective_function(
-        res.x, *args, return_positions=True
-    )
-    x0 = np.array([p0[0][0], 0])
-    p0 -= x0
-    p1 -= x0
-    positions -= x0
-    pos_initial -= x0
+    p0, p1, positions = objective_function(res.x, *args, return_positions=True)
 
-    # for iter in
     fig, ax = plt.subplots(figsize=(8, 8))
     crm.configure_ax(ax)
     ax.plot(p0[:, 1], p0[:, 0], color="red", linestyle=":")
@@ -304,7 +306,8 @@ def compare_with_data(n_vertices: int = 20):
         linestyle="--",
         alpha=0.5,
     )
-    ax.scatter(pos_initial[1], pos_initial[0], marker="o", color="red")
+    x_shift = calculate_x_shift(positions[0], parameters.block_size)
+    ax.scatter(x_shift, parameters.block_size, marker="x", color="red")
     ax.plot(
         positions[1, :, 1],
         positions[1, :, 0],
@@ -312,8 +315,11 @@ def compare_with_data(n_vertices: int = 20):
         linestyle="--",
         alpha=0.5,
     )
-    ax.set_xlim(0, parameters.domain_size)
-    ax.set_ylim(0, parameters.domain_size)
+
+    # Define limits for plot
+    dx = parameters.domain_size / 4
+    ax.set_xlim(dx, parameters.domain_size - dx)
+    ax.set_ylim(0, parameters.domain_size - dx)
     ax.fill_between(
         [0, parameters.domain_size],
         [parameters.block_size] * 2,
@@ -373,68 +379,3 @@ def crm_amir_main():
     # render_snapshots(n_workers=30)
     compare_with_data()
     # plot_angles_and_endpoints()
-
-    exit()
-    data = [
-        0.0,
-        1.7604029,
-        3.5208058,
-        5.281209,
-        7.0416117,
-        8.801963,
-        10.562818,
-        -124423.516,
-        -373562.06,
-        -373527.75,
-        -124489.164,
-        11.903782,
-        20.623741,
-        45.0182,
-        38.470818,
-        23.69586,
-        24.615635,
-        19.253815,
-        41.713398,
-        57.175552,
-        2.3841858e-7,
-        2.3841858e-7,
-        2.3841858e-7,
-        2.3841858e-7,
-        2.3841858e-7,
-        2.3841858e-7,
-        2.3841858e-7,
-        2.3841858e-7,
-        2.3841858e-7,
-        2.3841858e-7,
-        2.3841858e-7,
-        2.3841858e-7,
-        2.3841858e-7,
-        2.3841858e-7,
-        2.3841858e-7,
-        2.3841858e-7,
-        2.3841858e-7,
-        2.3841858e-7,
-        2.3841858e-7,
-        2.3841858e-7,
-        29.607843,
-        29.607843,
-        29.607843,
-        29.607843,
-        29.607843,
-        29.607843,
-        29.607843,
-        29.607843,
-        29.607843,
-        29.607843,
-        29.607843,
-        24.894072,
-        29.607843,
-        30.308558,
-        17.888462,
-        21.743269,
-        25.747568,
-        46.064224,
-        29.607843,
-        31.204397,
-    ]
-    print(np.array(data).reshape((20, -1)))
