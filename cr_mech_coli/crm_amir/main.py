@@ -8,10 +8,12 @@ import scipy as sp
 import skimage as sk
 from tqdm import tqdm
 from pathlib import Path
+import multiprocessing as mp
 
 GREEN_COLOR = np.array([21.5 / 100, 86.6 / 100, 21.6 / 100]) * 255
 
 ERROR_COST = 1e6
+PIXELS_PER_MICRON = 102 / 10
 
 
 def calculate_angle(p: np.ndarray, parameters: Parameters) -> float:
@@ -188,12 +190,16 @@ def calculate_x_shift(p, block_size):
 
 def objective_function(
     params,
-    parameters,
+    set_params: dict,
     positions,
     x0_bounds,
-    return_positions=False,
+    return_all=False,
     print_output=False,
 ):
+    parameters = create_default_parameters(positions)
+    for k, v in set_params.items():
+        parameters.__setattr__(k, v)
+
     # Variable Parameters
     for name, value in zip(x0_bounds.keys(), params):
         parameters.__setattr__(name, value)
@@ -224,8 +230,8 @@ def objective_function(
     x_shift_diff = x_shift_positions0 - x_shift_p0
     positions[:, :, 1] -= x_shift_diff
 
-    if return_positions:
-        return p0, p1, positions
+    if return_all:
+        return p0, p1, positions, parameters
 
     diff = p1 - positions[1]
     cost = np.linalg.norm(diff)
@@ -239,9 +245,10 @@ def objective_function(
     return cost
 
 
-def plot_results(popt, parameters: Parameters, positions: np.ndarray, x0_bounds: dict):
-    args = (parameters, positions, x0_bounds)
-    p0, p1, positions = objective_function(popt, *args, return_positions=True)
+def plot_results(popt, positions: np.ndarray, x0_bounds: dict):
+    p0, p1, positions, parameters = objective_function(
+        popt, {}, positions, x0_bounds, return_all=True
+    )
 
     fig, ax = plt.subplots(figsize=(8, 8))
     crm.configure_ax(ax)
@@ -281,9 +288,13 @@ def plot_results(popt, parameters: Parameters, positions: np.ndarray, x0_bounds:
     plt.close(fig)
 
 
-def calculate_profile_point(n, pnew, popt, args, x0_bounds):
-    import copy
-
+def calculate_profile_point(
+    n: int,
+    pnew: float,
+    popt,
+    positions: np.ndarray,
+    x0_bounds: dict,
+):
     x0_bounds_new = {k: v for i, (k, v) in enumerate(x0_bounds.items()) if i != n}
     x0 = [p for i, p in enumerate(popt) if i != n]
     bounds = [(x[0], x[2]) for x in x0_bounds_new.values()]
@@ -291,31 +302,40 @@ def calculate_profile_point(n, pnew, popt, args, x0_bounds):
     assert len(x0_bounds_new) + 1 == len(x0_bounds)
     assert len(x0) == len(x0_bounds_new)
     assert len(x0) == len(bounds)
-    new_args = (args[0], copy.deepcopy(args[1]), x0_bounds_new)
-    new_args[0].__setattr__(list(x0_bounds.keys())[n], pnew)
+    # new_args = (args[0], copy.deepcopy(args[1]), x0_bounds_new)
+    # parameters = create_default_parameters(positions)
+    # parameters.__setattr__(list(x0_bounds.keys())[n], pnew)
 
     res = sp.optimize.differential_evolution(
         objective_function,
         # x0=x0,
-        args=new_args,
+        args=({list(x0_bounds.keys())[n]: pnew}, positions, x0_bounds_new),
         # method="L-BFGS-B",
         bounds=bounds,
-        maxiter=40,
-        popsize=20,
+        maxiter=60,
+        popsize=30,
         mutation=(0, 1.2),
         seed=n,
     )
     return res
 
 
-def plot_profile(n, popt, final_cost, args, x0_bounds):
+def plot_profile(
+    n: int, popt, final_cost: float, positions, x0_bounds: dict, workers: int
+):
     b_lower = list(x0_bounds.values())[n][0]
     b_upper = list(x0_bounds.values())[n][2]
     p_samples = np.linspace(b_lower, b_upper)
 
-    results = [
-        calculate_profile_point(n, pi, popt, args, x0_bounds) for pi in p_samples
-    ]
+    from itertools import repeat
+
+    arglist = zip(
+        repeat(n), p_samples, repeat(popt), repeat(positions), repeat(x0_bounds)
+    )
+
+    pool = mp.Pool(workers)
+    results = pool.starmap(calculate_profile_point, arglist)
+    # results = [calculate_profile_point(*r) for r in arglist]
     costs = np.array([r.fun for r in results])
 
     # Filter out results that have produced errors
@@ -345,29 +365,14 @@ def plot_profile(n, popt, final_cost, args, x0_bounds):
     plt.close(fig)
 
 
-def compare_with_data(n_vertices: int = 20):
-    # data_files = glob("data/crm_amir/elastic/positions/*.txt")
-    data_files = [
-        (24, "data/crm_amir/elastic/frames/000024.png"),
-        (32, "data/crm_amir/elastic/frames/000032.png"),
-    ]
-
-    pixels_per_micron = 102 / 10
-    positions = np.array(
-        [extract_mask(iter, cv.imread(df), n_vertices) for iter, df in data_files]
-    )
-
-    for n, p in enumerate(positions):
-        ind = np.argsort(p[:, 0])
-        positions[n] = p[ind] / pixels_per_micron
-
+def create_default_parameters(positions):
     parameters = generate_parameters()
-    parameters.n_vertices = n_vertices
+    parameters.n_vertices = positions.shape[1]
 
     # Define size of the domain
     # Image has 604 pixels and 100 pixles correspond to 10µm
-    parameters.domain_size = 604 / pixels_per_micron  # in µm
-    parameters.block_size = 200 / pixels_per_micron  # in µm
+    parameters.domain_size = 604 / PIXELS_PER_MICRON  # in µm
+    parameters.block_size = 200 / PIXELS_PER_MICRON  # in µm
 
     segments_data = np.linalg.norm(positions[:, 1:] - positions[:, :-1], axis=2)
     lengths_data = np.sum(segments_data, axis=1)
@@ -385,6 +390,24 @@ def compare_with_data(n_vertices: int = 20):
     parameters.t_max = 3
     parameters.save_interval = parameters.t_max
 
+    return parameters
+
+
+def compare_with_data(workers: int, n_vertices: int = 20):
+    # data_files = glob("data/crm_amir/elastic/positions/*.txt")
+    data_files = [
+        (24, "data/crm_amir/elastic/frames/000024.png"),
+        (32, "data/crm_amir/elastic/frames/000032.png"),
+    ]
+
+    positions = np.array(
+        [extract_mask(iter, cv.imread(df), n_vertices) for iter, df in data_files]
+    )
+
+    for n, p in enumerate(positions):
+        ind = np.argsort(p[:, 0])
+        positions[n] = p[ind] / PIXELS_PER_MICRON
+
     # Define which parameters should be optimized
     x0_bounds = {
         "rod_rigiditiy": (0.0001, 20.0, 250.0),  # rod_rigiditiy,
@@ -393,29 +416,30 @@ def compare_with_data(n_vertices: int = 20):
         "growth_rate": (0.0, 0.01, 3.0),  # growth_rate,
         "spring_tension": (0.0000, 0.01, 30.0),  # spring_tension
     }
+
     # x0 = [x[1] for _, x in x0_bounds.items()]
     bounds = [(x[0], x[2]) for _, x in x0_bounds.items()]
-    args = (parameters, positions, x0_bounds, False, True)
     res = sp.optimize.differential_evolution(
         objective_function,
         # x0,
-        args=args,
+        args=({}, positions, x0_bounds, False, True),
         # method="L-BFGS-B",
         bounds=bounds,
-        maxiter=50,
-        popsize=15,
-        workers=1,
+        maxiter=200,
+        popsize=30,
+        workers=workers,
         tol=0,
         polish=True,
         mutation=(0, 1.2),
+        seed=n_vertices,
     )
 
-    plot_results(res.x, parameters, positions, x0_bounds)
+    plot_results(res.x, positions, x0_bounds)
 
     for n in tqdm(
         range(len(x0_bounds)), total=len(x0_bounds), desc="Plotting Profiles"
     ):
-        plot_profile(n, res.x, res.fun, args, x0_bounds)
+        plot_profile(n, res.x, res.fun, positions, x0_bounds, workers)
 
 
 def __render_single_snapshot(iter, agent, parameters, render_settings):
@@ -462,5 +486,5 @@ def render_snapshots():
 def crm_amir_main():
     crm.plotting.set_mpl_rc_params()
     # render_snapshots()
-    compare_with_data()
+    compare_with_data(workers=30)
     # plot_angles_and_endpoints()
