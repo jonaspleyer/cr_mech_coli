@@ -7,9 +7,11 @@ import matplotlib as mpl
 import scipy as sp
 import skimage as sk
 from tqdm import tqdm
-import multiprocessing as mp
+from pathlib import Path
 
 GREEN_COLOR = np.array([21.5 / 100, 86.6 / 100, 21.6 / 100]) * 255
+
+ERROR_COST = 1e6
 
 
 def calculate_angle(p: np.ndarray, parameters: Parameters) -> float:
@@ -199,8 +201,9 @@ def objective_function(
     try:
         rods = run_sim(parameters)
     except ValueError:
-        print(f"ERROR Returning {1e6}")
-        return 1e6
+        if print_output:
+            print(f"ERROR Returning {ERROR_COST}")
+        return ERROR_COST
 
     # Get initial and final position of rod
     p0 = rods[0][1].agent.pos[:, np.array([0, 2])]
@@ -291,26 +294,34 @@ def calculate_profile_point(n, pnew, popt, args, x0_bounds):
     new_args = (args[0], copy.deepcopy(args[1]), x0_bounds_new)
     new_args[0].__setattr__(list(x0_bounds.keys())[n], pnew)
 
-    res = sp.optimize.minimize(
+    res = sp.optimize.differential_evolution(
         objective_function,
-        x0=x0,
+        # x0=x0,
         args=new_args,
-        method="L-BFGS-B",
+        # method="L-BFGS-B",
         bounds=bounds,
-        options={"maxiter": 50},
+        maxiter=40,
+        popsize=20,
+        mutation=(0, 1.2),
+        seed=n,
     )
     return res
 
 
 def plot_profile(n, popt, final_cost, args, x0_bounds):
     b_lower = list(x0_bounds.values())[n][0]
-    b_upper = list(x0_bounds.values())[n][1]
+    b_upper = list(x0_bounds.values())[n][2]
     p_samples = np.linspace(b_lower, b_upper)
 
     results = [
         calculate_profile_point(n, pi, popt, args, x0_bounds) for pi in p_samples
     ]
-    costs = [r.fun for r in results]
+    costs = np.array([r.fun for r in results])
+
+    # Filter out results that have produced errors
+    filt = costs != ERROR_COST
+    costs = costs[filt]
+    p_samples = p_samples[filt]
 
     p_samples = np.array([*p_samples, popt[n]])
     costs = np.array([*costs, final_cost])
@@ -326,6 +337,9 @@ def plot_profile(n, popt, final_cost, args, x0_bounds):
     name = list(x0_bounds.keys())[n].replace("_", " ")
     ax.set_xlabel(name)
     ax.set_ylabel("Cost Function")
+
+    Path("out/crm_amir/profiles/").mkdir(parents=True, exist_ok=True)
+
     fig.savefig(f"out/crm_amir/profiles/{name}.png")
     fig.savefig(f"out/crm_amir/profiles/{name}.pdf")
     plt.close(fig)
@@ -373,11 +387,11 @@ def compare_with_data(n_vertices: int = 20):
 
     # Define which parameters should be optimized
     x0_bounds = {
-        "rod_rigiditiy": (0.0001, 20.0, 200.0),  # rod_rigiditiy,
-        "drag_force": (0.0000, 0.1, 2.0),  # drag_force,
-        "damping": (0.000, 1.0, 0.1),  # damping,
-        "growth_rate": (0.0, 0.01, 2.0),  # growth_rate,
-        "spring_tension": (0.0000, 0.01, 10.0),  # spring_tension
+        "rod_rigiditiy": (0.0001, 20.0, 250.0),  # rod_rigiditiy,
+        "drag_force": (0.0000, 0.1, 10.0),  # drag_force,
+        "damping": (0.000, 1.0, 2.0),  # damping,
+        "growth_rate": (0.0, 0.01, 3.0),  # growth_rate,
+        "spring_tension": (0.0000, 0.01, 30.0),  # spring_tension
     }
     # x0 = [x[1] for _, x in x0_bounds.items()]
     bounds = [(x[0], x[2]) for _, x in x0_bounds.items()]
@@ -388,10 +402,8 @@ def compare_with_data(n_vertices: int = 20):
         args=args,
         # method="L-BFGS-B",
         bounds=bounds,
-        maxiter=5,
-        popsize=3,
-        # maxiter=50,
-        # popsize=15,
+        maxiter=50,
+        popsize=15,
         workers=1,
         tol=0,
         polish=True,
@@ -400,7 +412,9 @@ def compare_with_data(n_vertices: int = 20):
 
     plot_results(res.x, parameters, positions, x0_bounds)
 
-    for n in range(len(x0_bounds)):
+    for n in tqdm(
+        range(len(x0_bounds)), total=len(x0_bounds), desc="Plotting Profiles"
+    ):
         plot_profile(n, res.x, res.fun, args, x0_bounds)
 
 
