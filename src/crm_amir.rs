@@ -57,6 +57,10 @@ impl Parameters {
     fn new() -> Self {
         Self::default()
     }
+
+    fn __repr__(&self) -> String {
+        format!("{:#?}", self)
+    }
 }
 
 /// RodAgent which is based on the :class:`RodAgent` class.
