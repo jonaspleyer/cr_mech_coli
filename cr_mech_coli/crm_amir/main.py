@@ -245,9 +245,9 @@ def objective_function(
     return cost
 
 
-def plot_results(popt, positions: np.ndarray, x0_bounds: dict):
+def plot_results(popt, positions: np.ndarray, x0_bounds: dict, set_params):
     p0, p1, positions, parameters = objective_function(
-        popt, {}, positions, x0_bounds, return_all=True
+        popt, set_params, positions, x0_bounds, return_all=True
     )
 
     fig, ax = plt.subplots(figsize=(8, 8))
@@ -294,6 +294,7 @@ def calculate_profile_point(
     popt,
     positions: np.ndarray,
     x0_bounds: dict,
+    set_params,
 ):
     x0_bounds_new = {k: v for i, (k, v) in enumerate(x0_bounds.items()) if i != n}
     x0 = [p for i, p in enumerate(popt) if i != n]
@@ -309,7 +310,7 @@ def calculate_profile_point(
     res = sp.optimize.differential_evolution(
         objective_function,
         # x0=x0,
-        args=({list(x0_bounds.keys())[n]: pnew}, positions, x0_bounds_new),
+        args=(set_params | {list(x0_bounds.keys())[n]: pnew}, positions, x0_bounds_new),
         # method="L-BFGS-B",
         bounds=bounds,
         maxiter=60,
@@ -321,7 +322,14 @@ def calculate_profile_point(
 
 
 def plot_profile(
-    n: int, popt, final_cost: float, positions, x0_bounds: dict, workers: int
+    n: int,
+    popt,
+    final_cost: float,
+    positions,
+    x0_bounds: dict,
+    workers: int,
+    set_params,
+    output_dir,
 ):
     b_lower = list(x0_bounds.values())[n][0]
     b_upper = list(x0_bounds.values())[n][2]
@@ -330,7 +338,12 @@ def plot_profile(
     from itertools import repeat
 
     arglist = zip(
-        repeat(n), p_samples, repeat(popt), repeat(positions), repeat(x0_bounds)
+        repeat(n),
+        p_samples,
+        repeat(popt),
+        repeat(positions),
+        repeat(x0_bounds),
+        repeat(set_params),
     )
 
     pool = mp.Pool(workers)
@@ -358,10 +371,11 @@ def plot_profile(
     ax.set_xlabel(name)
     ax.set_ylabel("Cost Function")
 
-    Path("out/crm_amir/profiles/").mkdir(parents=True, exist_ok=True)
+    output_dir = Path(output_dir)
+    output_dir.mkdir(parents=True, exist_ok=True)
 
-    fig.savefig(f"out/crm_amir/profiles/{name}.png")
-    fig.savefig(f"out/crm_amir/profiles/{name}.pdf")
+    fig.savefig(output_dir / f"{name}.png")
+    fig.savefig(output_dir / f"{name}.pdf")
     plt.close(fig)
 
 
@@ -393,7 +407,13 @@ def create_default_parameters(positions):
     return parameters
 
 
-def compare_with_data(workers: int, n_vertices: int = 20):
+def compare_with_data(
+    x0_bounds,
+    workers: int,
+    set_params={},
+    n_vertices: int = 20,
+    output_dir="out/crm_amir/profiles-full/",
+):
     # data_files = glob("data/crm_amir/elastic/positions/*.txt")
     data_files = [
         (24, "data/crm_amir/elastic/frames/000024.png"),
@@ -408,21 +428,12 @@ def compare_with_data(workers: int, n_vertices: int = 20):
         ind = np.argsort(p[:, 0])
         positions[n] = p[ind] / PIXELS_PER_MICRON
 
-    # Define which parameters should be optimized
-    x0_bounds = {
-        "rod_rigiditiy": (0.0001, 20.0, 250.0),  # rod_rigiditiy,
-        "drag_force": (0.0000, 0.1, 10.0),  # drag_force,
-        "damping": (0.000, 1.0, 2.0),  # damping,
-        "growth_rate": (0.0, 0.01, 3.0),  # growth_rate,
-        "spring_tension": (0.0000, 0.01, 30.0),  # spring_tension
-    }
-
     # x0 = [x[1] for _, x in x0_bounds.items()]
     bounds = [(x[0], x[2]) for _, x in x0_bounds.items()]
     res = sp.optimize.differential_evolution(
         objective_function,
         # x0,
-        args=({}, positions, x0_bounds, False, True),
+        args=(set_params, positions, x0_bounds, False, True),
         # method="L-BFGS-B",
         bounds=bounds,
         maxiter=200,
@@ -434,12 +445,14 @@ def compare_with_data(workers: int, n_vertices: int = 20):
         seed=n_vertices,
     )
 
-    plot_results(res.x, positions, x0_bounds)
+    plot_results(res.x, positions, x0_bounds, set_params)
 
     for n in tqdm(
         range(len(x0_bounds)), total=len(x0_bounds), desc="Plotting Profiles"
     ):
-        plot_profile(n, res.x, res.fun, positions, x0_bounds, workers)
+        plot_profile(
+            n, res.x, res.fun, positions, x0_bounds, workers, set_params, output_dir
+        )
 
 
 def __render_single_snapshot(iter, agent, parameters, render_settings):
@@ -486,5 +499,32 @@ def render_snapshots():
 def crm_amir_main():
     crm.plotting.set_mpl_rc_params()
     # render_snapshots()
-    compare_with_data(workers=30)
+
+    # Define which parameters should be optimized
+    x0_bounds = {
+        "rod_rigiditiy": (0.0001, 20.0, 250.0),  # rod_rigiditiy,
+        "drag_force": (0.0000, 0.1, 10.0),  # drag_force,
+        "damping": (0.000, 1.0, 2.0),  # damping,
+        "growth_rate": (0.0, 0.01, 2.0),  # growth_rate,
+        "spring_tension": (0.0000, 0.01, 30.0),  # spring_tension
+    }
+    compare_with_data(x0_bounds, workers=30)
+
+    x0_bounds_reduced = {
+        "rod_rigiditiy": (0.0001, 20.0, 250.0),  # rod_rigiditiy,
+        "drag_force": (0.0000, 0.1, 10.0),  # drag_force,
+        # "damping": (0.000, 1.0, 2.0),  # damping,
+        "growth_rate": (0.0, 0.01, 2.0),  # growth_rate,
+        # "spring_tension": (0.0000, 0.01, 30.0),  # spring_tension
+    }
+    set_params = {
+        "damping": 1.0,
+        "spring_tension": 15,
+    }
+    compare_with_data(
+        x0_bounds_reduced,
+        workers=30,
+        set_params=set_params,
+        output_dir="out/crm_amir/profiles-reduced/",
+    )
     # plot_angles_and_endpoints()
