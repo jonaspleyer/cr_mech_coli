@@ -185,7 +185,12 @@ def calculate_x_shift(p, block_size):
 
 
 def objective_function(
-    params, parameters, positions, x0_bounds, return_positions=False
+    params,
+    parameters,
+    positions,
+    x0_bounds,
+    return_positions=False,
+    print_output=False,
 ):
     # Variable Parameters
     for name, value in zip(x0_bounds.keys(), params):
@@ -221,33 +226,37 @@ def objective_function(
 
     diff = p1 - positions[1]
     cost = np.linalg.norm(diff)
-    print(f"f(x)={cost:>7.4f}", end=" ")
-    for name, p in zip(x0_bounds.keys(), params):
-        print(f"{name}={p:.4f}", end=" ")
-    print()
+
+    if print_output:
+        print(f"f(x)={cost:>7.4f}", end=" ")
+        for name, p in zip(x0_bounds.keys(), params):
+            print(f"{name}={p:.4f}", end=" ")
+        print()
+
     return cost
 
 
-def plot_results(parameters, args):
-    p0, p1, positions = objective_function(parameters, *args, return_positions=True)
+def plot_results(popt, parameters: Parameters, positions: np.ndarray, x0_bounds: dict):
+    args = (parameters, positions, x0_bounds)
+    p0, p1, positions = objective_function(popt, *args, return_positions=True)
 
     fig, ax = plt.subplots(figsize=(8, 8))
     crm.configure_ax(ax)
-    ax.plot(p0[:, 1], p0[:, 0], color="red", linestyle=":")
-    ax.plot(p1[:, 1], p1[:, 0], color="blue", linestyle=":")
+    ax.plot(p0[:, 1], p0[:, 0], color=crm.plotting.COLOR5, linestyle=":")
+    ax.plot(p1[:, 1], p1[:, 0], color=crm.plotting.COLOR3, linestyle=":")
     ax.plot(
         positions[0, :, 1],
         positions[0, :, 0],
-        color="red",
+        color=crm.plotting.COLOR5,
         linestyle="--",
         alpha=0.5,
     )
     x_shift = calculate_x_shift(positions[0], parameters.block_size)
-    ax.scatter(x_shift, parameters.block_size, marker="x", color="red")
+    ax.scatter(x_shift, parameters.block_size, marker="x", color=crm.plotting.COLOR4)
     ax.plot(
         positions[1, :, 1],
         positions[1, :, 0],
-        color="blue",
+        color=crm.plotting.COLOR3,
         linestyle="--",
         alpha=0.5,
     )
@@ -269,8 +278,57 @@ def plot_results(parameters, args):
     plt.close(fig)
 
 
-def plot_profile(n, parameters, args, x0_bounds):
-    pass
+def calculate_profile_point(n, pnew, popt, args, x0_bounds):
+    import copy
+
+    x0_bounds_new = {k: v for i, (k, v) in enumerate(x0_bounds.items()) if i != n}
+    x0 = [p for i, p in enumerate(popt) if i != n]
+    bounds = [(x[0], x[2]) for x in x0_bounds_new.values()]
+
+    assert len(x0_bounds_new) + 1 == len(x0_bounds)
+    assert len(x0) == len(x0_bounds_new)
+    assert len(x0) == len(bounds)
+    new_args = (args[0], copy.deepcopy(args[1]), x0_bounds_new)
+    new_args[0].__setattr__(list(x0_bounds.keys())[n], pnew)
+
+    res = sp.optimize.minimize(
+        objective_function,
+        x0=x0,
+        args=new_args,
+        method="L-BFGS-B",
+        bounds=bounds,
+        options={"maxiter": 50},
+    )
+    return res
+
+
+def plot_profile(n, popt, final_cost, args, x0_bounds):
+    b_lower = list(x0_bounds.values())[n][0]
+    b_upper = list(x0_bounds.values())[n][1]
+    p_samples = np.linspace(b_lower, b_upper)
+
+    results = [
+        calculate_profile_point(n, pi, popt, args, x0_bounds) for pi in p_samples
+    ]
+    costs = [r.fun for r in results]
+
+    p_samples = np.array([*p_samples, popt[n]])
+    costs = np.array([*costs, final_cost])
+    ind = np.argsort(p_samples)
+    p_samples = p_samples[ind]
+    costs = costs[ind]
+
+    fig, ax = plt.subplots(figsize=(8, 8))
+    crm.configure_ax(ax)
+
+    ax.plot(p_samples, costs, color=crm.plotting.COLOR3)
+    ax.scatter(popt[n], final_cost, marker="x", color="red", alpha=0.7)
+    name = list(x0_bounds.keys())[n].replace("_", " ")
+    ax.set_xlabel(name)
+    ax.set_ylabel("Cost Function")
+    fig.savefig(f"out/crm_amir/profiles/{name}.png")
+    fig.savefig(f"out/crm_amir/profiles/{name}.pdf")
+    plt.close(fig)
 
 
 def compare_with_data(n_vertices: int = 20):
@@ -323,25 +381,27 @@ def compare_with_data(n_vertices: int = 20):
     }
     # x0 = [x[1] for _, x in x0_bounds.items()]
     bounds = [(x[0], x[2]) for _, x in x0_bounds.items()]
-    args = (parameters, positions, x0_bounds)
+    args = (parameters, positions, x0_bounds, False, True)
     res = sp.optimize.differential_evolution(
         objective_function,
         # x0,
         args=args,
         # method="L-BFGS-B",
         bounds=bounds,
-        maxiter=50,
-        popsize=15,
+        maxiter=5,
+        popsize=3,
+        # maxiter=50,
+        # popsize=15,
         workers=1,
         tol=0,
         polish=True,
         mutation=(0, 1.2),
     )
 
-    plot_results(res.x, args)
+    plot_results(res.x, parameters, positions, x0_bounds)
 
     for n in range(len(x0_bounds)):
-        plot_profile(n, res.x, args, x0_bounds)
+        plot_profile(n, res.x, res.fun, args, x0_bounds)
 
 
 def __render_single_snapshot(iter, agent, parameters, render_settings):
@@ -388,5 +448,5 @@ def render_snapshots():
 def crm_amir_main():
     crm.plotting.set_mpl_rc_params()
     # render_snapshots()
-    # compare_with_data()
-    plot_angles_and_endpoints()
+    compare_with_data()
+    # plot_angles_and_endpoints()
