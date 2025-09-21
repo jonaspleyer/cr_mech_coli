@@ -228,6 +228,51 @@ def objective_function(
     return cost
 
 
+def plot_results(parameters, args):
+    p0, p1, positions = objective_function(parameters, *args, return_positions=True)
+
+    fig, ax = plt.subplots(figsize=(8, 8))
+    crm.configure_ax(ax)
+    ax.plot(p0[:, 1], p0[:, 0], color="red", linestyle=":")
+    ax.plot(p1[:, 1], p1[:, 0], color="blue", linestyle=":")
+    ax.plot(
+        positions[0, :, 1],
+        positions[0, :, 0],
+        color="red",
+        linestyle="--",
+        alpha=0.5,
+    )
+    x_shift = calculate_x_shift(positions[0], parameters.block_size)
+    ax.scatter(x_shift, parameters.block_size, marker="x", color="red")
+    ax.plot(
+        positions[1, :, 1],
+        positions[1, :, 0],
+        color="blue",
+        linestyle="--",
+        alpha=0.5,
+    )
+
+    # Define limits for plot
+    dx = parameters.domain_size / 4
+    ax.set_xlim(dx, parameters.domain_size - dx)
+    ax.set_ylim(0, parameters.domain_size - dx)
+    ax.fill_between(
+        [0, parameters.domain_size],
+        [parameters.block_size] * 2,
+        color="gray",
+        alpha=0.4,
+    )
+    ax.set_xlabel("[µm]")
+    ax.set_ylabel("[µm]")
+    fig.savefig("out/crm_amir/fit-comparison.png")
+    fig.savefig("out/crm_amir/fit-comparison.pdf")
+    plt.close(fig)
+
+
+def plot_profile(n, parameters, args, x0_bounds):
+    pass
+
+
 def compare_with_data(n_vertices: int = 20):
     # data_files = glob("data/crm_amir/elastic/positions/*.txt")
     data_files = [
@@ -293,44 +338,10 @@ def compare_with_data(n_vertices: int = 20):
         mutation=(0, 1.2),
     )
 
-    p0, p1, positions = objective_function(res.x, *args, return_positions=True)
+    plot_results(res.x, args)
 
-    fig, ax = plt.subplots(figsize=(8, 8))
-    crm.configure_ax(ax)
-    ax.plot(p0[:, 1], p0[:, 0], color="red", linestyle=":")
-    ax.plot(p1[:, 1], p1[:, 0], color="blue", linestyle=":")
-    ax.plot(
-        positions[0, :, 1],
-        positions[0, :, 0],
-        color="red",
-        linestyle="--",
-        alpha=0.5,
-    )
-    x_shift = calculate_x_shift(positions[0], parameters.block_size)
-    ax.scatter(x_shift, parameters.block_size, marker="x", color="red")
-    ax.plot(
-        positions[1, :, 1],
-        positions[1, :, 0],
-        color="blue",
-        linestyle="--",
-        alpha=0.5,
-    )
-
-    # Define limits for plot
-    dx = parameters.domain_size / 4
-    ax.set_xlim(dx, parameters.domain_size - dx)
-    ax.set_ylim(0, parameters.domain_size - dx)
-    ax.fill_between(
-        [0, parameters.domain_size],
-        [parameters.block_size] * 2,
-        color="gray",
-        alpha=0.4,
-    )
-    ax.set_xlabel("[µm]")
-    ax.set_ylabel("[µm]")
-    fig.savefig("out/crm_amir/fit.png")
-    fig.savefig("out/crm_amir/fit.pdf")
-    plt.close(fig)
+    for n in range(len(x0_bounds)):
+        plot_profile(n, res.x, args, x0_bounds)
 
 
 def __render_single_snapshot(iter, agent, parameters, render_settings):
@@ -353,7 +364,7 @@ def __render_single_snapshot(iter, agent, parameters, render_settings):
     cv.imwrite(f"out/crm_amir/{iter:010}.png", np.swapaxes(img, 0, 1)[::-1])
 
 
-def render_snapshots(n_workers: int):
+def render_snapshots():
     parameters = generate_parameters()
     agents = run_sim(parameters)
 
@@ -376,6 +387,6 @@ def render_snapshots(n_workers: int):
 
 def crm_amir_main():
     crm.plotting.set_mpl_rc_params()
-    # render_snapshots(n_workers=30)
-    compare_with_data()
-    # plot_angles_and_endpoints()
+    # render_snapshots()
+    # compare_with_data()
+    plot_angles_and_endpoints()
