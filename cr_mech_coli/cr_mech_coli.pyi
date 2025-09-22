@@ -42,6 +42,12 @@ class MorsePotentialF32:
     @staticmethod
     def __new__(cls, **kwargs) -> MorsePotentialF32: ...
 
+class GrowthRateSetter:
+    g1: np.float32
+    g2: np.float32
+    mean: np.float32
+    std: np.float32
+
 class AgentSettings:
     """\
     Contains settings needed to specify properties of the :class:`RodAgent`
@@ -50,7 +56,7 @@ class AgentSettings:
     mechanics: RodMechanicsSettings
     interaction: MorsePotentialF32
     growth_rate: np.float32
-    growth_rate_distr: tuple[np.float32, float]
+    growth_rate_setter: GrowthRateSetter
     spring_length_threshold: np.float32
     neighbor_reduction: tuple[int, np.float32] | None
 
@@ -139,7 +145,7 @@ class RodAgent:
         spring_length=3.0,
         damping=1.0,
         growth_rate=0.01,
-        growth_rate_distr=(0.01, 0.0),
+        growth_rate_setter={"mean": 0.01, "std": 0.0},
         spring_length_threshold=6.0,
         neighbor_reduction=None,
     ): ...
