@@ -247,11 +247,13 @@ def predict(
         200.0,
         200.0,
     ],
-    growth_rate_distrs=[
-        (0.001152799, 0),
-        (0.001410604, 0),
-        (0.0018761827, 0),
-        (0.0016834959, 0),
+    growth_rates_new=[
+        (0.001152799, 0.001152799),
+        (0.001410604, 0.001410604),
+        (0.0018761827, 0.0018761827),
+        (0.0016834959, 0.0016834959),
+        (0, 0),
+        (0, 0),
     ],
     show_progress=False,
 ):
@@ -287,15 +289,15 @@ def predict(
             spring_length=spring_length(pos),
             damping=damping,
             growth_rate=growth_rate,
-            growth_rate_distr=growth_rate_distr,
+            growth_rate_setter={"g1": g1, "g2": g2},
             spring_length_threshold=spring_length_threshold,
             neighbor_reduction=None,
         )
-        for spring_length_threshold, pos, growth_rate, growth_rate_distr in zip(
+        for spring_length_threshold, pos, growth_rate, (g1, g2) in zip(
             spring_length_thresholds,
             initial_positions,
             growth_rates,
-            growth_rate_distrs,
+            growth_rates_new,
         )
     ]
 
@@ -333,11 +335,11 @@ def objective_function(
             times.append((now, message))
 
     spring_length_thresholds = spring_length_thresholds_and_new_growth_rates[:4]
-    new_growth_rates = [
-        *spring_length_thresholds_and_new_growth_rates[4:],
+    growth_rates_new = [
+        *np.array(spring_length_thresholds_and_new_growth_rates[4:]).reshape((-1, 2)),
         # These should not come into effect at all
-        0.0,
-        0.0,
+        (0.0, 0.0),
+        (0.0, 0.0),
     ]
 
     try:
@@ -345,7 +347,7 @@ def objective_function(
             positions_all[0],
             settings,
             spring_length_thresholds=[*spring_length_thresholds, 200.0, 200.0],
-            growth_rate_distrs=[(g, 0) for g in new_growth_rates],
+            growth_rates_new=growth_rates_new,
             show_progress=show_progressbar,
         )
     except ValueError or KeyError as e:
@@ -484,12 +486,7 @@ def plot_mask_adjustment(
     output_dir, masks_data, positions_all, settings, iterations_data
 ):
     spring_length_thresholds = [15] * 4
-    new_growth_rates = [
-        0.001,
-        0.001,
-        0.001,
-        0.001,
-    ]
+    new_growth_rates = [0.001] * 8
     x0 = [
         *spring_length_thresholds,
         *new_growth_rates,
@@ -939,15 +936,19 @@ def crm_divide_main():
     ]
     new_growth_rates = [
         2.186928453188154847e-03,
+        2.186928453188154847e-03,
+        4.834987621055546192e-04,
         4.834987621055546192e-04,
         1.669060863394238470e-03,
+        1.669060863394238470e-03,
+        2.300937616285135622e-03,
         2.300937616285135622e-03,
     ]
     x0 = [
         *spring_length_thresholds,
         *new_growth_rates,
     ]
-    bounds = [(5, 12)] * 4 + [(0.0000, 0.004)] * 4
+    bounds = [(5, 12)] * 4 + [(0.0000, 0.004)] * 8
     parent_penalty = 0.5
     args = (
         positions_all,
