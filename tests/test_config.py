@@ -20,3 +20,15 @@ def test_config_set_attributes_5():
 def test_config_set_attributes_6():
     config = crm.Configuration(n_voxels=[3, 2])
     assert config.n_voxels == [3, 2]
+
+
+def test_agent_settings():
+    agent_settings = crm.AgentSettings(
+        growth_rate_setter={"mean": 0.003, "std": 937.85}
+    )
+    assert abs(agent_settings.growth_rate_setter.mean - 0.003) < 1e-3
+    assert abs(agent_settings.growth_rate_setter.std - 937.85) < 1e-3
+
+    agent_settings = crm.AgentSettings(growth_rate_setter={"g1": 0.03, "g2": -0.1})
+    assert abs(agent_settings.growth_rate_setter.g1 - 0.03) < 1e-5
+    assert abs(agent_settings.growth_rate_setter.g2 + 0.1) < 1e-5

@@ -111,31 +111,6 @@ impl GrowthRateSetter {
     }
 }
 
-#[cfg(test)]
-mod test_growth_rate_setter {
-    use super::*;
-
-    #[test]
-    fn test_create_default() {
-        Python::initialize();
-        Python::attach(|py| {
-            py.run(
-                pyo3::ffi::c_str!(
-                    r#"\
-import cr_mech_coli as crm
-agent_settings = crm.AgentSettings(growth_rate_setter={"g1": 0.03, "g2": -0.1})
-assert abs(agent_settings.growth_rate_setter.g1 - 0.03) < 1e-5
-assert abs(agent_settings.growth_rate_setter.g2 + 0.1) < 1e-5
-"#
-                ),
-                None,
-                None,
-            )
-            .unwrap()
-        });
-    }
-}
-
 impl Default for GrowthRateSetter {
     fn default() -> Self {
         Self::NormalDistr {
