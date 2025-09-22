@@ -272,9 +272,6 @@ def predict(
     else:
         raise TypeError("Expected float or list")
 
-    if growth_rate_distrs is None:
-        growth_rate_distrs = [(growth_rate, 0.0) for growth_rate in growth_rates[:4]]
-
     def spring_length(pos):
         dx = np.linalg.norm(pos[1:] - pos[:-1], axis=1)
         return np.mean(dx)
