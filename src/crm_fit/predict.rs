@@ -179,7 +179,10 @@ pub fn define_initial_agents(
                 },
                 interaction: interaction[n].clone(),
                 growth_rate: growth_rate[n],
-                growth_rate_distr: (growth_rate[n], 0.),
+                growth_rate_setter: crate::GrowthRateSetter::NormalDistr {
+                    mean: growth_rate[n],
+                    std: 0.0,
+                },
                 spring_length_threshold: f32::INFINITY,
                 neighbor_reduction: None,
             }

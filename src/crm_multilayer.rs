@@ -1,6 +1,6 @@
 use crate::{
-    AgentSettings, Configuration, PhysInt, PhysicalInteraction, RodMechanicsSettings, MICRO_METRE,
-    MINUTE,
+    AgentSettings, Configuration, GrowthRateSetter, PhysInt, PhysicalInteraction,
+    RodMechanicsSettings, MICRO_METRE, MINUTE,
 };
 use approx::AbsDiffEq;
 use cellular_raza::prelude::MorsePotentialF32;
@@ -122,10 +122,13 @@ impl MultilayerConfig {
                             ),
                         )?,
                         growth_rate: 0.1 * MICRO_METRE / MINUTE,
-                        growth_rate_distr: (
-                            0.1 * MICRO_METRE / MINUTE,
-                            0.02 * MICRO_METRE / MINUTE,
-                        ),
+                        growth_rate_setter: Py::new(
+                            py,
+                            GrowthRateSetter::NormalDistr {
+                                mean: 0.1 * MICRO_METRE / MINUTE,
+                                std: 0.02 * MICRO_METRE / MINUTE,
+                            },
+                        )?,
                         spring_length_threshold: 6. * MICRO_METRE,
                         neighbor_reduction: Some((16, 1.)),
                     },

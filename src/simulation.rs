@@ -92,7 +92,7 @@ pub fn generate_agents(
             },
             interaction: RodInteraction(agent_settings.interaction.borrow(py).clone()),
             growth_rate: agent_settings.growth_rate,
-            growth_rate_distr: agent_settings.growth_rate_distr,
+            growth_rate_setter: agent_settings.growth_rate_setter.borrow(py).clone(),
             spring_length_threshold: agent_settings.spring_length_threshold,
             neighbor_reduction: agent_settings.neighbor_reduction,
         })

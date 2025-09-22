@@ -63,7 +63,10 @@ fn main() {
                 mechanics: mechanics.clone(),
                 interaction: interaction.clone(),
                 growth_rate: 0.1,
-                growth_rate_distr: (0.1, 0.),
+                growth_rate_setter: cr_mech_coli::GrowthRateSetter::NormalDistr {
+                    mean: 0.1,
+                    std: 0.,
+                },
                 spring_length_threshold: 6.0,
                 neighbor_reduction: None,
             };

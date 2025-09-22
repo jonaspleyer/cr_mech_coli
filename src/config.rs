@@ -7,6 +7,7 @@ use pyo3::{prelude::*, types::PyString};
 use serde::{Deserialize, Serialize};
 
 use crate::agent::{PhysInt, PhysicalInteraction, RodAgent};
+use crate::GrowthRateSetter;
 
 use cellular_raza::prelude::{RodInteraction, RodMechanics, StorageOption};
 
@@ -152,8 +153,8 @@ pub struct AgentSettings {
     /// Rate with which the length of the bacterium grows
     pub growth_rate: f32,
     /// See :class:`RodAgent`
-    #[approx(epsilon_map = |x| (x, x))]
-    pub growth_rate_distr: (f32, f32),
+    #[approx(map = |b| Python::attach(|py| Some(crate::crm_fit::get_inner(b, py))))]
+    pub growth_rate_setter: Py<GrowthRateSetter>,
     /// Threshold when the bacterium divides
     pub spring_length_threshold: f32,
     /// Reduces the growth rate with multiplier $((max - N)/max)^q $
@@ -168,7 +169,7 @@ impl PartialEq for AgentSettings {
             mechanics,
             interaction,
             growth_rate,
-            growth_rate_distr,
+            growth_rate_setter,
             spring_length_threshold,
             neighbor_reduction,
         } = &self;
@@ -180,7 +181,10 @@ impl PartialEq for AgentSettings {
                     .deref()
                     .eq(&other.interaction.borrow(py))
                 && growth_rate.eq(&other.growth_rate)
-                && growth_rate_distr.eq(&other.growth_rate_distr)
+                && growth_rate_setter
+                    .borrow(py)
+                    .deref()
+                    .eq(&other.growth_rate_setter.borrow(py))
                 && spring_length_threshold.eq(&other.spring_length_threshold)
                 && neighbor_reduction.eq(&other.neighbor_reduction)
         })
@@ -194,17 +198,18 @@ impl From<AgentSettings> for RodAgent {
                 mechanics,
                 interaction,
                 growth_rate,
-                growth_rate_distr,
+                growth_rate_setter,
                 spring_length_threshold,
                 neighbor_reduction,
             } = value;
             let mechanics = mechanics.borrow(py).clone().into();
             let interaction = RodInteraction(interaction.borrow(py).clone());
+            let growth_rate_setter = growth_rate_setter.borrow(py).clone();
             RodAgent {
                 mechanics,
                 interaction,
                 growth_rate,
-                growth_rate_distr,
+                growth_rate_setter,
                 spring_length_threshold,
                 neighbor_reduction,
             }
@@ -241,7 +246,13 @@ impl AgentSettings {
                     ),
                 )?,
                 growth_rate: 0.01,
-                growth_rate_distr: (0.01, 0.),
+                growth_rate_setter: Py::new(
+                    py,
+                    GrowthRateSetter::NormalDistr {
+                        mean: 0.01,
+                        std: 0.,
+                    },
+                )?,
                 spring_length_threshold: 6.0,
                 neighbor_reduction: None,
             },
@@ -250,7 +261,14 @@ impl AgentSettings {
             for (key, value) in kwds.iter() {
                 let key: Py<PyString> = key.extract()?;
                 match as_new.getattr(py, &key) {
-                    Ok(_) => as_new.setattr(py, &key, value)?,
+                    Ok(_) => {
+                        if key.to_str(py)? == "growth_rate_setter" {
+                            let grs = GrowthRateSetter::from_pydict(&value.cast_into()?)?;
+                            as_new.borrow_mut(py).growth_rate_setter = Py::new(py, grs)?;
+                        } else {
+                            as_new.setattr(py, &key, value)?
+                        }
+                    }
                     Err(e) => {
                         let as_new = as_new.borrow_mut(py);
                         match (
@@ -294,7 +312,7 @@ impl AgentSettings {
             mechanics,
             interaction,
             growth_rate,
-            growth_rate_distr,
+            growth_rate_setter,
             spring_length_threshold,
             neighbor_reduction,
         } = self;
@@ -317,13 +335,12 @@ impl AgentSettings {
                     .unbind(),
             ),
             (
-                "growth_rate_distr",
-                pyo3::types::PyTuple::new(
-                    py,
-                    [growth_rate_distr.0 as f64, growth_rate_distr.1 as f64],
-                )?
-                .into_any()
-                .unbind(),
+                "growth_rate_setter",
+                growth_rate_setter
+                    .borrow(py)
+                    .to_pydict(py)?
+                    .into_any()
+                    .unbind(),
             ),
             (
                 "growth_rate",

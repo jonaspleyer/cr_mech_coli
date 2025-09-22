@@ -2,8 +2,148 @@ use std::f32::consts::SQRT_2;
 
 use approx::AbsDiffEq;
 use cellular_raza::prelude::*;
-use pyo3::prelude::*;
+use pyo3::{prelude::*, types::PyDict, IntoPyObjectExt};
 use serde::{Deserialize, Serialize};
+
+/// Defines how the growth rates of the daughter cells will be set
+#[pyclass]
+#[derive(Clone, Debug, Deserialize, Serialize, AbsDiffEq, PartialEq)]
+pub enum GrowthRateSetter {
+    /// Pick the new growth rates from a normal distribution
+    NormalDistr {
+        /// Mean of the distribution
+        mean: f32,
+        /// Standard deviation of the distribution
+        std: f32,
+    },
+    /// Explicitly define the two new growth rates
+    Explicit {
+        /// Growth rate 1
+        g1: f32,
+        /// Growth rate 2
+        g2: f32,
+    },
+}
+
+impl GrowthRateSetter {
+    /// Creates an instance of the object from a given python dict.
+    ///
+    /// The dictionary must match exactly with no additional keys.
+    pub(crate) fn from_pydict(dict: &Bound<PyDict>) -> PyResult<Self> {
+        let extract_key = |key: &str| -> PyResult<Option<f32>> {
+            if let Some(item) = dict.get_item(key)? {
+                Ok(Some(item.extract()?))
+            } else {
+                Ok(None)
+            }
+        };
+        let mean = extract_key("mean")?;
+        let std = extract_key("std")?;
+        let g1 = extract_key("g1")?;
+        let g2 = extract_key("g2")?;
+        match (mean, std, g1, g2) {
+            (Some(mean), Some(std), None, None) => Ok(GrowthRateSetter::NormalDistr { mean, std }),
+            (None, None, Some(g1), Some(g2)) => Ok(GrowthRateSetter::Explicit { g1, g2 }),
+            _ => Err(pyo3::exceptions::PyKeyError::new_err("could not find suitable combination of either ('mean', 'std') or ('g1', 'g2') keys in dict.")),
+        }
+    }
+
+    pub(crate) fn to_pydict<'py>(&self, py: Python<'py>) -> PyResult<Bound<'py, PyDict>> {
+        use pyo3::types::IntoPyDict;
+        use GrowthRateSetter::*;
+        match self {
+            NormalDistr { mean, std } => [
+                (
+                    "mean",
+                    pyo3::types::PyFloat::new(py, *mean as f64).into_py_any(py)?,
+                ),
+                (
+                    "std",
+                    pyo3::types::PyFloat::new(py, *std as f64).into_py_any(py)?,
+                ),
+            ],
+            Explicit { g1, g2 } => [
+                (
+                    "g1",
+                    pyo3::types::PyFloat::new(py, *g1 as f64).into_py_any(py)?,
+                ),
+                (
+                    "g2",
+                    pyo3::types::PyFloat::new(py, *g2 as f64).into_py_any(py)?,
+                ),
+            ],
+        }
+        .into_py_dict(py)
+    }
+
+    unsafe fn default_dict() -> Bound<'static, PyDict> {
+        let setter = Self::default();
+        let py = Python::assume_attached();
+        setter.to_pydict(py).unwrap()
+    }
+}
+
+#[pymethods]
+impl GrowthRateSetter {
+    #[new]
+    #[pyo3(signature=(kwds))]
+    fn new(kwds: Bound<PyDict>) -> PyResult<Self> {
+        Self::from_pydict(&kwds)
+    }
+
+    /// Get attributes of the class
+    pub fn __getattr__(&self, name: &str) -> pyo3::PyResult<f32> {
+        let e = Err(pyo3::exceptions::PyValueError::new_err(format!(
+            "GrowthRateSetter does not have attribute '{name}'"
+        )));
+        match self {
+            GrowthRateSetter::NormalDistr { mean, std } => match name {
+                "mean" => Ok(*mean),
+                "std" => Ok(*std),
+                _ => e,
+            },
+            GrowthRateSetter::Explicit { g1, g2 } => match name {
+                "g1" => Ok(*g1),
+                "g2" => Ok(*g2),
+                _ => e,
+            },
+        }
+    }
+}
+
+#[cfg(test)]
+mod test_growth_rate_setter {
+    use super::*;
+
+    #[test]
+    fn test_create_default() {
+        Python::initialize();
+        Python::attach(|py| {
+            py.run(
+                pyo3::ffi::c_str!(
+                    r#"\
+import cr_mech_coli as crm
+agent_settings = crm.AgentSettings(growth_rate_setter={"g1": 0.03, "g2": -0.1})
+assert abs(agent_settings.growth_rate_setter.g1 - 0.03) < 1e-5
+assert abs(agent_settings.growth_rate_setter.g2 + 0.1) < 1e-5
+"#
+                ),
+                None,
+                None,
+            )
+            .unwrap()
+        });
+    }
+}
+
+impl Default for GrowthRateSetter {
+    fn default() -> Self {
+        Self::NormalDistr {
+            mean: 0.01,
+            std: 0.0,
+        }
+    }
+}
 
 /// A basic cell-agent which makes use of
 /// `RodMechanics <https://cellular-raza.com/docs/cellular_raza_building_blocks/structs.RodMechanics.html>`_
@@ -23,8 +163,7 @@ pub struct RodAgent {
     pub growth_rate: f32,
     /// Determines the mean and width of distribution for sampling new values of growth rate.
     #[pyo3(set, get)]
-    #[approx(epsilon_map = |x| (x, x))]
-    pub growth_rate_distr: (f32, f32),
+    pub growth_rate_setter: GrowthRateSetter,
     /// Threshold at which the cell will divide in units `MICROMETRE`.
     #[pyo3(set, get)]
     pub spring_length_threshold: f32,
@@ -212,7 +351,7 @@ impl RodAgent {
         spring_length=3.0,
         damping=1.0,
         growth_rate=0.01,
-        growth_rate_distr=(0.01, 0.0),
+        growth_rate_setter=GrowthRateSetter::default_dict(),
         spring_length_threshold=6.0,
         neighbor_reduction=None,
     ))]
@@ -228,7 +367,7 @@ impl RodAgent {
         spring_length: f32,
         damping: f32,
         growth_rate: f32,
-        growth_rate_distr: (f32, f32),
+        growth_rate_setter: Bound<'py, PyDict>,
         spring_length_threshold: f32,
         neighbor_reduction: Option<(usize, f32)>,
     ) -> pyo3::PyResult<Self> {
@@ -250,7 +389,7 @@ impl RodAgent {
             },
             interaction: RodInteraction(interaction),
             growth_rate,
-            growth_rate_distr,
+            growth_rate_setter: GrowthRateSetter::from_pydict(&growth_rate_setter)?,
             spring_length_threshold,
             neighbor_reduction,
         })
@@ -337,10 +476,14 @@ impl Cycle<RodAgent, f32> for RodAgent {
         let c2_mechanics = cell.mechanics.divide(cell.radius())?;
         let mut c2 = cell.clone();
         // Pick new growth parameters
-        let distr = rand_distr::Normal::new(cell.growth_rate_distr.0, cell.growth_rate_distr.1)
-            .map_err(|e| DivisionError(format!("{e}")))?;
-        let g1 = distr.sample(rng);
-        let g2 = distr.sample(rng);
+        let (g1, g2) = match cell.growth_rate_setter {
+            GrowthRateSetter::NormalDistr { mean, std } => {
+                let distr = rand_distr::Normal::new(mean, std)
+                    .map_err(|e| DivisionError(format!("{e}")))?;
+                (distr.sample(rng), distr.sample(rng))
+            }
+            GrowthRateSetter::Explicit { g1, g2 } => (g1, g2),
+        };
         cell.growth_rate = g1;
         c2.growth_rate = g2;
         c2.mechanics = c2_mechanics;

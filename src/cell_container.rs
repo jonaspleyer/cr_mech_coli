@@ -410,7 +410,10 @@ fn cell_container_de_serialize() {
                 0,
             )),
             growth_rate: 0.05,
-            growth_rate_distr: (0.05, 0.0),
+            growth_rate_setter: GrowthRateSetter::NormalDistr {
+                mean: 0.05,
+                std: 0.0,
+            },
             spring_length_threshold: 2.0,
             neighbor_reduction: None,
         })

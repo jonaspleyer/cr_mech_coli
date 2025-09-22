@@ -10,7 +10,7 @@ use core::f32;
 use itertools::Itertools;
 use pyo3::prelude::*;
 
-use crate::{PhysInt, PhysicalInteraction, RodAgent};
+use crate::{GrowthRateSetter, PhysInt, PhysicalInteraction, RodAgent};
 use approx::AbsDiffEq;
 use cellular_raza::prelude::*;
 use serde::{Deserialize, Serialize};
@@ -280,7 +280,10 @@ fn run_sim(
             },
             interaction,
             growth_rate: parameters.growth_rate,
-            growth_rate_distr: (parameters.growth_rate, 0.),
+            growth_rate_setter: GrowthRateSetter::NormalDistr {
+                mean: parameters.growth_rate,
+                std: 0.,
+            },
             spring_length_threshold: f32::INFINITY,
             neighbor_reduction: None,
         },
