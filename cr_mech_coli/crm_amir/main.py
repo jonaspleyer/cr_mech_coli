@@ -313,7 +313,7 @@ def calculate_profile_point(
         args=(set_params | {list(x0_bounds.keys())[n]: pnew}, positions, x0_bounds_new),
         # method="L-BFGS-B",
         bounds=bounds,
-        maxiter=60,
+        maxiter=100,
         popsize=30,
         mutation=(0, 1.2),
         seed=n,
@@ -518,8 +518,8 @@ def crm_amir_main():
         # "spring_tension": (0.0000, 0.01, 30.0),  # spring_tension
     }
     set_params = {
-        "damping": 1.0,
-        "spring_tension": 15,
+        "damping": 0.0,
+        "spring_tension": 20,
     }
     compare_with_data(
         x0_bounds_reduced,

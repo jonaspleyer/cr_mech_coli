@@ -240,8 +240,8 @@ def predict(
         0.0015209642,
     ],
     spring_length_thresholds: float | list[float] = [
-        200.0,
-        200.0,
+        30.0,
+        30.0,
         8.0,
         11.0,
         200.0,
