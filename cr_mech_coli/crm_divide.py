@@ -1002,14 +1002,18 @@ def crm_divide_main():
 
     if not pyargs.skip_profiles:
         labels = [
+            "Division Length 0",
             "Division Length 1",
             "Division Length 2",
             "Division Length 3",
-            "Division Length 4",
-            "Growth Rate 1",
-            "Growth Rate 2",
-            "Growth Rate 3",
-            "Growth Rate 4",
+            "Growth Rate 0-0",
+            "Growth Rate 0-1",
+            "Growth Rate 1-0",
+            "Growth Rate 1-1",
+            "Growth Rate 2-0",
+            "Growth Rate 2-1",
+            "Growth Rate 3-0",
+            "Growth Rate 3-1",
         ]
         plot_profiles(
             final_parameters,
