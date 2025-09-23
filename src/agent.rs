@@ -420,6 +420,15 @@ impl RodAgent {
             PhysInt::MiePotentialF32(pot) => pot.radius,
         }
     }
+
+    /// Sets the radius of the interaction potential
+    #[setter]
+    pub fn set_radius(&mut self, radius: f32) {
+        match &mut self.interaction.0 .0 {
+            PhysInt::MorsePotentialF32(pot) => pot.radius = radius,
+            PhysInt::MiePotentialF32(pot) => pot.radius = radius,
+        }
+    }
 }
 
 impl Cycle<RodAgent, f32> for RodAgent {
