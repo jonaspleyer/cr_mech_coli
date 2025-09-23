@@ -500,27 +500,22 @@ def __render_single_snapshot(iter, agent, parameters, render_settings, output_di
     img[:, :block_size][bg_filt[:, :block_size]] = int(
         render_settings.bg_brightness / 2
     )
-    cv.imwrite(f"out/crm_amir/{iter:010}.png", np.swapaxes(img, 0, 1)[::-1])
+    cv.imwrite(output_dir / f"{iter:010}.png", np.swapaxes(img, 0, 1)[::-1])
 
 
-def render_snapshots():
-    parameters = generate_parameters()
-    agents = crm_amir.run_sim(parameters)
-
-    n_saves = 10
-
-    save_points = np.clip(
-        np.round(np.linspace(0, len(agents), n_saves)).astype(int), 0, len(agents) - 1
-    )
-
+def render_snapshots(agents, parameters, output_dir):
     render_settings = crm.RenderSettings()
     render_settings.bg_brightness = 200
 
-    for save_point in tqdm(
-        save_points, total=len(save_points), desc="Rendering Snapshots"
+    for n, agent in tqdm(
+        enumerate(agents), total=len(agents), desc="Rendering Snapshots"
     ):
         __render_single_snapshot(
-            save_point, agents[save_point][1].agent, parameters, render_settings
+            n,
+            agent,
+            parameters,
+            render_settings,
+            output_dir,
         )
 
 
@@ -534,7 +529,10 @@ def crm_amir_main():
         pyargs.workers = mp.cpu_count()
 
     crm.plotting.set_mpl_rc_params()
-    # render_snapshots()
+
+    parameters = generate_parameters()
+    agents = [x[1].agent for x in crm_amir.run_sim(parameters)]
+    render_snapshots(agents, parameters, Path("out/crm_amir/"))
 
     # Define which parameters should be optimized
     x0_bounds = {
