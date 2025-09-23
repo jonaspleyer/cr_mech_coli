@@ -248,7 +248,9 @@ def objective_function(
     return cost
 
 
-def plot_results(popt, positions_data: np.ndarray, x0_bounds: dict, set_params):
+def plot_results(
+    popt, positions_data: np.ndarray, x0_bounds: dict, set_params, output_dir
+):
     p0, p1, positions_data, parameters = objective_function(
         popt, set_params, positions_data, x0_bounds, return_all=True
     )
@@ -286,8 +288,8 @@ def plot_results(popt, positions_data: np.ndarray, x0_bounds: dict, set_params):
     )
     ax.set_xlabel("[µm]")
     ax.set_ylabel("[µm]")
-    fig.savefig("out/crm_amir/fit-comparison.png")
-    fig.savefig("out/crm_amir/fit-comparison.pdf")
+    fig.savefig(output_dir / "fit-comparison.png")
+    fig.savefig(output_dir / "fit-comparison.pdf")
     plt.close(fig)
 
 
@@ -449,7 +451,7 @@ def compare_with_data(
         seed=n_vertices,
     )
 
-    plot_results(res.x, positions_data, x0_bounds, set_params)
+    plot_results(res.x, positions_data, x0_bounds, set_params, output_dir)
 
     for n in tqdm(
         range(len(x0_bounds)), total=len(x0_bounds), desc="Plotting Profiles"
