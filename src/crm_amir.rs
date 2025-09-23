@@ -35,7 +35,7 @@ short_default::default! {
         /// Overall starting length of the rod
         rod_length: f32 = 24.0,
         /// Rigidity of the rod
-        rod_rigiditiy: f32 = 2.0,
+        rod_rigidity: f32 = 2.0,
         /// Tension with which the segment lengths are enforced
         spring_tension: f32 = 0.5,
         /// Growth rate of the rod
@@ -243,7 +243,7 @@ fn run_sim(
         vel: nalgebra::MatrixXx3::zeros(parameters.n_vertices),
         diffusion_constant: 0.0,
         spring_tension: parameters.spring_tension,
-        rigidity: parameters.rod_rigiditiy,
+        rigidity: parameters.rod_rigidity,
         spring_length: parameters.rod_length / (parameters.n_vertices as f32 - 1.0),
         damping: parameters.damping,
     };

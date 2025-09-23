@@ -14,7 +14,7 @@ class Parameters:
     save_interval: float
     dt: float
     rod_length: float
-    rod_rigiditiy: float
+    rod_rigidity: float
     spring_tension: float
     growth_rate: float
     damping: float

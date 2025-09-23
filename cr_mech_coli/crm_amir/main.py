@@ -37,7 +37,7 @@ def generate_parameters() -> Parameters:
     n_vertices = 20
     parameters.n_vertices = n_vertices
     parameters.growth_rate = 0.03 * 7 / (n_vertices - 1)
-    parameters.rod_rigiditiy = 20.0 * n_vertices / 20
+    parameters.rod_rigidity = 20.0 * n_vertices / 20
     parameters.save_interval = 1.0
     parameters.damping = 0.02
     parameters.spring_tension = 10.0
@@ -51,8 +51,8 @@ def plot_angles_and_endpoints():
     endpoints = []
     y_collection = []
     rod_rigidities = np.linspace(0.3, 30, 20, endpoint=True)
-    for rod_rigiditiy in rod_rigidities:
-        parameters.rod_rigiditiy = rod_rigiditiy
+    for rod_rigidity in rod_rigidities:
+        parameters.rod_rigidity = rod_rigidity
         agents = run_sim(parameters)
         t = np.array([a[0] for a in agents]) * parameters.dt
 
@@ -512,7 +512,7 @@ def crm_amir_main():
 
     # Define which parameters should be optimized
     x0_bounds = {
-        "rod_rigiditiy": (0.0001, 20.0, 250.0),  # rod_rigiditiy,
+        "rod_rigidity": (0.0001, 20.0, 250),  # rod_rigidity,
         "drag_force": (0.0000, 0.1, 10.0),  # drag_force,
         "damping": (0.000, 1.0, 2.0),  # damping,
         "growth_rate": (0.0, 0.01, 2.0),  # growth_rate,
@@ -521,7 +521,7 @@ def crm_amir_main():
     compare_with_data(x0_bounds, workers=30)
 
     x0_bounds_reduced = {
-        "rod_rigiditiy": (0.0001, 20.0, 250.0),  # rod_rigiditiy,
+        "rod_rigidity": (0.0001, 20.0, 250),  # rod_rigidity,
         "drag_force": (0.0000, 0.1, 10.0),  # drag_force,
         # "damping": (0.000, 1.0, 2.0),  # damping,
         "growth_rate": (0.0, 0.01, 2.0),  # growth_rate,
