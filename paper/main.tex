@@ -1022,8 +1022,94 @@ In cases where the simpler approach of comparing positions of the agents is poss
 should be preferred.
 
 %###################################################################################################
-\section{Application to \textit{E.Coli.} growing on Agar}
-\label{section:application}
+\section{Application 1: Elastic deformations of \textit{E.Coli} (TODO)}
+\label{section:application-1}
+
+We will use our previously developed computational model and apply it directly to the data provided
+by the experiments of Amir et. al~\cite{Amir2014,Amir2014_2}.
+These images show a singular \textit{E.Coli} which is fixed at the bottom and is subject to a
+horizontal fluid flow that exerts a force onto the rod.
+This setup is displayed in figure~\ref{fig:amir-bending-simulation} (A).
+In order to model this setup, we also fixate the lower-most vertex of our rod at the bottom of the
+simulation domain.
+Furthermore, we introduce a force $\vec{F}_i = C \sin(\alpha_i)\vec{e}_x$ that acts similarlyl to
+Stoke's Law \textbf{TODO Citation} onto the normal component of each rod-segment where $\alpha_i$ is
+the angle of the rod edge between $\vec{x}_i$ and $\vec{x}_{i+1}$ and the x-axis.
+We extract the position of the rod from the provided image and use it as intial value.
+Our simulation is split into two phases, one with an external force that initially bends the rod,
+and a second one during which the force is disabled and the cell returns to its original shape.
+\textbf{TODO maybe exclude second phase again}
+We compare the simulated positions with the extracted ones and calculate the euclidean distance
+between them.
+This value serves as the cost function that allows us to estimate the parameters of this model.
+Since this model is void of any interactions or cell division, we are left with the 5 parameters
+damping 
+Figure~\ref{fig:amir-bending-simulation} (B) shows a snapshot of the initial (orange) and final
+(blue) position of the rod using the optimized parameters.
+Unfortunately the images only contain snapshots of a fully-bent or fully-relaxed rod without any
+intermediate steps.
+This effectively limits us to 2 datapoints and prohibits us from accurately estimating the
+parameters involved in the dynamics of the rod-bending.
+This effect can be seen in the likelihood profiles of the individual parameters.
+While the dragging force, growth rate and damping can be identified properly, the same can not be
+said for the rigidity and spring tension.
+The rigidity of the rod and spring tension exhibit non-identifiabilities with respect to larger
+values.
+Both of these behaviours are expected since firstly, the shape of the rod is almost exclusively
+straight, thus adding no further information except that a lower threshold of rigidity and spring
+tension should be present.
+
+\begin{itemize}
+    \item discuss why damping and spring tension can not be estimated: damping - missing dynamics,
+        spring tension - no elasticity with respect to elongation, more tension = better shape
+        preservation
+    \item TODO: also model relaxation part
+\end{itemize}
+
+\begin{figure}
+    \centering
+    \begin{minipage}{0.33\textwidth}
+        \begin{tikzonimage}[width=\textwidth]
+            {figures/amir-elastic-000032-wider.png}%
+            \node at (0.01, 0.01+17pt)[anchor=north west, rectangle, draw, white, minimum width=15pt, minimum height=15pt]{\textbf{A}};
+        \end{tikzonimage}%
+    \end{minipage}%
+    \begin{minipage}{0.66\textwidth}
+        \begin{tikzonimage}[width=0.33\textwidth]
+            {figures/crm_amir/profiles-full/fit-comparison.pdf}%
+            \node at (0.15, 0.86)[anchor=north west, rectangle, draw, black, minimum width=15pt, minimum height=15pt]{\textbf{B}};
+        \end{tikzonimage}%
+        \begin{tikzonimage}[width=0.33\textwidth]
+            {figures/crm_amir/profiles-full/drag force.pdf}%
+            \node at (0.15, 0.86)[anchor=north west, rectangle, draw, black, minimum width=15pt, minimum height=15pt]{\textbf{C}};
+        \end{tikzonimage}%
+        \begin{tikzonimage}[width=0.33\textwidth]
+            {figures/crm_amir/profiles-full/growth rate.pdf}%
+            \node at (0.15, 0.86)[anchor=north west, rectangle, draw, black, minimum width=15pt, minimum height=15pt]{\textbf{D}};
+        \end{tikzonimage}\\
+        \begin{tikzonimage}[width=0.33\textwidth]
+            {figures/crm_amir/profiles-full/rod rigidity.pdf}%
+            \node at (0.15, 0.86)[anchor=north west, rectangle, draw, black, minimum width=15pt, minimum height=15pt]{\textbf{E}};
+        \end{tikzonimage}%
+        \begin{tikzonimage}[width=0.33\textwidth]
+            {figures/crm_amir/profiles-full/spring tension.pdf}%
+            \node at (0.15, 0.86)[anchor=north west, rectangle, draw, black, minimum width=15pt, minimum height=15pt]{\textbf{F}};
+        \end{tikzonimage}%
+        \begin{tikzonimage}[width=0.33\textwidth]
+            {figures/crm_amir/profiles-full/damping.pdf}%
+            \node at (0.15, 0.86)[anchor=north west, rectangle, draw, black, minimum width=15pt, minimum height=15pt]{\textbf{G}};
+        \end{tikzonimage}%
+    \end{minipage}
+    \caption{
+        TODO \cite{Amir2014_2}
+    }
+    \label{fig:amir-bending-simulation}
+\end{figure}
+
+
+%###################################################################################################
+\section{Application 2: \textit{E.Coli.} growing on Agar}
+\label{section:application-2}
 
 To show the usefulness of our previously developed methods (see
 section~\ref{section:parameter-estimation}), we will use them to estimate the parameters of a
