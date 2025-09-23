@@ -344,10 +344,38 @@ fn run_sim(
     Ok(cells)
 }
 
+#[pyfunction]
+#[pyo3(signature = (parameters, initial_pos=None))]
+fn run_sim_with_relaxation(
+    py: Python,
+    parameters: &Parameters,
+    initial_pos: Option<Bound<numpy::PyArray2<f32>>>,
+) -> PyResult<Vec<(u64, FixedRod)>> {
+    // Run first iteration of simulation
+    let mut rods = run_sim(parameters.clone(), initial_pos)?;
+    // Obtain final position of rod
+    let p = rods[1].1.agent.mechanics.pos.clone();
+    let initial_pos =
+        ndarray::Array2::<f32>::from_shape_vec(p.shape(), p.into_iter().copied().collect())
+            .unwrap();
+    // Set final position of rod as initial position for second run
+    let initial_pos = numpy::PyArray2::from_owned_array(py, initial_pos);
+    let mut new_parameters = parameters.clone();
+    // Remove the drag force and run simulation again
+    new_parameters.drag_force = 0.0;
+    let (iter_final, agent) = run_sim(new_parameters, Some(initial_pos))?[1].clone();
+
+    // Append last rods to results
+    rods.push((rods[1].0 + iter_final, agent));
+    assert_eq!(rods.len(), 3);
+    Ok(rods)
+}
+
 /// A Python module implemented in Rust.
 pub fn crm_amir(py: Python) -> PyResult<Bound<PyModule>> {
     let m = PyModule::new(py, "cr_mech_coli.crm_amir.crm_amir_rs")?;
     m.add_function(wrap_pyfunction!(run_sim, &m)?)?;
+    m.add_function(wrap_pyfunction!(run_sim_with_relaxation, &m)?)?;
     m.add_class::<FixedRod>()?;
     m.add_class::<Parameters>()?;
     Ok(m)

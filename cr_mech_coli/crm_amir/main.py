@@ -29,7 +29,7 @@ def calculate_angle(p: np.ndarray, parameters: crm_amir.Parameters) -> float:
     return angle
 
 
-def generate_parameters() -> crm_amir.Parameters:
+def generate_parameters(**kwargs) -> crm_amir.Parameters:
     parameters = crm_amir.Parameters()
     parameters.block_size = 25.0
     parameters.dt = 0.01
@@ -39,10 +39,13 @@ def generate_parameters() -> crm_amir.Parameters:
     parameters.n_vertices = n_vertices
     parameters.growth_rate = 0.03 * 7 / (n_vertices - 1)
     parameters.rod_rigidity = 20.0 * n_vertices / 20
-    parameters.save_interval = 1.0
+    parameters.save_interval = 20
     parameters.damping = 0.02
     parameters.spring_tension = 10.0
     parameters.drag_force = 0.03
+
+    for k, v in kwargs:
+        parameters.__setattr__(k, v)
     return parameters
 
 
@@ -213,15 +216,19 @@ def objective_function(
         return ERROR_COST
 
     # Get initial and final position of rod
-    p0 = rods[0][1].agent.pos[:, np.array([0, 2])]
-    p1 = rods[-1][1].agent.pos[:, np.array([0, 2])]
+    p_rods = np.array(
+        [
+            rods[0][1].agent.pos[:, np.array([0, 2])],
+            rods[1][1].agent.pos[:, np.array([0, 2])],
+            rods[2][1].agent.pos[:, np.array([0, 2])],
+        ]
+    )
 
-    p0[:, 1] = parameters.domain_size - p0[:, 1]
-    p1[:, 1] = parameters.domain_size - p1[:, 1]
+    p_rods[:, :, 1] = parameters.domain_size - p_rods[:, :, 1]
 
     # Shift such that start points align
 
-    positions_data = np.array(positions_data)
+    positions_data = np.array([*positions_data, positions_data[0]])
     positions_data = (
         np.array([parameters.domain_size, 0]) - np.array([1, -1]) * positions_data
     )
@@ -229,14 +236,14 @@ def objective_function(
     for i in range(positions_data.shape[0]):
         positions_data[i, 0, 0] -= positions_data[i, 0, 0]
     x_shift_positions0 = calculate_x_shift(positions_data[0], parameters.block_size)
-    x_shift_p0 = calculate_x_shift(p0, parameters.block_size)
+    x_shift_p0 = calculate_x_shift(p_rods[0], parameters.block_size)
     x_shift_diff = x_shift_positions0 - x_shift_p0
     positions_data[:, :, 1] -= x_shift_diff
 
     if return_all:
-        return p0, p1, positions_data, parameters
+        return p_rods, positions_data, parameters
 
-    diff = p1 - positions_data[1]
+    diff = p_rods[1:] - positions_data[1:]
     cost = np.linalg.norm(diff)
 
     if print_output:
@@ -251,9 +258,11 @@ def objective_function(
 def plot_results(
     popt, positions_data: np.ndarray, x0_bounds: dict, set_params, output_dir
 ):
-    p0, p1, positions_data, parameters = objective_function(
+    p_rods, positions_data, parameters = objective_function(
         popt, set_params, positions_data, x0_bounds, return_all=True
     )
+    p0 = p_rods[0]
+    p1 = p_rods[1]
 
     fig, ax = plt.subplots(figsize=(8, 8))
     crm.configure_ax(ax)
@@ -291,6 +300,11 @@ def plot_results(
     fig.savefig(output_dir / "fit-comparison.png")
     fig.savefig(output_dir / "fit-comparison.pdf")
     plt.close(fig)
+
+    agents = [x[1].agent for x in crm_amir.run_sim_with_relaxation(parameters)]
+    for a in agents:
+        a.radius = np.float32(parameters.domain_size / 50)
+    render_snapshots(agents, parameters, output_dir)
 
 
 def calculate_profile_point(
@@ -425,7 +439,6 @@ def compare_with_data(
     data_files = [
         (24, "data/crm_amir/elastic/frames/000024.png"),
         (32, "data/crm_amir/elastic/frames/000032.png"),
-        (40, "data/crm_amir/elastic/frames/000024.png"),
     ]
 
     positions_data = np.array(
@@ -470,7 +483,7 @@ def compare_with_data(
         )
 
 
-def __render_single_snapshot(iter, agent, parameters, render_settings):
+def __render_single_snapshot(iter, agent, parameters, render_settings, output_dir):
     green = (np.uint8(44), np.uint8(189), np.uint8(25))
     agent.pos = agent.pos[:, [0, 2, 1]]
     cells = {crm.CellIdentifier.new_initial(0): (agent, None)}

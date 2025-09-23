@@ -26,3 +26,6 @@ class Parameters:
 def run_sim(
     parameters: Parameters, pos: np.ndarray | None = None
 ) -> list[tuple[int, FixedRod]]: ...
+def run_sim_with_relaxation(
+    parameters: Parameters, pos: np.ndarray | None = None
+) -> list[tuple[int, FixedRod]]: ...
