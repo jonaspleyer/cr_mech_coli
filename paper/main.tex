@@ -525,14 +525,15 @@ The total force is the sum of external and interal forces.
         + \vec{F}_{i,\text{external}}
 \end{equation}
 
-and are integrated via
+and are integrated via damped brownian dynamics
 
 \begin{align}
     \partial_t^2 \vec{x}_i &= \partial_t\vec{x}_i + \sqrt{2D}\vec{\xi}_i\\
     \partial_t\vec{x}_i &= \vec{F}_{i,\text{total}} - \lambda \partial_t\vec{x}_i
 \end{align}
 
-where $D$ is the diffusion constant and $\vec{\xi}$ is the wiener process.
+where $D$ is the diffusion constant, $\vec{\xi}$ is the wiener process and $\lambda$ a damping
+constant.
 Together they determine the stochastic motion of the individual vertices which can arise from
 recurring collisions with small particles of the surrounding medium or other minor fluctuations.
 
