@@ -220,9 +220,10 @@ impl SubDomainForce<RodPos, RodPos, RodPos, f32> for MySubDomain {
             .enumerate()
             .tuple_windows()
             .for_each(|((n1, p1), (n2, p2))| {
+                let length = (p2 - p1).norm();
                 let dir = (p2 - p1).normalize();
                 let angle = dir.angle(&nalgebra::matrix![0.0, 1.0, 0.0]);
-                let f = self.0.gel_pressure * angle.sin();
+                let f = self.0.gel_pressure * length * angle.sin();
                 force.row_mut(n1)[2] -= f / 2.0;
                 force.row_mut(n2)[2] -= f / 2.0;
             });
