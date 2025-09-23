@@ -376,7 +376,6 @@ def plot_profile(
     ax.set_xlabel(name)
     ax.set_ylabel("Cost Function")
 
-    output_dir = Path(output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
 
     fig.savefig(output_dir / f"{name}.png")
@@ -419,6 +418,8 @@ def compare_with_data(
     n_vertices: int = 20,
     output_dir="out/crm_amir/profiles-full/",
 ):
+    output_dir = Path(output_dir)
+
     # data_files = glob("data/crm_amir/elastic/positions/*.txt")
     data_files = [
         (24, "data/crm_amir/elastic/frames/000024.png"),
