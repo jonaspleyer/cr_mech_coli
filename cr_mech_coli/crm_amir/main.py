@@ -537,18 +537,35 @@ def crm_amir_main():
     # Define which parameters should be optimized
     x0_bounds = {
         "rod_rigidity": (0.0001, 20.0, 250),  # rod_rigidity,
-        "drag_force": (0.0000, 0.1, 10.0),  # drag_force,
+        "drag_force": (0.0000, 0.1, 3.0),  # drag_force,
         "damping": (0.000, 1.0, 2.0),  # damping,
-        "growth_rate": (0.0, 0.01, 2.0),  # growth_rate,
+        "growth_rate": (0.0, 0.01, 0.15),  # growth_rate,
         "spring_tension": (0.0000, 0.01, 30.0),  # spring_tension
     }
     compare_with_data(x0_bounds, workers=pyargs.workers)
 
     x0_bounds_reduced = {
         "rod_rigidity": (0.0001, 20.0, 250),  # rod_rigidity,
-        "drag_force": (0.0000, 0.1, 10.0),  # drag_force,
+        "drag_force": (0.0000, 0.1, 3.0),  # drag_force,
+        "damping": (0.000, 1.0, 2.0),  # damping,
+        "growth_rate": (0.0, 0.01, 0.15),  # growth_rate,
+        # "spring_tension": (0.0000, 0.01, 30.0),  # spring_tension
+    }
+    set_params = {
+        "spring_tension": 20,
+    }
+    compare_with_data(
+        x0_bounds_reduced,
+        workers=pyargs.workers,
+        set_params=set_params,
+        output_dir="out/crm_amir/profiles-without-spring-tension/",
+    )
+
+    x0_bounds_reduced = {
+        "rod_rigidity": (0.0001, 20.0, 250),  # rod_rigidity,
+        "drag_force": (0.0000, 0.1, 3.0),  # drag_force,
         # "damping": (0.000, 1.0, 2.0),  # damping,
-        "growth_rate": (0.0, 0.01, 2.0),  # growth_rate,
+        "growth_rate": (0.0, 0.01, 0.15),  # growth_rate,
         # "spring_tension": (0.0000, 0.01, 30.0),  # spring_tension
     }
     set_params = {
