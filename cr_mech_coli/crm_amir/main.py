@@ -191,12 +191,12 @@ def calculate_x_shift(p, block_size):
 def objective_function(
     params,
     set_params: dict,
-    positions,
+    positions_data,
     x0_bounds,
     return_all=False,
     print_output=False,
 ):
-    parameters = create_default_parameters(positions)
+    parameters = create_default_parameters(positions_data)
     for k, v in set_params.items():
         parameters.__setattr__(k, v)
 
@@ -220,20 +220,22 @@ def objective_function(
 
     # Shift such that start points align
 
-    positions = np.array(positions)
-    positions = np.array([parameters.domain_size, 0]) - np.array([1, -1]) * positions
-    positions = positions[:, ::-1]
-    for i in range(positions.shape[0]):
-        positions[i, 0, 0] -= positions[i, 0, 0]
-    x_shift_positions0 = calculate_x_shift(positions[0], parameters.block_size)
+    positions_data = np.array(positions_data)
+    positions_data = (
+        np.array([parameters.domain_size, 0]) - np.array([1, -1]) * positions_data
+    )
+    positions_data = positions_data[:, ::-1]
+    for i in range(positions_data.shape[0]):
+        positions_data[i, 0, 0] -= positions_data[i, 0, 0]
+    x_shift_positions0 = calculate_x_shift(positions_data[0], parameters.block_size)
     x_shift_p0 = calculate_x_shift(p0, parameters.block_size)
     x_shift_diff = x_shift_positions0 - x_shift_p0
-    positions[:, :, 1] -= x_shift_diff
+    positions_data[:, :, 1] -= x_shift_diff
 
     if return_all:
-        return p0, p1, positions, parameters
+        return p0, p1, positions_data, parameters
 
-    diff = p1 - positions[1]
+    diff = p1 - positions_data[1]
     cost = np.linalg.norm(diff)
 
     if print_output:
@@ -245,9 +247,9 @@ def objective_function(
     return cost
 
 
-def plot_results(popt, positions: np.ndarray, x0_bounds: dict, set_params):
-    p0, p1, positions, parameters = objective_function(
-        popt, set_params, positions, x0_bounds, return_all=True
+def plot_results(popt, positions_data: np.ndarray, x0_bounds: dict, set_params):
+    p0, p1, positions_data, parameters = objective_function(
+        popt, set_params, positions_data, x0_bounds, return_all=True
     )
 
     fig, ax = plt.subplots(figsize=(8, 8))
@@ -255,17 +257,17 @@ def plot_results(popt, positions: np.ndarray, x0_bounds: dict, set_params):
     ax.plot(p0[:, 1], p0[:, 0], color=crm.plotting.COLOR5, linestyle=":")
     ax.plot(p1[:, 1], p1[:, 0], color=crm.plotting.COLOR3, linestyle=":")
     ax.plot(
-        positions[0, :, 1],
-        positions[0, :, 0],
+        positions_data[0, :, 1],
+        positions_data[0, :, 0],
         color=crm.plotting.COLOR5,
         linestyle="--",
         alpha=0.5,
     )
-    x_shift = calculate_x_shift(positions[0], parameters.block_size)
+    x_shift = calculate_x_shift(positions_data[0], parameters.block_size)
     ax.scatter(x_shift, parameters.block_size, marker="x", color=crm.plotting.COLOR4)
     ax.plot(
-        positions[1, :, 1],
-        positions[1, :, 0],
+        positions_data[1, :, 1],
+        positions_data[1, :, 0],
         color=crm.plotting.COLOR3,
         linestyle="--",
         alpha=0.5,
@@ -418,22 +420,23 @@ def compare_with_data(
     data_files = [
         (24, "data/crm_amir/elastic/frames/000024.png"),
         (32, "data/crm_amir/elastic/frames/000032.png"),
+        (40, "data/crm_amir/elastic/frames/000024.png"),
     ]
 
-    positions = np.array(
+    positions_data = np.array(
         [extract_mask(iter, cv.imread(df), n_vertices) for iter, df in data_files]
     )
 
-    for n, p in enumerate(positions):
+    for n, p in enumerate(positions_data):
         ind = np.argsort(p[:, 0])
-        positions[n] = p[ind] / PIXELS_PER_MICRON
+        positions_data[n] = p[ind] / PIXELS_PER_MICRON
 
     # x0 = [x[1] for _, x in x0_bounds.items()]
     bounds = [(x[0], x[2]) for _, x in x0_bounds.items()]
     res = sp.optimize.differential_evolution(
         objective_function,
         # x0,
-        args=(set_params, positions, x0_bounds, False, True),
+        args=(set_params, positions_data, x0_bounds, False, True),
         # method="L-BFGS-B",
         bounds=bounds,
         maxiter=200,
@@ -445,13 +448,20 @@ def compare_with_data(
         seed=n_vertices,
     )
 
-    plot_results(res.x, positions, x0_bounds, set_params)
+    plot_results(res.x, positions_data, x0_bounds, set_params)
 
     for n in tqdm(
         range(len(x0_bounds)), total=len(x0_bounds), desc="Plotting Profiles"
     ):
         plot_profile(
-            n, res.x, res.fun, positions, x0_bounds, workers, set_params, output_dir
+            n,
+            res.x,
+            res.fun,
+            positions_data,
+            x0_bounds,
+            workers,
+            set_params,
+            output_dir,
         )
 
 
