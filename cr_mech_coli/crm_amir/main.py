@@ -419,6 +419,7 @@ def compare_with_data(
     output_dir="out/crm_amir/profiles-full/",
 ):
     output_dir = Path(output_dir)
+    output_dir.mkdir(parents=True, exist_ok=True)
 
     # data_files = glob("data/crm_amir/elastic/positions/*.txt")
     data_files = [
