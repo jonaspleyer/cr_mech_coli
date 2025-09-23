@@ -9,6 +9,7 @@ import skimage as sk
 from tqdm import tqdm
 from pathlib import Path
 import multiprocessing as mp
+import argparse
 
 GREEN_COLOR = np.array([21.5 / 100, 86.6 / 100, 21.6 / 100]) * 255
 
@@ -507,6 +508,14 @@ def render_snapshots():
 
 
 def crm_amir_main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "-w", "--workers", type=int, default=-1, help="Number of threads"
+    )
+    pyargs = parser.parse_args()
+    if pyargs.workers == -1:
+        pyargs.workers = mp.cpu_count()
+
     crm.plotting.set_mpl_rc_params()
     # render_snapshots()
 
@@ -518,7 +527,7 @@ def crm_amir_main():
         "growth_rate": (0.0, 0.01, 2.0),  # growth_rate,
         "spring_tension": (0.0000, 0.01, 30.0),  # spring_tension
     }
-    compare_with_data(x0_bounds, workers=30)
+    compare_with_data(x0_bounds, workers=pyargs.workers)
 
     x0_bounds_reduced = {
         "rod_rigidity": (0.0001, 20.0, 250),  # rod_rigidity,
@@ -533,7 +542,7 @@ def crm_amir_main():
     }
     compare_with_data(
         x0_bounds_reduced,
-        workers=30,
+        workers=pyargs.workers,
         set_params=set_params,
         output_dir="out/crm_amir/profiles-reduced/",
     )
