@@ -1,4 +1,4 @@
-from cr_mech_coli.crm_amir import run_sim, Parameters
+from cr_mech_coli import crm_amir
 import cr_mech_coli as crm
 import numpy as np
 import cv2 as cv
@@ -16,7 +16,7 @@ ERROR_COST = 1e6
 PIXELS_PER_MICRON = 102 / 10
 
 
-def calculate_angle(p: np.ndarray, parameters: Parameters) -> float:
+def calculate_angle(p: np.ndarray, parameters: crm_amir.Parameters) -> float:
     intersection = np.array([parameters.block_size, parameters.domain_size / 2.0])
     endpoint = p[-1] if p[-1, 0] >= p[0, 0] else p[0]
     if endpoint[0] < parameters.block_size:
@@ -28,8 +28,8 @@ def calculate_angle(p: np.ndarray, parameters: Parameters) -> float:
     return angle
 
 
-def generate_parameters() -> Parameters:
-    parameters = Parameters()
+def generate_parameters() -> crm_amir.Parameters:
+    parameters = crm_amir.Parameters()
     parameters.block_size = 25.0
     parameters.dt = 0.01
     parameters.t_max = 200
@@ -53,7 +53,7 @@ def plot_angles_and_endpoints():
     rod_rigidities = np.linspace(0.3, 30, 20, endpoint=True)
     for rod_rigidity in rod_rigidities:
         parameters.rod_rigidity = rod_rigidity
-        agents = run_sim(parameters)
+        agents = crm_amir.run_sim(parameters)
         t = np.array([a[0] for a in agents]) * parameters.dt
 
         angles = [
@@ -205,7 +205,7 @@ def objective_function(
         parameters.__setattr__(name, value)
 
     try:
-        rods = run_sim(parameters)
+        rods = crm_amir.run_sim_with_relaxation(parameters)
     except ValueError:
         if print_output:
             print(f"ERROR Returning {ERROR_COST}")
@@ -487,7 +487,7 @@ def __render_single_snapshot(iter, agent, parameters, render_settings):
 
 def render_snapshots():
     parameters = generate_parameters()
-    agents = run_sim(parameters)
+    agents = crm_amir.run_sim(parameters)
 
     n_saves = 10
 
