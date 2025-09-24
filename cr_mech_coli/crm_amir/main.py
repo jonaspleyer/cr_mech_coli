@@ -359,6 +359,7 @@ def plot_profile(
     workers: int,
     set_params,
     output_dir,
+    pyargs,
 ):
     b_lower = list(x0_bounds.values())[n][0]
     b_upper = list(x0_bounds.values())[n][2]
@@ -374,6 +375,7 @@ def plot_profile(
         repeat(iterations_data),
         repeat(x0_bounds),
         repeat(set_params),
+        repeat(pyargs),
     )
 
     pool = mp.Pool(workers)
@@ -491,6 +493,7 @@ def compare_with_data(
                 pyargs.workers,
                 set_params,
                 output_dir,
+                pyargs,
             )
 
     return {k: res.x[n] for n, (k, _) in enumerate(x0_bounds.items())}
