@@ -330,20 +330,15 @@ def calculate_profile_point(
     assert len(x0_bounds_new) + 1 == len(x0_bounds)
     assert len(x0) == len(x0_bounds_new)
     assert len(x0) == len(bounds)
-    # new_args = (args[0], copy.deepcopy(args[1]), x0_bounds_new)
-    # parameters = create_default_parameters(positions)
-    # parameters.__setattr__(list(x0_bounds.keys())[n], pnew)
 
     res = sp.optimize.differential_evolution(
         objective_function,
-        # x0=x0,
         args=(
             set_params | {list(x0_bounds.keys())[n]: pnew},
             positions_data,
             iterations_data,
             x0_bounds_new,
         ),
-        # method="L-BFGS-B",
         bounds=bounds,
         maxiter=100,
         popsize=30,
