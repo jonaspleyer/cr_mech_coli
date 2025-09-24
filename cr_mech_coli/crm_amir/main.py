@@ -445,7 +445,7 @@ def compare_with_data(
     iterations_data,
     workers: int = 1,
     set_params={},
-    n_vertices: int = 20,
+    seed: int = 20,
     output_dir="out/crm_amir/profiles-full/",
 ):
     output_dir = Path(output_dir)
