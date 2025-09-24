@@ -322,6 +322,7 @@ def calculate_profile_point(
     iterations_data,
     x0_bounds: dict,
     set_params,
+    pyargs,
 ):
     x0_bounds_new = {k: v for i, (k, v) in enumerate(x0_bounds.items()) if i != n}
     x0 = [p for i, p in enumerate(popt) if i != n]
@@ -340,9 +341,9 @@ def calculate_profile_point(
             x0_bounds_new,
         ),
         bounds=bounds,
-        maxiter=350,
-        popsize=30,
-        mutation=(0, 1.2),
+        maxiter=pyargs.maxiter_profiles,
+        popsize=pyargs.popsize_profiles,
+        mutation=(0, 1.6),
         seed=n,
     )
     return res
@@ -463,8 +464,8 @@ def compare_with_data(
         args=(set_params, positions_data, iterations_data, x0_bounds, False, True),
         # method="L-BFGS-B",
         bounds=bounds,
-        maxiter=350,
-        popsize=30,
+        maxiter=pyargs.maxiter,
+        popsize=pyargs.popsize,
         workers=pyargs.workers,
         tol=0,
         polish=True,
@@ -478,19 +479,19 @@ def compare_with_data(
 
     if not pyargs.skip_profiles:
         for n in tqdm(
-        range(len(x0_bounds)), total=len(x0_bounds), desc="Plotting Profiles"
-    ):
+            range(len(x0_bounds)), total=len(x0_bounds), desc="Plotting Profiles"
+        ):
             plot_profile(
-            n,
-            res.x,
-            res.fun,
-            positions_data,
-            iterations_data,
-            x0_bounds,
-            workers,
-            set_params,
-            output_dir,
-        )
+                n,
+                res.x,
+                res.fun,
+                positions_data,
+                iterations_data,
+                x0_bounds,
+                pyargs.workers,
+                set_params,
+                output_dir,
+            )
 
     return {k: res.x[n] for n, (k, _) in enumerate(x0_bounds.items())}
 
@@ -553,15 +554,41 @@ def obtain_data(output_dir, n_vertices):
 
 
 def crm_amir_main():
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter
+    )
     parser.add_argument(
         "-w", "--workers", type=int, default=-1, help="Number of threads"
     )
     parser.add_argument(
-        "--skip-profiles"
+        "--skip-profiles",
         default=False,
         help="Skips Plotting of profiles for parameters",
         action="store_true",
+    )
+    parser.add_argument(
+        "--maxiter",
+        type=int,
+        default=50,
+        help="Maximum iterations of the optimization routine",
+    )
+    parser.add_argument(
+        "--popsize",
+        type=int,
+        default=30,
+        help="Population Size of the optimization routine",
+    )
+    parser.add_argument(
+        "--maxiter-profiles",
+        type=int,
+        default=50,
+        help="Maximum iterations of the optimization routine for likelihood profiles",
+    )
+    parser.add_argument(
+        "--popsize-profiles",
+        type=int,
+        default=30,
+        help="Population Size of the optimization routine for likelihood profiles",
     )
     pyargs = parser.parse_args()
     if pyargs.workers == -1:
