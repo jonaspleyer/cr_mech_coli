@@ -32,7 +32,7 @@ def calculate_angle(p: np.ndarray, parameters: crm_amir.Parameters) -> float:
 def generate_parameters(**kwargs) -> crm_amir.Parameters:
     parameters = crm_amir.Parameters()
     parameters.block_size = 25.0
-    parameters.dt = 0.01
+    parameters.dt = 0.005
     parameters.t_max = 200
     parameters.domain_size = 400
     n_vertices = 20
@@ -42,7 +42,7 @@ def generate_parameters(**kwargs) -> crm_amir.Parameters:
     parameters.save_interval = 20
     parameters.damping = 0.02
     parameters.spring_tension = 10.0
-    parameters.drag_force = 0.03
+    parameters.drag_force = 0.005
 
     for k, v in kwargs:
         parameters.__setattr__(k, v)
@@ -340,7 +340,7 @@ def calculate_profile_point(
             x0_bounds_new,
         ),
         bounds=bounds,
-        maxiter=100,
+        maxiter=350,
         popsize=30,
         mutation=(0, 1.2),
         seed=n,
@@ -463,7 +463,7 @@ def compare_with_data(
         args=(set_params, positions_data, iterations_data, x0_bounds, False, True),
         # method="L-BFGS-B",
         bounds=bounds,
-        maxiter=200,
+        maxiter=350,
         popsize=30,
         workers=workers,
         tol=0,
