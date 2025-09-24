@@ -402,7 +402,8 @@ def plot_profile(
     ax.plot(p_samples, costs, color=crm.plotting.COLOR3)
     ax.scatter(popt[n], final_cost, marker="x", color="red", alpha=0.7)
     name = list(x0_bounds.keys())[n].replace("_", " ")
-    ax.set_xlabel(name)
+    units = list(x0_bounds.items())[n][1][3]
+    ax.set_xlabel(f"{name} {units}")
     ax.set_ylabel("Cost Function")
 
     output_dir.mkdir(parents=True, exist_ok=True)
