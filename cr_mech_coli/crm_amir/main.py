@@ -137,7 +137,7 @@ def plot_angles_and_endpoints():
     fig.savefig("out/crm_amir/angles-endpoints.png")
 
 
-def extract_mask(iteration, img, n_vertices: int, output_dir=None):
+def extract_mask(iteration, img, n_vertices: int, output_dir):
     img2 = np.copy(img)
     filt1 = img2[:, :, 1] <= 150
     img2[filt1] = [0, 0, 0]
@@ -174,11 +174,12 @@ def extract_mask(iteration, img, n_vertices: int, output_dir=None):
         print(e)
         ret = None
 
-    if output_dir is not None:
-        cv.imwrite(output_dir / f"progression-{iteration:06}-1.png", img)
-        cv.imwrite(output_dir / f"progression-{iteration:06}-2.png", img2)
-        cv.imwrite(output_dir / f"progression-{iteration:06}-3.png", img3)
-        cv.imwrite(output_dir / f"progression-{iteration:06}-4.png", img4)
+    odir = output_dir / "progressions"
+    odir.mkdir(parents=True, exist_ok=True)
+    cv.imwrite(odir / f"step1-{iteration:06}.png", img)
+    cv.imwrite(odir / f"step2-{iteration:06}.png", img2)
+    cv.imwrite(odir / f"step3-{iteration:06}.png", img3)
+    cv.imwrite(odir / f"step4-{iteration:06}.png", img4)
 
     return ret
 
