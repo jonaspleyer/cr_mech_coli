@@ -11,7 +11,7 @@ from pathlib import Path
 import multiprocessing as mp
 import argparse
 
-GREEN_COLOR = np.array([21.5 / 100, 86.6 / 100, 21.6 / 100]) * 255
+GREEN_COLOR = np.array([95, 231, 76])
 
 ERROR_COST = 1e6
 PIXELS_PER_MICRON = 102 / 10
@@ -435,10 +435,10 @@ def compare_with_data(
     output_dir = Path(output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    # data_files = glob("data/crm_amir/elastic/positions/*.txt")
     data_files = [
-        (24, "data/crm_amir/elastic/frames/000024.png"),
-        (32, "data/crm_amir/elastic/frames/000032.png"),
+        (24, "data/crm_amir/elastic-segmented/000024-masked.png"),
+        (32, "data/crm_amir/elastic-segmented/000032-masked.png"),
+        (64, "data/crm_amir/elastic-segmented/000064-masked.png"),
     ]
 
     positions_data = np.array(
