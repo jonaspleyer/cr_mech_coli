@@ -440,7 +440,8 @@ def create_default_parameters(positions_data, iterations_data):
     parameters.t_max = 3
     parameters.save_interval = parameters.t_max
 
-    return parameters
+    t_relax = iterations_data[2] - iterations_data[1]
+    return parameters, t_relax
 
 
 def compare_with_data(
@@ -454,16 +455,6 @@ def compare_with_data(
 ):
     output_dir = Path(output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
-
-    data_files = [
-        (24, "data/crm_amir/elastic-segmented/000024-masked.png"),
-        (32, "data/crm_amir/elastic-segmented/000032-masked.png"),
-        (64, "data/crm_amir/elastic-segmented/000064-masked.png"),
-    ]
-
-    positions_data = np.array(
-        [extract_mask(iter, cv.imread(df), n_vertices) for iter, df in data_files]
-    )
 
     for n, p in enumerate(positions_data):
         ind = np.argsort(p[:, 0])
@@ -542,6 +533,27 @@ def render_snapshots(agents, parameters, output_dir):
         )
 
 
+def obtain_data(output_dir, n_vertices):
+    output_dir = Path(output_dir)
+    # data_files = glob("data/crm_amir/elastic/positions/*.txt")
+    data_files = [
+        (10, "data/crm_amir/elastic-segmented/000024-masked.png"),
+        (17, "data/crm_amir/elastic-segmented/000032-masked.png"),
+        (34, "data/crm_amir/elastic-segmented/000064-masked.png"),
+    ]
+
+    positions_data = np.array(
+        [
+            extract_mask(iter, cv.imread(df), n_vertices, output_dir)
+            for iter, df in data_files
+        ]
+    )
+    iterations_data = np.array([d[0] for d in data_files])
+    iterations_data -= np.min(iterations_data)
+
+    return positions_data, iterations_data
+
+
 def crm_amir_main():
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -557,6 +569,8 @@ def crm_amir_main():
     agents = [x[1].agent for x in crm_amir.run_sim(parameters)]
     render_snapshots(agents, parameters, Path("out/crm_amir/"))
 
+    positions_data, iterations_data = obtain_data("out/crm_amir/", n_vertices=20)
+
     # Define which parameters should be optimized
     x0_bounds = {
         "rod_rigidity": (0.0001, 20.0, 250),  # rod_rigidity,
@@ -565,7 +579,12 @@ def crm_amir_main():
         "growth_rate": (0.0, 0.01, 0.15),  # growth_rate,
         "spring_tension": (0.0000, 0.01, 30.0),  # spring_tension
     }
-    compare_with_data(x0_bounds, workers=pyargs.workers)
+    popt = compare_with_data(
+        x0_bounds,
+        positions_data,
+        iterations_data,
+        workers=pyargs.workers,
+    )
 
     x0_bounds_reduced = {
         "rod_rigidity": (0.0001, 20.0, 250),  # rod_rigidity,
@@ -579,6 +598,8 @@ def crm_amir_main():
     }
     compare_with_data(
         x0_bounds_reduced,
+        positions_data,
+        iterations_data,
         workers=pyargs.workers,
         set_params=set_params,
         output_dir="out/crm_amir/profiles-without-spring-tension/",
@@ -597,6 +618,8 @@ def crm_amir_main():
     }
     compare_with_data(
         x0_bounds_reduced,
+        positions_data,
+        iterations_data,
         workers=pyargs.workers,
         set_params=set_params,
         output_dir="out/crm_amir/profiles-reduced/",
