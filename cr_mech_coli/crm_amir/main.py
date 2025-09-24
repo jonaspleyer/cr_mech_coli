@@ -429,11 +429,11 @@ def create_default_parameters(positions_data, iterations_data):
     estimated_growth_rate = (
         np.log(lengths_data[1] / lengths_data[0] + 1) / parameters.t_max
     )
-    parameters.growth_rate = estimated_growth_rate
+    parameters.growth_rate = estimated_growth_rate  # 1 /seconds
 
-    parameters.dt = 0.01
-    parameters.t_max = 3
-    parameters.save_interval = parameters.t_max
+    parameters.dt = 0.01  # seconds
+    parameters.t_max = iterations_data[1] - iterations_data[0]  # seconds
+    parameters.save_interval = parameters.t_max  # seconds
 
     t_relax = iterations_data[2] - iterations_data[1]
     return parameters, t_relax
