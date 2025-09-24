@@ -197,11 +197,13 @@ def objective_function(
     params,
     set_params: dict,
     positions_data,
+    iterations_data,
     x0_bounds,
     return_all=False,
     print_output=False,
 ):
-    parameters = create_default_parameters(positions_data)
+    parameters, t_relax = create_default_parameters(positions_data, iterations_data)
+
     for k, v in set_params.items():
         parameters.__setattr__(k, v)
 
@@ -210,7 +212,7 @@ def objective_function(
         parameters.__setattr__(name, value)
 
     try:
-        rods = crm_amir.run_sim_with_relaxation(parameters)
+        rods = crm_amir.run_sim_with_relaxation(parameters, t_relax)
     except ValueError:
         if print_output:
             print(f"ERROR Returning {ERROR_COST}")
@@ -257,10 +259,15 @@ def objective_function(
 
 
 def plot_results(
-    popt, positions_data: np.ndarray, x0_bounds: dict, set_params, output_dir
+    popt,
+    positions_data: np.ndarray,
+    iterations_data,
+    x0_bounds: dict,
+    set_params,
+    output_dir,
 ):
     p_rods, positions_data, parameters = objective_function(
-        popt, set_params, positions_data, x0_bounds, return_all=True
+        popt, set_params, positions_data, iterations_data, x0_bounds, return_all=True
     )
     p0 = p_rods[0]
     p1 = p_rods[1]
@@ -302,7 +309,8 @@ def plot_results(
     fig.savefig(output_dir / "fit-comparison.pdf")
     plt.close(fig)
 
-    agents = [x[1].agent for x in crm_amir.run_sim_with_relaxation(parameters)]
+    t_relax = iterations_data[2] - iterations_data[1]
+    agents = [x[1].agent for x in crm_amir.run_sim_with_relaxation(parameters, t_relax)]
     for a in agents:
         a.radius = np.float32(parameters.domain_size / 50)
     render_snapshots(agents, parameters, output_dir)
@@ -312,7 +320,8 @@ def calculate_profile_point(
     n: int,
     pnew: float,
     popt,
-    positions: np.ndarray,
+    positions_data: np.ndarray,
+    iterations_data,
     x0_bounds: dict,
     set_params,
 ):
@@ -330,7 +339,12 @@ def calculate_profile_point(
     res = sp.optimize.differential_evolution(
         objective_function,
         # x0=x0,
-        args=(set_params | {list(x0_bounds.keys())[n]: pnew}, positions, x0_bounds_new),
+        args=(
+            set_params | {list(x0_bounds.keys())[n]: pnew},
+            positions_data,
+            iterations_data,
+            x0_bounds_new,
+        ),
         # method="L-BFGS-B",
         bounds=bounds,
         maxiter=100,
@@ -345,7 +359,8 @@ def plot_profile(
     n: int,
     popt,
     final_cost: float,
-    positions,
+    positions_data,
+    iterations_data,
     x0_bounds: dict,
     workers: int,
     set_params,
@@ -361,7 +376,8 @@ def plot_profile(
         repeat(n),
         p_samples,
         repeat(popt),
-        repeat(positions),
+        repeat(positions_data),
+        repeat(iterations_data),
         repeat(x0_bounds),
         repeat(set_params),
     )
@@ -398,16 +414,18 @@ def plot_profile(
     plt.close(fig)
 
 
-def create_default_parameters(positions):
+def create_default_parameters(positions_data, iterations_data):
     parameters = generate_parameters()
-    parameters.n_vertices = positions.shape[1]
+    parameters.n_vertices = positions_data.shape[1]
 
     # Define size of the domain
     # Image has 604 pixels and 100 pixles correspond to 10µm
     parameters.domain_size = 604 / PIXELS_PER_MICRON  # in µm
     parameters.block_size = 200 / PIXELS_PER_MICRON  # in µm
 
-    segments_data = np.linalg.norm(positions[:, 1:] - positions[:, :-1], axis=2)
+    segments_data = np.linalg.norm(
+        positions_data[:, 1:] - positions_data[:, :-1], axis=2
+    )
     lengths_data = np.sum(segments_data, axis=1)
 
     # Set the initial rod length
@@ -428,7 +446,9 @@ def create_default_parameters(positions):
 
 def compare_with_data(
     x0_bounds,
-    workers: int,
+    positions_data,
+    iterations_data,
+    workers: int = 1,
     set_params={},
     n_vertices: int = 20,
     output_dir="out/crm_amir/profiles-full/",
@@ -455,7 +475,7 @@ def compare_with_data(
     res = sp.optimize.differential_evolution(
         objective_function,
         # x0,
-        args=(set_params, positions_data, x0_bounds, False, True),
+        args=(set_params, positions_data, iterations_data, x0_bounds, False, True),
         # method="L-BFGS-B",
         bounds=bounds,
         maxiter=200,
@@ -464,10 +484,12 @@ def compare_with_data(
         tol=0,
         polish=True,
         mutation=(0, 1.2),
-        seed=n_vertices,
+        seed=seed,
     )
 
-    plot_results(res.x, positions_data, x0_bounds, set_params, output_dir)
+    plot_results(
+        res.x, positions_data, iterations_data, x0_bounds, set_params, output_dir
+    )
 
     for n in tqdm(
         range(len(x0_bounds)), total=len(x0_bounds), desc="Plotting Profiles"
@@ -477,6 +499,7 @@ def compare_with_data(
             res.x,
             res.fun,
             positions_data,
+            iterations_data,
             x0_bounds,
             workers,
             set_params,

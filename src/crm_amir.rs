@@ -346,10 +346,11 @@ fn run_sim(
 }
 
 #[pyfunction]
-#[pyo3(signature = (parameters, initial_pos=None))]
+#[pyo3(signature = (parameters, t_relax, initial_pos=None))]
 fn run_sim_with_relaxation(
     py: Python,
     parameters: &Parameters,
+    t_relax: f32,
     initial_pos: Option<Bound<numpy::PyArray2<f32>>>,
 ) -> PyResult<Vec<(u64, FixedRod)>> {
     // Run first iteration of simulation
@@ -364,6 +365,7 @@ fn run_sim_with_relaxation(
     let mut new_parameters = parameters.clone();
     // Remove the drag force and run simulation again
     new_parameters.drag_force = 0.0;
+    new_parameters.t_max = t_relax;
     let (iter_final, agent) = run_sim(new_parameters, Some(initial_pos))?[1].clone();
 
     // Append last rods to results
