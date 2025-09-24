@@ -230,8 +230,6 @@ def objective_function(
     p_rods[:, :, 1] = parameters.domain_size - p_rods[:, :, 1]
 
     # Shift such that start points align
-
-    positions_data = np.array([*positions_data, positions_data[0]])
     positions_data = (
         np.array([parameters.domain_size, 0]) - np.array([1, -1]) * positions_data
     )
