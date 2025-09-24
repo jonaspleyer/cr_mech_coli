@@ -363,7 +363,7 @@ def plot_profile(
 ):
     b_lower = list(x0_bounds.values())[n][0]
     b_upper = list(x0_bounds.values())[n][2]
-    p_samples = np.linspace(b_lower, b_upper)
+    p_samples = np.linspace(b_lower, b_upper, pyargs.samples_profiles, endpoint=True)
 
     from itertools import repeat
 
@@ -592,6 +592,12 @@ def crm_amir_main():
         type=int,
         default=30,
         help="Population Size of the optimization routine for likelihood profiles",
+    )
+    parser.add_argument(
+        "--samples-profiles",
+        type=int,
+        default=50,
+        help="Number of sample points for profile likelihood plots",
     )
     pyargs = parser.parse_args()
     if pyargs.workers == -1:
