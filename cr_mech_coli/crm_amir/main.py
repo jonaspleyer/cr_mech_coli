@@ -443,7 +443,7 @@ def compare_with_data(
     x0_bounds,
     positions_data,
     iterations_data,
-    workers: int = 1,
+    pyargs,
     set_params={},
     seed: int = 20,
     output_dir="out/crm_amir/profiles-full/",
@@ -465,7 +465,7 @@ def compare_with_data(
         bounds=bounds,
         maxiter=350,
         popsize=30,
-        workers=workers,
+        workers=pyargs.workers,
         tol=0,
         polish=True,
         mutation=(0, 1.2),
@@ -476,10 +476,11 @@ def compare_with_data(
         res.x, positions_data, iterations_data, x0_bounds, set_params, output_dir
     )
 
-    for n in tqdm(
+    if not pyargs.skip_profiles:
+        for n in tqdm(
         range(len(x0_bounds)), total=len(x0_bounds), desc="Plotting Profiles"
     ):
-        plot_profile(
+            plot_profile(
             n,
             res.x,
             res.fun,
@@ -556,6 +557,12 @@ def crm_amir_main():
     parser.add_argument(
         "-w", "--workers", type=int, default=-1, help="Number of threads"
     )
+    parser.add_argument(
+        "--skip-profiles"
+        default=False,
+        help="Skips Plotting of profiles for parameters",
+        action="store_true",
+    )
     pyargs = parser.parse_args()
     if pyargs.workers == -1:
         pyargs.workers = mp.cpu_count()
@@ -587,7 +594,7 @@ def crm_amir_main():
         x0_bounds,
         positions_data,
         iterations_data,
-        workers=pyargs.workers,
+        pyargs,
     )
     exit()
 
