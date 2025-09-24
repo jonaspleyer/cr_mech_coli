@@ -491,6 +491,8 @@ def compare_with_data(
             output_dir,
         )
 
+    return {k: res.x[n] for n, (k, _) in enumerate(x0_bounds.items())}
+
 
 def __render_single_snapshot(iter, agent, parameters, render_settings, output_dir):
     green = (np.uint8(44), np.uint8(189), np.uint8(25))
@@ -566,13 +568,20 @@ def crm_amir_main():
 
     positions_data, iterations_data = obtain_data("out/crm_amir/", n_vertices=20)
 
+    # Define globals for all optimizations
+    rod_rigidity = (0.0, 20.0, 350, "[pix/s²]")
+    drag_force = (0.0000, 0.1, 0.5, "[1/s²]")
+    damping = (0.000, 1.0, 0.15, "[1/s]")
+    growth_rate = (0.0, 0.01, 0.05, "[1/s]")
+    spring_tension = (5, 30.0, 150.0, "[1/pix]")
+
     # Define which parameters should be optimized
     x0_bounds = {
-        "rod_rigidity": (0.0001, 20.0, 250),  # rod_rigidity,
-        "drag_force": (0.0000, 0.1, 3.0),  # drag_force,
-        "damping": (0.000, 1.0, 2.0),  # damping,
-        "growth_rate": (0.0, 0.01, 0.15),  # growth_rate,
-        "spring_tension": (0.0000, 0.01, 30.0),  # spring_tension
+        "rod_rigidity": rod_rigidity,
+        "drag_force": drag_force,
+        "damping": damping,
+        "growth_rate": growth_rate,
+        "spring_tension": spring_tension,
     }
     popt = compare_with_data(
         x0_bounds,
@@ -580,18 +589,18 @@ def crm_amir_main():
         iterations_data,
         workers=pyargs.workers,
     )
+    exit()
 
     x0_bounds_reduced = {
-        "rod_rigidity": (0.0001, 20.0, 250),  # rod_rigidity,
-        "drag_force": (0.0000, 0.1, 3.0),  # drag_force,
-        "damping": (0.000, 1.0, 2.0),  # damping,
-        "growth_rate": (0.0, 0.01, 0.15),  # growth_rate,
-        # "spring_tension": (0.0000, 0.01, 30.0),  # spring_tension
+        "rod_rigidity": rod_rigidity,
+        "drag_force": drag_force,
+        "damping": damping,
+        "growth_rate": growth_rate,
     }
     set_params = {
-        "spring_tension": 20,
+        "spring_tension": popt["spring_tension"],
     }
-    compare_with_data(
+    popt = compare_with_data(
         x0_bounds_reduced,
         positions_data,
         iterations_data,
@@ -601,15 +610,13 @@ def crm_amir_main():
     )
 
     x0_bounds_reduced = {
-        "rod_rigidity": (0.0001, 20.0, 250),  # rod_rigidity,
-        "drag_force": (0.0000, 0.1, 3.0),  # drag_force,
-        # "damping": (0.000, 1.0, 2.0),  # damping,
-        "growth_rate": (0.0, 0.01, 0.15),  # growth_rate,
-        # "spring_tension": (0.0000, 0.01, 30.0),  # spring_tension
+        "rod_rigidity": rod_rigidity,
+        "drag_force": drag_force,
+        "growth_rate": growth_rate,
     }
     set_params = {
-        "damping": 0.0,
-        "spring_tension": 20,
+        "damping": popt["damping"],
+        "spring_tension": set_params["spring_tension"],
     }
     compare_with_data(
         x0_bounds_reduced,
