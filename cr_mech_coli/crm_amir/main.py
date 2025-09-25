@@ -365,44 +365,24 @@ def calculate_profile_point(
         popsize=pyargs.popsize_profiles,
         mutation=(0, 1.6),
         seed=n,
+        polish=not pyargs.skip_polish_profiles,
     )
     return res
 
 
+def __calculate_profile_point_wrapper(args):
+    return calculate_profile_point(*args)
+
+
 def plot_profile(
     n: int,
+    p_samples,
+    costs,
     popt,
     final_cost: float,
-    positions_data,
-    iterations_data,
     x0_bounds: dict,
-    workers: int,
-    set_params,
     output_dir,
-    pyargs,
 ):
-    b_lower = list(x0_bounds.values())[n][0]
-    b_upper = list(x0_bounds.values())[n][2]
-    p_samples = np.linspace(b_lower, b_upper, pyargs.samples_profiles, endpoint=True)
-
-    from itertools import repeat
-
-    arglist = zip(
-        repeat(n),
-        p_samples,
-        repeat(popt),
-        repeat(positions_data),
-        repeat(iterations_data),
-        repeat(x0_bounds),
-        repeat(set_params),
-        repeat(pyargs),
-    )
-
-    pool = mp.Pool(workers)
-    results = pool.starmap(calculate_profile_point, arglist)
-    # results = [calculate_profile_point(*r) for r in arglist]
-    costs = np.array([r.fun for r in results])
-
     # Filter out results that have produced errors
     filt = costs != ERROR_COST
     costs = costs[filt]
@@ -490,8 +470,8 @@ def compare_with_data(
         popsize=pyargs.popsize,
         workers=pyargs.workers,
         tol=0,
-        polish=True,
-        mutation=(0, 1.2),
+        polish=not pyargs.skip_polish,
+        mutation=(0, 1.6),
         seed=seed,
     )
 
@@ -500,20 +480,39 @@ def compare_with_data(
     )
 
     if not pyargs.skip_profiles:
-        for n in tqdm(
-            range(len(x0_bounds)), total=len(x0_bounds), desc="Plotting Profiles"
-        ):
+        b_lower = [x[0] for x in x0_bounds.values()]
+        b_upper = [x[2] for x in x0_bounds.values()]
+        samples = np.linspace(b_lower, b_upper, pyargs.samples_profiles, endpoint=True)
+        counts = np.array([np.arange(samples.shape[1])] * samples.shape[0])
+
+        arglist = zip(
+            counts.reshape(-1),
+            samples.reshape(-1),
+            itertools.repeat(res.x),
+            itertools.repeat(positions_data),
+            itertools.repeat(iterations_data),
+            itertools.repeat(x0_bounds),
+            itertools.repeat(set_params),
+            itertools.repeat(pyargs),
+        )
+
+        pool = mp.Pool(pyargs.workers)
+        results = tqdm(
+            pool.imap(__calculate_profile_point_wrapper, arglist),
+            total=int(np.prod(samples.shape)),
+            desc="Plotting Profiles",
+        )
+        costs = np.array([r.fun for r in results]).reshape(counts.shape)
+
+        for n in range(len(x0_bounds)):
             plot_profile(
                 n,
+                samples[:, n],
+                costs[:, n],
                 res.x,
                 res.fun,
-                positions_data,
-                iterations_data,
                 x0_bounds,
-                pyargs.workers,
-                set_params,
                 output_dir,
-                pyargs,
             )
 
     return {k: res.x[n] for n, (k, _) in enumerate(x0_bounds.items())}
@@ -602,16 +601,25 @@ def crm_amir_main():
         help="Population Size of the optimization routine",
     )
     parser.add_argument(
+        "--skip-polish",
+        default=True,
+        action="store_true",
+        help="Skips polishing the result of the differential evolution algorithm",
+    )
+    parser.add_argument(
         "--maxiter-profiles",
         type=int,
-        default=50,
-        help="Maximum iterations of the optimization routine for likelihood profiles",
+        default=150,
     )
     parser.add_argument(
         "--popsize-profiles",
         type=int,
         default=30,
-        help="Population Size of the optimization routine for likelihood profiles",
+    )
+    parser.add_argument(
+        "--skip-polish-profiles",
+        default=True,
+        action="store_false",
     )
     parser.add_argument(
         "--samples-profiles",
