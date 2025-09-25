@@ -1042,39 +1042,42 @@ horizontal fluid flow that exerts a force onto the rod.
 This setup is displayed in figure~\ref{fig:amir-bending-simulation} (A).
 In order to model this setup, we also fixate the lower-most vertex of our rod at the bottom of the
 simulation domain.
-Furthermore, we introduce a force $\vec{F}_i = C \sin(\alpha_i)\vec{e}_x$ that acts similarlyl to
-Stoke's Law \textbf{TODO Citation} onto the normal component of each rod-segment where $\alpha_i$ is
-the angle of the rod edge between $\vec{x}_i$ and $\vec{x}_{i+1}$ and the x-axis.
+Furthermore, we introduce a force $\vec{F}_i = C |\vec{x}_i - \vec{x}_{i+1}|\sin(\alpha_i)\vec{e}_x$
+that acts similarlyl to Stoke's Law \textbf{TODO Citation} onto the normal component of each
+rod-segment where $\alpha_i$ is the angle of the rod edge between $\vec{x}_i$ and $\vec{x}_{i+1}$
+and the x-axis.
 We extract the position of the rod from the provided image and use it as intial value.
 Our simulation is split into two phases, one with an external force that initially bends the rod,
 and a second one during which the force is disabled and the cell returns to its original shape.
-\textbf{TODO maybe exclude second phase again}
 We compare the simulated positions with the extracted ones and calculate the euclidean distance
 between them.
 This value serves as the cost function that allows us to estimate the parameters of this model.
-Since this model is void of any interactions or cell division, we are left with the 5 parameters
-damping 
+Since this model is void of any interactions or cell division, we are left with 5 parameters:
+Magnitude of the drag force $C$, growth rate $\alpha$, rigidity of the rod $\eta$, spring tension
+$\gamma$ and damping constant $\lambda$.
 Figure~\ref{fig:amir-bending-simulation} (B) shows a snapshot of the initial (orange) and final
 (blue) position of the rod using the optimized parameters.
-Unfortunately the images only contain snapshots of a fully-bent or fully-relaxed rod without any
-intermediate steps.
-This effectively limits us to 2 datapoints and prohibits us from accurately estimating the
-parameters involved in the dynamics of the rod-bending.
-This effect can be seen in the likelihood profiles of the individual parameters.
-While the dragging force, growth rate and damping can be identified properly, the same can not be
-said for the rigidity and spring tension.
-The rigidity of the rod and spring tension exhibit non-identifiabilities with respect to larger
-values.
-Both of these behaviours are expected since firstly, the shape of the rod is almost exclusively
-straight, thus adding no further information except that a lower threshold of rigidity and spring
-tension should be present.
-
-\begin{itemize}
-    \item discuss why damping and spring tension can not be estimated: damping - missing dynamics,
-        spring tension - no elasticity with respect to elongation, more tension = better shape
-        preservation
-    \item TODO: also model relaxation part
-\end{itemize}
+While the dragging force, growth rate and damping can be identified properly, the same
+can not be said for the rod rigidity and spring tension which both exhibit non-identifiabilities.
+However this behaviour is expected since, the shape of the rod is almost exclusively straight,
+thus adding no further information except that a lower threshold of rigidity and spring tension
+should be present.
+Note that each point represented in the subfigures~\ref{fig:amir-bending-simulation} (C-G) was
+optimized again, meaning that higher values of rigidity and spring tension can also lead to higher
+values of drag forces.
+Furthermore the used images only contain snapshots of a fully-bent or fully-relaxed rod without any
+intermediate steps that cannot fully capture its dynamic.
+This effectively limits us to 2 datapoints and is likely the key factor that leads to the two local
+minima observed in the damping profile.
+This is further supported by the observation that the contributions to the cost function is evenly
+distributed between the bent and relaxed position of our system.
+In order to better understand this system, we reduce it by inserting a new parameter that determines
+the values of rod rigidity and spring tension via $\gamma=\gamma_0/s$ and $\eta=\eta_0 s$.
+We then optimize for this parameter and pick $\gamma_0=\SI{15}{\pixel}$ with
+$\eta_0=\SI{150}{\pixel\per\second\squared}$ which corresponds to $60\%$ of the previously considered
+interval.
+With this change, all parameters are identifiable.
+The corresponding plots can be seen in \ref{sec:supplement-parameter-profiles}.
 
 \begin{figure}
     \centering
