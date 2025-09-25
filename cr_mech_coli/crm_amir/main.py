@@ -205,11 +205,19 @@ def objective_function(
     parameters, t_relax = create_default_parameters(positions_data, iterations_data)
 
     for k, v in set_params.items():
-        parameters.__setattr__(k, v)
+        if k == "rigidity_to_spring_tension_ratio":
+            parameters.rod_rigidity = set_params["rod_rigidity"] * v
+            parameters.spring_tension = set_params["spring_tension"] / v
+        else:
+            parameters.__setattr__(k, v)
 
     # Variable Parameters
     for name, value in zip(x0_bounds.keys(), params):
-        parameters.__setattr__(name, value)
+        if name == "rigidity_to_spring_tension_ratio":
+            parameters.rod_rigidity = set_params["rod_rigidity"] * value
+            parameters.spring_tension = set_params["spring_tension"] / value
+        else:
+            parameters.__setattr__(name, value)
 
     try:
         rods = crm_amir.run_sim_with_relaxation(parameters, t_relax)
@@ -684,10 +692,11 @@ def crm_amir_main():
         "rod_rigidity": rod_rigidity,
         "drag_force": drag_force,
         "growth_rate": growth_rate,
+        "rigidity_to_spring_tension_ratio": (0.0, 1.0, 10.0, "[pix]"),
     }
     set_params = {
-        "damping": popt["damping"],
-        "spring_tension": set_params["spring_tension"],
+        "rod_rigidity": 150.0,
+        "spring_tension": 18.0,
     }
     compare_with_data(
         x0_bounds_reduced,
