@@ -270,6 +270,26 @@ def plot_results(
     p0 = p_rods[0]
     p1 = p_rods[1]
 
+    # Plot distribution of cost between bending and relaxation
+    fig, ax = plt.subplots(figsize=(8, 8))
+    diffs = np.linalg.norm(positions_data[1:] - p_rods[1:], axis=(1, 2))
+    labels = ["Bending", "Relaxation"]
+    b = ax.bar(labels, diffs, color=crm.plotting.COLOR3)
+    ax.bar_label(
+        b,
+        [f"{100 * p:.2f}%%" for p in diffs / np.sum(diffs)],
+        label_type="edge",
+        color=crm.plotting.COLOR5,
+        weight="bold",
+    )
+    ax.set_ylim(0, np.max(diffs) * 1.1)
+    ax.set_title("Cost Contributions")
+    ax.set_ylabel("Cost")
+    fig.savefig(output_dir / "cost-contributions.png")
+    fig.savefig(output_dir / "cost-contributions.pdf")
+    plt.close(fig)
+
+    # Plot Comparison of fit with positional data
     fig, ax = plt.subplots(figsize=(8, 8))
     crm.configure_ax(ax)
     ax.plot(p0[:, 1], p0[:, 0], color=crm.plotting.COLOR5, linestyle=":")
@@ -292,9 +312,9 @@ def plot_results(
     )
 
     # Define limits for plot
-    dx = parameters.domain_size / 4
+    dx = parameters.domain_size / 3
     ax.set_xlim(dx, parameters.domain_size - dx)
-    ax.set_ylim(0, parameters.domain_size - dx)
+    ax.set_ylim(0.7 * parameters.block_size, parameters.domain_size - dx)
     ax.fill_between(
         [0, parameters.domain_size],
         [parameters.block_size] * 2,
