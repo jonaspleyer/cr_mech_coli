@@ -279,7 +279,7 @@ def plot_results(
     p0 = p_rods[0]
     p1 = p_rods[1]
 
-    # Plot distribution of cost between bending and relaxation
+    #
     fig, ax = plt.subplots(figsize=(8, 8))
     diffs = np.linalg.norm(positions_data[1:] - p_rods[1:], axis=(1, 2))
     labels = ["Bending", "Relaxation"]
