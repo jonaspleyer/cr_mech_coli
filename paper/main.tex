@@ -863,9 +863,16 @@ is not dominated by outliers.
         \node at (0.03, 0.99)[anchor=north west, rectangle, draw, black, minimum width=15pt, minimum height=15pt]{\textbf{E}};
     \end{tikzonimage}
     \caption{
-        Progression of generated masks with estimated and exact positions.
-        Comparison of masks across generations. Compare estimated with exact rod lengths.
-"Iceberg plot"
+        Subfigures (A-C) show rendered masks of a simulation where the extracted positions have been
+        drawn within the individual agents.
+        Subfigure (D) displayes the average rod length of the exact and extracted data.
+        The light blue region is the mean distance between vertices of extracted and exact
+        positions which captures the inherent uncertainty of our method.
+        Subfigure (E) displays all of these distances on a logarithmic scale.
+        The colorscale represents earlier (darker) and later (brighter) temporal states of our
+        simulation.
+        Overall, this plot shows a widening of the distance distributions for increasing simulation
+        times.
     }
     \label{fig:benchmarking-extraction-algorithm}
 \end{figure}
