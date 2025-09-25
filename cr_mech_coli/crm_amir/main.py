@@ -10,6 +10,7 @@ from tqdm import tqdm
 from pathlib import Path
 import multiprocessing as mp
 import argparse
+import itertools
 
 GREEN_COLOR = np.array([95, 231, 76])
 
