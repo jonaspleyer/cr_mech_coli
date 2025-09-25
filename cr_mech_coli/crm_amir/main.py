@@ -648,11 +648,11 @@ def crm_amir_main():
     positions_data, iterations_data = obtain_data("out/crm_amir/", n_vertices=20)
 
     # Define globals for all optimizations
-    rod_rigidity = (0.0, 20.0, 350, "[pix/s²]")
-    drag_force = (0.0000, 0.1, 0.5, "[1/s²]")
-    damping = (0.000, 1.0, 0.15, "[1/s]")
+    rod_rigidity = (0.0, 20.0, 250, "[pix/s²]")
+    drag_force = (0.0000, 0.1, 1.5, "[1/s²]")
+    damping = (0.000, 1.0, 1.0, "[1/s]")
     growth_rate = (0.0, 0.01, 0.05, "[1/s]")
-    spring_tension = (5, 30.0, 150.0, "[1/pix]")
+    spring_tension = (5, 30.0, 30.0, "[1/s²]")
 
     # Define which parameters should be optimized
     x0_bounds = {
@@ -662,35 +662,34 @@ def crm_amir_main():
         "growth_rate": growth_rate,
         "spring_tension": spring_tension,
     }
-    popt = compare_with_data(
+    compare_with_data(
         x0_bounds,
         positions_data,
         iterations_data,
         pyargs,
     )
-    exit()
 
     x0_bounds_reduced = {
-        "rod_rigidity": rod_rigidity,
         "drag_force": drag_force,
         "damping": damping,
         "growth_rate": growth_rate,
+        "spring_tension": spring_tension,
     }
     set_params = {
-        "spring_tension": popt["spring_tension"],
+        "rod_rigidity": 150,
     }
-    popt = compare_with_data(
+    compare_with_data(
         x0_bounds_reduced,
         positions_data,
         iterations_data,
-        workers=pyargs.workers,
+        pyargs,
         set_params=set_params,
-        output_dir="out/crm_amir/profiles-without-spring-tension/",
+        output_dir="out/crm_amir/profiles-fixed-rod-rigidity/",
     )
 
     x0_bounds_reduced = {
-        "rod_rigidity": rod_rigidity,
         "drag_force": drag_force,
+        "damping": damping,
         "growth_rate": growth_rate,
         "rigidity_to_spring_tension_ratio": (0.0, 1.0, 10.0, "[pix]"),
     }
@@ -702,8 +701,9 @@ def crm_amir_main():
         x0_bounds_reduced,
         positions_data,
         iterations_data,
-        workers=pyargs.workers,
+        pyargs,
         set_params=set_params,
         output_dir="out/crm_amir/profiles-reduced/",
     )
+
     # plot_angles_and_endpoints()
