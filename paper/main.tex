@@ -1530,11 +1530,15 @@ parameters as global ones and once a certain threshold of tolerance is matched, 
 restriction and treating cells individually.
 This will allow the algorithm to initially search within a smaller space and possibly reach the
 optimium more quickly in total.
+Another factor that could be considered to improve performance is that individual parameters of
+cells which are spatially separated will not have an immediate effect on each other, thus presenting
+a loosely coupled or fully decoupled relationship.
+Depening on the solver, this information could be exploited.
 
 Our approach furthermore highlighted that we are able to detect non-identifiabilities.
 By choosing \texttt{cellular\_raza} as a modeling framework, we retain flexibility with respect to
 model design thus effectively allowing us to reduce our model as we continue working on it.
-\textt{cellular\_raza} allows us to change the underlying representation if such unidentifiabilities
+\texttt{cellular\_raza} allows us to change the underlying representation if such unidentifiabilities
 are determined to be structural (model-based) rather than practical (due to lack of
 data).\textbf{TODO CITATION}
 This allows us to iterate and find the model formulation which suits the data best but still retain
