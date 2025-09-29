@@ -1464,7 +1464,7 @@ Combining these two values, the position-comparison algorithm is $\approx 6.13(8
 \end{figure}
 
 %###################################################################################################
-\section{Discussion (TODO)}
+\section{Discussion}
 \label{section:discussion}
 
 With this work we have layed out a "blueprint" to estimate the parameters of \acp{abm} using
@@ -1495,63 +1495,94 @@ The case including division events produced parameter profiles with minima that 
 to estimate the chosen parameters.
 These results ca be traced back to a gap within the provided segmentation masks.
 
-
-
-\begin{itemize}
-    \item Model does not capture every aspect of rod-shaped bacteria. Needs to extended (see our
-        review).
-    \begin{enumerate}
-        \item polar interactions
-        \item differentiation for van Gogh bundles; surfactin-producing, matrix-producing cells.
-        \item Proper friction; this might have a huge implication on the estimation of
-            parameters~\cite{Grant2014}.
-            This paper has already implemented this~\cite{Doumic2020}.
-            We can build on top of that.
-        \item Extracellular Reactions~\cite{Li2025}
-        \item see supplement for full list \ref{table:simulation-aspects-supplement}
-    \end{enumerate}
-    \item Data Extraction: Skeletonization Algorithm ultimately not good enough for some scenarios
-        (i.e. overlapping of cells, endpoints can sometimes be "too short")
-    \begin{itemize}
-        \item Possibly use AI for new algorithm
-    \end{itemize}
-    \item Image generation; Produce high-quality near-realistic microscopic images with cell-masks
-        from scratch with mechanistic model; train cell-segmentation and more importantly
-        cell-tracking algorithms with that.
-    \item Lack of data -> this study establishes only methods -> apply it much more broadly in
-        future
-\end{itemize}
-
-\textbf{Discussion on the Individual Treatment}\\
-The individual treatment of the bacteria allows us in principle to estimate the distribution of the
+Our work shows that it is possible to estimate the parameters of \acp{abm} on a single-cell level.
+Together with the flexible nature of \texttt{cellular\_raza}, this opens up the possibility to
+design minimal \acp{abm} which can be fit to data.
+As such it formulates a blueprint for the parameter estimation of \acp{abm}.
+The developed methods are publicly available as a well-documented python package
+(\url{https://github.com/jonaspleyer/cr_mech_coli}).
+The individual treatment of the cells allows us in principle to estimate the distribution of the
 parameters directly without having to resort to any assumptions on the form of said distribution.
-This is true for any parameter, not just the growth rates, since we aim to estimate all mechanical
-parameters of our cellular model.
+This is true for any parameter, not just the growth rates, since our approach can be generalized to
+other individual cellular behaviours.
 
-The total parameter space $P$ is a product of all single spaces $P_i$ in which the parameters
-$p_i$ live $P=P_0\times P_1\times\dots$ but some of these parameters share the same space (let's
-assume $p_0,p_1\in \tilde{P}$).
-This leaves the open question as to weather the optimization algorithm could be modified to leverage
-this knowledge and obtain increased performance.
-For instance, it might be valuable to initially consider individual parameters as globally defined
-and start treating the individually after a certain amount of optimization steps.
+Future work should focus on multiple aspects that target challenges with respect to computational
+efficiency and accuracy and extending the described model.
+Additional biological effects include polar interactions~\cite{Duvernoy2018},
+differentiation~\cite{vanGestel2015}, extracellular reactions~\cite{Li2025} (see also
+table~\ref{table:simulation-aspects-supplement}).
+When it comes to the designed algorithms, we have already discussed that the performance of
+generating masks from computational results is the limiting factor for the performance of the
+imaging-based comparison algorithm.
+This problem could be targeted by rewriting existing code in C++ using native VTK~\cite{vtkBook}
+instead of relying on the wrapper library pyvista~\cite{Sullivan2019}.
+Another area of improvement is the position extraction algorithm which works well for cells living
+in 2D or thin sheets but will not hold up when multiple bacteria are overlapping.
+This task is well suited to be tackled by a purpose-built machine-learning tool that can either
+reconstruct masks or accurately extrapolate positions from incomplete (possibly overlapping) masks.
+Finally, the results of our computational model can be used to generate synthetic near-realistic
+microscopic brightfield images together with their corresponding cell masks.
+This combination of data allows us to train segmentation and more importantly tracking algorithms
+which require large amounts of data.
 
-\textbf{Discussion Identifiability and Model Reduction/Flexibility}\\
-But it also shows that the approach which we used is able to detect these problems.
-As we continue to develop these methods, we expect to be able to reuse many of the existing
-theoretical approaches such as likelihood estimation and uncertainty quantification which have
-already been developed extensively for less complex systems such as \acp{ode}.
-\textbf{TODO citations, also: is this discussion?}
-Fortunately, \texttt{cellular\_raza} was chosen to construct our model such that we are flexible in
-changing the underlying representation if should find that such unidentifiabilities are structural
-(model-based) rather than practical (due to lack of data).
+In order to speed up the optimization process, it could also be valuable to initially consider all
+parameters as global ones and once a certain threshold of tolerance is matched, losening this
+restriction and treating cells individually.
+This will allow the algorithm to initially search within a smaller space and possibly reach the
+optimium more quickly in total.
+
+Our approach furthermore highlighted that we are able to detect non-identifiabilities.
+By choosing \texttt{cellular\_raza} as a modeling framework, we retain flexibility with respect to
+model design thus effectively allowing us to reduce our model as we continue working on it.
+\textt{cellular\_raza} allows us to change the underlying representation if such unidentifiabilities
+are determined to be structural (model-based) rather than practical (due to lack of
+data).\textbf{TODO CITATION}
 This allows us to iterate and find the model formulation which suits the data best but still retain
 the mechanistic methodology of our approach.
 
-\textbf{Discussion Advanced Optimizations}\\
-\begin{itemize}
-    \item 
-\end{itemize}
+As we continue to develop these methods, we expect to be able to reuse many of the existing
+workflows\textbf{TODO better wording} such as likelihood estimation and uncertainty quantification
+which have already been developed extensively for less complex systems such as \acp{ode}
+\textbf{TODO CITATION}.
+
+% \begin{itemize}
+%     \item Summary:
+%         "blueprint" to estimate parameters of \ac{abm},
+%         bending of bacteria,
+%         individual nature of cells,
+%         fit model to data,
+%         without+with division
+%
+%     \item Model does not capture every aspect of rod-shaped bacteria. Needs to extended (see our
+%         review).
+%     \begin{enumerate}
+%         \item polar interactions
+%         \item differentiation for van Gogh bundles; surfactin-producing, matrix-producing cells.
+%         \item Proper friction; this might have a huge implication on the estimation of
+%             parameters~\cite{Grant2014}.
+%             This paper has already implemented this~\cite{Doumic2020}.
+%             We can build on top of that.
+%         \item Extracellular Reactions~\cite{Li2025}
+%         \item see supplement for full list \ref{table:simulation-aspects-supplement}
+%     \end{enumerate}
+%     \item Data Extraction: Skeletonization Algorithm ultimately not good enough for some scenarios
+%         (i.e. overlapping of cells, endpoints can sometimes be "too short")
+%     \begin{itemize}
+%         \item Possibly use AI for new algorithm
+%     \end{itemize}
+%     \item Image generation; Produce high-quality near-realistic microscopic images with cell-masks
+%         from scratch with mechanistic model; train cell-segmentation and more importantly
+%         cell-tracking algorithms with that.
+%     \item Lack of data -> this study establishes only methods -> apply it much more broadly in
+%         future
+% \end{itemize}
+%
+% \textbf{Discussion Identifiability and Model Reduction/Flexibility}\\
+%
+% \textbf{Discussion Advanced Optimizations}\\
+% \begin{itemize}
+%     \item 
+% \end{itemize}
 
 \section{Conclusion (TODO)}
 
