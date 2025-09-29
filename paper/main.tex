@@ -1128,8 +1128,8 @@ The corresponding plots can be seen in \ref{subsec:supplement-parameter-profiles
 \label{section:application-2}
 
 To show the usefulness of our previously developed methods (see
-section~\ref{section:parameter-estimation}), we will use them to estimate the parameters of a
-sequence of microscopic images of growing \texttt{E.Coli}.
+section~\ref{section:parameter-estimation}), we will use them to estimate the parameters individual
+growing \textit{E.Coli} using a sequence of microscopic images.
 The data we use~\cite{https://doi.org/10.3203/iwf/k-129} (see
 section~\ref{section:data-code-availability}) has been automatically segmented with the
 omnipose~\cite{Cutler2022} algorithm which provides us with the necessary cell masks.
@@ -1137,20 +1137,20 @@ omnipose~\cite{Cutler2022} algorithm which provides us with the necessary cell m
 % --------------------------------------------------------------------------------------------------
 \subsection{Individual Treatment}
 We have already suspected (see table~\ref{table:simulation-aspects}) that in order to properly
-estimate parameters of our system, we need to treat every cell-agent individually, thus assigning
+estimate parameters of our system, we need to treat every cell individually, thus assigning
 parameters on a single-cell level.
-This would mean to increase the total number of parameters that need to be sampled within an
+This means that we increase the total number of parameters that need to be sampled within an
 optimization routine.
 Given $N_c$ cells and $N_p$ parameters per cell and $N_u$ individual parameters (where
-$N_u\leq N_p$), the total amount of parameters is
+$N_u\leq N_p$), the total amount of parameters to be estimated is
 
 \begin{equation}
     N_{p,\text{total}} = N_u + N_c (N_p - N_u) = N_C N_p - (N_c - 1) N_u.
 \end{equation}
 
 It is clear, that we should avoid to needlessly assign every parameter individually since the volume
-of the space that needs to be sampled, scales exponentially with the dimension ie. the number of
-parameters.
+of the parameter space that needs to be sampled, scales exponentially with the dimension ie. the
+number of parameters.
 However, we will now present data that indicate that an individual treatment is in fact necessary.
 Figure~\ref{fig:estimated-growth-rates} shows the rod-lengths of individual bacteria which have been
 calculated from the extracted positions.
@@ -1218,16 +1218,15 @@ system, we need to treat the bacteria individually.
 % --------------------------------------------------------------------------------------------------
 \subsection{Without Division}
 For now, we will focus on a time-interval which does not contain any division events and at which
-the initial lag-phase of our bacteria os already passed.
+the initial lag-phase of our bacteria has already passed.
 By doing so, we can utilize the simpler and more performant position comparison scheme for our loss
 function.
 Furthermore, we need not to estimate the lag-time parameters which improves performance of our
 optimization algorithm.
-For this dataset, we assumed that all parameters which specify the interaction potential are
-identical across all agents but growth rates of the cells are individual.
-
+% For this dataset, we assumed that all parameters which specify the interaction potential are
+% identical across all agents but growth rates of the cells are individual.
 We chose to optimize for the damping of agents' movement within the medium, 3 interaction parameters
-of the Mie potential $n,m,V_0$ a single radius for all agents and growth rates which were chosen
+of the Mie potential $n,m,V_0$ a single radius $r$ for all agents and growth rates which were chosen
 individually for each cell.
 We removed any stochastic motion contributions by setting $D=0$.
 This leads to a total of $5+1\times 6=11$ variable parameters.
@@ -1239,9 +1238,10 @@ method.
 Finally, we performed a local minimization using the L-BFGS-B algorithm~\cite{Liu1989}.
 
 Figure~\ref{fig:parameter-estimates-single-step} shows profile-likelihoods for each optimized
-parameter with respect to the optimization results described before.
+parameter with respect to the optimization results.
 We can see that all parameters can be estimated by our optimization approach and that no
 non-identifiability~\cite{Raue2009} is present.
+These plots also show that the individual growth rates of the bacteria can be estimated effectively.
 
 \begin{figure}
     \centering
@@ -1312,58 +1312,64 @@ non-identifiability~\cite{Raue2009} is present.
 % --------------------------------------------------------------------------------------------------
 \subsection{With Division}
 
-In the next step, we extend our previously used time-series with additional images, which include
-cell division events which means that we now have to use the imaing-based comparison algorithm (see
+In the next step, we extend our previously used time-series with successive images including
+cell division events which means that we now have to use the imaging-based comparison algorithm (see
 section~\ref{section:parameter-estimation}).
 A practical problem in extending the time series is that the segmentation algorithm was not able to
 properly segment the individual bacteria around the division event which meant that we had to omit
 parts of the snapshots, leaving us with only incomplete data.
 
-Since we have already optimized said system, we can reduce the computational demand by choosing the
-parameters which were obtained by our previous attempts and extend them with the parameters that the
-daughter cells will carry.
-In addition to assigning growth rates individually, but we also need to consider division lengths at
-which the bacteria split.
-Since our simulation involves the division of 4 cells into 8 new ones, in principle, this would lead
-us to a total of $8$ new growth rates and $4$ division lengths.
-But to decrease the size of the parameter space, we assume that the growth rates of the daughter
-cells are identical between every sibling, leaving us at only $4$ new growth rates and a total of
-$8$ parameters.
-Future approaches should aim to loosen this assumption, allowing to optimize every new growth rate.
-To optimize this system, we again used the same optimization approach by seed with samples generated
-by latin-hypercube~\cite{McKay1979}, then applying the differential evolution
-algorithm~\cite{Storn1997} and finally a local minimization via L-BFGS-B~\cite{Liu1989}.
+% Since we have already optimized said system, we can reduce the computational demand by choosing the
+% parameters which were obtained by our previous attempts and extend them with the parameters that the
+% daughter cells will carry.
+We optimize for the same parameters as done before.
+In addition to assigning growth rates individually, we also need to consider division lengths at
+which the bacteria split and the new individual growth rates of the daughter cells as additional
+parameters.
+Since our simulation involves the division of 4 cells into 8 new ones, in principle, this leads
+to a total of $8$ new growth rates and $4$ division lengths.
+% But to decrease the size of the parameter space, we assume that the growth rates of the daughter
+% cells are identical between every sibling, leaving us at only $4$ new growth rates and a total of
+% $8$ parameters.
+% Future approaches should aim to loosen this assumption, allowing to optimize every new growth rate.
+To optimize this system, we used a similar optimization approach by again seeding with samples
+generated via latin-hypercube~\cite{McKay1979}, then applying the differential evolution
+algorithm~\cite{Storn1997} and finally a local minimization with Nelder-Mead~\cite{Gao2010}.
 We used the value $0.5$ for the parent penalty, which aims to provide a smooth transition between
 not accounting for them and assigning full weighting to this difference.
 Figure~\ref{fig:celldiffs-progression-with-division} shows the difference between the cell mask as
 given by the data and the cell mask predicted by the best fit of our model.
+As expected, the fully-optimized system does not produce differences where the parental penalty is
+required.
+However, its value is frequently used within the the optimization scheme itself.
 
 We can again calculate likelihood profiles for every optimized parameter.
-The results displayed in Figure~\ref{fig:likelihood-profiles-comparison-with-division} show that the
-values for the division lengths exhibit a decrease in steepness of the curve towards the left side
-of the estimated parameter.
-This can be attributed to the missing images which were not able to be segmented in our time series.
+The results displayed in Figure~\ref{fig:likelihood-profiles-comparison-with-division} show that
+some curves exhibit a plateau close to the calculated optimum of the estimated parameter.
+This concerns the division lengths and some growth rates of the mother bacteria which both determine
+if and when a cell divides.
+Such behaviour can be attributed to the missing images around the division events of the cells which
+were not able to be segmented.
+\textbf{TODO check this with data}
 It can be argued that this leads to a non-identifiability for the first division length while the
 remaining parameters are still identifiable although the effect is also notable.
 These results highlight a reassuring finding, namely that the method of profile-likelihood is able
 to properly display this lack of data.
-It therefore further underlines the accuracy of our methods.
-In comparison, the growth rates of the daughter cells display larger variations within their
-likelihood profiles.
-\textbf{TODO finish this; need more results for otimization of all daughter growth rates as well}
+It therefore further underlines the accuracy and predictive power of our methods.
 
-It has to be noted that this approach is computationally much more expensive compared to the simpler
-position-comparison algorithm.
+The imaging-based comparison algorithm is computationally much more expensive compared to the
+simpler position-comparison algorithm.
 There are 4 main steps which are executed within any single optimization iteration that contribute
 to the total wall time.
 These steps are prediction via the computational model ($15.63(21)\%$), mask adjustment of the data
 masks ($14.49(19)\%$), mask rendering for the numerical results ($69.2(1.4)\%$) and finally
 comparison of the masks ($0.68(5)\%$) (see section \ref{section:supplement-performance}).
-The masks which are provided by the data need to be adjusted such that the identifiers of the cells
-which are directly related to the chosen colors match with the ones used within the masks provided
-by the data.
-It is clear that the generation of masks from the numerical results takes up the majority of the
-work.
+The second step alters the masks provided by the data for every individual numerical simulation.
+This is required since we need to ensure that the colors of the data-masks match the colors of the
+masks produced by our computational model.
+To this end, we need to construct a family tree of the data-bacteria and compare with the
+\textit{in-silico} family tree.
+We can see that the generation of masks from the numerical results takes up the majority of the work.
 In addition, the step of mask adjustment would not have been required within the position-comparison
 algorithm.
 Combining these two values, the position-comparison algorithm is $\approx 6.13(8)$ times faster.
@@ -1575,6 +1581,39 @@ showcases the exponential growth of bacteria.
 The parameter ranges were chosen such that a suitable 
 Plots are chosen for visual ease; parameter ranges have been widened to ensure results are
 accurate (maybe just leave this in the appendix).
+
+\begin{figure}
+    \centering
+    \begin{tikzonimage}[width=0.33\textwidth]
+        {figures/crm_amir/profiles-reduced/fit-comparison.pdf}%
+        \node at (0.15, 0.86)[anchor=north west, rectangle, draw, black, minimum width=15pt, minimum height=15pt]{\textbf{B}};
+    \end{tikzonimage}%
+    \begin{tikzonimage}[width=0.33\textwidth]
+        {figures/crm_amir/profiles-reduced/drag force.pdf}%
+        \node at (0.15, 0.86)[anchor=north west, rectangle, draw, black, minimum width=15pt, minimum height=15pt]{\textbf{C}};
+    \end{tikzonimage}%
+    \begin{tikzonimage}[width=0.33\textwidth]
+        {figures/crm_amir/profiles-reduced/growth rate.pdf}%
+        \node at (0.15, 0.86)[anchor=north west, rectangle, draw, black, minimum width=15pt, minimum height=15pt]{\textbf{D}};
+    \end{tikzonimage}\\
+    \begin{tikzonimage}[width=0.33\textwidth]
+        {figures/crm_amir/profiles-reduced/rod rigidity.pdf}%
+        \node at (0.15, 0.86)[anchor=north west, rectangle, draw, black, minimum width=15pt, minimum height=15pt]{\textbf{E}};
+    \end{tikzonimage}%
+    \begin{tikzonimage}[width=0.33\textwidth]
+        {figures/crm_amir/profiles-reduced/rigidity to spring tension ratio.pdf}%
+        \node at (0.15, 0.86)[anchor=north west, rectangle, draw, black, minimum width=15pt, minimum height=15pt]{\textbf{F}};
+    \end{tikzonimage}%
+    \begin{tikzonimage}[width=0.33\textwidth]
+        {figures/crm_amir/profiles-reduced/damping.pdf}%
+        \node at (0.15, 0.86)[anchor=north west, rectangle, draw, black, minimum width=15pt, minimum height=15pt]{\textbf{G}};
+    \end{tikzonimage}%
+    \caption{
+        \textbf{TODO}
+    }
+\end{figure}
+
+\subsubsection{With Division}
 
 %TODO {explain profiles}
 \begin{figure}
