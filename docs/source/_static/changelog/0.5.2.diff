@@ -1,0 +1,57 @@
+ .cargo/config.toml                                 |   2 +
+ .github/workflows/CI.yml                           | 109 ++--
+ Cargo.toml                                         |   8 +-
+ README.md                                          |  40 +-
+ cr_mech_coli/__init__.py                           |   1 +
+ cr_mech_coli/cr_mech_coli.pyi                      |  34 +-
+ cr_mech_coli/crm_amir/__init__.py                  |   8 +
+ cr_mech_coli/crm_amir/crm_amir_rs.pyi              |   8 +
+ cr_mech_coli/crm_amir/main.py                      |   8 +
+ cr_mech_coli/crm_fit/crm_fit_rs.pyi                |   7 +
+ cr_mech_coli/crm_fit/plotting.py                   |   1 -
+ cr_mech_coli/crm_multilayer/crm_multilayer_rs.pyi  |  10 +
+ cr_mech_coli/crm_multilayer/main.py                | 423 +++++++++++----
+ cr_mech_coli/crm_perf_plots.py                     | 146 +++++
+ cr_mech_coli/simulation.py                         |   4 +-
+ data/crm_amir/README.md                            |  42 ++
+ data/crm_amir/elastic/.gitkeep                     |   0
+ data/crm_amir/obtain.py                            |  95 ++++
+ data/crm_amir/plastic/.gitkeep                     |   0
+ {scripts => data/scripts-old}/cp.ipynb             |   0
+ {scripts => data/scripts-old}/segment.ipynb        |   0
+ {scripts => data/scripts-old}/src/cp.py            |   0
+ docs/requirements.txt                              |   2 +-
+ docs/source/_static/changelog/0.5.1.diff           | 163 ++++++
+ .../computation-time-with-initial-agents.pdf       | Bin 0 -> 19426 bytes
+ .../computation-time-with-initial-agents.png       | Bin 0 -> 221433 bytes
+ docs/source/_static/performance/flamegraph.svg     | 491 +++++++++++++++++
+ .../crm_multilayer/multilayer-time-evolution.pdf   | Bin 0 -> 21492 bytes
+ .../crm_multilayer/multilayer-time-evolution.png   | Bin 0 -> 90222 bytes
+ docs/source/changelog.rst                          |  14 +-
+ docs/source/index.rst                              |   3 +-
+ docs/source/performance.rst                        |  13 +
+ docs/source/references.bib                         | 595 +++++++++++++++------
+ docs/source/scripts/crm_amir.rst                   |  10 +
+ docs/source/scripts/crm_multilayer.rst             |   4 +
+ docs/source/scripts/crm_perf_plots.rst             |   9 +
+ docs/source/scripts/index.rst                      |   2 +
+ docs/source/todo.rst                               |   2 +
+ paper/main.tex                                     |  58 +-
+ plots/fitting_extract_positions.py                 |  12 +-
+ pyproject.toml                                     |   9 +-
+ requirements.txt                                   |   5 +-
+ src/agent.rs                                       |  55 +-
+ src/bin/crm_bench.rs                               |  75 +++
+ src/{datatypes.rs => cell_container.rs}            | 120 ++++-
+ src/config.rs                                      | 566 ++++++++++++++++++++
+ src/crm_amir.rs                                    | 217 ++++++++
+ src/crm_fit/mod.rs                                 | 300 +++++++----
+ src/crm_multilayer.rs                              |  90 +++-
+ src/lib.rs                                         |  31 +-
+ src/sampling.rs                                    |   5 -
+ src/simulation.rs                                  | 527 +++---------------
+ tests/test_extract_positions.py                    |  69 +++
+ tests/test_fit.py                                  |   2 +-
+ tests/test_getting_started.py                      |   7 +-
+ tests/test_image_generation_basic.py               |   2 +-
+ 56 files changed, 3442 insertions(+), 962 deletions(-)

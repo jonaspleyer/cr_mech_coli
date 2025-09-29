@@ -1,0 +1,217 @@
+ .gitattributes                                     |    2 +
+ Cargo.lock                                         |  687 ++++++++----
+ Cargo.toml                                         |   27 +-
+ cr_mech_coli/cr_mech_coli.pyi                      |  118 ++-
+ cr_mech_coli/crm_amir/crm_amir_rs.pyi              |    2 +-
+ cr_mech_coli/crm_divide.py                         | 1010 ++++++++++++++++++
+ cr_mech_coli/crm_estimate_params/main.py           |   59 +-
+ cr_mech_coli/crm_fit/crm_fit_rs.pyi                |   71 +-
+ cr_mech_coli/crm_fit/main.py                       |  155 ++-
+ cr_mech_coli/crm_fit/plotting.py                   |   95 +-
+ cr_mech_coli/datatypes.py                          |    2 +-
+ cr_mech_coli/fitting.py                            |   18 +-
+ cr_mech_coli/imaging.py                            |   47 +-
+ .../0002/images/{image001064.png => 001064.png}    |  Bin
+ .../0002/images/{image001078.png => 001078.png}    |  Bin
+ ...{image001064-markers.csv => 001064-markers.csv} |    0
+ ...{image001078-markers.csv => 001078-markers.csv} |    0
+ data/crm_fit/0004/images/001044.png                |  Bin 0 -> 104360 bytes
+ data/crm_fit/0004/images/001045.png                |  Bin 0 -> 108958 bytes
+ data/crm_fit/0004/images/001046.png                |  Bin 0 -> 109232 bytes
+ data/crm_fit/0004/images/001047.png                |  Bin 0 -> 109560 bytes
+ data/crm_fit/0004/images/001048.png                |  Bin 0 -> 106903 bytes
+ data/crm_fit/0004/images/001049.png                |  Bin 0 -> 108785 bytes
+ data/crm_fit/0004/images/001052.png                |  Bin 0 -> 108943 bytes
+ data/crm_fit/0004/masks/001044-markers.csv         |  576 ++++++++++
+ data/crm_fit/0004/masks/001045-markers.csv         |  576 ++++++++++
+ data/crm_fit/0004/masks/001046-markers.csv         |  576 ++++++++++
+ data/crm_fit/0004/masks/001047-markers.csv         |  576 ++++++++++
+ data/crm_fit/0004/masks/001048-markers.csv         |  576 ++++++++++
+ data/crm_fit/0004/masks/001049-markers.csv         |  576 ++++++++++
+ data/crm_fit/0004/masks/001052-markers.csv         |  576 ++++++++++
+ data/crm_fit/0004/settings.toml                    |   42 +
+ docs/requirements.txt                              |    2 +-
+ .../_static/11571737453049821261/config.json       |   26 +
+ .../11571737453049821261/images/000000200.png      |  Bin 0 -> 8818187 bytes
+ .../11571737453049821261/images/000000400.png      |  Bin 0 -> 8820460 bytes
+ .../11571737453049821261/images/000000600.png      |  Bin 0 -> 8820765 bytes
+ .../11571737453049821261/images/000000800.png      |  Bin 0 -> 8822282 bytes
+ .../11571737453049821261/images/000001000.png      |  Bin 0 -> 8821985 bytes
+ .../11571737453049821261/masks/000000200.png       |  Bin 0 -> 28202 bytes
+ .../11571737453049821261/masks/000000400.png       |  Bin 0 -> 31319 bytes
+ .../11571737453049821261/masks/000000600.png       |  Bin 0 -> 35719 bytes
+ .../11571737453049821261/masks/000000800.png       |  Bin 0 -> 39233 bytes
+ .../11571737453049821261/masks/000001000.png       |  Bin 0 -> 44527 bytes
+ .../11571737453049821261/raw_pv/000000200.png      |  Bin 0 -> 178088 bytes
+ .../11571737453049821261/raw_pv/000000400.png      |  Bin 0 -> 214567 bytes
+ .../11571737453049821261/raw_pv/000000600.png      |  Bin 0 -> 267554 bytes
+ .../11571737453049821261/raw_pv/000000800.png      |  Bin 0 -> 312680 bytes
+ .../11571737453049821261/raw_pv/000001000.png      |  Bin 0 -> 355587 bytes
+ .../algorithm/interpolate-positions.png            |  Bin 2280 -> 9043 bytes
+ .../fitting-methods/algorithm/mask-zoom.png        |  Bin 13049 -> 12037 bytes
+ .../fitting-methods/displacement-calculations.pdf  |  Bin 16798 -> 19828 bytes
+ .../fitting-methods/displacement-calculations.png  |  Bin 61873 -> 103894 bytes
+ .../fitting-methods/displacement-distribution.pdf  |  Bin 0 -> 40959 bytes
+ .../fitting-methods/displacement-distribution.png  |  Bin 33650 -> 26541 bytes
+ .../estimate-parameters1/Growth Rate.png           |  Bin 28684 -> 0 bytes
+ .../estimate-parameters1/Potential Stiffness.png   |  Bin 26114 -> 0 bytes
+ .../estimate-parameters1/Radius.png                |  Bin 26061 -> 0 bytes
+ .../estimate-parameters1/Rigidity.png              |  Bin 27844 -> 0 bytes
+ .../estimate-parameters1/Strength.png              |  Bin 26361 -> 0 bytes
+ .../estimate-parameters1/microscopic-images-0.png  |  Bin 87521 -> 0 bytes
+ .../estimate-parameters1/microscopic-images-1.png  |  Bin 90840 -> 0 bytes
+ .../estimate-parameters1/microscopic-images-2.png  |  Bin 6860 -> 0 bytes
+ .../estimate-parameters1/microscopic-images-3.png  |  Bin 7154 -> 0 bytes
+ .../estimate-parameters1/microscopic-images.png    |  Bin 156614 -> 0 bytes
+ .../fitting-methods/extract_positions-002000.png   |  Bin 31371 -> 51332 bytes
+ .../fitting-methods/extract_positions-004000.png   |  Bin 41306 -> 64873 bytes
+ .../fitting-methods/extract_positions-006000.png   |  Bin 57828 -> 84459 bytes
+ .../fitting-methods/extract_positions-008000.png   |  Bin 79826 -> 103691 bytes
+ .../fitting-methods/extract_positions-010000.png   |  Bin 121807 -> 140136 bytes
+ .../_static/fitting-methods/penalty-time-flow.pdf  |  Bin 0 -> 22395 bytes
+ .../_static/fitting-methods/penalty-time-flow.png  |  Bin 43655 -> 93719 bytes
+ .../_static/fitting-methods/progressions-1.png     |  Bin 13518 -> 44530 bytes
+ .../_static/fitting-methods/progressions-2.png     |  Bin 17878 -> 52680 bytes
+ .../_static/fitting-methods/progressions-3.png     |  Bin 6468 -> 25026 bytes
+ .../_static/fitting-methods/progressions-4.png     |  Bin 9947 -> 32433 bytes
+ docs/source/index.rst                              |   22 +-
+ docs/source/scripts/crm_divide.rst                 |    4 +
+ docs/source/scripts/index.rst                      |    1 +
+ out/crm_fit/mie/0068/final_params.toml             |  219 ++++
+ paper/.gitignore                                   |   17 +-
+ paper/Makefile                                     |   53 +-
+ paper/README.md                                    |   55 +-
+ paper/docs                                         |    1 +
+ paper/figures/concept/overview.tex                 |   64 ++
+ paper/figures/concept/visualization.tex            |   33 +
+ paper/figures/crm_estimate_params                  |    1 +
+ .../cell-004444.pdf => celldiffs/cell-000556.pdf}  |  Bin 12394 -> 11747 bytes
+ paper/figures/crm_fit/celldiffs/cell-000556.png    |  Bin 0 -> 25326 bytes
+ .../cell-022222.pdf => celldiffs/cell-001111.pdf}  |  Bin 12425 -> 11785 bytes
+ paper/figures/crm_fit/celldiffs/cell-001111.png    |  Bin 0 -> 25456 bytes
+ .../cell-031111.pdf => celldiffs/cell-001667.pdf}  |  Bin 12415 -> 11760 bytes
+ paper/figures/crm_fit/celldiffs/cell-001667.png    |  Bin 0 -> 25635 bytes
+ .../cell-017778.pdf => celldiffs/cell-002222.pdf}  |  Bin 12417 -> 11761 bytes
+ paper/figures/crm_fit/celldiffs/cell-002222.png    |  Bin 0 -> 25723 bytes
+ .../cell-013333.pdf => celldiffs/cell-002778.pdf}  |  Bin 12403 -> 11775 bytes
+ paper/figures/crm_fit/celldiffs/cell-002778.png    |  Bin 0 -> 25904 bytes
+ paper/figures/crm_fit/celldiffs/cell-003333.pdf    |  Bin 0 -> 11749 bytes
+ paper/figures/crm_fit/celldiffs/cell-003333.png    |  Bin 0 -> 26069 bytes
+ paper/figures/crm_fit/celldiffs/cell-003889.pdf    |  Bin 0 -> 11768 bytes
+ paper/figures/crm_fit/celldiffs/cell-003889.png    |  Bin 0 -> 26329 bytes
+ paper/figures/crm_fit/celldiffs/diff-000556.png    |  Bin 0 -> 2866 bytes
+ paper/figures/crm_fit/celldiffs/diff-001111.png    |  Bin 0 -> 2873 bytes
+ paper/figures/crm_fit/celldiffs/diff-001667.png    |  Bin 0 -> 2898 bytes
+ paper/figures/crm_fit/celldiffs/diff-002222.png    |  Bin 0 -> 2928 bytes
+ paper/figures/crm_fit/celldiffs/diff-002778.png    |  Bin 0 -> 2925 bytes
+ paper/figures/crm_fit/celldiffs/diff-003333.png    |  Bin 0 -> 2980 bytes
+ paper/figures/crm_fit/celldiffs/diff-003889.png    |  Bin 0 -> 2969 bytes
+ paper/figures/crm_fit/celldifss/cell-004444.png    |  Bin 35125 -> 0 bytes
+ paper/figures/crm_fit/celldifss/cell-008889.pdf    |  Bin 12420 -> 0 bytes
+ paper/figures/crm_fit/celldifss/cell-008889.png    |  Bin 36160 -> 0 bytes
+ paper/figures/crm_fit/celldifss/cell-013333.png    |  Bin 36570 -> 0 bytes
+ paper/figures/crm_fit/celldifss/cell-017778.png    |  Bin 36007 -> 0 bytes
+ paper/figures/crm_fit/celldifss/cell-022222.png    |  Bin 36919 -> 0 bytes
+ paper/figures/crm_fit/celldifss/cell-026667.pdf    |  Bin 12439 -> 0 bytes
+ paper/figures/crm_fit/celldifss/cell-026667.png    |  Bin 37626 -> 0 bytes
+ paper/figures/crm_fit/celldifss/cell-031111.png    |  Bin 38057 -> 0 bytes
+ paper/figures/crm_fit/estimate_growth_rates.csv    |    6 +
+ paper/figures/crm_fit/estimated-growth-rates.pdf   |  Bin 0 -> 16109 bytes
+ paper/figures/crm_fit/estimated-growth-rates.png   |  Bin 0 -> 129212 bytes
+ paper/figures/crm_fit/final_params.csv             |   22 -
+ paper/figures/crm_fit/final_params.toml            |  219 ++++
+ .../crm_fit/growth_rates_lengths_distribution.pdf  |  Bin 21071 -> 21371 bytes
+ .../crm_fit/growth_rates_lengths_distribution.png  |  Bin 58220 -> 36497 bytes
+ .../radius-2.pdf => optimization-progression.pdf}  |  Bin 16544 -> 13161 bytes
+ paper/figures/crm_fit/optimization-progression.png |  Bin 0 -> 34078 bytes
+ paper/figures/crm_fit/potential-shape.pdf          |  Bin 19631 -> 19112 bytes
+ paper/figures/crm_fit/potential-shape.png          |  Bin 44069 -> 43586 bytes
+ paper/figures/crm_fit/profiles/damping.pdf         |  Bin 16967 -> 18298 bytes
+ paper/figures/crm_fit/profiles/damping.png         |  Bin 50553 -> 48161 bytes
+ paper/figures/crm_fit/profiles/exponent-m.pdf      |  Bin 16724 -> 16040 bytes
+ paper/figures/crm_fit/profiles/exponent-m.png      |  Bin 47917 -> 42089 bytes
+ paper/figures/crm_fit/profiles/exponent-n.pdf      |  Bin 16143 -> 14947 bytes
+ paper/figures/crm_fit/profiles/exponent-n.png      |  Bin 46322 -> 41281 bytes
+ paper/figures/crm_fit/profiles/growth-rate-0.pdf   |  Bin 17875 -> 19194 bytes
+ paper/figures/crm_fit/profiles/growth-rate-0.png   |  Bin 44796 -> 48604 bytes
+ paper/figures/crm_fit/profiles/growth-rate-1.pdf   |  Bin 17930 -> 19289 bytes
+ paper/figures/crm_fit/profiles/growth-rate-1.png   |  Bin 45183 -> 50482 bytes
+ paper/figures/crm_fit/profiles/growth-rate-2.pdf   |  Bin 19006 -> 19002 bytes
+ paper/figures/crm_fit/profiles/growth-rate-2.png   |  Bin 46052 -> 50170 bytes
+ paper/figures/crm_fit/profiles/growth-rate-3.pdf   |  Bin 19357 -> 18660 bytes
+ paper/figures/crm_fit/profiles/growth-rate-3.png   |  Bin 50590 -> 49213 bytes
+ paper/figures/crm_fit/profiles/growth-rate-4.pdf   |  Bin 19043 -> 19860 bytes
+ paper/figures/crm_fit/profiles/growth-rate-4.png   |  Bin 47963 -> 51881 bytes
+ paper/figures/crm_fit/profiles/growth-rate-5.pdf   |  Bin 19073 -> 18961 bytes
+ paper/figures/crm_fit/profiles/growth-rate-5.png   |  Bin 45696 -> 48542 bytes
+ paper/figures/crm_fit/profiles/radius-0.pdf        |  Bin 16698 -> 0 bytes
+ paper/figures/crm_fit/profiles/radius-0.png        |  Bin 42407 -> 0 bytes
+ paper/figures/crm_fit/profiles/radius-1.png        |  Bin 43733 -> 0 bytes
+ paper/figures/crm_fit/profiles/radius-2.png        |  Bin 50953 -> 0 bytes
+ paper/figures/crm_fit/profiles/radius-3.pdf        |  Bin 16719 -> 0 bytes
+ paper/figures/crm_fit/profiles/radius-3.png        |  Bin 45283 -> 0 bytes
+ paper/figures/crm_fit/profiles/radius-4.pdf        |  Bin 16738 -> 0 bytes
+ paper/figures/crm_fit/profiles/radius-4.png        |  Bin 45573 -> 0 bytes
+ paper/figures/crm_fit/profiles/radius-5.png        |  Bin 50023 -> 0 bytes
+ .../crm_fit/profiles/{radius-5.pdf => radius.pdf}  |  Bin 18121 -> 18704 bytes
+ paper/figures/crm_fit/profiles/radius.png          |  Bin 0 -> 54966 bytes
+ paper/figures/crm_fit/profiles/strength.pdf        |  Bin 16990 -> 17680 bytes
+ paper/figures/crm_fit/profiles/strength.png        |  Bin 43317 -> 43073 bytes
+ .../{exact-004444.png => exact-000556.png}         |  Bin
+ .../{exact-008889.png => exact-001111.png}         |  Bin
+ .../{exact-013333.png => exact-001667.png}         |  Bin
+ .../{exact-017778.png => exact-002222.png}         |  Bin
+ .../{exact-022222.png => exact-002778.png}         |  Bin
+ .../{exact-026667.png => exact-003333.png}         |  Bin
+ .../{exact-031111.png => exact-003889.png}         |  Bin
+ .../figures/crm_fit/snapshots/predicted-000556.png |  Bin 0 -> 190494 bytes
+ .../figures/crm_fit/snapshots/predicted-001111.png |  Bin 0 -> 196907 bytes
+ .../figures/crm_fit/snapshots/predicted-001667.png |  Bin 0 -> 196773 bytes
+ .../figures/crm_fit/snapshots/predicted-002222.png |  Bin 0 -> 197819 bytes
+ .../figures/crm_fit/snapshots/predicted-002778.png |  Bin 0 -> 194421 bytes
+ .../figures/crm_fit/snapshots/predicted-003333.png |  Bin 0 -> 196172 bytes
+ .../figures/crm_fit/snapshots/predicted-003889.png |  Bin 0 -> 196599 bytes
+ .../figures/crm_fit/snapshots/predicted-004444.png |  Bin 191960 -> 0 bytes
+ .../figures/crm_fit/snapshots/predicted-008889.png |  Bin 198411 -> 0 bytes
+ .../figures/crm_fit/snapshots/predicted-013333.png |  Bin 198504 -> 0 bytes
+ .../figures/crm_fit/snapshots/predicted-017778.png |  Bin 199394 -> 0 bytes
+ .../figures/crm_fit/snapshots/predicted-022222.png |  Bin 196038 -> 0 bytes
+ .../figures/crm_fit/snapshots/predicted-026667.png |  Bin 197692 -> 0 bytes
+ .../figures/crm_fit/snapshots/predicted-031111.png |  Bin 198203 -> 0 bytes
+ paper/{ => figures}/orcid.pdf                      |  Bin
+ paper/figures/tikz-preamble.tex                    |   27 +
+ paper/introduction_old.tex                         |  264 +++++
+ paper/main.tex                                     | 1105 +++++++++++++-------
+ paper/references.bib                               |  480 ++++++++-
+ paper_segmentation_tracking/Makefile               |   36 +
+ paper_segmentation_tracking/arxiv.sty              |  263 +++++
+ paper_segmentation_tracking/docs                   |    1 +
+ paper_segmentation_tracking/fake-figures/main.py   |  104 ++
+ .../fake-figures/segmentation-benchmark.pdf        |  Bin 0 -> 21888 bytes
+ .../fake-figures/tracking-defects.pdf              |  Bin 0 -> 24530 bytes
+ paper_segmentation_tracking/figures                |    1 +
+ paper_segmentation_tracking/main.tex               |  354 +++++++
+ paper_segmentation_tracking/onimage.dtx            |  315 ++++++
+ paper_segmentation_tracking/onimage.sty            |  132 +++
+ paper_segmentation_tracking/references.bib         |    0
+ plots/fitting_extract_positions.py                 |  103 +-
+ plots/fitting_penalty_over_time.py                 |   70 +-
+ plots/fitting_progression.py                       |    2 +-
+ plots/index_simulation.py                          |   19 +-
+ plots/position_extraction_algorithm.py             |   21 +-
+ pyproject.toml                                     |    1 +
+ src/bin/crm_bench.rs                               |    2 +-
+ src/cell_container.rs                              |   33 +-
+ src/config.rs                                      |   19 +-
+ src/crm_amir.rs                                    |    4 +-
+ src/crm_fit/optimize.rs                            |   62 +-
+ src/crm_fit/predict.rs                             |    1 -
+ src/crm_fit/settings.rs                            |  174 ++-
+ src/crm_multilayer.rs                              |    6 +-
+ src/fitting.rs                                     |   25 +-
+ src/lib.rs                                         |    3 +-
+ src/simulation.rs                                  |    3 +-
+ tests/test_counter_color_conversion.py             |   13 +-
+ tests/test_fit.py                                  |   16 +-
+ tests/test_image_generation_basic.py               |    6 +-
+ 216 files changed, 9681 insertions(+), 1096 deletions(-)

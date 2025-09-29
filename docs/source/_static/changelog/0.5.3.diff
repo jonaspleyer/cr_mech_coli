@@ -1,0 +1,5 @@
+ Cargo.toml                            |  2 +-
+ cr_mech_coli/crm_amir/crm_amir_rs.pyi | 14 +++++++++-
+ cr_mech_coli/crm_amir/main.py         | 40 +++++++++++++++++++++++++---
+ src/crm_amir.rs                       | 49 +++++++++++++++++++++++++++--------
+ 4 files changed, 88 insertions(+), 17 deletions(-)

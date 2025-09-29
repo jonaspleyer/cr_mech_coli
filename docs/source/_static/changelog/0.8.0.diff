@@ -1,0 +1,105 @@
+ Cargo.lock                                         |  80 ++--
+ Cargo.toml                                         |   6 +-
+ README.md                                          |  13 +
+ cr_mech_coli/cr_mech_coli.pyi                      |  10 +-
+ cr_mech_coli/crm_amir/main.py                      | 422 +++++++++++++++++--
+ cr_mech_coli/crm_divide.py                         | 278 +++++++------
+ data/crm_amir/obtain.py                            |  50 ---
+ .../source/_static/scripts/crm_amir/0000000023.png | Bin 0 -> 191712 bytes
+ docs/source/_static/scripts/crm_amir/angles.pdf    | Bin 0 -> 33220 bytes
+ docs/source/_static/scripts/crm_amir/endpoints.pdf | Bin 0 -> 26258 bytes
+ docs/source/cell-segmentation.rst                  |   8 -
+ docs/source/index.rst                              |  22 +-
+ docs/source/todo.rst                               |   6 -
+ .../figures/crm_divide/mask_adjustments/000000.png | Bin 0 -> 35931 bytes
+ .../figures/crm_divide/mask_adjustments/000001.png | Bin 0 -> 36024 bytes
+ .../figures/crm_divide/mask_adjustments/000002.png | Bin 0 -> 36027 bytes
+ .../figures/crm_divide/mask_adjustments/000003.png | Bin 0 -> 36007 bytes
+ .../figures/crm_divide/mask_adjustments/000004.png | Bin 0 -> 35973 bytes
+ .../figures/crm_divide/mask_adjustments/000005.png | Bin 0 -> 36486 bytes
+ .../figures/crm_divide/mask_adjustments/000008.png | Bin 0 -> 36821 bytes
+ .../figures/crm_divide/mask_adjustments/000010.png | Bin 0 -> 37401 bytes
+ .../figures/crm_divide/mask_adjustments/000019.png | Bin 0 -> 42881 bytes
+ .../figures/crm_divide/mask_adjustments/000020.png | Bin 0 -> 42717 bytes
+ .../figures/crm_divide/mask_adjustments/000021.png | Bin 0 -> 43247 bytes
+ .../figures/crm_divide/mask_adjustments/000022.png | Bin 0 -> 43293 bytes
+ .../figures/crm_divide/mask_adjustments/000023.png | Bin 0 -> 43385 bytes
+ paper/figures/crm_divide/masks_adjusted/000000.png | Bin 0 -> 5315 bytes
+ paper/figures/crm_divide/masks_adjusted/000001.png | Bin 0 -> 5362 bytes
+ paper/figures/crm_divide/masks_adjusted/000002.png | Bin 0 -> 5362 bytes
+ paper/figures/crm_divide/masks_adjusted/000003.png | Bin 0 -> 5428 bytes
+ paper/figures/crm_divide/masks_adjusted/000004.png | Bin 0 -> 5339 bytes
+ paper/figures/crm_divide/masks_adjusted/000005.png | Bin 0 -> 5465 bytes
+ paper/figures/crm_divide/masks_adjusted/000008.png | Bin 0 -> 5471 bytes
+ paper/figures/crm_divide/masks_adjusted/000010.png | Bin 0 -> 5640 bytes
+ paper/figures/crm_divide/masks_adjusted/000019.png | Bin 0 -> 6190 bytes
+ paper/figures/crm_divide/masks_adjusted/000020.png | Bin 0 -> 6178 bytes
+ paper/figures/crm_divide/masks_adjusted/000021.png | Bin 0 -> 6276 bytes
+ paper/figures/crm_divide/masks_adjusted/000022.png | Bin 0 -> 6244 bytes
+ paper/figures/crm_divide/masks_adjusted/000023.png | Bin 0 -> 6235 bytes
+ paper/figures/crm_divide/masks_diff/000000.png     | Bin 0 -> 2871 bytes
+ paper/figures/crm_divide/masks_diff/000001.png     | Bin 0 -> 2844 bytes
+ paper/figures/crm_divide/masks_diff/000002.png     | Bin 0 -> 2886 bytes
+ paper/figures/crm_divide/masks_diff/000003.png     | Bin 0 -> 2908 bytes
+ paper/figures/crm_divide/masks_diff/000004.png     | Bin 0 -> 2889 bytes
+ paper/figures/crm_divide/masks_diff/000005.png     | Bin 0 -> 2952 bytes
+ paper/figures/crm_divide/masks_diff/000008.png     | Bin 0 -> 3016 bytes
+ paper/figures/crm_divide/masks_diff/000010.png     | Bin 0 -> 3128 bytes
+ paper/figures/crm_divide/masks_diff/000019.png     | Bin 0 -> 3381 bytes
+ paper/figures/crm_divide/masks_diff/000020.png     | Bin 0 -> 3395 bytes
+ paper/figures/crm_divide/masks_diff/000021.png     | Bin 0 -> 3409 bytes
+ paper/figures/crm_divide/masks_diff/000022.png     | Bin 0 -> 3403 bytes
+ paper/figures/crm_divide/masks_diff/000023.png     | Bin 0 -> 3439 bytes
+ .../figures/crm_divide/masks_predicted/000000.png  | Bin 0 -> 5261 bytes
+ .../figures/crm_divide/masks_predicted/000001.png  | Bin 0 -> 5291 bytes
+ .../figures/crm_divide/masks_predicted/000002.png  | Bin 0 -> 5296 bytes
+ .../figures/crm_divide/masks_predicted/000003.png  | Bin 0 -> 5310 bytes
+ .../figures/crm_divide/masks_predicted/000004.png  | Bin 0 -> 5327 bytes
+ .../figures/crm_divide/masks_predicted/000005.png  | Bin 0 -> 5364 bytes
+ .../figures/crm_divide/masks_predicted/000006.png  | Bin 0 -> 5404 bytes
+ .../figures/crm_divide/masks_predicted/000007.png  | Bin 0 -> 5407 bytes
+ .../figures/crm_divide/masks_predicted/000008.png  | Bin 0 -> 5448 bytes
+ .../figures/crm_divide/masks_predicted/000009.png  | Bin 0 -> 5479 bytes
+ .../figures/crm_divide/masks_predicted/000010.png  | Bin 0 -> 5510 bytes
+ .../figures/crm_divide/masks_predicted/000011.png  | Bin 0 -> 5536 bytes
+ .../figures/crm_divide/masks_predicted/000012.png  | Bin 0 -> 5570 bytes
+ .../figures/crm_divide/masks_predicted/000013.png  | Bin 0 -> 5609 bytes
+ .../figures/crm_divide/masks_predicted/000014.png  | Bin 0 -> 5632 bytes
+ .../figures/crm_divide/masks_predicted/000015.png  | Bin 0 -> 5671 bytes
+ .../figures/crm_divide/masks_predicted/000016.png  | Bin 0 -> 5746 bytes
+ .../figures/crm_divide/masks_predicted/000017.png  | Bin 0 -> 5757 bytes
+ .../figures/crm_divide/masks_predicted/000018.png  | Bin 0 -> 5849 bytes
+ .../figures/crm_divide/masks_predicted/000019.png  | Bin 0 -> 5972 bytes
+ .../figures/crm_divide/masks_predicted/000020.png  | Bin 0 -> 5963 bytes
+ .../figures/crm_divide/masks_predicted/000021.png  | Bin 0 -> 5975 bytes
+ .../figures/crm_divide/masks_predicted/000022.png  | Bin 0 -> 5937 bytes
+ .../figures/crm_divide/masks_predicted/000023.png  | Bin 0 -> 5973 bytes
+ .../figures/crm_divide/masks_predicted/000024.png  | Bin 0 -> 5988 bytes
+ paper/figures/crm_divide/optimize_result.csv       |   9 +
+ .../figures/crm_divide/profiles/profile-000000.png | Bin 0 -> 44192 bytes
+ .../figures/crm_divide/profiles/profile-000001.png | Bin 0 -> 40999 bytes
+ .../figures/crm_divide/profiles/profile-000002.png | Bin 0 -> 45713 bytes
+ .../figures/crm_divide/profiles/profile-000003.png | Bin 0 -> 44060 bytes
+ .../figures/crm_divide/profiles/profile-000004.png | Bin 0 -> 61817 bytes
+ .../figures/crm_divide/profiles/profile-000005.png | Bin 0 -> 50999 bytes
+ .../figures/crm_divide/profiles/profile-000006.png | Bin 0 -> 50197 bytes
+ .../figures/crm_divide/profiles/profile-000007.png | Bin 0 -> 56539 bytes
+ paper/figures/crm_divide/time-evolution.pdf        | Bin 0 -> 16641 bytes
+ paper/figures/crm_divide/time-evolution.png        | Bin 0 -> 38032 bytes
+ paper/figures/crm_divide/timings.pdf               | Bin 0 -> 25353 bytes
+ paper/figures/crm_divide/timings.png               | Bin 0 -> 43613 bytes
+ paper/main.tex                                     | 446 ++++++++++++++-------
+ paper/references.bib                               |  42 ++
+ paper_segmentation_tracking/.gitignore             |  15 +
+ paper_segmentation_tracking/main.tex               |   9 +-
+ src/agent.rs                                       | 138 ++++++-
+ src/bin/crm_bench.rs                               |   5 +-
+ src/cell_container.rs                              |   5 +-
+ src/config.rs                                      |  49 ++-
+ src/crm_amir.rs                                    |  11 +-
+ src/crm_fit/predict.rs                             |   5 +-
+ src/crm_multilayer.rs                              |  15 +-
+ src/lib.rs                                         |   1 +
+ src/simulation.rs                                  |   2 +-
+ tests/test_config.py                               |  12 +
+ 104 files changed, 1184 insertions(+), 475 deletions(-)

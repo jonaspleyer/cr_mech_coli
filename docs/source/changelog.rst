@@ -1,6 +1,49 @@
 Changelog
 #########
 
+cr_mech_coli 0.8.0 `(22.09.2025) <_static/changelog/0.8.0.diff>`_
+-----------------------------------------------------------------------
+
+- Improve results of `crm_amir <scripts/crm_amir>`_ script
+- Allow to explicitly set growth rates for new cells
+- Fix functionality of `crm_divide <scripts/crm_divide>`_ script
+
+cr_mech_coli 0.7.1 `(19.09.2025) <_static/changelog/0.7.1.diff>`_
+-----------------------------------------------------------------------
+
+- Exclude some files in distribution release due to large file sizes
+
+cr_mech_coli 0.7.0 `(19.09.2025) <_static/changelog/0.7.0.diff>`_
+-----------------------------------------------------------------------
+
+- Extend methods of :class:`CellContainer`
+- Use rayon as default parallelizer
+- Adjust to new `cellular_raza` version
+- New script `crm_divide <scripts/crm_divide>`_ to fit model to dividing bacteria
+- Calculate profiles more efficiently for `crm_fit <scripts/crm_fit>`_
+- Improve type hints of Rust-based code
+
+cr_mech_coli 0.6.0 `(19.06.2025) <_static/changelog/0.6.0.diff>`_
+-----------------------------------------------------------------------
+
+- Modularize `crm_fit <scripts/crm_fit>`_ script
+- Adjust to new `cellular_raza` version
+
+cr_mech_coli 0.5.3 `(12.05.2025) <_static/changelog/0.5.3.diff>`_
+-----------------------------------------------------------------------
+
+- Extend `crm_amir <scripts/crm_amir>`_ script
+
+cr_mech_coli 0.5.2 `(09.05.2025) <_static/changelog/0.5.2.diff>`_
+-----------------------------------------------------------------------
+
+- Update dependencies
+- Add performance metrics in documentation
+- Allow picking new growth rates from distribution
+- New script `crm_amir <scripts/crm_amir>`_ to fit model to bent rod
+- New script `crm_perf_plots <scripts/crm_perf_plots>`_ to plot performance of simulations
+- Update plots of `crm_multilayer <scripts/crm_multilayer>`_ script
+
 cr_mech_coli 0.5.1 `(01.05.2025) <_static/changelog/0.5.1.diff>`_
 -----------------------------------------------------------------------
 
