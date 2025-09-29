@@ -316,7 +316,7 @@ ERROR_COST = 1e6
 
 
 def objective_function(
-    spring_length_thresholds_and_new_growth_rates,
+    params,
     positions_all,
     settings,
     masks_data,
@@ -334,9 +334,10 @@ def objective_function(
             now = time.perf_counter_ns()
             times.append((now, message))
 
-    spring_length_thresholds = spring_length_thresholds_and_new_growth_rates[:4]
+    growth_rates = params[0:6]
+    spring_length_thresholds = params[6:10]
     growth_rates_new = [
-        *np.array(spring_length_thresholds_and_new_growth_rates[4:]).reshape((-1, 2)),
+        *np.array(params[10:18]).reshape((-1, 2)),
         # These should not come into effect at all
         (0.0, 0.0),
         (0.0, 0.0),
@@ -346,6 +347,7 @@ def objective_function(
         container = predict(
             positions_all[0],
             settings,
+            growth_rates=growth_rates,
             spring_length_thresholds=[*spring_length_thresholds, 200.0, 200.0],
             growth_rates_new=growth_rates_new,
             show_progress=show_progressbar,
@@ -485,9 +487,18 @@ def preprocessing(n_masks=None):
 def plot_mask_adjustment(
     output_dir, masks_data, positions_all, settings, iterations_data
 ):
+    growth_rates = [
+        0.001152799,
+        0.001410604,
+        0.0018761827,
+        0.0016834959,
+        0.0036106023,
+        0.0015209642,
+    ]
     spring_length_thresholds = [15] * 4
     new_growth_rates = [0.001] * 8
     x0 = [
+        *growth_rates,
         *spring_length_thresholds,
         *new_growth_rates,
     ]
@@ -787,7 +798,7 @@ def calculate_single(args):
 
 
 def run_optimizer(
-    spring_length_thresholds_and_new_growth_rates,
+    params,
     bounds,
     output_dir,
     iteration,
@@ -802,7 +813,7 @@ def run_optimizer(
     else:
         res = sp.optimize.differential_evolution(
             objective_function,
-            x0=spring_length_thresholds_and_new_growth_rates,
+            x0=params,
             bounds=bounds,
             args=args,
             disp=True,
@@ -928,6 +939,14 @@ def crm_divide_main():
         if pyargs.only_mask_adjustment:
             exit()
 
+    growth_rates = [
+        0.001152799,
+        0.001410604,
+        0.0018761827,
+        0.0016834959,
+        0.0036106023,
+        0.0015209642,
+    ]
     spring_length_thresholds = [
         9.405841188088112759e00,
         1.103879179742345329e01,
@@ -945,10 +964,11 @@ def crm_divide_main():
         2.300937616285135622e-03,
     ]
     x0 = [
+        *growth_rates,
         *spring_length_thresholds,
         *new_growth_rates,
     ]
-    bounds = [(5, 12)] * 4 + [(0.0000, 0.004)] * 8
+    bounds = [(0.0001, 0.0037)] * 6 + [(5, 12)] * 4 + [(0.0000, 0.004)] * 8
     parent_penalty = 0.5
     args = (
         positions_all,
@@ -1002,6 +1022,12 @@ def crm_divide_main():
 
     if not pyargs.skip_profiles:
         labels = [
+            "Growth Rate 0",
+            "Growth Rate 1",
+            "Growth Rate 2",
+            "Growth Rate 3",
+            "Growth Rate 4",
+            "Growth Rate 5",
             "Division Length 0",
             "Division Length 1",
             "Division Length 2",
