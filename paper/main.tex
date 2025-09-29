@@ -1532,6 +1532,9 @@ Another factor that could be considered to improve performance is that individua
 cells which are spatially separated will not have an immediate effect on each other, thus presenting
 a loosely coupled or fully decoupled relationship.
 Depening on the solver, this information could be exploited.
+Ultimately, we desire to apply these methods to large amounts of data, which is done most
+effectively by fitting our model to various image time-series simultanously which is yet to be
+implemented.
 
 Our approach furthermore highlighted that we are able to detect non-identifiabilities.
 By choosing \texttt{cellular\_raza} as a modeling framework, we retain flexibility with respect to
@@ -1586,23 +1589,54 @@ which have already been developed extensively for less complex systems such as \
 %     \item 
 % \end{itemize}
 
-\section{Conclusion (TODO)}
+\section{Conclusion}
 
-\begin{itemize}
-    \item Highlight methodological advancements
-    \item Constructed Model which already combines many effects; extend this even further
-    \item can now use classical methods: sensitivity-analysis, likelihood estimators and uncertainty quantification
-    \item Proof of concept: Able to fit individual parameters of the agents; can be extend this?
-    \item Provide software package which combines all functionality and is readily available
-    \item Future work:
-    \begin{itemize}
-        \item Optimize multiple data sources (images) in parallel: requires some kind of
-        "normalization" to ensure that the dimensions, pixels etc. are the same such that parameters
-        are comparable; also requires identical experimental setup
-        \item Compare different species with various modifications
-        \item Modify model futher; asymmetric forces etc.
-    \end{itemize}
-\end{itemize}
+This work has introduced a novel methodological framework which allows us to estimate the parameters
+of models describing rod-shaped bacteria on the single-cell level by using data obtained from
+microscopic images.
+The approach is agnostic with respect to details of the underlying model and instead only makes use
+of the fundamental spatial representation of our bacteria as a collection of vertices.
+In this way it highlights a modular blueprint that can be followed by researchers applied to models
+of rod-shaped bacteria which incorporate other and more complex behaviours.
+Combining these methods, our workflow links experimental data to the parameter estimation of a
+mechanistic, computational model and allows us to estimate the individual parameters of the
+cell-agents.
+
+Our framework allow researchers to employ well-known methods such as profile-likelihood
+\textbf{TODO CITATION} and sensitivity-analysis.
+The code is publicly available as the python package
+\href{https://github.com/jonaspleyer/cr_mech_coli}{cr\_mech\_coli}.
+The utilized cellular properties are contained within the \texttt{cellular\_raza}~\cite{Pleyer2025}
+package which provides flexibility in model design, thus enabling researchers to easily reuse,
+extend and combine existing building blocks.
+This allows researchers to extend the model and incorporate additional biological properties.
+
+Future work will focus on the data-generation capabilities of the software.
+We will aim to generate near-realistic microscopic brightfield images together with corresponding
+segmentation masks in order to train segmentation and tracking algorithms.
+On the biological side, a plethora of cellular properties waits to be investigated using this novel
+tecnhique.
+Another open question is how to efficiently scale up this operation in order to treat large amounts
+of cells such that distributions of parameters themselves can be estimated.
+Put together, this work establishes a promising platform which is able to directly combine
+microscopic data with single-cell agent-based modeling techniques and offers a wide range of
+opportunities for future quantitative studies in cellular biolgoy.
+
+% \begin{itemize}
+%     \item Highlight methodological advancements
+%     \item Constructed Model which already combines many effects; possibility to extend this even further
+%     \item can now use classical methods: sensitivity-analysis, likelihood estimators and uncertainty quantification
+%     \item Proof of concept: Able to fit individual parameters of the agents; can be extend this?
+%     \item Provide software package which combines all functionality and is readily available
+%     \item Future work:
+%     \begin{itemize}
+%         \item Optimize multiple data sources (images) in parallel: requires some kind of
+%         "normalization" to ensure that the dimensions, pixels etc. are the same such that parameters
+%         are comparable; also requires identical experimental setup
+%         \item Compare different species with various modifications
+%         \item Modify model futher; asymmetric forces etc.
+%     \end{itemize}
+% \end{itemize}
 
 %###################################################################################################
 \section{Data and Code Availability}
