@@ -334,10 +334,11 @@ def objective_function(
             now = time.perf_counter_ns()
             times.append((now, message))
 
-    growth_rates = params[0:6]
-    spring_length_thresholds = params[6:10]
+    (radius, strength, en, em, damping) = params[:5]
+    growth_rates = params[5:11]
+    spring_length_thresholds = params[11:15]
     growth_rates_new = [
-        *np.array(params[10:18]).reshape((-1, 2)),
+        *np.array(params[15:23]).reshape((-1, 2)),
         # These should not come into effect at all
         (0.0, 0.0),
         (0.0, 0.0),
@@ -347,6 +348,11 @@ def objective_function(
         container = predict(
             positions_all[0],
             settings,
+            radius=radius,
+            strength=strength,
+            en=en,
+            em=em,
+            damping=damping,
             growth_rates=growth_rates,
             spring_length_thresholds=[*spring_length_thresholds, 200.0, 200.0],
             growth_rates_new=growth_rates_new,
@@ -487,6 +493,11 @@ def preprocessing(n_masks=None):
 def plot_mask_adjustment(
     output_dir, masks_data, positions_all, settings, iterations_data
 ):
+    radius = 8.059267
+    strength = 10.584545
+    en = 0.50215733
+    em = 0.21933548
+    damping = 2.5799131
     growth_rates = [
         0.001152799,
         0.001410604,
@@ -498,6 +509,11 @@ def plot_mask_adjustment(
     spring_length_thresholds = [15] * 4
     new_growth_rates = [0.001] * 8
     x0 = [
+        radius,
+        strength,
+        en,
+        em,
+        damping,
         *growth_rates,
         *spring_length_thresholds,
         *new_growth_rates,
@@ -941,6 +957,11 @@ def crm_divide_main():
         if pyargs.only_mask_adjustment:
             exit()
 
+    radius = 8.059267
+    strength = 10.584545
+    en = 0.50215733
+    em = 0.21933548
+    damping = 2.5799131
     growth_rates = [
         0.001152799,
         0.001410604,
@@ -966,11 +987,25 @@ def crm_divide_main():
         2.300937616285135622e-03,
     ]
     x0 = [
+        radius,
+        strength,
+        en,
+        em,
+        damping,
         *growth_rates,
         *spring_length_thresholds,
         *new_growth_rates,
     ]
-    bounds = [(0.0001, 0.0037)] * 6 + [(5, 12)] * 4 + [(0.0000, 0.004)] * 8
+    bounds = (
+        # Radius, Strength, en, em, Damping
+        [(0.05, 15.0), (0.1, 15.0), (0.1, 4.0), (0.1, 4.0), (2.0, 15.0)]
+        # Growth rates
+        + [(0.0000, 0.005)] * 6
+        # Spring length thresholds
+        + [(5, 12)] * 4
+        # new growth rates
+        + [(0.0000, 0.005)] * 8
+    )
     parent_penalty = 0.5
     args = (
         positions_all,
@@ -1024,6 +1059,11 @@ def crm_divide_main():
 
     if not pyargs.skip_profiles:
         labels = [
+            "Radius",
+            "Strength",
+            "Exponent n",
+            "Exponent m",
+            "Damping",
             "Growth Rate 0",
             "Growth Rate 1",
             "Growth Rate 2",
