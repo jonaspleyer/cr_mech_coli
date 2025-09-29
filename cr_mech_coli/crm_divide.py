@@ -715,6 +715,8 @@ def plot_profiles(
     for n, p, costs_ind, samples_ind in zip(
         range(len(parameters)), parameters, costs.T, samples.T
     ):
+        np.savetxt(output_dir / f"profile-{n:06}.csv", samples_ind)
+
         fig, ax = plt.subplots(figsize=(8, 8))
         crm.configure_ax(ax)
 
