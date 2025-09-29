@@ -670,7 +670,7 @@ def __optimize_around_single(params, param_single, n, args):
     return objective_function(all_params, *args, print_costs=False)
 
 
-def __calculate_single_cost(n, p, parameters, bounds, args):
+def __calculate_single_cost(n, p, parameters, bounds, args, pyargs):
     index = np.arange(len(parameters)) != n
     x0 = np.array(parameters)[index]
     bounds_reduced = np.array(bounds)[index]
@@ -686,8 +686,8 @@ def __calculate_single_cost(n, p, parameters, bounds, args):
         args=(p, n, args),
         options={
             "disp": False,
-            "maxiter": 12,
-            "maxfev": 12,
+            "maxiter": pyargs.profiles_maxiter,
+            "maxfev": pyargs.profiles_maxiter,
         },
     )
 
@@ -701,13 +701,13 @@ def plot_profiles(
     final_cost: float,
     args,
     output_dir,
-    n_workers: int,
+    pyargs,
 ):
     from itertools import repeat
 
-    pool = mp.Pool(n_workers)
+    pool = mp.Pool(pyargs.workers)
 
-    n_samples = 60
+    n_samples = pyargs.profiles_samples
     b_low = np.array(bounds)[:, 0]
     b_high = np.array(bounds)[:, 1]
     n_param = np.repeat([np.arange(len(parameters))], n_samples, axis=0)
@@ -720,6 +720,7 @@ def plot_profiles(
             repeat(parameters),
             repeat(bounds),
             repeat(args),
+            repeat(pyargs),
         ),
         total=int(np.prod(n_param.shape)),
         desc="Calculating Costs",
@@ -821,7 +822,7 @@ def run_optimizer(
     output_dir,
     iteration,
     args,
-    n_workers,
+    pyargs,
 ):
     # Try loading data
     if iteration is not None:
@@ -835,17 +836,30 @@ def run_optimizer(
             bounds=bounds,
             args=args,
             disp=True,
-            maxiter=100,
-            popsize=15,
-            mutation=(0.0, 1.5),
-            recombination=0.6,
-            tol=0.0001,
-            workers=n_workers,
+            maxiter=pyargs.maxiter,
+            popsize=pyargs.popsize,
+            mutation=(pyargs.mutation_lower, pyargs.mutation_upper),
+            recombination=pyargs.recombination,
+            tol=pyargs.tol,
+            workers=pyargs.workers,
             updating="deferred",
-            polish=True,
+            polish=False,
             init="latinhypercube",
             strategy="best1bin",
         )
+        if not pyargs.skip_polish:
+            res = sp.optimize.minimize(
+                objective_function,
+                x0=res.x,
+                method="Nelder-Mead",
+                bounds=bounds,
+                args=args,
+                options={
+                    "disp": True,
+                    "maxiter": pyargs.polish_maxiter,
+                    "maxfev": pyargs.polish_maxiter,
+                },
+            )
         final_parameters = res.x
         final_cost = res.fun
         np.savetxt(output_dir / "optimize_result.csv", [*final_parameters, final_cost])
@@ -929,6 +943,16 @@ def crm_divide_main():
         default=-1,
         help="Number of threads to utilize",
     )
+    parser.add_argument("--maxiter", type=int, default=100)
+    parser.add_argument("--popsize", type=int, default=15)
+    parser.add_argument("--recombination", type=float, default=0.6)
+    parser.add_argument("--tol", type=float, default=0.0001)
+    parser.add_argument("--mutation-upper", type=float, default=1.2)
+    parser.add_argument("--mutation-lower", type=float, default=0.0)
+    parser.add_argument("--skip-polish", action="store_true")
+    parser.add_argument("--polish-maxiter", type=int, default=20)
+    parser.add_argument("--profiles-maxiter", type=int, default=20)
+    parser.add_argument("--profiles-samples", type=int, default=60)
     pyargs = parser.parse_args()
 
     n_workers = pyargs.workers
@@ -1021,7 +1045,7 @@ def crm_divide_main():
         output_dir,
         pyargs.iteration,
         args,
-        n_workers,
+        pyargs,
     )
 
     (
@@ -1090,7 +1114,7 @@ def crm_divide_main():
             final_cost,
             args,
             output_dir,
-            n_workers,
+            pyargs,
         )
 
     if not pyargs.skip_timings:
