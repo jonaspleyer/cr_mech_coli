@@ -58,6 +58,7 @@
 \newacro{abm}[ABM]{Agent-Based Model}
 \newacro{ode}[ODE]{Ordinary Differential Equation}
 \newacro{pbr}[PBR]{Physically-Based Rendering}
+\newacro{ib}[IB]{Individual-based}
 
 % Define new units
 \DeclareSIUnit\pixel{pix}
@@ -1465,6 +1466,36 @@ Combining these two values, the position-comparison algorithm is $\approx 6.13(8
 %###################################################################################################
 \section{Discussion (TODO)}
 \label{section:discussion}
+
+With this work we have layed out a "blueprint" to estimate the parameters of \acp{abm} using
+microscopic image time series.
+Our approach is modularized such that its structure can be applied to a variety of problems.
+We introduced a \ac{ib} computational model for rod-shaped bacteria that incorporates bendiness of
+the rod and is implemented with \texttt{cellular\_raza} allowing it to be flexible in design and
+readily applicable for computational studies.
+Furthermore, we devised novel methods to extract the spatial positions and other information of
+cell-agents from masks which have been segmented from microscopic images.
+The extracting method was validated using results from our computational model.
+We further implemented a pipeline that can produce 3D visualizations of simulation snapshots and can
+generate cell masks from data as produced by our computational model.
+These imaging techniques were also utilized to design a cost function that can compare snapshots
+of cellular states across cellular division events, allowing us to estimate parameters across a
+large time-span.
+Finally, the combination of these preceding advancements were applied to 2 case studies, which showed
+that the profile-likelihood method can be used to effectively evaluate the ability of our system to
+properly identify the involved parameters.
+In the first example, we fit a simplified model of a singular bent rod to microscopic images.
+These results highlighted that a reduction of the systems parameters is necessary in order to
+identify them.
+In our next step, the same system was fitted to a series of microscopic images in two secarios,
+excluding and incorporating division events.
+Both results showed the ability of our model to effectively estimate individual parameters of the
+cells.
+The case including division events produced parameter profiles with minima that were not fully able
+to estimate the chosen parameters.
+These results ca be traced back to a gap within the provided segmentation masks.
+
+
 
 \begin{itemize}
     \item Model does not capture every aspect of rod-shaped bacteria. Needs to extended (see our
