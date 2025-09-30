@@ -891,7 +891,6 @@ def plot_snapshots(
 
 def plot_growth_rate_distribution(final_parameters, output_dir):
     fig, ax = plt.subplots(figsize=(8, 8))
-    crm.configure_ax(ax)
 
     growth_rates = final_parameters[5:11]
     new_growth_rates = final_parameters[15:23]
@@ -900,6 +899,7 @@ def plot_growth_rate_distribution(final_parameters, output_dir):
 
     _, bins, _ = ax.hist(data, color=crm.plotting.COLOR3, alpha=0.5)
     ax.cla()
+    crm.configure_ax(ax)
     y, _, _ = ax.hist(
         growth_rates, color=crm.plotting.COLOR3, bins=bins, label="Mother"
     )
