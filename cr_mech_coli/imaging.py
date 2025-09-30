@@ -127,6 +127,7 @@ def render_pv_image(
     domain_size: tuple[np.float32, np.float32],
     colors: dict[CellIdentifier, tuple[np.uint8, np.uint8, np.uint8]] | None = None,
     filename: str | Path | None = None,
+    render_distance=None,
 ) -> np.ndarray:
     """
     Creates a 3D render of the given cells.
@@ -139,11 +140,17 @@ def render_pv_image(
             If not given use color from `render_settings`.
         filename: Name of the file in which to save the image. If not specified, do
             not save.
+        image_distance: Distance of the camera from the image. If not given, try to estimate
+            automatically.
 
     Returns:
         np.ndarray: An array of shape `(resolution, resolution, 3)` which contains the rendered
             pixels.
     """
+
+    if render_distance is None:
+        render_distance = max(domain_size)
+
     plotter = pv.Plotter(
         off_screen=True,
         window_size=[
@@ -162,7 +169,7 @@ def render_pv_image(
     pv.Plotter.view_xy(plotter, bounds=bounds)
     pv.Plotter.enable_parallel_projection(plotter)
     plotter.camera.tight(padding=0)
-    plotter.camera.position = (*plotter.camera.position[:2], max(domain_size))
+    plotter.camera.position = (*plotter.camera.position[:2], render_distance)
     camera = plotter.camera.copy()
     plotter.clear_actors()
 
@@ -211,6 +218,7 @@ def render_mask(
     domain_size: tuple[np.float32, np.float32],
     render_settings: RenderSettings | None = None,
     filename: str | Path | None = None,
+    render_distance=None,
 ) -> np.ndarray:
     """
     Creates an image containing masks of the given cells.
@@ -230,7 +238,14 @@ def render_mask(
     if render_settings is None:
         render_settings = RenderSettings()
     rs = render_settings.prepare_for_masks()
-    img = render_pv_image(cells, rs, domain_size, colors, filename=filename)
+    img = render_pv_image(
+        cells,
+        rs,
+        domain_size,
+        colors,
+        filename,
+        render_distance,
+    )
     return img
 
 
@@ -239,6 +254,7 @@ def render_image(
     domain_size: tuple[np.float32, np.float32],
     render_settings: RenderSettings | None = None,
     filename: str | Path | None = None,
+    render_distance=None,
 ) -> np.ndarray:
     """
     Aims to create a near-realistic microscopic image with the given cells.
@@ -256,7 +272,7 @@ def render_image(
     """
     if render_settings is None:
         render_settings = RenderSettings()
-    img = render_pv_image(cells, render_settings, domain_size)
+    img = render_pv_image(cells, render_settings, domain_size, render_distance)
 
     # Smoothen it out
     kernel = (
@@ -287,6 +303,7 @@ def store_all_images(
     domain_size: tuple[np.float32, np.float32],
     render_settings: RenderSettings | None = None,
     save_dir: str | Path = "out",
+    render_distance=None,
     render_raw_pv: bool = False,
     show_progressbar: bool | int = False,
     store_config: Configuration | None = None,
