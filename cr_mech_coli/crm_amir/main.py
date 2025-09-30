@@ -674,24 +674,6 @@ def crm_amir_main():
         "drag_force": drag_force,
         "damping": damping,
         "growth_rate": growth_rate,
-        "spring_tension": spring_tension,
-    }
-    set_params = {
-        "rod_rigidity": 150,
-    }
-    compare_with_data(
-        x0_bounds_reduced,
-        positions_data,
-        iterations_data,
-        pyargs,
-        set_params=set_params,
-        output_dir="out/crm_amir/profiles-fixed-rod-rigidity/",
-    )
-
-    x0_bounds_reduced = {
-        "drag_force": drag_force,
-        "damping": damping,
-        "growth_rate": growth_rate,
         "rigidity_to_spring_tension_ratio": (0.0, 1.0, 10.0, "[pix]"),
     }
     set_params = {
