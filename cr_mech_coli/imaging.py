@@ -340,7 +340,7 @@ def __store_all_images_wrapper(args):
 
 def store_all_images(
     cell_container: CellContainer,
-    domain_size: tuple[np.float32, np.float32],
+    domain_size: tuple[np.float32, np.float32] | tuple[float, float],
     render_settings: RenderSettings | None = None,
     save_dir: str | Path = "out",
     render_distance=None,

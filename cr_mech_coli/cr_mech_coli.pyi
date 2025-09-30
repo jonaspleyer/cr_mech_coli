@@ -96,18 +96,18 @@ class Configuration:
     agent_settings: AgentSettings
     n_agents: int
     n_threads: int
-    t0: np.float32
-    dt: np.float32
-    t_max: np.float32
+    t0: np.float32 | float
+    dt: np.float32 | float
+    t_max: np.float32 | float
     n_saves: int
     progressbar: str | None
-    domain_size: tuple[np.float32, np.float32]
-    domain_height: np.float32
+    domain_size: tuple[np.float32, np.float32] | tuple[float, float]
+    domain_height: np.float32 | float
     n_voxels: tuple[int, int]
     rng_seed: int
-    gel_pressure: np.float32
-    surface_friction: np.float32
-    surface_friction_distance: np.float32
+    gel_pressure: np.float32 | float
+    surface_friction: np.float32 | float
+    surface_friction_distance: np.float32 | float
     storage_options: list[StorageOption]
     storage_location: Path | str
     storage_suffix: Path | str | None = None
@@ -218,8 +218,11 @@ def generate_positions(
     agent_settings: AgentSettings,
     config: Configuration,
     rng_seed: int = 0,
-    dx: tuple[np.float32, np.float32] = (np.float32(0.0), np.float32(0.0)),
-    randomize_positions: np.float32 = np.float32(0.0),
+    dx: tuple[np.float32, np.float32] | tuple[float, float] = (
+        np.float32(0.0),
+        np.float32(0.0),
+    ),
+    randomize_positions: np.float32 | float = np.float32(0.0),
     n_vertices: int = 8,
 ) -> list[np.ndarray]:
     """\
