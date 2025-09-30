@@ -1088,38 +1088,43 @@ def crm_divide_main():
         pyargs,
     )
 
-    (
-        masks_adjusted,
-        parent_map,
-        _,
-        color_to_cell,
-        container,
-        masks_predicted,
-    ) = objective_function(
-        final_parameters, *args, return_all=True, show_progressbar=True
-    )
-
-    if not pyargs.skip_snapshots:
-        plot_snapshots(
-            iterations_data,
-            masks_predicted,
+    if (
+        not pyargs.skip_snapshots
+        or not pyargs.skip_time_evolution
+        or not pyargs.skip_profiles
+    ):
+        (
             masks_adjusted,
-            output_dir,
-            color_to_cell,
             parent_map,
+            _,
+            color_to_cell,
+            container,
+            masks_predicted,
+        ) = objective_function(
+            final_parameters, *args, return_all=True, show_progressbar=True
         )
 
-    if not pyargs.skip_time_evolution:
-        plot_time_evolution(
-            masks_predicted,
-            masks_adjusted,
-            color_to_cell,
-            parent_map,
-            container.get_all_iterations(),
-            iterations_data,
-            settings,
-            output_dir,
-        )
+        if not pyargs.skip_snapshots:
+            plot_snapshots(
+                iterations_data,
+                masks_predicted,
+                masks_adjusted,
+                output_dir,
+                color_to_cell,
+                parent_map,
+            )
+
+        if not pyargs.skip_time_evolution:
+            plot_time_evolution(
+                masks_predicted,
+                masks_adjusted,
+                color_to_cell,
+                parent_map,
+                container.get_all_iterations(),
+                iterations_data,
+                settings,
+                output_dir,
+            )
 
     if not pyargs.skip_profiles:
         labels = [
