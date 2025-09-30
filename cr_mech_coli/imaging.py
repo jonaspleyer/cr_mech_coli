@@ -42,6 +42,7 @@ import cv2 as cv
 import dataclasses
 from pathlib import Path
 from tqdm import tqdm
+import multiprocessing as mp
 
 
 @dataclasses.dataclass
@@ -298,6 +299,45 @@ def render_image(
     return img
 
 
+def __store_all_images_wrapper(args):
+    (
+        iteration,
+        container,
+        domain_size,
+        render_settings,
+        save_dir,
+        render_raw_pv,
+        render_distance,
+    ) = args
+    cell_container = CellContainer.deserialize(container)
+    cells = cell_container.get_cells_at_iteration(iteration)
+    colors = cell_container.cell_to_color
+    render_image(
+        cells,
+        domain_size,
+        render_settings,
+        Path(save_dir) / "images/{:09}.png".format(iteration),
+        render_distance,
+    )
+    render_mask(
+        cells,
+        colors,
+        domain_size,
+        render_settings,
+        Path(save_dir) / "masks/{:09}.png".format(iteration),
+        render_distance,
+    )
+    if render_raw_pv:
+        render_pv_image(
+            cells,
+            render_settings,
+            domain_size,
+            colors=None,
+            filename=Path(save_dir) / "raw_pv/{:09}.png".format(iteration),
+            render_distance=render_distance,
+        )
+
+
 def store_all_images(
     cell_container: CellContainer,
     domain_size: tuple[np.float32, np.float32],
@@ -308,6 +348,7 @@ def store_all_images(
     show_progressbar: bool | int = False,
     store_config: Configuration | None = None,
     use_hash: bool = True,
+    workers: int = 1,
 ):
     """
     Combines multiple functions and renders images to files for a complete simulation result.
@@ -332,7 +373,6 @@ def store_all_images(
     """
     if render_settings is None:
         render_settings = RenderSettings()
-    colors = cell_container.cell_to_color
     iterations = cell_container.get_all_iterations()
 
     if use_hash and store_config is not None:
@@ -345,28 +385,25 @@ def store_all_images(
         with open(Path(save_dir) / "config.json", "w") as f:
             f.write(config_string)
 
-    if show_progressbar is True:
-        iterations = tqdm(iterations, total=len(iterations))
-    for iteration in iterations:
-        cells = cell_container.get_cells_at_iteration(iteration)
-        render_image(
-            cells,
-            domain_size,
-            render_settings,
-            Path(save_dir) / "images/{:09}.png".format(iteration),
+    from itertools import repeat
+
+    container = cell_container.serialize()
+
+    arglist = zip(
+        iterations,
+        repeat(container),
+        repeat(domain_size),
+        repeat(render_settings),
+        repeat(save_dir),
+        repeat(render_raw_pv),
+        repeat(render_distance),
+    )
+
+    pool = mp.Pool(workers)
+    _ = list(
+        tqdm(
+            pool.imap(__store_all_images_wrapper, arglist),
+            total=len(iterations),
+            disable=not show_progressbar,
         )
-        render_mask(
-            cells,
-            colors,
-            domain_size,
-            render_settings,
-            Path(save_dir) / "masks/{:09}.png".format(iteration),
-        )
-        if render_raw_pv:
-            render_pv_image(
-                cells,
-                render_settings,
-                domain_size,
-                colors=None,
-                filename=Path(save_dir) / "raw_pv/{:09}.png".format(iteration),
-            )
+    )
