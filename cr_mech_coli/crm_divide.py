@@ -889,6 +889,41 @@ def plot_snapshots(
         cv.imwrite(f"{output_dir}/masks_diff/{n:06}.png", diff)
 
 
+def plot_growth_rate_distribution(final_parameters, output_dir):
+    fig, ax = plt.subplots(figsize=(8, 8))
+    crm.configure_ax(ax)
+
+    growth_rates = final_parameters[5:11]
+    new_growth_rates = final_parameters[15:23]
+
+    data = np.array([*growth_rates, *new_growth_rates])
+
+    _, bins, _ = ax.hist(data, color=crm.plotting.COLOR3, alpha=0.5)
+    ax.cla()
+    y, _, _ = ax.hist(
+        growth_rates, color=crm.plotting.COLOR3, bins=bins, label="Mother"
+    )
+    ax.hist(
+        new_growth_rates,
+        color=crm.plotting.COLOR3,
+        bins=bins,
+        bottom=y,
+        alpha=0.5,
+        label="Daughter",
+    )
+    ax.legend(
+        loc="upper center",
+        bbox_to_anchor=(0.5, 1.1),
+        ncol=2,
+        frameon=False,
+    )
+
+    ax.set_ylabel("Growth Rate")
+    fig.savefig(output_dir / "growth-rate-distribution.pdf")
+    fig.savefig(output_dir / "growth-rate-distribution.png")
+    plt.close(fig)
+
+
 def crm_divide_main():
     parser = argparse.ArgumentParser(
         description="Fits the Bacterial Rods model to a system of cells."
@@ -935,6 +970,11 @@ def crm_divide_main():
         "--only-mask-adjustment",
         action="store_true",
         help="Only plot adjusted masks",
+    )
+    parser.add_argument(
+        "--skip-distribution",
+        action="store_true",
+        help="Skip plotting of the distribution of growth rates",
     )
     parser.add_argument(
         "-w",
@@ -1124,5 +1164,11 @@ def crm_divide_main():
             settings,
             masks_data,
             iterations_data,
+            output_dir,
+        )
+
+    if not pyargs.skip_distribution:
+        plot_growth_rate_distribution(
+            final_parameters,
             output_dir,
         )
