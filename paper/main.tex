@@ -216,19 +216,19 @@ Our approach takes a general stance which incorporates effects that are observed
 \section{Overview}
 This work consists of many subcomponents which can be combined in order to achieve various tasks.
 Figure~\ref{fig:flowchart-project-structure} shows a high-level overview of all components.
-We assume that bacterial rods can be represented by a colleciton of vertices $\vec{x}_i$ (see
+We assume that bacterial rods can be represented by a colleciton of vertices (see
 section~\ref{subsec:spatial-representation}).
 This assumption alone is enough to enable a cascade of other components.
 Using the spatial representation, we provide visualization methods that create 3D models from the
 given vertices which can then either be rendered or projected to a 2D plane.
-The data extraction component determines the vertices $\vec{x}_i$ from given cell masks which
+The data extraction component determines the vertices from given cell masks which
 correspond to microscopic images.
 This allows us in particular to turn any sequence of images (movie) into a sequence of bacterial
 positions.
-The dynamics of the vertices $\vec{x}_i$ are determined by a computational model which is specific
+The dynamics of the vertices are determined by a computational model which is specific
 to the respective use-case and should be defined by the researcher.
 It merely needs to utilize the aforementioned spatial representation of bacterial rods as a
-collection of vertices $\vec{x}_i$.
+collection of vertices.
 This work will provide one example of how such a model can be defined.
 Notably, the visualization and data extraction components do not require any knowledge about the
 computational model, thus allowing us to reuse their functionality across multiple models.
@@ -268,7 +268,7 @@ algorithms.
         modeling assumptions or data.
         Blue blocks indicate possible future extensions of this project.
         Every component implicitly builds on the spatial representation of rod-shaped bacteria as
-        vertices $\vec{x}_i$.
+        vertices.
     }
     \label{fig:flowchart-project-structure}
 \end{figure}
