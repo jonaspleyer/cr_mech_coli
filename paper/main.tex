@@ -277,44 +277,40 @@ algorithms.
 \section{A Computational Model for Rod-Shaped Bacteria}
 \label{sec:computational-model}
 
-We will go into the details of the model for rod-shaped bacteria.
 The mechanical behaviour of rod-shaped bacteria is governed by a plethora of effects.
-In this work, we aim to establish a model which is abstract enough such that it can be reused for
-many types of rod-shaped bacteria but also explicit enough such that we can quantify its parameters.
-We are thus aiming to work with a minimal set of assumptions that is as general as possible but
-still specific to rod-shaped bacteria. 
+In this work, we aim to establish a model which is general enough such that it can be reused as the
+basis for many variants of rod-shaped bacteria but also explicit enough such that we can quantify
+its parameters.
+We thus utilize only a minimal set of assumptions.
 
-Given this delicate balance, it is evident that numerous cellular processes will be excluded due to
-their specificity to particular cell types or their irrelevance to the construction of our model.
-This encompasses a range of effects, including polar interactions~\cite{Duvernoy2018}, extracellular
-reactions~\cite{Wang2010} or differentiation processes~\cite{vanGestel2015,Lpez2010}, among numerous
-others.
 When describing the bacterial system, we distinguish between intra-cellular processes and cell-cell
 interactions.
-We restrict ourselves to the features discussed below and summarized in
+We restrict ourselves to the features discussed below and summarize them in
 Table~\ref{table:simulation-aspects}.
-For a collection of other known aspects which could be considered, we refer to the supplementary
-section~\ref{section:discussion}, and~\ref{section:supplement-more-simulation-aspects}.
+% For a collection of other known aspects which could be considered, we refer to the supplementary
+% section~\ref{section:discussion}, and~\ref{section:supplement-more-simulation-aspects}.
 
 \paragraph{(C) Cellular}
 In bacteria the MreB protein forms an actin-like cytoskeleton~\cite{Erickson2001}.
 It can polymerize and form filaments which behave similar to actin microfilaments~\cite{Dersch2020}.
 The effect of MreB on the shape of cells during growth was shown in more detail
-by~\cite{Ursell2014}. They found that MreB localizes specifically at regions of negative curvature
-and thus introduces
+by~\cite{Ursell2014}.
+They found that MreB localizes specifically at regions of negative curvature and thus introduces
 heterogeneous cell growth which results in a bending force during the growth of cells.
 It also means that the cells are able to sense the curvature of the cell wall through cytoskeleteal
 MreB filaments during growth.
 \cite{Bratton2018} showed that the trans-membrane protein RodZ can modulate MreB density and
 facilitates local MreB assembly.
 This feedback mechanism will result in straight rod-shaped bacteria if not interfered from the
-external environment. These results were also confirmed by the studies of~\cite{Wang2010}.
+external environment.
+These results were also confirmed by the studies of~\cite{Wang2010}.
 In their experiments, a single bacterium was fixed at the bottom pole while an optically trapped
-bead was placed on the upper pole. They could now exert a force on the free part and thus study the
-response of the cell under different conditions. When treating cells with A22, an antibiotic which
-disassembles MreB~\cite{IWAI2002,Gitai2005,Karczmarek2007,Bean2009}, a higher displacement with
-identical force could be measured, thus indicating that MreB increases mechanical rigidity of the
-cell.
+bead was placed on the upper pole.
+They could now exert a force on the free part and thus study the response of the cell under
+different conditions.
+When treating cells with A22, an antibiotic which disassembles
+MreB~\cite{IWAI2002,Gitai2005,Karczmarek2007,Bean2009}, a higher displacement with identical force
+could be measured, thus indicating that MreB increases mechanical rigidity of the cell.
 
 While some rod-shaped bacteria grow by inserting new material at the ends, \textit{E.Coli} and
 \textit{B.Subtilis} utilize a method where new material is inserted along the cylindrical part of
