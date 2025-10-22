@@ -360,57 +360,28 @@ We therefore need account for this phenomenon as well.
 % --------------------------------------------------------------------------------------------------
 \subsection{Spatial Representation}
 \label{subsec:spatial-representation}
-This work makes use of a few but powerful assumptions concerning the mathematical representation of
-the cells. In order to describe the spatial dynamics of individual cells or agents, we need to
-define their position, shape and how they interact with each other.
+This work makes use of a one powerful assumption concerning the mathematical representation of the
+cells.
+To model the spatial mechanics of elongated bacteria \cite{Billaudeau2017}, we represent them as a
+collection of auxiliary vertices $\{\vec{x}_i\}$.
+We treat this collection of vertices as a discretization of the rod where the individual segments
+between the vertices carry no explicit physical or biological meaning.
+This assumption alone is enough to be able to build visualization and data-extraction pipelines (see
+\ref{fig:flowchart-project-structure}).
+Our computational model builds on top of this assumption and utilizes this representation to
+define the dynamics of the vertices $\{\vec{x}_i\}$.
+For this study, we will choose a particular type of model incorporating a chosen set effects.
+But researchers are in general free to adapt the model for the specific problem at hand.
+By building on our discretization scheme, future modeling approaches will be able to directly reuse
+our established theoretical methods and computational functionalities.
 
-In order to provide as much flexibility as possible when constructing new models, we restrict
-ourselves to assumptions concerning the position such that researchers can freely experiment with
-various shapes and interaction types.
-\textbf{[Dieser Satz ist leider unverständlich. Je öfter ich den Satz lese, umso weniger ist mir klar, was du sagen möchtest.]}\\
-
-
-Furthermore, it is very important to strike a good balance between the restrictiveness of our
-assumptions and generality in order to provide meaningful results and still be able to apply our
-approach to a broader class of models.
-\textbf{[Ebenso unklar warum du das hier an dieser Stelle sagst. Vielleicht versuchst du die Aussagen zu bündeln und geeigneter Stelle zu bringen. So ist man leider eher verwirrt.]}\\
-
-Taking into account the natural shape of rod-like bacteria, it is clear that they can not be
-represented with a singular point $\vec{x}$ in space.
-\textbf{[Hast du nicht bereits oben die Hilfsvariablen $x_i$ eingeführt?]}\\
-
-We could extend this positional definition with a vector $\vec{w}$, indicating the direction of
-extension but this would restrict ourselves to fully straight rod-shaped bacteria.
-\textbf{[Nicht spekulieren was du hättest machen können, sondern einfach sagen, was du gemacht hast.]}
-
-However, multiple experiments have shown that MReB is responsible for the growth and maintenance of
-the elongated shape of bacteria~\cite{Erickson2001}.
-\textbf{[Wiederholung?]}
-
-
-By means of this protein, rod-shaped bacteria can bend elastically on short time-scales and deform
-plastically over longer periods of time. Our goal is to provide a model that can encapsulate these effects.
-\textbf{[Das beschriebene Verhalten ist visko-elastisch. Soweit ich sehe, hast du das nicht implementiert. Könnte es sein, dass das elastisches Modell mit Wachstum äquivalent zum Maxwell-Modell ist? Eigene Antwort: im allgemeinen nein.]}\\
-
-We discretize the (possibly non-straight) rod of a bacteria and model it by using multiple vertices
-which are part of a 1-dimensional
-polygon with two endpoints $\vec{x}_i$. \textbf{[Was ist denn die Diskretisierungslänge? Two endpoints $x_i$ macht keinen Sinn.]}\\
-
-Figure~\ref{fig:mechanics-bacterium} shows a visualization of this approach.
-The angles $\alpha_i$ between vertices $\vec{x}_{i-1},\vec{x}_i$ can be used when modeling the
-dynamics of these bacteria.
-\textbf{[Klingt kryptisch. "Can be used ..". Für was, wie?]}\\
-
-With these fundamental thoughts layed out, we retain the flexibility to represent many models such
-as varying shapes since we do not have to make any assumptions on the type of interactions between
-two bacteria.
-Even concerning the shape of bacteria, this assumption still allows us to model elliptical cells by
-modifying the interaction type as well as other effects such as polarity of
-interactions~\cite{Duvernoy2018}.
-Furthermore, we also did not have to assume any particular mechanical dynamics of the agents, only
-their spatial representation, thus leaving in particular room for plastical or elastic deformations
-of the rod and other more intricate mechanisms.
-\textbf{[Ich glaube, ich verstehe warum du das hier sagst. Aber das kommt nicht richtig rüber. Der Absatz ist vielleicht nicht nötig. Der Kommentar über elliptische Zellen, sollte eher unter Potential stehen?]}\\
+\textbf{TODO mention this in sections below}
+\begin{itemize}
+    \item plastic/elastic deformations
+    \item non-uniform thickness of the rod
+    \item polar interactions \cite{Duvernoy2018}
+    \item other dynamics
+\end{itemize}
 
 % \begin{enumerate}
 %     \item represent bacteria as polygon with vertices $\vec{x}_i$
@@ -424,7 +395,7 @@ of the rod and other more intricate mechanisms.
     \caption{
         Example of an elonged bacterial rod represented by a collection of vertices which are
         connected by springs.
-        The angles $\alpha_i$ have been exaggerated such that they can be identified more easily.
+        The angles $\alpha_i$ will be used to model the rigidity of the rod.
         A bacterial agent which is not interacting with any external objects will tend to the
         equilibrium state of a straight rod with no curvature.
     }
@@ -434,27 +405,32 @@ of the rod and other more intricate mechanisms.
 % --------------------------------------------------------------------------------------------------
 \subsection{Mechanics}
 \label{subsection:mechanical-model-mechanics}
+In rod-shaped bacteria, the MreB protein plays a key role for the maintenance of the cellular shape.
+It forms an actin-like cytoskeleton~\cite{Erickson2001,Dersch2020} and localizes specifically at
+regions of negative curvature thus introducing heterogeneous cell growth~\cite{Ursell2014} which
+results in a bending force during growth.
+This feedback mechanism will result in straight rod-shaped bacteria if not interfered from the
+external environment~\cite{Wang2010}.
+
 We use principles from discrete differential geometry~\cite{bobenko2008discrete} to describe the
 stiffness of the bacterial rod~\cite{Amir2014_2}.
 As explained above, MReB will counteract the bending of the rod, resulting in a stiffening force.
-In principle, this stress will be dependent on the position inside the cell~\cite{Chatterjee1988},
-but for sake of simplicity we chose to model the bacterium as a bending beam.
-\textbf{[", thus utilizing the simplest solution which can still produce the desired effects." Es ist unklar was die "desired effects" sind. ]}\\
-
-Such a beam can be represented by a collection of vertices $\vec{x}_i$ which are connected by a
-springs of lengths $l_i$.
-\textbf{[Das klingt nach einer Wiederholung von Spatial Representation. Du erklärst ziemlich umständlich. Konzentriere dich auf das wesentliche und überlege, was du eigentlich sagen möchtest.]}\\
-
-We use the notation $\vec{c}_i:=\vec{x}_i-\vec{x}_{i-1}$ with which the resulting force acting
+We model the bacterium as a bending beam.
+% In principle, this stress will be dependent on the position inside the cell~\cite{Chatterjee1988},
+% but for sake of simplicity we chose to model the bacterium as a bending beam.
+% \textbf{[", thus utilizing the simplest solution which can still produce the desired effects." Es ist unklar was die "desired effects" sind. ]}\\
+Using our discretization $\vec{x}_i$, we connect the vertices by springs of length $l_i$.
+% which can be represented by a collection of vertices $\vec{x}_i$ which are connected by a
+% springs of lengths $l_i$.
+% \textbf{[Das klingt nach einer Wiederholung von Spatial Representation. Du erklärst ziemlich umständlich. Konzentriere dich auf das wesentliche und überlege, was du eigentlich sagen möchtest.]}\\
+We use the notation $\vec{w}i:=\vec{x}_i-\vec{x}_{i-1}$ with which the resulting force acting
 between two vertices if given by
 
-\begin{align}
+\begin{equation}
     \vec{F}_{i,\text{springs}} =
-        &-\gamma\left(1 - \frac{l}{\left|\vec{c}_i\right|}\right)
-        \vec{c}_i\\
-        &+ \gamma\left(1 - \frac{l}{\left|\vec{c}_{i+1}\right|}\right)
-        \vec{c}_{i+1}.
-\end{align}
+        -\gamma\left(1 - \frac{l}{\left|\vec{w}i\right|}\right) \vec{w}i
+        + \gamma\left(1 - \frac{l}{\left|\vec{w}{i+1}\right|}\right) \vec{w}{i+1}.
+\end{equation}
 
 The value of the spring constants determines the elasticity with respect to elongation of the cell.
 In situations where this aspect is not relevant, they merely serve as a auxiliary parameters to
@@ -462,66 +438,55 @@ maintain the length of the rod.
 In addition to springs between individual vertices $\vec{x}_i$, we assume that each angle at a
 vertex between edges is subject to a force indiced by curvature.
 % We assume that we can model the mechanical properties of the bacterium as an elastic rod.
-Given the angle $\alpha_i = \sphericalangle(\vec{c}_{i-1},\vec{c}_i)$ between adjacent edges,
+Given the angle $\alpha_i = \sphericalangle(\vec{w}{i-1},\vec{w}i)$ between adjacent edges,
 the bending force is proportional to the curvature $\kappa_i$ at each vertex
 $\kappa_i = 2\tan(\alpha_i/2)$.
 The resulting force acts along the angle bisector which can be calculated from the edge vectors.
 Figure~\ref{fig:mechanics-bacterium} shows an elongated rod represented by $6$ vertices.
-The forces acting on vertices $\vec{x}_i,\vec{x}_{i-1},\vec{x}_{i+1}$ are given by
+The force acting on vertex $\vec{x}_i$ is given by
 
-\begin{align}
-    \vec{F}_{i,\text{curvature}} &= \eta\kappa_i
-        \frac{\vec{c}_i - \vec{c}_{i+1}}{|\vec{c}_i-\vec{c}_{i+1}|}\\
-    \vec{F}_{i-1,\text{curvature}} &= -\frac{1}{2}\vec{F}_{i,\text{curvature}}\\
-    \vec{F}_{i+1,\text{curvature}} &= -\frac{1}{2}\vec{F}_{i,\text{curvature}}
-\end{align}
+\begin{equation}
+    \vec{F}_{i,\text{curvature}} = \eta\kappa_i
+        \frac{\vec{w}i - \vec{w}{i+1}}{|\vec{w}i-\vec{w}{i+1}|}
+\end{equation}
 
 where $\eta_i$ is the rigidity at vertex $\vec{x}_i$ (see Figure~\ref{fig:mechanics-bacterium}).
+The adjoining vertices $\vec{x}_{i-1},\vec{x}_{i+1}$ are subject to half of the same force in the
+opposite direction $\vec{F}_{i\pm 1,\text{curvature}} = -0.5\vec{F}_{i,\text{curvature}}$.
 We can see that the curvature force does not move the overall center of the rod in space.
-The total force is the sum of external and interal forces.
+The total force is the sum of interal and external forces.
 
 \begin{equation}
     \vec{F}_{i,\text{total}} = \vec{F}_{i,\text{springs}}+ \vec{F}_{i,\text{curvature}}
         + \vec{F}_{i,\text{external}}
 \end{equation}
 
-and are integrated via damped brownian dynamics
+and are integrated via damped newtonian dynamics
 
-\begin{align}
-    \partial_t^2 \vec{x}_i &= \partial_t\vec{x}_i + \sqrt{2D}\vec{\xi}_i\\
-    \partial_t\vec{x}_i &= \vec{F}_{i,\text{total}} - \lambda \partial_t\vec{x}_i
-\end{align}
-\textbf{[Ich verstehe die Gleichungen nicht. Eine überdämpfte Langevin Gleichung bezeichnet man doch als Brownsche Bewegung, oder? Und sollte die Brownsche Gleichung nicht so lauten?
-\begin{align}
-   \partial_t \vec{x}_i &= \frac{D}{k_B T} \vec{F}_{i,\text{total}} + \sqrt{2D}\vec{\xi}_i
-\end{align}
-Die Einheiten stimmen auch überhaupt nicht. $[x_i]=$m, $[\lambda]=$kg/s, $[F]=$(kg m)/s$^2$
-]}\\
+\begin{equation}
+    \partial_t^2 \vec{x}_i = \vec{F}_{i,\text{total}} - \lambda \partial_t\vec{x}_i
+\end{equation}
 
-where $D$ is the diffusion constant, $\vec{\xi}$ is a Wiener process and $\lambda$ a damping constant.
-Together they determine the stochastic motion of the individual vertices which can arise from
-recurring collisions with small particles of the surrounding medium or other minor fluctuations.
+where $\lambda$ a damping constant and the mass was set to $1$ to simplify the model.
 
 % --------------------------------------------------------------------------------------------------
 \subsection{Physical Interactions - Mie Potential}
 
-Calculating the force between cells resulting  from long ranged interactions requires performing a
-double integral over the length of the cells. 
-To reduce the computational costs we use a approximative, simplified model Given a vertex
-$\vec{x}_i$ on one cell, we determine the closest point $\vec{p}$ on the polygonal line given by the
-vertices $\{\vec{w}_j\}$ of the interacting cell. 
-\textbf{[Ich bin etwas verwirrt. Warum änderst du die Bezeichnung der Vertices?]}
-
-Furthermore we determine the value $q\in[0,1]$ such that $\vec{p} = (1-q)\vec{w}_j + q\vec{w}_{j+1}$
+Calculating the force between cells requires performing a double integral over the length of the
+cells.
+To reduce the computational costs we use an approximative, simplified model.
+Given a vertex $\vec{x}_i$ on one cell, we determine the closest point $\vec{p}$ on the polygonal
+line given by the vertices $\{\vec{y}_j\}$ of the interacting cell.
+Furthermore we determine the value $q\in[0,1]$ such that $\vec{p} = (1-q)\vec{y}_j + q\vec{y}_{j+1}$
 for some specific $j$.
-The force is then calculated between the points $\vec{x}_i$ and $\vec{p}_i$ and acts on
-the vertex $\vec{w}_i,\vec{w}_{i+1}$ with relative strength $(1-q)$ and $q$.
+The force is then calculated between the points $\vec{x}_i$ and $\vec{p}$ and acts on
+the vertex $\vec{y}_j,\vec{y}_{j+1}$ with relative strength $(1-q)$ and $q$.
 
 \begin{equation}
     \vec{F}_{i,\text{External}} = \vec{F}(\vec{x}_i,\vec{p})
 \end{equation}
 
-The interaction between cells can be described by the Mie potential~\cite{Mie1903}.
+We utilize the Mie potential~\cite{Mie1903} to describe the attraction between two cells.
 It is the generalization of the well-known Lennard-Jones~\cite{Jones1924} potential and was designed
 to describe the interactions between molecules.
 The Mie potential is given by:
@@ -529,24 +494,34 @@ The Mie potential is given by:
 \begin{align}
     U(r) &= C\epsilon\left[ \left(\frac{\sigma}{r}\right)^n -
         \left(\frac{\sigma}{r}\right)^m\right]\\
-    C &= \frac{n}{n-m}\left(\frac{n}{m}\right)^{\frac{n}{n-m}}\\
-    V(r) &= \min(U(r), \beta)\theta(r-\zeta)
+    C &= \frac{n}{n-m}\left(\frac{n}{m}\right)^{\frac{n}{n-m}}
 \end{align}
 
-The strength of the potential is given by $\epsilon$ and the radius \textbf{[Welcher Radius?]} is
-encoded in $\sigma = (m/n)^{1/(n-m)}(R_1+R_2)$ where $R_1,R_2$ are the radii of the two interacting
-particles.
-In our simulation, we use $V(r)$ to guarantee numerical regularity.
-\textbf{[Beschreibe, welche Rolle $\beta$ und $\zeta$ spielen.]}
+The strength of the potential is given by $\epsilon$ and the thickness of our rods
+is encoded in $\sigma = (m/n)^{1/(n-m)}(R_1+R_2)$ where $R_1,R_2$ are the thicknesses of the two
+interacting bacteria.
+We utilize the shorthand notation $r=|\vec{x}_i - \vec{p}|$ for the distance between the two points
+in question.
+We numerically regularize the potential by imposing an upper bound $\beta$ on the norm of the
+resulting force $\vec{F} = \vec{\nabla} V$.
+Furthermore, we impose a cutoff parameter $\zeta$ which sets sets the force to zero when the
+distance $r$ between the interacting points exceeds this threshold.
+The resulting force is given by
 
-The specific choice of interaction potential plays a crucial role for the dynamics of the agents.
-Since we cannot expect to simply know the correct shape and parameters of this potential, it is
-desirable to experiment with various interaction potentials in order to quantify their
-ability to produce accurate results.
-While this study, only relies on the Mie Potential, our python package \texttt{cr\_mech\_coli}
-also implements the popular Morse potential~\cite{Morse1929} to model physical interactions.
+\begin{equation}
+    \vec{F}_{i,\text{external}} = \vec{F} \theta(r-\zeta) \min\left(1, \beta / |\vec{F}|\right)
+\end{equation}
 
-\textbf{[Du hast hier von shape geredet. Das Potential ist doch immer radial-symmetrisch, oder? Vielleicht könnte es helfen, Bilder zu zeigen? Darin könnte man die Bedeutung der Parameter verdeutlichen. Wenn du schreibst, das Potential ist sehr wichtig, dann musst du viel besser begründen, warum du das Potential gewählt hast. Ich denke, du solltest das etwas abschwächen.]}
+where $\theta$ is the heaviside step-function and the $\min$ term ensures the upper bound $\beta$.
+
+The physical interaction between the bacteria plays a crucial role for the overall dynamics of our
+simulation.
+The Mie potential is capable of describing a wide range of interaction types from soft to rigid, by
+adjusting the parameters of the potential accordingly.
+In contrast, a popular alternative is the Morse potential~\cite{Morse1929}, which is less
+customizable due to the lower amount of parameters and more restrictive mathematical formulation.
+Therefore, the Mie potential is a good choice for a simple, interpretable interaction potential with
+low amount of parameters that can be estimated by a data-driven approach.
 
 % --------------------------------------------------------------------------------------------------
 \subsection{Cell-Cycle}
@@ -583,7 +558,7 @@ We first calculate the new spring lengths of the two resulting rods, according t
 
 Afterwards, we start at one endpoint $\vec{x}_0$ and move along the polygon defined by the
 bacterial rod. We stop when we have reached a length that matches the length of the new spring length $\tilde{l}$.
-From here, we continue and iterate this procedure until we have found all new vertices $\vec{w}_i$.
+From here, we continue and iterate this procedure until we have found all new vertices $\vec{y}_i$.
 Equation~\ref{eq:growth-rod-new-lengths} ensures that that the tips of the two new rods are touching
 right after the division event.
 \textbf{[Was ist $r$? Was ist mit den Parametern und mit anderen intro-zellularen Zuständen?]}
