@@ -423,13 +423,13 @@ Using our discretization $\vec{x}_i$, we connect the vertices by springs of leng
 % which can be represented by a collection of vertices $\vec{x}_i$ which are connected by a
 % springs of lengths $l_i$.
 % \textbf{[Das klingt nach einer Wiederholung von Spatial Representation. Du erklärst ziemlich umständlich. Konzentriere dich auf das wesentliche und überlege, was du eigentlich sagen möchtest.]}\\
-We use the notation $\vec{w}i:=\vec{x}_i-\vec{x}_{i-1}$ with which the resulting force acting
+We use the notation $\vec{w}_i:=\vec{x}_i-\vec{x}_{i-1}$ with which the resulting force acting
 between two vertices if given by
 
 \begin{equation}
     \vec{F}_{i,\text{springs}} =
-        -\gamma\left(1 - \frac{l}{\left|\vec{w}i\right|}\right) \vec{w}i
-        + \gamma\left(1 - \frac{l}{\left|\vec{w}{i+1}\right|}\right) \vec{w}{i+1}.
+        -\gamma\left(1 - \frac{l}{\left|\vec{w}_i\right|}\right) \vec{w}_i
+        + \gamma\left(1 - \frac{l}{\left|\vec{w}_{i+1}\right|}\right) \vec{w}_{i+1}.
 \end{equation}
 
 The value of the spring constants determines the elasticity with respect to elongation of the cell.
@@ -438,7 +438,7 @@ maintain the length of the rod.
 In addition to springs between individual vertices $\vec{x}_i$, we assume that each angle at a
 vertex between edges is subject to a force indiced by curvature.
 % We assume that we can model the mechanical properties of the bacterium as an elastic rod.
-Given the angle $\alpha_i = \sphericalangle(\vec{w}{i-1},\vec{w}i)$ between adjacent edges,
+Given the angle $\alpha_i = \sphericalangle(\vec{w}_{i-1},\vec{w}_i)$ between adjacent edges,
 the bending force is proportional to the curvature $\kappa_i$ at each vertex
 $\kappa_i = 2\tan(\alpha_i/2)$.
 The resulting force acts along the angle bisector which can be calculated from the edge vectors.
@@ -447,7 +447,7 @@ The force acting on vertex $\vec{x}_i$ is given by
 
 \begin{equation}
     \vec{F}_{i,\text{curvature}} = \eta\kappa_i
-        \frac{\vec{w}i - \vec{w}{i+1}}{|\vec{w}i-\vec{w}{i+1}|}
+        \frac{\vec{w}_i - \vec{w}_{i+1}}{|\vec{w}_i-\vec{w}_{i+1}|}
 \end{equation}
 
 where $\eta_i$ is the rigidity at vertex $\vec{x}_i$ (see Figure~\ref{fig:mechanics-bacterium}).
