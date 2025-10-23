@@ -627,75 +627,30 @@ To visualize the spatial configuration of the results we employ pyvista, which p
 wrappers around the popular VTK library~\cite{vtkBook,Sullivan2019}.
 The initial phase of the visualization process entails the generation of three-dimensional meshes
 for each bacterium as an intermediate representation.
-We insert spheres of a given radius $r$ at each vertex $\vec{x}_i$ and connect adjacent vertices
-$\vec{x}_i,\vec{x}_{i+1}$ with a cylinder, also of radius $r$ which is positioned such that its core
-is identical to the connecting line segment between the two vertices.
+We insert spheres matching the thickness of the rod $R$ at each vertex $\vec{x}_i$ and connect
+adjacent vertices $\vec{x}_i,\vec{x}_{i+1}$ with a cylinder, also of radius $r$ which is positioned
+such that its core is identical to the connecting line segment between the two vertices.
 Finally, we combine the meshes of all of these objects to obtain a single mesh of one bacterium.
 
 A render of this result can be seen in figure~\ref{fig:progression-image-generation}.
-Since we use a 3D rendering engine as an intermediate representation, the resulting image can have
+Since we use a 3D rendering engine for our visualization, the resulting image can have
 overlaps of bacteria which are placed at higher or lower values along the z-direction.
 To generate masks, we assign unique colours to every mesh of the respective cellular agent, ensuring
-no two agents will use identical colours.
+no two agents will use identical colours. \textbf{TODO semantic segmentation Citation}
 We then use a parallel projection and remove any existing light sources in order to obtain a solid
 color for every cell-agent.
 The resulting image is shown in subfigure (B).
-Subfigure (C) shows an example of a simplified way to generate microscopic images.
-The properties of the meshes such as roughness and reflectivity have been adjusted and we use
-physically-based rendering of VTK. The result of this render is augmented by introducing white noise
-on the pixel values at each point.
-\textbf{[Warum?]}
-
-This approach is very rudimentary and we hope to extend these methods in the future.
-\textbf{[So sollte man das nicht formulieren. Hört sich etwa so an wie: jetzt hatte ich keine Lust es richtig zu machen, aber vielleicht mache ich das in der Zukunft.]}
-In order to properly generate data, we need to deal with microscopic imaging techniques and possible
-defects that can occur. It is crucial to get this part of the image-generation process right in
-order to obtain near-realistic images that can be further reused.
-\textbf{[Kann wenig mit diesen Kommentaren anfangen. Verstehe nicht warum du das hier sagst.]}
-
-% \begin{itemize}
-%     \item use pyvista (VTK) for Visualization
-%     \item always do 3D render. This way, we can have overalp between agents and produce more
-%         realistic masks.
-%     \item Assign unique color values for idividual agents.
-%         We have a 1:1 mapping between agent identifier and color! (for each simulation different
-%         though)
-%     \item use parallel projection; this should be most close to what microscopes measure due to the
-%         relatively large distance between object and lens.
-%     \item use some noise to smear out the rods; this is already similar to microscopic images; use
-%         more like this and deal with real-world defects to make it more realistic (future, not now)
-%     \item Figure~\ref{fig:progression-image-generation} shows steps in generating image.
-%     \item Reflectivity, placement of light etc. can already introduce some heterogeneity in the
-%         visual of the rod.
-%     \item Plan to implement noise on the mesh itself; make it have rough surface (like real rods as
-%         seen under electron microscopy)
-% \end{itemize}
-%
-% \paragraph{Algorithm}
-% \begin{enumerate}
-%     \item Get position of cell
-%     \item Insert spheres at each vertex
-%     \item Insert cylinder along edges
-%     \item Combine individual objects into one big mesh
-%     \item Use \ac{pbr}
-% \end{enumerate}
 
 \begin{figure}
     \centering
-    % \begin{tikzonimage}[width=0.9\textwidth]{visualization.pdf}
-    %     \node at (0.025, 0.975)[anchor=north west, rectangle, draw, minimum width=15pt, minimum height=15pt]{\textbf{A}};
-    % \end{tikzonimage}
-    \begin{tikzonimage}[width=0.3\textwidth]
+    \begin{tikzonimage}[width=0.4\textwidth]
         {docs/source/_static/09395645494836445480/raw_pv/000000400.png}
         \node at (0.025, 0.975)[anchor=north west, rectangle, draw, white, minimum width=15pt, minimum height=15pt]{\textbf{A}};
     \end{tikzonimage}
-    \begin{tikzonimage}[width=0.3\textwidth]
+    \hspace{0.01\textwidth}
+    \begin{tikzonimage}[width=0.4\textwidth]
         {docs/source/_static/09395645494836445480/masks/000000400.png}
         \node at (0.025, 0.975)[anchor=north west, rectangle, draw, white, minimum width=15pt, minimum height=15pt]{\textbf{B}};
-    \end{tikzonimage}
-    \begin{tikzonimage}[width=0.3\textwidth]
-        {docs/source/_static/09395645494836445480/images/000000400.png}
-        \node at (0.025, 0.975)[anchor=north west, rectangle, draw, white, minimum width=15pt, minimum height=15pt]{\textbf{C}};
     \end{tikzonimage}
     \caption{
         (A) shows the result from combining sphere and cylinder meshes to obtain the shape of a
@@ -704,25 +659,19 @@ order to obtain near-realistic images that can be further reused.
         on the upper part of the meshes.
         (B) Unique color values are assigned to each agent and light sources are removed.
         Afterwards, the image is rendered by projecting along the z-axis.
-        (C) We use physically-based rendering and assign properties such as roughness and
-        reflectivity to generate an initial render.
-        Afterwards, we apply white noise to the pixel values of image.
-        In the future, we hope to extend this approach in order to construct near-realistic
-        microscopic images from synthetic data.
     }
     \label{fig:progression-image-generation}
 \end{figure}
 
 % --------------------------------------------------------------------------------------------------
 \subsection{Data Extraction}
-\label{section:data-extraction}
 
 This section will explain how we can determine the collection of vertices $\vec{x}_i$ introduced in
 subsection~\ref{subsection:mechanical-model-mechanics} from microscopic images
 (Figure~\ref{fig:position-extraction-algorithm} (A)).
-They will serve as initial, final and intermediate values with which we can compare our predictions.
-\textbf{[Beziehen sich initial und final, usw. auf räumliches? Ist missverständlich, bitte umformulieren.]}
-The algorithms which we devised requires the input of cell-masks which assign a unique color for
+The extracted vertices for multiple time points will be used by our parameter estimation methods as
+input data.
+The algorithms which we devised requires the input of cell-masks which utilize a unique color for
 every cell in the image.
 
 Such masks can be generated by cell-segmentation tools or obtained by annottating microscopic images
@@ -733,7 +682,6 @@ Afterwards, we proceed with the following 5 steps.
     \item Skeletonize submask with algorithm from Lee~\cite{Lee1994}
     \item Determine endpoints $\vec{q}_0,\vec{q}_1$.
         Assert that there are only 2 endpoints.
-        \textbf{[Heissen die Endpoints immer $q$? Kontrolliere bitte, ob deine Notation einheitlich ist.]}
     \item Sort points such that they form a polygon.
     \item Interpolate vertices $\vec{x}_i$ from obtained polygon.
 \end{enumerate}
@@ -784,11 +732,9 @@ the desired number of vertices $\vec{x}_i$.
 
 % --------------------------------------------------------------------------------------------------
 \paragraph{Benchmarking the Extraction Algorithm}
-\label{paragraph-extraction-algorithm}
 
-In order to determine if our extraction algorithm provides reliable results, we have to take
-advantage of a functionality which will be introduced later in
-section~\ref{subsection:visualization} \textbf{[Hier stimmt die Referenz nicht.]}.
+In order to determine if our extraction algorithm provides reliable results, we set out to compare
+extracted data with known real data.
 Our methodology makes use of the fact that we have already set up our model and solving scheme and
 are able to produce cell masks from these numerical results.
 In doing so, we have exact knowledge about the position of our agents since we can simply obtain
@@ -1462,7 +1408,6 @@ Combining these two values, the position-comparison algorithm is $\approx 6.13(8
 
 %###################################################################################################
 \section{Discussion}
-\label{section:discussion}
 
 With this work we have layed out a "blueprint" to estimate the parameters of \acp{abm} using
 microscopic image time series.
