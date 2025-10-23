@@ -419,9 +419,9 @@ We model the bacterium as a bending beam.
 % In principle, this stress will be dependent on the position inside the cell~\cite{Chatterjee1988},
 % but for sake of simplicity we chose to model the bacterium as a bending beam.
 % \textbf{[", thus utilizing the simplest solution which can still produce the desired effects." Es ist unklar was die "desired effects" sind. ]}\\
-Using our discretization $\vec{x}_i$, we connect the vertices by springs of length $l_i$.
+Using our discretization $\vec{x}_i$, we connect the vertices by springs of length $l$.
 % which can be represented by a collection of vertices $\vec{x}_i$ which are connected by a
-% springs of lengths $l_i$.
+% springs of lengths $l$.
 % \textbf{[Das klingt nach einer Wiederholung von Spatial Representation. Du erklärst ziemlich umständlich. Konzentriere dich auf das wesentliche und überlege, was du eigentlich sagen möchtest.]}\\
 We use the notation $\vec{w}_i:=\vec{x}_i-\vec{x}_{i-1}$ with which the resulting force acting
 between two vertices if given by
@@ -498,8 +498,8 @@ The Mie potential is given by:
 \end{align}
 
 The strength of the potential is given by $\epsilon$ and the thickness of our rods
-is encoded in $\sigma = (m/n)^{1/(n-m)}(R_1+R_2)$ where $R_1,R_2$ are the thicknesses of the two
-interacting bacteria.
+is encoded in $\sigma = (m/n)^{1/(n-m)}(R_1+R_2)$ where $R_1,R_2$ are the thicknesses (radii) of the
+two interacting rod-like bacteria.
 We utilize the shorthand notation $r=|\vec{x}_i - \vec{p}|$ for the distance between the two points
 in question.
 We numerically regularize the potential by imposing an upper bound $\beta$ on the norm of the
@@ -514,54 +514,85 @@ The resulting force is given by
 
 where $\theta$ is the heaviside step-function and the $\min$ term ensures the upper bound $\beta$.
 
-The physical interaction between the bacteria plays a crucial role for the overall dynamics of our
-simulation.
-The Mie potential is capable of describing a wide range of interaction types from soft to rigid, by
-adjusting the parameters of the potential accordingly.
+The physical interaction between the bacteria plays a crucial role for the overall dynamics of the
+system.
+By varying its parameters, the Mie potential is capable of describing a wide range of interaction
+types from softer ones that permit some level of overlap to rigid ones with steep ascends for
+distance valuels that correspond to overlaps.
 In contrast, a popular alternative is the Morse potential~\cite{Morse1929}, which is less
 customizable due to the lower amount of parameters and more restrictive mathematical formulation.
 Therefore, the Mie potential is a good choice for a simple, interpretable interaction potential with
-low amount of parameters that can be estimated by a data-driven approach.
+low amount of parameters that can be estimated by our data-driven approach.
 
 % --------------------------------------------------------------------------------------------------
 \subsection{Cell-Cycle}
 
-To simulate proliferation, we introduce a growth term for the spring lengths $l_i$.
-In most of our simulations, we choose to use identical lengths for all segments (i.e. $l_i=l$).
-However, in order to generalize our approach we assume that individual lengths of segments could
-vary. Our implemented model allows us to reduce the growth rate with increasing number of neighbours
-$n\leq N$. This option provides a phenomenological approach for modelling slower growth in larger colonies but
-is be toggled off by default thus removing the additional term in brackets of equation~\ref{eq:growth-rod-lengths}.
-
-\textbf{[Ich empfinde deinen Text als uneinheitlich. Du solltest hier nicht deine Softwareimplementation beschreiben, sondern das was du tatsächlich in den Simulationen benutzt hast. Also Möglichkeiten, die du in deinem Code angelegt hast, aber für das Paper nicht verwendet hast, brauchst du nicht zu erwähnen. Das führt zu Verwirrung.]}
+To simulate cellular growth, we introduce an exponential growth term for the spring lengths $l$
+\cite{Takeuchi2005}.
 
 \begin{equation}
-    \partial_t l_i = \mu\left(1-\frac{\text{min}(n,N)}{N}\right)l_i
-    \label{eq:growth-rod-lengths}
+    \partial_t l = \mu l
 \end{equation}
 
-Note that the growth rate is proportional to the rod length $l$ which leads to exponential
-growth~\cite{Robert2014,Takeuchi2005}.
-\textbf{[Das zu erwähnen ist eine Trivialität für ein Forschungspapier. Du kannst begründen warum du exp. Wachstum verwendest und wie du den Teilungszeitpunkt bestimmst.]}
-
 This process will increase the length of the cell indefinitely unless we impose a condition for the
-division event. We define a fixed length threshold for the total length of the cell at which it divides.
+division event.
+The cell divides when the spring length $l$ has reached a fixed length threshold~\cite{Robert2014}
+$l_\text{thresh}$.
 To construct a new cell, we cannot simply copy the existing one twice, but we also need to adjust
 internal parameters in the process.
 The following actions need to be taken for the old and new agent.
-We first calculate the new spring lengths of the two resulting rods, according to the equation:
+We first calculate the new spring lengths of the two resulting rods via
 
 \begin{equation}
-    \tilde{l} = l_i\left(\frac{1}{2} - \frac{r}{\sum\limits_i l_i}\right)
-    \label{eq:growth-rod-new-lengths}
+    \tilde{l} = l\left(\frac{1}{2} - \frac{R}{n_v l}\right)
 \end{equation}
 
-Afterwards, we start at one endpoint $\vec{x}_0$ and move along the polygon defined by the
-bacterial rod. We stop when we have reached a length that matches the length of the new spring length $\tilde{l}$.
-From here, we continue and iterate this procedure until we have found all new vertices $\vec{y}_i$.
-Equation~\ref{eq:growth-rod-new-lengths} ensures that that the tips of the two new rods are touching
-right after the division event.
-\textbf{[Was ist $r$? Was ist mit den Parametern und mit anderen intro-zellularen Zuständen?]}
+where $n_v$ is the number of vertices and $R$ the previously introduced thickness of the rod.
+This relation ensures that that the tips of the two new rods are touching right after the division
+event.
+We subdivide the polygon given by the vertices of the mother cell in $n$ segments of length
+$\tilde{l}$, one segment of length $2R$ and again $n$ segments of length $\tilde{l}$.
+The first and latter groups determine the new vertices of the two daughter cells.
+This approach assumes cells where the total length of the polygon is greater than its diameter
+$n_vl>2R$.
+We set the growth rates of the daughter cells explicitly during the division event.
+This approach allows us to treat the growth rates of the daughter cells as full individual
+parameters within our model.
+In order to reuse this model, we also provide the option to assign growth rates by sampling from a
+normal distribution with user-defined parameters.
+Every other intracellular parameter is copied identically to the daughter cells.
+Table~\ref{table:list-of-parameters} shows a list of all parameters used within our model.
+
+\begin{table}
+    \centering
+    \def\arraystretch{1.3}
+    \begin{tabular}{l c l c}
+        \textbf{Parameters} && \textbf{Variables}\\
+        \toprule
+        \multicolumn{4}{l}{\textbf{Mechanics}}\\
+        \midrule
+        Spring tension & $\gamma$ & Position (vertices) & $\vec{x}_i$\\
+        Rigidity & $\eta$ & Velocity & $\partial_t\vec{x}_i$\\
+        Damping & $\lambda$ & Spring length & $l$ \\
+        \multicolumn{4}{l}{\textbf{Interaction}}\\
+        \midrule
+        Thickness & $R$\\
+        Strength & $\epsilon$\\
+        Exponent 1 & $n$\\
+        Exponent 2 & $m$\\
+        Bound & $\beta$\\
+        Cutoff & $\zeta$\\
+        \multicolumn{4}{l}{\textbf{Growth \& Division}}\\
+        \midrule
+        Growth rate & $\mu$\\
+        Spring length threshold & $l_\text{thresh}$\\
+        \bottomrule
+    \end{tabular}
+    \caption{
+        List of all parameters and variables.
+    }
+    \label{table:list-of-parameters}
+\end{table}
 
 % --------------------------------------------------------------------------------------------------
 \subsection{Numerical Implementation}
@@ -569,22 +600,16 @@ right after the division event.
 We implemented the described model in our recently developed \ac{abm} framework
 \texttt{cellular\_raza}~\cite{Pleyer2025}.
 By design \texttt{cellular\_raza} does not assume any particular cellular representation, thus makes
-it flexible and easy to adapt the simulation to particular needs. This allows us to experiment with
-different model implementations and still retain performance.
+it flexible and easy to adapt the simulation to particular needs.
+Its design allows us to experiment with different model implementations while retaining fast
+execution times.
 \textbf{[Der Zusammenhang zwischen der Flexibilität und Performance ist unklar.]}
+\textit{Oft muss man das eine für das andere opfern. Hier nicht/kaum.}
 
 Furthermore, it is an \ac{abm} which is able to natively track cells through the course of a
 numerical simulation and also keeps track of mother/daughter relationships.
 \textbf{[Das scheint hier trivial zu sein.]}
-
-On the programming side, we are using the \texttt{pyo3} and \texttt{maturin} crates which allow us
-to easily generate Python bindings and enable us to interoperate between the two ecosystems.
-\textbf{[Das kennt hier keiner und gehört eher in den Anhang.]}
-
-By using \texttt{cellular\_raza}, we can make use of multiple threads for running a single numerical
-simulation, using the built-in parallelization methods (see Supplementary Material,
-Figure~\ref{fig:performance}).
-\textbf{[Ist alles eher für den Anhang. Vielleicht solltest du mehr darüber reden, warum ABMs für die Fragestellungen gut geeignet sind.]}
+\textit{Machen aber viele (zB. PhysiCell) einfach nicht. (Mother-Daughter relation)}
 
 %###################################################################################################
 \section{Methodology}
@@ -1038,9 +1063,9 @@ distributed between the bent and relaxed position of our system.
 
 To remove this non-identifiability we reduce the number of parameters by setting $\gamma=\gamma_0/s$
 and $\eta=\eta_0 s$ for the rod rigidity and spring tension, resp.
-We then optimize for this parameter and pick $\gamma_0=\SI{15}{\pixel}$ with
-$\eta_0=\SI{150}{\pixel\per\second\squared}$ which corresponds to $60\%$ of the previously considered
-interval. \textbf{[Unklar, wie die Pixel hier auftauchen.]}
+We then optimize for this parameter and pick $\gamma_0=\SI{15}{\micro\metre}$ with
+$\eta_0=\SI{150}{\micro\metre\per\second\squared}$ which corresponds to $60\%$ of the previously considered
+interval.
 The corresponding plots can be seen in \ref{subsec:supplement-parameter-profiles-amir}.
 
 \begin{figure}
@@ -1810,8 +1835,15 @@ $r\geq\xi$.
 \end{itemize}
 
 %###################################################################################################
-\subsection{Performance (TODO)}
+\subsection{Implementation \& Performance (TODO)}
 \label{section:supplement-performance}
+
+On the programming side, we are using the \texttt{pyo3} and \texttt{maturin} crates which allow us
+to easily generate Python bindings and enable us to interoperate between the two ecosystems.
+
+By using \texttt{cellular\_raza}, we can make use of multiple threads for running a single numerical
+simulation, using the built-in parallelization methods (see Supplementary Material,
+Figure~\ref{fig:performance}).
 
 \begin{itemize}
     \item Quadratic Scaling comes from more dense simulation
