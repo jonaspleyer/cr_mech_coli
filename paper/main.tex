@@ -1,6 +1,6 @@
-\documentclass[10pt,letterpaper]{article}
+\documentclass{article}
 
-\usepackage[top=0.85in,left=2.75in,footskip=0.75in]{geometry}
+\usepackage{arxiv}
 
 \usepackage[utf8]{inputenc} % allow utf-8 input
 \usepackage[T1]{fontenc}    % use 8-bit T1 fonts
@@ -11,7 +11,7 @@
 \usepackage{amsfonts}       % blackboard math symbols
 \usepackage{float}
 \usepackage{nicefrac}       % compact symbols for 1/2, etc.
-% \usepackage{microtype}      % microtypography
+\usepackage{microtype}      % microtypography
 \usepackage{mathrsfs}
 \usepackage{onimage}
 \usepackage{graphicx}
@@ -28,43 +28,32 @@
 
 \input{figures/tikz-preamble.tex}
 
-% Plos usepackages
-% amsmath and amssymb packages, useful for mathematical formulas and symbols
-\usepackage{amsmath,amssymb}
-
-% Use adjustwidth environment to exceed column width (see example table in text)
-\usepackage{changepage}
-
-% textcomp package and marvosym package for additional characters
-\usepackage{textcomp,marvosym}
-
-% cite package, to clean up citations in the main text. Do not remove.
-\usepackage{cite}
-
-% Use nameref to cite supporting information files (see Supporting Information section for more info)
-\usepackage{nameref,hyperref}
-
-% line numbers
-\usepackage[right]{lineno}
-
-% ligatures disabled
-\usepackage[nopatch=eqnum]{microtype}
-\DisableLigatures[f]{encoding = *, family = * }
-
-% color can be used to apply background shading to table cells only
-\usepackage[table]{xcolor}
-
-% array package and thick rules for tables
-\usepackage{array}
-
-% create "+" rule type for thick vertical lines
-\newcolumntype{+}{!{\vrule width 2pt}}
 \title{Methods for Analyzing Models of\\ Rod-Shaped Bacteria}
 
 %\date{September 9, 1985}	% Here you can change the date presented in the paper title
 %\date{} 					% Or removing it
 
-\author{Jonas Pleyer and Christian Fleck}
+\author{
+    \href{https://orcid.org/0009-0001-0613-7978}{
+        \includegraphics[scale=0.06]{figures/orcid.pdf}
+        \hspace{1mm}Jonas Pleyer
+    }
+    \thanks{
+        \href{https://jonas.pleyer.org}{jonas.pleyer.org},
+        \href{https://cellular-raza.com}{cellular-raza.com}
+    }\\
+	Freiburg Center for Data-Analysis and Modeling\\
+	University of Freiburg\\
+	\texttt{jonas.pleyer@fdm.uni-freiburg.de} \\
+	%% examples of more authors
+	\And
+	\href{https://orcid.org/0000-0002-6371-4495}{
+        \includegraphics[scale=0.06]{figures/orcid.pdf}
+        \hspace{1mm}Christian Fleck
+    }\\
+	Freiburg Center for Data-Analysis and Modeling\\
+	University of Freiburg
+}
 
 \newacro{abm}[ABM]{Agent-Based Model}
 \newacro{ode}[ODE]{Ordinary Differential Equation}
@@ -78,9 +67,9 @@
 %\date{}
 
 % Uncomment to override  the `A preprint' in the header
-% \renewcommand{\headeright}{Preprint}
+\renewcommand{\headeright}{Preprint}
 %\renewcommand{\undertitle}{Technical Report}
-% \renewcommand{\shorttitle}{Methods for Analyzing Models of Rod-Shaped Bacteria}
+\renewcommand{\shorttitle}{Methods for Analyzing Models of Rod-Shaped Bacteria}
 
 \usepackage{enumitem}
 \setlist{nolistsep}
@@ -99,108 +88,36 @@ pdfkeywords={},
 % Change numbering of equations
 % \numberwithin{equation}{section}
 
-% create "+" rule type for thick vertical lines
-\newcolumntype{+}{!{\vrule width 2pt}}
-
-% create \thickcline for thick horizontal lines of variable length
-\newlength\savedwidth
-\newcommand\thickcline[1]{%
-  \noalign{\global\savedwidth\arrayrulewidth\global\arrayrulewidth 2pt}%
-  \cline{#1}%
-  \noalign{\vskip\arrayrulewidth}%
-  \noalign{\global\arrayrulewidth\savedwidth}%
-}
-
-% \thickhline command for thick horizontal lines that span the table
-\newcommand\thickhline{\noalign{\global\savedwidth\arrayrulewidth\global\arrayrulewidth 2pt}%
-\hline
-\noalign{\global\arrayrulewidth\savedwidth}}
-
-
-% Remove comment for double spacing
-%\usepackage{setspace} 
-%\doublespacing
-
-% Text layout
-\raggedright
-\setlength{\parindent}{0.5cm}
-\textwidth 5.25in
-\textheight 8.75in
-
-% Bold the 'Figure #' in the caption and separate it from the title/caption with a period
-% Captions will be left justified
-\usepackage[aboveskip=1pt,labelfont=bf,labelsep=period,justification=raggedright,singlelinecheck=off]{caption}
-\renewcommand{\figurename}{Fig}
-
-% Remove brackets from numbering in List of References
+% MAKE TITLES IN THEOREMS BOLD
 \makeatletter
-\renewcommand{\@biblabel}[1]{\quad#1.}
+\def\th@plain{%
+  \thm@notefont{}% same as heading font
+  \itshape % body font
+}
+\def\th@definition{%
+  \thm@notefont{}% same as heading font
+  \normalfont % body font
+}
 \makeatother
 
-% Header and Footer with logo
-\usepackage{lastpage,fancyhdr,graphicx}
-\usepackage{epstopdf}
-%\pagestyle{myheadings}
-\pagestyle{fancy}
-\fancyhf{}
-%\setlength{\headheight}{27.023pt}
-%\lhead{\includegraphics[width=2.0in]{PLOS-submission.eps}}
-\rfoot{\thepage/\pageref{LastPage}}
-\renewcommand{\headrulewidth}{0pt}
-\renewcommand{\footrule}{\hrule height 2pt \vspace{2mm}}
-\fancyheadoffset[L]{2.25in}
-\fancyfootoffset[L]{2.25in}
-\lfoot{\today}
-
-%% Include all user-defined macros below
-
-\newcommand{\lorem}{\textbf{LOREM}}
-\newcommand{\ipsum}{\textbf{IPSUM}}
-
-%% END MACROS SECTION
-
-
 \begin{document}
-\vspace*{0.2in}
+\maketitle
 
-% Title must be 250 characters or less.
-\begin{flushleft}
-{\Large
-\textbf{Methods for analyzing models of rod-shaped bacteria}
-% Please use "sentence case" for title and headings (capitalize only the first word in a title (or heading), the first word in a subtitle (or subheading), and any proper nouns).
-}
-\newline
-% Insert author names, affiliations and corresponding author email (do not include titles, positions, or degrees).
-\\
-\href{https://orcid.org/0009-0001-0613-7978}{
-    \includegraphics[scale=0.06]{figures/orcid.pdf}
-    \hspace{1mm}Jonas Pleyer\textsuperscript{1},
-}
-\href{https://orcid.org/0000-0002-6371-4495}{
-    \includegraphics[scale=0.06]{figures/orcid.pdf}
-    \hspace{1mm}Christian Fleck\textsuperscript{1}
-}
-\\
-\bigskip
-\textbf{1} Freiburg Center for Data-Analysis and Modeling, University of Freiburg, Freiburg Germany
-\\
-\bigskip
-
-\end{flushleft}
 
 %###################################################################################################
-\section*{Abstract}
-\aclp{abm} have become popular tools in the study of complex cellular systems.
-However, despite their popularity, it is often difficult to systematically estimate their
-parameters and perform advanced analyses, e.g., using the profile-likelihood.
-In this work, we study the mechanical properties of rod-shaped bacteria and provide techniques
-for estimating their parameters and performing identifiability analysis on them.
-Our approach provides a modular framework which can be adapted to a broad range of research
-questions regarding models of rod-shaped bacteria.
-We use time series of microscopic images as input data and incorporate advanced effects as the
-elasticity of the rod.
-The developed model serves as a generalized foundation to describe multiple species of
-rod-shaped bacteria such as \textit{E.Coli} or \textit{B.Subtilis}.
+\begin{abstract}
+    \aclp{abm} have become popular tools in the study of complex cellular systems.
+    However, despite their popularity, it is often difficult to systematically estimate their
+    parameters and perform advanced analyses, e.g., using the profile-likelihood.
+    In this work, we study the mechanical properties of rod-shaped bacteria and provide techniques
+    for estimating their parameters and performing identifiability analysis on them.
+    Our approach may serve as a blueprint for a modular framework which can be adapted to other
+    research questions.
+    We use time series of microscopic images as input data and incorporate advanced effects as the
+    elasticity of the rod.
+    The developed model serves as a generalized foundation to describe multiple species of
+    rod-shaped bacteria such as \textit{E.Coli} or \textit{B.Subtilis}.
+\end{abstract}
 
 % keywords can be removed
 % \keywords{}
@@ -1701,7 +1618,7 @@ The time series of microscopic images which has been studied in section~\ref{sec
 was extracted from individual frames of a video~\cite{https://doi.org/10.3203/iwf/k-129} that
 showcases the exponential growth of bacteria.
 
-\bibliographystyle{plos2025}
+\bibliographystyle{IEEEtran}
 \bibliography{references}
 
 \appendix
@@ -1919,5 +1836,4 @@ Figure~\ref{fig:performance}).
     \label{fig:timings-crm_divide}
 \end{figure}
 
-\label{LastPage}
 \end{document}
