@@ -824,74 +824,86 @@ tools~\cite{Cutler2022,Stringer2020,Hardo2022} or manually annotating microscopi
 \textbf{Du solltest hier erwähnen, dass du die Parameter per Bakterium fittest und nicht globale Parameter.}
 \textit{Tue ich aber nicht grundsätzlich. Es gibt globale und individuelle parameter; also ein "mixed approach". Ich habe aber einen Hinweis eingefügt.}
 
-\paragraph{No Cell Division}
+\paragraph{Direct Comparison}
 In the scenario where no cells divide during the observed interval, we can use our extraction
 algorithm to obtain the position of the cells and then compare them directly to the positions
-calculated from the computational results. For all cells $j=1..M$, we have a collection of $i=0..N$ vertices $\vec{x}_{i,j}$. \textbf{[Warum jetzt zweifach indiziert?]} Thus, the total amount of information is an array of shape $(M,N,2)$ Assuming that we have $N$ cells, each of which is represented by $M$ vertices, the total amount of information is an array of shape $(N,M,2)$, containing all positions of all agents.
-It is thus only a matter of comparing two of these arrays with each other and many methods and
-approaches which already exist~\cite{Wang2020} can be leveraged. For now, we simply calculate the distance of each vertex pair, which is equivalent to the
-well-known loss function:
+calculated from the computational results.
+Each cell contains a collection of vertices.
+Given $M$ cells with $N$ vertices each and dimension $d$, the total information can be stored in an
+array $\nu_{i,j,k}$ of shape $(M,N,2)$.
+Comparing the results of a simulation $\nu$ with experimental values $\tilde{\nu}$ is thus only a
+matter of comparing two of these arrays within a suitable cost function~\cite{Wang2020}.
+In our approach we utilize a least squares approach given by
 
 \begin{equation}
     L_{\text{LS}}(\vec{x}, \vec{y})
-        = \sqrt{\sum\limits_{i,j}||\vec{x}_{i,j}-\vec{y}_{i,j}||^2}
-        = \sqrt{\sum\limits_{i,j,k}|x_{i,j,k}-y_{i,j,k}|^2}
+        = \sqrt{\sum\limits_{i,j,k}|\nu_{i,j,k} - \tilde{\nu}_{i,j,k}|^2}
 \end{equation}
 
-of least squares (LS).
-One important detail is that it must be guaranteed that the ordering of vertices is identical in the
-numerical and experimentally obtained results.
+which minimizes the distance between the corresponding vertices.
+One important detail is that the ordering of vertices must be identical in the numerical and
+experimental values.
 
 \paragraph{Comparison across Generations}
-In order to compare a variable amount of cells, we can not utilize the positions of these cells
-for comparison directly since one particular state of our simulation might contain cells which are
-not present in the experimental results (or vice-versa).
+The preceding algorithm is performant and effective but can not be applied in the event of a
+division process.
+Due to possibly differing division times, a cell which is present in the simulation might not yet
+have a corresponding cell in the experimental data at this time point yet (or vice-versa).
+In order to still be able to compare these datapoints, we require additional methods which can be
+used for comparisons across division events.
 \textbf{[Es bleibt unklar, was du hier verhandeln möchtest.]}
+\textit{Jetzt klarer?}
 
-We thus need additional methods which can be used for comparisons across division events.
-To achieve this, we use the numerical results of the \ac{abm} simulation and our visualization
+To this end we use the numerical results of the \ac{abm} simulation and our visualization
 algorithms to generate cell-masks (see section~\ref{subsection:visualization}).
-We then compare the generated masks to the experimentally obtained ones pixel by pixel.
-Whenever two pixel colors are not matching, a loss value is assigned.
-The sum of all those penalties is then the total loss.
-This algorithm is an implementation of a signed area measure.
-It is very important to take into account the parental relationship between the cells, checking if
-either one of the cells is a daughter of the other cell.
+Each pixel has a unique color value which is directly related to one particular cell or background
+(black).
+We compare the generated masks to the experimentally obtained ones pixel by pixel.
+Whenever two colors are not matching, a penalty of $1$ is assigned.
+The total cost is the sum of all penalties.
+% This algorithm is an implementation of a signed area measure.
+It is important to take into account the parental relationship between the cells, by checking if
+either one of the colors corresponding to the compared colors is a daughter of the other cell.
 Figure~\ref{fig:mask-difference-metric} (A,B) shows two successive states of a numerical simulation
 with varying amounts of cells.
-We can see that some division events have occurred but other cells have only grown without
-completing a division step.
+We can see that some cells have divided while others have only grown without completing a division
+step.
 The resulting penalties without accounting for the parental relationships are displayed in
 Figure~\ref{fig:mask-difference-metric} (C).
-Black indicates that the pixels are matching and no loss is assigned while a white pixel
-indicates that the original pixels are not matching, thus assigning a loss value.
-Similarly, Figure~\ref{fig:mask-difference-metric} (D) takes the parental relationship into account
-and highlights these in gray.
-It is possible to assign a custom value for the parental loss value.
-If we set this loss value to $0$, this algorithm ensures the contiuity of the loss function in time.
+Black indicates that the pixels are matching and no penalty is assigned while a white pixel
+indicates that the original pixels are not matching, thus adding to the overall cost.
+In contrast, Figure~\ref{fig:mask-difference-metric} (D) takes the parental relationship into
+account and highlights regions where compared pixels belong to mother-daughter cells in gray.
+We assign a penalty $0\leq p \leq 1$ which is a hyperparameter for this optimization algorithm.
+% It is possible to assign a custom value for the parental cost value.
+Settings its value to $0$ results in a contiuous cost function in time.
 
-But it is also biologically motivated.
-If a cell has just divided, the resulting two daughter cells will cover precisely the space that the
-mother had taken up.
-Often times, the exact time at which the fission event is over can not be determined accurately,
-thus leading not only to uncertainties but also some fundamental problems.
-Another approach to construct a comparison algorithm across generations would be to use the
-previously explained position comparison algorithm and use it on intervals in which no division
-event occurrs.
+Future extensions should introduce a time-dependent parent penalty $p=p(t)$ which grows with the age
+of the daughter cells.
+Furthermore, the developed algorithm relies on the comparison of two images and can as such make use
+of existing machine-learning workflows that construct cost functions for such
+scenarios~\cite{Dice1945}.\\
+\textbf{@Christian are these two sentences Discussion?}
+
+Although this optimization scheme was driven by technical challenges, it is also biologically
+motivated.
+In the infenitisemal time point after the division event the resulting two daughter cells will cover
+precisely the space that the mother had taken up.
+Often times, the exact time at which the fission event has commenced can not be determined
+accurately, thus leading to uncertainties with respect to the question when the life of the daughter
+cells begins and the one of the mother ends.
+
+In a different approach, one might be tempted to utilize the previously constructed direct
+comparison algorithm for time intervals that do not contain any division events.
 But this attempt would quickly lead to multiple problems.
-How can we deal with the uncertainties of the timing of the division event?
-And the more cells we want to investigate, the more division events will occurr even in a fixed
-amount of time thus greatly decreasing the effective interval at which this alternative algorithm
-could be used.
-Furthermore, what if there are only two images and there is a division event which is occurring
-between them?
+It will not be able to deal with the uncertainties of the timing of the division event.
+As the number of investigated cells grows, more division events will occurr even in a fixed
+amount of time thus greatly decreasing or completely vanishing the effective interval at which no
+division event is observed.
+The latter situation is equivalent to two microscopic images as input data between which a division
+event has occured.
 
-It further needs to be noted that the constructed algorithm can also be adapted by users in order to
-provide more complex loss functions (such as considering time-evolvement, etc.).
-Our method can make use of existing machine leanring algorithms since it is only based on the
-principle of comparing two images with each other.
-There already exists a variety of methods on how to assign loss values in these
-circumstances~\cite{Dice1945}.
+\textbf{@Christian is this Supplement?}
 
 \textbf{[Wir müssen darüber reden, mir ist hier vieles unklar.]}
 
@@ -930,16 +942,16 @@ circumstances~\cite{Dice1945}.
         Image (B) contains more cells which are a result of cellular division events that have not
         yet occurred in image (A).
         (C) "Naive" comparison of cell masks, which identifies pixels of non-matching colors and
-        assigns a loss by counting these pixels.
+        assigns a cost by counting these pixels.
         This simple approach does not take into consideration the parental relationship.
         This approach is displayed in (D) where pixels of cells that are directly related have been
         colored in gray.\\
-        (E) Comparison of loss functions, exponential regression (ER) and number of cells.
-        % Total loss between successive iteration steps $t_n,t_{n+1}$.
-        The overall shape of the loss is expected to have the slope of an exponential function.
+        (E) Comparison of cost functions, exponential regression (ER) and number of cells.
+        % Total cost between successive iteration steps $t_n,t_{n+1}$.
+        The overall shape of the cost is expected to have the slope of an exponential function.
         We can clearly see that division events introduce jumps within this relationship.
         In the case where we account for the parental relationship, these jumps are mitigated.
-        The loss value was set to $0$ for pixel-comparisons which belong to cells that are in a
+        The cost value was set to $0$ for pixel-comparisons which belong to cells that are in a
         parental relationship.
     }
     \label{fig:mask-difference-metric}
@@ -948,13 +960,13 @@ circumstances~\cite{Dice1945}.
 \paragraph{Testing the Comparison Algorithm with Division Events}
 When utilizing a computational model (see section~\ref{sec:computational-model}), we can generate
 data and use the generated masks to provide a benchmark of our algorithm.
-To do this, we set out to calculate the loss between two successive iteration steps
+To do this, we set out to calculate the cost between two successive iteration steps
 $t_n$ with $t_{n+1}$.
-We expect to obtain an exponential growth in the loss.
+We expect to obtain an exponential growth in the cost.
 This can be explained by the fact that the growth of the total area is exponential in time.
 Furthermore, the temporal area difference can be viewed as a derivative of the total area in time,
 which is again an exponential function.
-Figure~\ref{fig:mask-difference-metric} (E) shows the total loss for this approach.
+Figure~\ref{fig:mask-difference-metric} (E) shows the total cost for this approach.
 We can see that by accounting for the parental relationship, we get the overall desired effect.
 This method allows us to compare results between states that have a different number of cells.
 However, since this algorithm requires us to calculate a cell-mask for each comparison and then also
@@ -1163,7 +1175,7 @@ In section we will focus on a time-interval which does not contain any division 
 the initial lag-phase of our bacteria has already passed.
 \textbf{[Sprachlich wieder fragwürdig. "A time interval at which the initial lag-phase has passed" ist kein irgendwie korrekter englischer Satz.]}
 
-By doing so, we can utilize the simpler and more performant position comparison scheme for our loss function.
+By doing so, we can utilize the simpler and more performant direct comparison scheme for our cost function.
 \textbf{[Hier weiss man nicht worüber du sprichst.]}
 
 Furthermore, we need not to estimate the lag-time parameters which improves performance of our
@@ -1247,7 +1259,7 @@ These plots also show that the individual growth rates of the bacteria can be es
     \end{tikzonimage}%
     \caption{
         We calculated the likelihood profiles for every optimized parameter of our model.
-        All plots show how the value of the loss function varies when fixing a single parameter but
+        All plots show how the value of the cost function varies when fixing a single parameter but
         still optimizing for the remaining ones.
         Every plot indicates that a minimum was achieved, thus every parameter could be identified.
         We show only one of the 6 individually-chosen growth rate as an example.
