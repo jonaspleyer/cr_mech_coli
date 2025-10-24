@@ -195,8 +195,8 @@ However, despite their popularity, it is often difficult to systematically estim
 parameters and perform advanced analyses, e.g., using the profile-likelihood.
 In this work, we study the mechanical properties of rod-shaped bacteria and provide techniques
 for estimating their parameters and performing identifiability analysis on them.
-Our approach may serve as a blueprint for a modular framework which can be adapted to other
-research questions.
+Our approach provides a modular framework which can be adapted to a broad range of research
+questions regarding models of rod-shaped bacteria.
 We use time series of microscopic images as input data and incorporate advanced effects as the
 elasticity of the rod.
 The developed model serves as a generalized foundation to describe multiple species of
@@ -255,7 +255,6 @@ bacteria as an example.
 Our approach provides various methods which can be combined to systematically estimate the
 parameters of our model. We deliberately distinguish between conceptually separate components within
 this framework.
-This modularity highlights a "blueprint" which can be adapted and applied to other \acp{abm}.
 
 Mechanical properties of rod-shaped bacteria have been studied in great detail
 experimentally~\cite{Chatterjee1988,Takeuchi2005,IWAI2002}.
@@ -285,6 +284,7 @@ estimate the parameters of such models directly from data is very sparse.
     Man erwartet mehr Infos über den Blueprint und ist verwirrt.
     Worum geht es hier?
 }
+\textit{Ich habe den blueprint vollkommen entfernt. Er macht kein Sinn im MS.}
 
 This work addresses some of these limitations.
 We use microscopic image time series as inputs to obtain information about the spatial configuration
@@ -1508,13 +1508,14 @@ Combining these two values, the position-comparison algorithm is $\approx 6.13(8
 %###################################################################################################
 \section{Discussion}
 
-With this work we have layed out a "blueprint" to estimate the parameters of \acp{abm} using
+With this work we have layed out how to estimate the parameters of \acp{abm} using
 microscopic image time series.
 \textbf{
     Es wird leider überhaupt nicht deutlich, was die Blaupause sein könnte.
     Wenn man das MS liesst, gewinnt man den Eindruck, du machst dies und das, aber ein einheitliches Konzept fehlt.
     Wir müssen zuerst eine Konzeption für das Paper entwickeln, bevor wir über weitere Details reden können.
 }
+\textit{Alles zu blaupause ist wegradiert.}
 
 Our approach is modularized such that its structure can be applied to a variety of problems.
 We introduced a \ac{ib} computational model for rod-shaped bacteria that incorporates bendiness of
@@ -1545,7 +1546,6 @@ These results ca be traced back to a gap within the provided segmentation masks.
 Our work shows that it is possible to estimate the parameters of \acp{abm} on a single-cell level.
 Together with the flexible nature of \texttt{cellular\_raza}, this opens up the possibility to
 design minimal \acp{abm} which can be fit to data.
-As such it formulates a blueprint for the parameter estimation of \acp{abm}.
 The developed methods are publicly available as a well-documented python package
 (\href{https://github.com/jonaspleyer/cr_mech_coli}{cr\_mech\_coli}).
 The individual treatment of the cells allows us in principle to estimate the distribution of the
@@ -1645,13 +1645,13 @@ of models describing rod-shaped bacteria on the single-cell level by using data 
 microscopic images.
 The approach is agnostic with respect to details of the underlying model and instead only makes use
 of the fundamental spatial representation of our bacteria as a collection of vertices.
-In this way it highlights a modular blueprint that can be followed by researchers applied to models
-of rod-shaped bacteria which incorporate other and more complex behaviours.
+The developed functionalities are modular and can directly be reused by researchers to asses a wide
+range of rod-shaped bacterial models.
 Combining these methods, our workflow links experimental data to the parameter estimation of a
 mechanistic, computational model and allows us to estimate the individual parameters of the
 cell-agents.
 
-Our framework allow researchers to employ well-known methods such as profile-likelihood
+Our framework allows researchers to employ well-known methods such as profile-likelihood
 \textbf{TODO CITATION} and sensitivity-analysis.
 The code is publicly available as the python package
 \href{https://github.com/jonaspleyer/cr_mech_coli}{cr\_mech\_coli}.
