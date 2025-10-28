@@ -912,33 +912,35 @@ event has occured.
 
 \begin{figure}[H]
     \centering
-    \begin{minipage}{0.5\textwidth}
-    \begin{tikzonimage}[width=0.48\textwidth]
+    \begin{tikzonimage}[width=0.24\textwidth]
         {docs/source/_static/fitting-methods/progressions-1.png}
         \node at (0.025, 0.975)[anchor=north west, rectangle, draw, white, minimum width=15pt, minimum height=15pt]{\textbf{A}};
     \end{tikzonimage}%
     \hspace{0.01\textwidth}%
-    \begin{tikzonimage}[width=0.48\textwidth]
+    \begin{tikzonimage}[width=0.24\textwidth]
         {docs/source/_static/fitting-methods/progressions-2.png}
         \node at (0.025, 0.975)[anchor=north west, rectangle, draw, white, minimum width=15pt, minimum height=15pt]{\textbf{B}};
-    \end{tikzonimage}
-    \linebreak
-    \vspace{0.01\textwidth}
-    \begin{tikzonimage}[width=0.48\textwidth]
+    \end{tikzonimage}%
+    \hspace{0.01\textwidth}%
+    \begin{tikzonimage}[width=0.24\textwidth]
         {docs/source/_static/fitting-methods/progressions-3.png}
         \node at (0.025, 0.975)[anchor=north west, rectangle, draw, white, minimum width=15pt, minimum height=15pt]{\textbf{C}};
     \end{tikzonimage}%
     \hspace{0.01\textwidth}%
-    \begin{tikzonimage}[width=0.48\textwidth]
+    \begin{tikzonimage}[width=0.24\textwidth]
         {docs/source/_static/fitting-methods/progressions-4.png}
         \node at (0.025, 0.975)[anchor=north west, rectangle, draw, white, minimum width=15pt, minimum height=15pt]{\textbf{D}};
-    \end{tikzonimage}
-    \end{minipage}%
-    \begin{minipage}{0.49\textwidth}
-        \begin{tikzonimage}[width=\textwidth]
-            {docs/source/_static/fitting-methods/penalty-time-flow.png}%
-            \node at (0, 0.975)[anchor=north west, draw, rectangle, minimum width=15pt, minimum height=15pt]{\textbf{E}};
-        \end{tikzonimage}
+    \end{tikzonimage}\\
+    \begin{minipage}{\textwidth}
+        \begin{tikzonimage}[width=0.48\textwidth]
+            {docs/source/_static/fitting-methods/extract_positionsdivision-comparison.png}
+            \node at (0, 1)[anchor=north west, draw, rectangle, minimum width=15pt, minimum height=15pt]{\textbf{E}};
+        \end{tikzonimage}%
+        \hspace{0.01\textwidth}%
+        \begin{tikzonimage}[width=0.48\textwidth]
+            {docs/source/_static/fitting-methods/penalty-time-flow.png}
+            \node at (0, 0.975)[anchor=north west, draw, rectangle, minimum width=15pt, minimum height=15pt]{\textbf{F}};
+        \end{tikzonimage}%
     \end{minipage}
     \caption{
         The figure shows two masks (A,B) which will be compared against each other.
@@ -949,7 +951,11 @@ event has occured.
         This simple approach does not take into consideration the parental relationship.
         This approach is displayed in (D) where pixels of cells that are directly related have been
         colored in gray.
-        (E) Comparison of cost functions, exponential regression (ER) and number of cells.
+        (E) A schematic representation of the comparison problem involving multiple cells at
+        different generations.
+        An initial configuration produces two results by utilizing distinct methods (i.e. evoling
+        our computational model in time or assigning the data for next time point).
+        (F) Comparison of cost functions, exponential regression (ER) and number of cells.
         % Total cost between successive iteration steps $t_n,t_{n+1}$.
         The overall shape of the cost is expected to have the slope of an exponential function.
         We can clearly see that division events introduce jumps within this relationship.
@@ -969,7 +975,7 @@ We expect to obtain an exponential growth in the cost.
 This can be explained by the fact that the growth of the total area is exponential in time.
 Furthermore, the temporal area difference can be viewed as a derivative of the total area in time,
 which is again an exponential function.
-Figure~\ref{fig:mask-difference-metric} (E) shows the total cost for this approach.
+Figure~\ref{fig:mask-difference-metric} (F) shows the total cost for this approach.
 We can see that by accounting for the parental relationship, we get the overall desired effect.
 This method allows us to compare results between states that have a different number of cells.
 However, since this algorithm requires us to calculate a cell-mask for each comparison and then also
