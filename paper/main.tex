@@ -827,6 +827,7 @@ tools~\cite{Cutler2022,Stringer2020,Hardo2022} or manually annotating microscopi
 \textit{Tue ich aber nicht grundsätzlich. Es gibt globale und individuelle parameter; also ein "mixed approach". Ich habe aber einen Hinweis eingefügt.}
 
 \paragraph{Direct Comparison}
+\label{paragraph:direct-comparison}
 In the scenario where no cells divide during the observed interval, we can use our extraction
 algorithm to obtain the position of the cells and then compare them directly to the positions
 calculated from the computational results.
@@ -984,23 +985,33 @@ After all, for each comparison step, we need to run a full 3D visualization pipe
 In cases where the simpler approach of comparing positions of the agents is possible, this method
 should be preferred.
 \textbf{[Wir müssen darüber reden, mir ist hier vieles unklar. Es könnte nützlich sein, vor der Application Sektion, eine Zusammenfassung zu setzen.]}
-\textit{Bis hierhin bin ich mit meiner Überarbeitung gekommen.}
 
 %###################################################################################################
 \section{Application 1: Elastic deformations of \textit{E.Coli}}
-\label{section:application-1}
 
-We will use our previously developed computational model and apply it directly to the data provided
+To assess that our model can be applied to single cells and showcase the usefulness of the
+previously developed comparison techniques,
+will use our previously developed computational model and apply it directly to the data provided
 by the experiments of Amir et. al~\cite{Amir2014,Amir2014_2}.
-\textbf{[Es wäre gut zu sagen, was für ein Ziel du verfolgst. Warum machst du das?]}
-They studied how a single \textit{E.Coli}, which is fixed at the bottom, reacts to a horizontal
-fluid flow that exerts a force onto the bacteria.
-This setup is displayed in figure~\ref{fig:amir-bending-simulation} (A).
+They studied how a single \textit{E.Coli}, which is partially confined within a narrow tube, reacts
+to a horizontal fluid flow that exerts a force onto the bacterium.
+The experiment is particularly suited as a first attempt since it excludes cell-cell interactions
+and focusses on the behaviour of a single cell.
+It therefore reduces the total amount of parameters and allows for fast iteration times when
+performing parameter estimations.
+The experimental setup is displayed in figure~\ref{fig:amir-bending-simulation} (A).
 To model this configuration, the lowermost vertex of the rod is fixed at the base of the simulation
-domain.
+domain and vertices which are inside the tubulus are restricted to move only in the y-direction.
 
-Furthermore, we introduce a force $\vec{F}_i = C |\vec{x}_i - \vec{x}_{i+1}|\sin(\alpha_i)\vec{e}_x$
-that acts similarly to Stoke's Law \textbf{TODO Citation} onto the normal component of each
+\textbf{@Christian is this more clear now?}
+
+We model the force exerted by the fluid flow onto the individual vertices by
+
+\begin{equation}
+    \vec{F}_i = C |\vec{x}_i - \vec{x}_{i+1}|\sin(\alpha_i)\vec{e}_x
+\end{equation}
+
+which acts similarly to Stoke's Law \textbf{TODO Citation} onto the normal component of each
 rod-segment where $\alpha_i$ is the angle of the rod edge between $\vec{x}_i$ and $\vec{x}_{i+1}$
 and the x-axis.
 We extract the position of the rod from the provided image and use it as initial value.
@@ -1009,9 +1020,9 @@ and a second one during which the force is disabled and the cell returns to its 
 We compare the simulated positions with the extracted ones and calculate the euclidean distance
 between them, which we use as the cost function to estimate the parameters of this model.
 
-Since this model is void of any interactions or cell division, we are left with 5 parameters:
+Since this model is void of any cell-cell interactions or cell division, we are left with 5 parameters:
 Magnitude of the drag force $C$, growth rate $\alpha$, rigidity of the rod $\eta$, spring tension
-$\gamma$ and damping constant $\lambda$.
+$\gamma$ and damping constant $\lambda$ (see table~\ref{table:list-of-parameters}).
 Figure~\ref{fig:amir-bending-simulation} (B) shows a snapshot of the initial (orange) and final
 (blue) position of the rod using the optimized parameters.
 While the parameters for the dragging force, growth rate and damping can be identified, the same
@@ -1075,9 +1086,12 @@ The corresponding plots can be seen in \ref{subsec:supplement-parameter-profiles
         \end{tikzonimage}%
     \end{minipage}
     \caption{
+        \textbf{TODO remove pixels in units}
+        \textbf{@Christian is it okay to change the units here to seconds from minutes? (compare
+        table above)}
         Subfigure (A) shows a snapshot of the experiments performed by \cite{Amir2014_2}.
-        Division of the bacteria is inhibited and they are trapped within a mother machine such that
-        a controlled flow can be exerted on them.
+        Division of the bacteria is inhibited and they are partially trapped within a mother machine
+        such that a controlled flow can be exerted on them.
         (B) A comparison of the initial and bent state show good visual agreement of our prediction
         with the experimental data.
         Subfigures (C-G) show likelihood profiles for the individual parameters.
@@ -1090,28 +1104,31 @@ The corresponding plots can be seen in \ref{subsec:supplement-parameter-profiles
 \section{Application 2: \textit{E.Coli.} growing on Agar}
 \label{section:application-2}
 To show the usefulness of our previously developed methods
-(see section~\ref{section:parameter-estimation}), we will use them to estimate the parameters
-individual growing \textit{E.Coli} using a sequence of microscopic images.
+(see section~\ref{section:parameter-estimation}), we will use them to estimate the parameters of
+individually growing \textit{E.Coli} using a sequence of microscopic images.
 The data we use~\cite{https://doi.org/10.3203/iwf/k-129} (see
 section~\ref{section:data-code-availability}) has been automatically segmented with the
-omnipose~\cite{Cutler2022} algorithm by mean of which the necessary cell masks are obtained.
+omnipose~\cite{Cutler2022} algorithm to obtain the required cell masks.
 
 % --------------------------------------------------------------------------------------------------
 \subsection{Individual Treatment}
 
-We have already suspected (see table~\ref{table:simulation-aspects}) that in order to properly
-estimate parameters of our system, we need to treat every cell individually, thus assigning
-parameters on a single-cell level.
-This means that we increase the total number of parameters that need to be sampled within an
-optimization routine.
-Given $N_c$ cells and $N_p$ parameters per cell and $N_u$ individual parameters (where $N_u\leq N_p$), the total amount of parameters to be estimated is:
+We have already suspected (see Table~\ref{table:simulation-aspects}) that in order to properly
+estimate parameters of our system, we need to account for natural cell-variability, thus assigning
+parameters on a per-cell basis.
+We have previously presented a list of $N_p$ parameters (see Table~\ref{table:list-of-parameters})
+which will either be assigned individually or globally.
+We filter out a subset $N_g\leq N_p$ of global parameters, treating the remaining ones individually.
+Given $N_c$ cells, the total amount of parameters to be estimated is:
 \begin{equation}
-    N_{p,\text{total}} = N_u + N_c (N_p - N_u) = N_C N_p - (N_c - 1) N_u.
+    N_{p,\text{tot}} = N_g + N_c (N_p - N_g).
 \end{equation}
-It is clear, that we should avoid to needlessly assign every parameter individually since the volume
-of the parameter space that needs to be sampled, scales exponentially with the dimension ie. the
-number of parameters.
+It is clear, that we should avoid, to needlessly treat parameters non-globally since this increases
+the size of the parameter space considerably.
+The volume that needs to be sampled to optimize within a given parameter space scales exponentially
+with the dimension ie. the total number of parameters $N_{p,\text{tot}}$.
 \textbf{[Das ist leider komplett unverständlich. Ich glaube, ich weiss schon, was du sagen möchtest, aber das muss umformuliert werden. Stichworte sind hier: Cell Variability, Heterogeneity, latent variables. Parameter per cell and individual parameters versteht auch niemand den Unterschied.]}
+\textit{Ich habe versucht, es klarer zu machen. Bitte dazu Feedback!}
 
 However, we will now present data that indicate that an individual treatment is in fact necessary.
 Figure~\ref{fig:estimated-growth-rates} shows the rod-lengths of individual bacteria which have been
@@ -1131,12 +1148,13 @@ Fitting this function to the individual growth curves of the bacteria and their 
 both results in good agreements (Figure~\ref{fig:estimated-growth-rates} A,B).
 However, the latter exhibits large amounts of uncertainty within the data which is also illustrated
 in subfigure (C).
-There, we can see much more clearly the difference between considering individually assigned
-parameters and global ones.
-It is clear from this observation that in order for us to accurately estimate the parameters of this
-system, we need to treat the bacteria individually.
+There, we can see much more clearly the difference between considering assigning parameters per cell
+and global ones.
+These results show that in order to accurately estimate the parameters of this system, we need to
+account for this inherent heterogeneity and hence treat the growth parameters of the bacteria
+individually.
 \textbf{[Man ahnt was du meinst, doch leider ahnt man es nur. Vermeide Aussagen wie "it is clear".]}
-
+\textit{Jetzt klarer?}
 
 % \begin{enumerate}
 %     \item motivate individual treatment of cells
@@ -1181,17 +1199,12 @@ system, we need to treat the bacteria individually.
 
 % --------------------------------------------------------------------------------------------------
 \subsection{Without Division}
-In section we will focus on a time-interval which does not contain any division events and at which
-the initial lag-phase of our bacteria has already passed.
-\textbf{[Sprachlich wieder fragwürdig. "A time interval at which the initial lag-phase has passed" ist kein irgendwie korrekter englischer Satz.]}
-
-By doing so, we can utilize the simpler and more performant direct comparison scheme for our cost function.
-\textbf{[Hier weiss man nicht worüber du sprichst.]}
-
-Furthermore, we need not to estimate the lag-time parameters which improves performance of our
-optimization algorithm.
-\textbf{[Verweise auf die entsprechende Gleichung.]}
-\textbf{[Ich werde nun nicht mehr das Sprachliche kommentieren oder verbessern. Zuerst muss die gesamte Konzeption verbessert werden.]}
+In this section we will focus on a time-interval which does not contain any division events.
+By doing so, we can utilize the simpler and more performant direct comparison scheme (see
+\ref{paragraph:direct-comparison}) for our cost function.
+We have chosen said interval such that effects related to the lag phase can be neglected which
+allows us to sample a lower amount of paremeters thus improving runtime performance of our
+optimization scheme.
 
 % For this dataset, we assumed that all parameters which specify the interaction potential are
 % identical across all agents but growth rates of the cells are individual.
@@ -1437,13 +1450,6 @@ Combining these two values, the position-comparison algorithm is $\approx 6.13(8
 
 With this work we have layed out how to estimate the parameters of \acp{abm} using
 microscopic image time series.
-\textbf{
-    Es wird leider überhaupt nicht deutlich, was die Blaupause sein könnte.
-    Wenn man das MS liesst, gewinnt man den Eindruck, du machst dies und das, aber ein einheitliches Konzept fehlt.
-    Wir müssen zuerst eine Konzeption für das Paper entwickeln, bevor wir über weitere Details reden können.
-}
-\textit{Alles zu blaupause ist wegradiert.}
-
 Our approach is modularized such that its structure can be applied to a variety of problems.
 We introduced a \ac{ib} computational model for rod-shaped bacteria that incorporates bendiness of
 the rod and is implemented with \texttt{cellular\_raza} allowing it to be flexible in design and
