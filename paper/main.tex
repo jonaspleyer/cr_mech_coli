@@ -566,22 +566,22 @@ Table~\ref{table:list-of-parameters} shows a list of all parameters used within 
 \begin{table}[H]
     \centering
     \def\arraystretch{1.3}
-    \begin{tabular}{l c l c}
-        \textbf{Parameters} && \textbf{Variables}\\
+    \begin{tabular}{l c c l c c}
+        \textbf{Parameters} && \textbf{Units} & \textbf{Variables} && \textbf{Units}\\
         \toprule
         \multicolumn{4}{l}{\textbf{Mechanics}}\\
         \midrule
-        Spring tension & $\gamma$ & Position (vertices) & $\vec{x}_i$\\
-        Rigidity & $\eta$ & Velocity & $\partial_t\vec{x}_i$\\
-        Damping & $\lambda$ & Spring length & $l$ \\
+        Spring tension & $\gamma$ & $\unit{1\per\minute}$ & Position (vertices) & $\vec{x}_i$ & $\unit{\micro\metre}$\\
+        Rigidity & $\eta$ & $\unit{\micro\metre\per\minute^2}$ & Velocity & $\partial_t\vec{x}_i$ & $\unit{\micro\metre\per\minute}$\\
+        Damping & $\lambda$ & $\unit{\micro\metre}$ & Spring length & $l$ & $\unit{\micro\metre}$\\
         \multicolumn{4}{l}{\textbf{Interaction}}\\
         \midrule
-        Thickness & $R$\\
-        Strength & $\epsilon$\\
-        Exponent 1 & $n$\\
-        Exponent 2 & $m$\\
-        Bound & $\beta$\\
-        Cutoff & $\zeta$\\
+        Thickness & $R$ & $\unit{\micro\metre}$\\
+        Strength & $\epsilon$ & $\unit{\micro\metre^2\per\minute^2}$\\
+        Exponent 1 & $n$ & $1$\\
+        Exponent 2 & $m$ & $1$\\
+        Bound & $\beta$ & $\unit{\micro\metre^2\per\minute^2}$\\
+        Cutoff & $\zeta$ & $\unit{\micro\metre}$\\
         \multicolumn{4}{l}{\textbf{Growth \& Division}}\\
         \midrule
         Growth rate & $\mu$\\
