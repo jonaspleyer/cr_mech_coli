@@ -257,7 +257,7 @@ algorithms.
     spezifischen Problem, welches du hier verhandelst.
 }
 
-\begin{figure}
+\begin{figure}[H]
     \centering
     % \includegraphics[width=0.8\textwidth]{overview.pdf}
     \includestandalone[width=0.8\textwidth]{figures/concept/overview}
@@ -389,7 +389,7 @@ our established theoretical methods and computational functionalities.
 %         problem
 % \end{enumerate}
 
-\begin{figure}
+\begin{figure}[H]
     \centering
     \includegraphics[width=0.5\textwidth]{docs/source/_static/mechanics.png}
     \caption{
@@ -563,7 +563,7 @@ normal distribution with user-defined parameters.
 Every other intracellular parameter is copied identically to the daughter cells.
 Table~\ref{table:list-of-parameters} shows a list of all parameters used within our model.
 
-\begin{table}
+\begin{table}[H]
     \centering
     \def\arraystretch{1.3}
     \begin{tabular}{l c l c}
@@ -641,7 +641,7 @@ We then use a parallel projection and remove any existing light sources in order
 color for every cell-agent.
 The resulting image is shown in subfigure (B).
 
-\begin{figure}
+\begin{figure}[H]
     \centering
     \begin{tikzonimage}[width=0.4\textwidth]
         {docs/source/_static/09395645494836445480/raw_pv/000000400.png}
@@ -707,7 +707,7 @@ We list the points in this order, thus forming a sorted polygon of pixel coordin
 In the last step, we take the sorted, extracted points $\vec{p}_i$ and interpolate $n$ values for
 the desired number of vertices $\vec{x}_i$.
 
-\begin{figure}
+\begin{figure}[H]
     \centering
     \begin{tikzonimage}[width=0.36\textwidth]
         {docs/source/_static/fitting-methods/algorithm/image001042.png}
@@ -773,7 +773,7 @@ is not dominated by outliers.
     Damit ich aber schneller durchkomme, verschieben wir das auf später.
 }
 
-\begin{figure}
+\begin{figure}[H]
     \centering
     \begin{tikzonimage}[width=0.32\textwidth]
         {docs/source/_static/fitting-methods/extract_positions-004000.png}
@@ -907,7 +907,7 @@ event has occured.
 
 \textbf{[Wir müssen darüber reden, mir ist hier vieles unklar.]}
 
-\begin{figure}
+\begin{figure}[H]
     \centering
     \begin{minipage}{0.5\textwidth}
     \begin{tikzonimage}[width=0.48\textwidth]
@@ -1031,7 +1031,7 @@ $\eta_0=\SI{150}{\micro\metre\per\second\squared}$ which corresponds to $60\%$ o
 interval.
 The corresponding plots can be seen in \ref{subsec:supplement-parameter-profiles-amir}.
 
-\begin{figure}
+\begin{figure}[H]
     \centering
     \begin{minipage}{0.38\textwidth}
         \begin{tikzonimage}[width=\textwidth]
@@ -1140,7 +1140,7 @@ system, we need to treat the bacteria individually.
 % \end{enumerate}
 
 \label{subsec:parameter-estimation-individual-treatment}
-\begin{figure}
+\begin{figure}[H]
     \centering
     \begin{tikzonimage}[width=0.33\textwidth]
         {figures/crm_estimate_params/IWF-Goettingen/rod-lengths-individual.pdf}%
@@ -1204,7 +1204,7 @@ We can see that all parameters can be estimated by our optimization approach and
 non-identifiability~\cite{Raue2009} is present.
 These plots also show that the individual growth rates of the bacteria can be estimated effectively.
 
-\begin{figure}
+\begin{figure}[H]
     \centering
     \begin{tikzonimage}[width=0.49\textwidth]
         {figures/crm_fit/snapshots/predicted-003889.png}%
@@ -1224,7 +1224,7 @@ These plots also show that the individual growth rates of the bacteria can be es
     }
 \end{figure}
 
-\begin{figure}
+\begin{figure}[H]
     \centering
     \begin{tikzonimage}[width=0.25\textwidth]
         {figures/crm_fit/profiles/damping.pdf}%
@@ -1335,7 +1335,7 @@ In addition, the step of mask adjustment would not have been required within the
 algorithm.
 Combining these two values, the position-comparison algorithm is $\approx 6.13(8)$ times faster.
 
-\begin{figure}
+\begin{figure}[H]
     \centering
     \begin{tikzonimage}[width=0.32\textwidth]
         {figures/crm_divide/masks_diff/000000.png}%
@@ -1362,7 +1362,7 @@ Combining these two values, the position-comparison algorithm is $\approx 6.13(8
     \label{fig:celldiffs-progression-with-division}
 \end{figure}
 
-\begin{figure}
+\begin{figure}[H]
     \centering
     \begin{tikzonimage}[width=0.25\textwidth]
         {figures/crm_divide/profiles/profile-000000.png}%
@@ -1647,7 +1647,7 @@ The parameter ranges were chosen such that a suitable
 Plots are chosen for visual ease; parameter ranges have been widened to ensure results are
 accurate (maybe just leave this in the appendix).
 
-\begin{figure}
+\begin{figure}[H]
     \centering
     \begin{tikzonimage}[width=0.33\textwidth]
         {figures/crm_amir/profiles-reduced/fit-comparison.pdf}%
@@ -1681,7 +1681,7 @@ accurate (maybe just leave this in the appendix).
 \subsubsection{With Division}
 
 %TODO {explain profiles}
-\begin{figure}
+\begin{figure}[H]
     \centering
     \includegraphics[width=0.33\textwidth]
         {figures/crm_fit/profiles/growth-rate-0.pdf}%
@@ -1699,7 +1699,7 @@ accurate (maybe just leave this in the appendix).
     \label{fig:parameter-estimates-supplement-growth-rates}
 \end{figure}
 
-\begin{table}
+\begin{table}[H]
     \centering
     \begin{tabularx}{\textwidth}{l c c c c c c}
         \toprule
@@ -1819,7 +1819,7 @@ Figure~\ref{fig:performance}).
         In particular to update\_mechanics functions.
 \end{itemize}
 
-\begin{figure}
+\begin{figure}[H]
     \centering
     \includegraphics[width=0.49\textwidth]
         {docs/source/_static/performance/computation-time-with-initial-agents.pdf}
@@ -1828,7 +1828,7 @@ Figure~\ref{fig:performance}).
     \label{fig:performance}
 \end{figure}
 
-\begin{figure}
+\begin{figure}[H]
     \centering
     \includegraphics[width=0.5\textwidth]{figures/crm_divide/timings.pdf}%
     \includegraphics[width=0.5\textwidth]{figures/crm_divide/time-evolution.pdf}%
