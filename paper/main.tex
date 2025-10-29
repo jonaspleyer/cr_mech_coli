@@ -743,29 +743,6 @@ We list the points in this order, thus forming a sorted polygon of pixel coordin
 In the last step, we take the sorted, extracted points $\vec{p}_i$ and interpolate $n$ values for
 the desired number of vertices $\vec{x}_i$.
 
-\begin{figure}[H]
-    \centering
-    \begin{tikzonimage}[width=0.36\textwidth]
-        {docs/source/_static/fitting-methods/algorithm/image001042.png}
-        \node at (0.025, 0.975)[anchor=north west, rectangle, draw, white, minimum width=15pt, minimum height=15pt]{\textbf{A}};
-    \end{tikzonimage}
-    \begin{tikzonimage}[width=0.36\textwidth]
-        {docs/source/_static/fitting-methods/algorithm/mask-zoom.png}
-        \node at (0.025, 0.975)[anchor=north west, rectangle, draw, white, minimum width=15pt, minimum height=15pt]{\textbf{B}};
-    \end{tikzonimage}
-    \begin{tikzonimage}[width=0.255\textwidth]
-        {docs/source/_static/fitting-methods/algorithm/interpolate-positions.png}
-        \node at (0.025, 0.975)[anchor=north west, rectangle, draw, white, minimum width=15pt, minimum height=15pt]{\textbf{C}};
-    \end{tikzonimage}
-    \caption{
-        (A) Input image.
-        (B) Result of the skeletonization algorithm for a single cell.
-        (C) Vertices $\vec{x}_i$ which have been interpolated from the skeletonized cell.
-        They represent the position of our cell-agents.
-    }
-    \label{fig:position-extraction-algorithm}
-\end{figure}
-
 % --------------------------------------------------------------------------------------------------
 \paragraph{Benchmarking the Extraction Algorithm}
 
@@ -811,20 +788,18 @@ is not dominated by outliers.
 
 \begin{figure}[H]
     \centering
-    \begin{tikzonimage}[width=0.32\textwidth]
-        {docs/source/_static/fitting-methods/extract_positions-004000.png}
+    \begin{tikzonimage}[width=0.36\textwidth]
+        {docs/source/_static/fitting-methods/algorithm/image001042.png}
         \node at (0.025, 0.975)[anchor=north west, rectangle, draw, white, minimum width=15pt, minimum height=15pt]{\textbf{A}};
     \end{tikzonimage}
-    \begin{tikzonimage}[width=0.32\textwidth]
-        {docs/source/_static/fitting-methods/extract_positions-006000.png}
+    \begin{tikzonimage}[width=0.36\textwidth]
+        {docs/source/_static/fitting-methods/algorithm/mask-zoom.png}
         \node at (0.025, 0.975)[anchor=north west, rectangle, draw, white, minimum width=15pt, minimum height=15pt]{\textbf{B}};
     \end{tikzonimage}
-    \begin{tikzonimage}[width=0.32\textwidth]
-        {docs/source/_static/fitting-methods/extract_positions-008000.png}
+    \begin{tikzonimage}[width=0.255\textwidth]
+        {docs/source/_static/fitting-methods/algorithm/interpolate-positions.png}
         \node at (0.025, 0.975)[anchor=north west, rectangle, draw, white, minimum width=15pt, minimum height=15pt]{\textbf{C}};
-    \end{tikzonimage}\\
-    \textbf{@Christian should we remove images (A-C)? I do not think that they add too much
-    value. Maybe we should combine this figure with \ref{fig:position-extraction-algorithm}}\\
+    \end{tikzonimage}
     \begin{tikzonimage}[width=0.5\textwidth]
         {docs/source/_static/fitting-methods/displacement-calculations.png}%
         \node at (0.03, 0.99)[anchor=north west, rectangle, draw, black, minimum width=15pt, minimum height=15pt]{\textbf{D}};
@@ -834,8 +809,10 @@ is not dominated by outliers.
         \node at (0.03, 0.99)[anchor=north west, rectangle, draw, black, minimum width=15pt, minimum height=15pt]{\textbf{E}};
     \end{tikzonimage}
     \caption{
-        Subfigures (A-C) show rendered masks of a simulation where the extracted positions have been
-        drawn within the individual agents.
+        (A) Input image.
+        (B) Result of the skeletonization algorithm for a single cell.
+        (C) Vertices $\vec{x}_i$ which have been interpolated from the skeletonized cell.
+        They represent the position of our cell-agents.
         Subfigure (D) displayes the average rod length of the exact and extracted data.
         The light blue region is the mean distance between vertices of extracted and exact
         positions which captures the inherent uncertainty of our method.
@@ -844,6 +821,7 @@ is not dominated by outliers.
         simulation.
     }
     \label{fig:benchmarking-extraction-algorithm}
+    \label{fig:position-extraction-algorithm}
 \end{figure}
 
 % --------------------------------------------------------------------------------------------------
