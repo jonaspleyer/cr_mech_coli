@@ -465,7 +465,7 @@ Given the angle $\alpha_i = \sphericalangle(\vec{w}_{i-1},\vec{w}_i)$ between ad
 the bending force is proportional to the curvature $\kappa_i$ at each vertex
 $\kappa_i = 2\tan(\alpha_i/2)$.
 The resulting force acts along the angle bisector which can be calculated from the edge vectors.
-Figure~\ref{fig:mechanics-bacterium} shows an elongated rod represented by $6$ vertices.
+Figure~\ref{fig:model-bacterium} (A) shows an elongated rod represented by $6$ vertices.
 The force acting on vertex $\vec{x}_i$ is given by
 
 \begin{equation}
@@ -473,7 +473,7 @@ The force acting on vertex $\vec{x}_i$ is given by
         \frac{\vec{w}_i - \vec{w}_{i+1}}{|\vec{w}_i-\vec{w}_{i+1}|}
 \end{equation}
 
-where $\eta_i$ is the rigidity at vertex $\vec{x}_i$ (see Figure~\ref{fig:mechanics-bacterium}).
+where $\eta_i$ is the rigidity at vertex $\vec{x}_i$ (see Figure~\ref{fig:model-bacterium}).
 The adjoining vertices $\vec{x}_{i-1},\vec{x}_{i+1}$ are subject to half of the same force in the
 opposite direction $\vec{F}_{i\pm 1,\text{curvature}} = -0.5\vec{F}_{i,\text{curvature}}$.
 We can see that the curvature force does not move the overall center of the rod in space.
@@ -536,6 +536,7 @@ The resulting force is given by
 \end{equation}
 
 where $\theta$ is the heaviside step-function and the $\min$ term ensures the upper bound $\beta$.
+A collection of configurations are displayed in figure~\ref{fig:model-bacterium} (B).
 
 The physical interaction between the bacteria plays a crucial role for the overall dynamics of the
 system.
