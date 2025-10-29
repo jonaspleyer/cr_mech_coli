@@ -12,16 +12,12 @@ rc("text", usetex=True)
 rc("font", size="20")
 
 
-def plot_polygon_with_arrows(points, radius, angle_circle_size=0.8):
-    fig, ax = plt.subplots(figsize=(8, 8))
-    ax.axis("off")
-    cell_color = [0.9, 0.9, 0.9]
+def __plot_cell_envelope(ax, points, radius, cell_color=[0.9, 0.9, 0.9]):
     for i in range(len(points) - 1):
         p1 = points[i]
         p2 = points[i + 1]
         c = p2 - p1
         angle = np.arccos(c[0] / np.linalg.norm(c))
-        # direction = np.array([np.cos(np.pi / 2 + angle), np.sin(np.pi / 2 + angle)])
         direction = np.array([np.sin(angle), -np.cos(angle)])
         rect = Rectangle(
             points[i] + radius * direction,
@@ -37,13 +33,25 @@ def plot_polygon_with_arrows(points, radius, angle_circle_size=0.8):
     circle = Circle(points[-1], radius, color=cell_color)
     ax.add_patch(circle)
 
+
+def __plot_cell_springs(ax, points, color=[0.5, 0.5, 0.5]):
+    with rc_context({"path.sketch": (4, 7, 1)}):
+        ax.plot(points[:, 0], points[:, 1], color=color, linewidth=1)
+
+
+def plot_polygon_with_arrows(points, radius, angle_circle_size=0.8):
+    fig, ax = plt.subplots(figsize=(8, 8))
+    ax.axis("off")
+
+    __plot_cell_envelope(ax, points, radius)
+
     ax.scatter(points[:, 0], points[:, 1], s=80, marker="+", color="k")
     ax.text(*(points[0] + np.array([-0.2, 0.2])), "$\\vec x_{}$".format(0))
     ax.text(
         *(points[-1] + np.array([-0.2, 0.2])), "$\\vec x_{}$".format(len(points) - 1)
     )
-    with rc_context({"path.sketch": (4, 7, 1)}):
-        ax.plot(points[:, 0], points[:, 1], color=[0.5, 0.5, 0.5], linewidth=1)
+
+    __plot_cell_springs(ax, points)
 
     for i in range(1, len(points) - 1):
         p1 = points[i - 1]
@@ -89,6 +97,72 @@ def plot_polygon_with_arrows(points, radius, angle_circle_size=0.8):
         ax.add_patch(arc)
     ax.set_xlim(np.min(points[:, 0]) - radius, np.max(points[:, 0]) + radius)
     ax.set_ylim(np.min(points[:, 1]) - radius, np.max(points[:, 1]) + radius)
+    fig.tight_layout()
+    return fig, ax
+
+
+def _closest_point_on_segment(p, a, b):
+    ap = p - a
+    ab = b - a
+
+    ab_squared = np.dot(ab, ab)
+    if ab_squared == 0:
+        return a
+
+    t = np.dot(ap, ab) / ab_squared
+    t = max(0, min(1, t))
+
+    closest = a + t * ab
+
+    dist = np.linalg.norm(p - closest)
+    return dist, closest
+
+
+def _closest_point_on_polygon(p, polygon):
+    dists = []
+    points = []
+    for pi1, pi2 in zip(polygon[1:], polygon[:-1]):
+        dist, closest = _closest_point_on_segment(p, pi1, pi2)
+        dists.append(dist)
+        points.append(closest)
+
+    n = np.argmin(dists)
+    return points[n]
+
+
+def plot_cells_interacting(points1, points2, radius):
+    points = np.vstack([points1, points2])
+
+    fig, ax = plt.subplots(figsize=(8, 8))
+    ax.axis("off")
+
+    __plot_cell_envelope(ax, points1, radius)
+    __plot_cell_envelope(ax, points2, radius)
+
+    __plot_cell_springs(ax, points1)
+    __plot_cell_springs(ax, points2)
+
+    for p in points1:
+        closest = _closest_point_on_polygon(p, points2)
+        x = [p[0], closest[0]]
+        y = [p[1], closest[1]]
+        ax.plot(x, y, c=crm.plotting.COLOR5, linestyle="--")
+
+    ax.scatter(points[:, 0], points[:, 1], s=80, marker="+", color="k")
+
+    xmin = np.min(points[:, 0]) - radius
+    xmax = np.max(points[:, 0]) + radius
+    ymin = np.min(points[:, 1]) - radius
+    ymax = np.max(points[:, 1]) + radius
+    dx = xmax - xmin
+    dy = ymax - ymin
+    dd = max(dx, dy)
+    ddx = (dd - dx) / 2
+    ddy = (dd - dy) / 2
+
+    ax.set_xlim(xmin - ddx, xmin + dd - ddx)
+    ax.set_ylim(ymin - ddy, ymin + dd - ddy)
+
     fig.tight_layout()
     return fig, ax
 
@@ -208,7 +282,7 @@ if __name__ == "__main__":
         [
             [0, 0],
             [1, 0.7],
-            [2, 2.1],
+            [2, 1.9],
             [3, 2.6],
             [4, 3.8],
             [5, 4.7],
@@ -218,6 +292,18 @@ if __name__ == "__main__":
     radius = 0.8
     fig, ax = plot_polygon_with_arrows(points, radius)
     fig.savefig("docs/source/_static/mechanics.png", transparent=True)
+    fig.savefig("docs/source/_static/mechanics.pdf", transparent=True)
+    fig.savefig("docs/source/_static/mechanics.svg", transparent=True)
     plt.close(fig)
+
+    points2 = np.array(points)
+    points2 += np.array([3, -2])
+    points2[0] += np.array([0.1, -0.2])
+    points2[2] += np.array([0.3, -0.2])
+    points2[4] += np.array([0.1, -0.1])
+    fig, ax = plot_cells_interacting(points, points2, radius)
+    fig.savefig("docs/source/_static/interaction.png", transparent=True)
+    fig.savefig("docs/source/_static/interaction.pdf", transparent=True)
+    fig.savefig("docs/source/_static/interaction.svg", transparent=True)
 
     # plot_3d_rod(points, radius)
