@@ -93,23 +93,7 @@ def plot_polygon_with_arrows(points, radius, angle_circle_size=0.8):
     return fig, ax
 
 
-if __name__ == "__main__":
-    points = np.array(
-        [
-            [0, 0],
-            [1, 0.7],
-            [2, 2.1],
-            [3, 2.6],
-            [4, 3.8],
-            [5, 4.7],
-        ]
-    )
-
-    radius = 0.8
-    fig, ax = plot_polygon_with_arrows(points, radius)
-    fig.savefig("docs/source/_static/mechanics.png", transparent=True)
-    plt.close(fig)
-
+def plot_3d_rod(points, radius):
     pos = np.zeros((points.shape[0], 3), dtype=np.float32)
     pos[:, :2] = points
     vel = 0 * pos
@@ -217,3 +201,23 @@ if __name__ == "__main__":
     ax.imshow(img)
     plt.show()
     plt.close(fig)
+
+
+if __name__ == "__main__":
+    points = np.array(
+        [
+            [0, 0],
+            [1, 0.7],
+            [2, 2.1],
+            [3, 2.6],
+            [4, 3.8],
+            [5, 4.7],
+        ]
+    )
+
+    radius = 0.8
+    fig, ax = plot_polygon_with_arrows(points, radius)
+    fig.savefig("docs/source/_static/mechanics.png", transparent=True)
+    plt.close(fig)
+
+    # plot_3d_rod(points, radius)
