@@ -498,13 +498,14 @@ All involved parameters and their units can be viewed in Table~\ref{table:list-o
 % --------------------------------------------------------------------------------------------------
 \subsection{Physical Interactions - Mie Potential}
 
-Calculating the force between cells requires performing a double integral over the length of the
-cells.
+Calculating the force between cells requires performing a double integral over the two polygonal
+paths of the cells.
 To reduce the computational costs we use an approximative, simplified model.
 Given a vertex $\vec{x}_i$ on one cell, we determine the closest point $\vec{p}$ on the polygonal
 line given by the vertices $\{\vec{y}_j\}$ of the interacting cell.
 Furthermore we determine the value $q\in[0,1]$ such that $\vec{p} = (1-q)\vec{y}_j + q\vec{y}_{j+1}$
 for some specific $j$.
+This approach is especially justified for short-ranged interactions.
 The force is then calculated between the points $\vec{x}_i$ and $\vec{p}$ and acts on
 the vertex $\vec{y}_j,\vec{y}_{j+1}$ with relative strength $(1-q)$ and $q$.
 
@@ -518,27 +519,34 @@ to describe the interactions between molecules.
 The Mie potential is given by:
 
 \begin{align}
-    U(r) &= C\epsilon\left[ \left(\frac{\sigma}{r}\right)^n -
+    V(r) &= V_0C\left[ \left(\frac{\sigma}{r}\right)^n -
         \left(\frac{\sigma}{r}\right)^m\right]\\
     C &= \frac{n}{n-m}\left(\frac{n}{m}\right)^{\frac{n}{n-m}}
 \end{align}
 
-The strength of the potential is given by $\epsilon$ and the thickness of our rods
+The strength of the potential is given by $V_0$ and the thickness of our rods
 is encoded in $\sigma = (m/n)^{1/(n-m)}(R_1+R_2)$ where $R_1,R_2$ are the thicknesses (radii) of the
 two interacting rod-like bacteria.
 We utilize the shorthand notation $r=|\vec{x}_i - \vec{p}|$ for the distance between the two points
 in question.
 We numerically regularize the potential by imposing an upper bound $\beta$ on the norm of the
-resulting force $\vec{F} = \vec{\nabla} V$.
+resulting force $\vec{F} = -\vec{\nabla} V$.
 Furthermore, we impose a cutoff parameter $\zeta$ which sets sets the force to zero when the
 distance $r$ between the interacting points exceeds this threshold.
 The resulting force is given by
 
 \begin{equation}
-    \vec{F}_{i,\text{external}} = \vec{F} \theta(r-\zeta) \min\left(1, \beta / |\vec{F}|\right)
+    \vec{F}_{i,\text{external}} = \left\{
+    \begin{array}{ll}
+        \beta\vec{F}/|\vec{F}| & |\vec{F}| >= \beta\\
+        \vec{0} & r > \zeta\\
+        \vec{F} & \text{else}
+    \end{array}\right.
+    % \vec{F} \theta(r-\zeta) \min\left(1, \beta / |\vec{F}|\right)
 \end{equation}
 
-where $\theta$ is the heaviside step-function and the $\min$ term ensures the upper bound $\beta$.
+\textbf{@Christian Can you find a more elegant notation than this equation?}\\
+where the first case ensures that the norm is bound and the second case ensures the cutoff.
 A collection of configurations are displayed in figure~\ref{fig:model-bacterium} (B).
 
 The physical interaction between the bacteria plays a crucial role for the overall dynamics of the
@@ -549,7 +557,7 @@ distance valuels that correspond to overlaps.
 In contrast, a popular alternative is the Morse potential~\cite{Morse1929}, which is less
 customizable due to the lower amount of parameters and more restrictive mathematical formulation.
 Therefore, the Mie potential is a good choice for a simple, interpretable interaction potential with
-low amount of parameters that can be estimated by our data-driven approach.
+low amount of parameters that can be estimated.
 
 % --------------------------------------------------------------------------------------------------
 \subsection{Cell-Cycle}
@@ -586,7 +594,7 @@ We set the growth rates of the daughter cells explicitly during the division eve
 This approach allows us to treat the growth rates of the daughter cells as full individual
 parameters within our model.
 In order to reuse this model, we also provide the option to assign growth rates by sampling from a
-normal distribution with user-defined parameters.
+normal distribution with user-defined parameters.\textbf{@Christian Supplement?}
 Every other intracellular parameter is copied identically to the daughter cells.
 Table~\ref{table:list-of-parameters} shows a list of all parameters used within our model.
 
@@ -604,7 +612,7 @@ Table~\ref{table:list-of-parameters} shows a list of all parameters used within 
         \multicolumn{4}{l}{\textbf{Interaction}}\\
         \midrule
         Thickness & $R$ & $\unit{\micro\metre}$\\
-        Strength & $\epsilon$ & $\unit{\micro\metre^2\per\minute^2}$\\
+        Strength & $V_0$ & $\unit{\micro\metre^2\per\minute^2}$\\
         Exponent 1 & $n$ & $1$\\
         Exponent 2 & $m$ & $1$\\
         Bound & $\beta$ & $\unit{\micro\metre^2\per\minute^2}$\\
