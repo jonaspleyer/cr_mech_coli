@@ -403,15 +403,26 @@ our established theoretical methods and computational functionalities.
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.5\textwidth]{docs/source/_static/mechanics.png}
+    \begin{tikzonimage}[width=0.5\textwidth]
+        {docs/source/_static/mechanics.png}
+        \node at (0.025, 0.975)[anchor=north west, rectangle, draw, minimum width=15pt, minimum height=15pt]{\textbf{A}};
+    \end{tikzonimage}%
+    \begin{tikzonimage}[width=0.5\textwidth]
+        {docs/source/_static/mie-potential-shapes.pdf}
+        \node at (0.025, 0.975)[anchor=north west, rectangle, draw, minimum width=15pt, minimum height=15pt]{\textbf{B}};
+    \end{tikzonimage}%
     \caption{
-        Example of an elonged bacterial rod represented by a collection of vertices which are
+        (A) Example of an elonged bacterial rod represented by a collection of vertices which are
         connected by springs.
         The angles $\alpha_i$ will be used to model the rigidity of the rod.
         A bacterial agent which is not interacting with any external objects will tend to the
         equilibrium state of a straight rod with no curvature.
+        (B) Potential curves of the Mie potential for various combinations of exponents $n,m$ with
+        upper bound $\beta=2.5U_0$ and cutoff $\zeta=3(R_1+R_2)$.
+        \textbf{TODO insert more (possibly schematic depictions of how the model works
+        (Interactions, Cycle))}
     }
-    \label{fig:mechanics-bacterium}
+    \label{fig:model-bacterium}
 \end{figure}
 
 % --------------------------------------------------------------------------------------------------
