@@ -35,7 +35,7 @@ agents = crm.generate_agents(
 )
 
 # Run simulation and return container
-cell_container = crm.run_simulation_with_agents(agents, config)
+cell_container = crm.run_simulation_with_agents(config, agents)
 
 # Plot individual results
 crm.store_all_images(cell_container, config.domain_size)
