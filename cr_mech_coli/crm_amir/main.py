@@ -601,7 +601,7 @@ def crm_amir_main():
     parser.add_argument(
         "--maxiter",
         type=int,
-        default=150,
+        default=350,
         help="Maximum iterations of the optimization routine",
     )
     parser.add_argument(
@@ -619,7 +619,7 @@ def crm_amir_main():
     parser.add_argument(
         "--maxiter-profiles",
         type=int,
-        default=150,
+        default=350,
         help="See MAXITER",
     )
     parser.add_argument(
@@ -637,7 +637,7 @@ def crm_amir_main():
     parser.add_argument(
         "--samples-profiles",
         type=int,
-        default=50,
+        default=100,
         help="Number of sample points for profile likelihood plots",
     )
     pyargs = parser.parse_args()
