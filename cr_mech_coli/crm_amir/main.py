@@ -797,5 +797,5 @@ def crm_amir_main():
     ax2.set_xlabel(ax2.get_xlabel(), labelpad=-40)
 
     fig.savefig(output_dir / "damping-spring_tension.png")
-    fig.savefig(output_dir / "daming-spring_tension.pdf")
+    fig.savefig(output_dir / "damping-spring_tension.pdf")
     plt.close(fig)
