@@ -340,6 +340,7 @@ def plot_results(
     )
     ax.set_xlabel("[µm]")
     ax.set_ylabel("[µm]")
+    ax.set_title("Fit Comparison")
     fig.savefig(output_dir / "fit-comparison.png")
     fig.savefig(output_dir / "fit-comparison.pdf")
     plt.close(fig)
@@ -612,7 +613,7 @@ def crm_amir_main():
     )
     parser.add_argument(
         "--skip-polish",
-        default=True,
+        default=False,
         action="store_true",
         help="Skips polishing the result of the differential evolution algorithm",
     )
@@ -630,7 +631,7 @@ def crm_amir_main():
     )
     parser.add_argument(
         "--skip-polish-profiles",
-        default=True,
+        default=False,
         action="store_false",
         help="See POLISH",
     )
