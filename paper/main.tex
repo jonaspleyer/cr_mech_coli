@@ -870,7 +870,7 @@ tools~\cite{Cutler2022,Stringer2020,Hardo2022} or manually annotating microscopi
 \textbf{Du solltest hier erwähnen, dass du die Parameter per Bakterium fittest und nicht globale Parameter.}
 \textit{Tue ich aber nicht grundsätzlich. Es gibt globale und individuelle parameter; also ein "mixed approach". Ich habe aber einen Hinweis eingefügt.}
 
-\paragraph{Direct Comparison}
+\subsubsection{Direct Comparison}
 \label{paragraph:direct-comparison}
 In the scenario where no cells divide during the observed interval, we can use our extraction
 algorithm to obtain the position of the cells and then compare them directly to the positions
@@ -891,7 +891,7 @@ which minimizes the distance between the corresponding vertices.
 One important detail is that the ordering of vertices must be identical in the numerical and
 experimental values.
 
-\paragraph{Comparison across Generations}
+\subsubsection{Imaging-based Comparison Algorithm}
 The preceding algorithm is performant and effective but can not be applied in the event of a
 division process.
 Due to possibly differing division times, a cell which is present in the simulation might not yet
@@ -955,6 +955,25 @@ event has occured.
 
 \textbf{[Wir müssen darüber reden, mir ist hier vieles unklar.]}
 
+\paragraph{Testing the Comparison Algorithms with Division Events}
+When utilizing a computational model (see section~\ref{sec:computational-model}), we can generate
+data and use the generated masks to provide a benchmark of our algorithm.
+To do this, we set out to calculate the cost between two successive iteration steps
+$t_n$ with $t_{n+1}$.
+We expect to obtain an exponential growth in the cost.
+This can be explained by the fact that the growth of the total area is exponential in time.
+Furthermore, the temporal area difference can be viewed as a derivative of the total area in time,
+which is again an exponential function.
+Figure~\ref{fig:mask-difference-metric} (F) shows the total cost for this approach.
+We can see that by accounting for the parental relationship, we get the overall desired effect.
+This method allows us to compare results between states that have a different number of cells.
+However, since this algorithm requires us to calculate a cell-mask for each comparison and then also
+process this mask as well as the comparator, it is much more computationally demanding.
+After all, for each comparison step, we need to run a full 3D visualization pipeline.
+In cases where the simpler approach of comparing positions of the agents is possible, this method
+should be preferred.
+\textbf{[Wir müssen darüber reden, mir ist hier vieles unklar. Es könnte nützlich sein, vor der Application Sektion, eine Zusammenfassung zu setzen.]}
+
 \begin{figure}[H]
     \centering
     \begin{tikzonimage}[width=0.24\textwidth]
@@ -1011,31 +1030,7 @@ event has occured.
     \label{fig:mask-difference-metric}
 \end{figure}
 
-\paragraph{Testing the Comparison Algorithm with Division Events}
-When utilizing a computational model (see section~\ref{sec:computational-model}), we can generate
-data and use the generated masks to provide a benchmark of our algorithm.
-To do this, we set out to calculate the cost between two successive iteration steps
-$t_n$ with $t_{n+1}$.
-We expect to obtain an exponential growth in the cost.
-This can be explained by the fact that the growth of the total area is exponential in time.
-Furthermore, the temporal area difference can be viewed as a derivative of the total area in time,
-which is again an exponential function.
-Figure~\ref{fig:mask-difference-metric} (F) shows the total cost for this approach.
-We can see that by accounting for the parental relationship, we get the overall desired effect.
-This method allows us to compare results between states that have a different number of cells.
-However, since this algorithm requires us to calculate a cell-mask for each comparison and then also
-process this mask as well as the comparator, it is much more computationally demanding.
-After all, for each comparison step, we need to run a full 3D visualization pipeline.
-In cases where the simpler approach of comparing positions of the agents is possible, this method
-should be preferred.
-\textbf{[Wir müssen darüber reden, mir ist hier vieles unklar. Es könnte nützlich sein, vor der Application Sektion, eine Zusammenfassung zu setzen.]}
-
 \section{Applications}
-
-\begin{itemize}
-    \item go from simple to more complex: single-cell, many cells, with division
-    \item explain data in a generalized way; detailed explanations within subsections
-\end{itemize}
 
 %###################################################################################################
 \subsection{Application 1: Elastic deformations of \textit{E.Coli}}
