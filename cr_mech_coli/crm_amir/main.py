@@ -12,7 +12,7 @@ import multiprocessing as mp
 import argparse
 import itertools
 
-from cr_mech_coli.plotting import COLOR3, COLOR5
+from cr_mech_coli.plotting import COLOR2, COLOR3, COLOR5
 
 GREEN_COLOR = np.array([95, 231, 76])
 
@@ -761,4 +761,38 @@ def crm_amir_main():
     fig.savefig(output_dir / f"{name}.pdf")
     ax.cla()
 
+    # Plot combination of damping and spring tension
+    ax2 = ax.twiny()
+    crm.configure_ax(ax, minor=False)
+    ax2.grid(False)
+
+    for a, name, color in [(ax, "damping", COLOR2), (ax2, "spring_tension", COLOR3)]:
+        n = np.where([p == name for p in params1.keys()])[0][0]
+        plot_profile(
+            n,
+            samples1[:, n],
+            costs1[:, n],
+            popt1,
+            pfin1,
+            x0_bounds,
+            a,
+            color=color,
+            label=name,
+        )
+
+    handles1, labels1 = ax.get_legend_handles_labels()
+    handles2, labels2 = ax2.get_legend_handles_labels()
+    ax.legend(
+        handles=[*handles1, *handles2],
+        labels=[*labels1, *labels2],
+        loc="upper center",
+        bbox_to_anchor=(0.5, 1.10),
+        ncol=2,
+        frameon=False,
+    )
+    ax2.tick_params(axis="x", direction="in", pad=-25)
+    ax2.set_xlabel(ax2.get_xlabel(), labelpad=-40)
+
+    fig.savefig(output_dir / "damping-spring_tension.png")
+    fig.savefig(output_dir / "daming-spring_tension.pdf")
     plt.close(fig)
