@@ -12,6 +12,8 @@ import multiprocessing as mp
 import argparse
 import itertools
 
+from cr_mech_coli.plotting import COLOR3, COLOR5
+
 GREEN_COLOR = np.array([95, 231, 76])
 
 ERROR_COST = 1e6
@@ -209,6 +211,9 @@ def objective_function(
         if k == "rigidity_to_spring_tension_ratio":
             parameters.rod_rigidity = set_params["rod_rigidity"] * v
             parameters.spring_tension = set_params["spring_tension"] / v
+        elif k == "damping_to_spring_tension_ratio":
+            parameters.damping = set_params["damping"] * v
+            parameters.spring_tension = set_params["spring_tension"] / v
         else:
             parameters.__setattr__(k, v)
 
@@ -216,6 +221,9 @@ def objective_function(
     for name, value in zip(x0_bounds.keys(), params):
         if name == "rigidity_to_spring_tension_ratio":
             parameters.rod_rigidity = set_params["rod_rigidity"] * value
+            parameters.spring_tension = set_params["spring_tension"] / value
+        elif name == "damping_to_spring_tension_ratio":
+            parameters.damping = set_params["damping"] * value
             parameters.spring_tension = set_params["spring_tension"] / value
         else:
             parameters.__setattr__(name, value)
@@ -390,7 +398,9 @@ def plot_profile(
     popt,
     final_cost: float,
     x0_bounds: dict,
-    output_dir,
+    ax,
+    color,
+    label: str,
 ):
     # Filter out results that have produced errors
     filt = costs != ERROR_COST
@@ -403,21 +413,12 @@ def plot_profile(
     p_samples = p_samples[ind]
     costs = costs[ind]
 
-    fig, ax = plt.subplots(figsize=(8, 8))
-    crm.configure_ax(ax)
-
-    ax.plot(p_samples, costs, color=crm.plotting.COLOR3)
+    ax.plot(p_samples, costs, color=color, label=label)
     ax.scatter(popt[n], final_cost, marker="x", color="red", alpha=0.7)
     name = list(x0_bounds.keys())[n].replace("_", " ")
     units = list(x0_bounds.items())[n][1][3]
     ax.set_xlabel(f"{name} {units}")
     ax.set_ylabel("Cost Function")
-
-    output_dir.mkdir(parents=True, exist_ok=True)
-
-    fig.savefig(output_dir / f"{name}.png")
-    fig.savefig(output_dir / f"{name}.pdf")
-    plt.close(fig)
 
 
 def create_default_parameters(positions_data, iterations_data):
@@ -462,33 +463,47 @@ def compare_with_data(
 ):
     output_dir = Path(output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
+    pdata = np.array(positions_data)
 
     for n, p in enumerate(positions_data):
         ind = np.argsort(p[:, 0])
-        positions_data[n] = p[ind] / PIXELS_PER_MICRON
+        pdata[n] = p[ind] / PIXELS_PER_MICRON
 
     # x0 = [x[1] for _, x in x0_bounds.items()]
     bounds = [(x[0], x[2]) for _, x in x0_bounds.items()]
-    res = sp.optimize.differential_evolution(
-        objective_function,
-        # x0,
-        args=(set_params, positions_data, iterations_data, x0_bounds, False, True),
-        # method="L-BFGS-B",
-        bounds=bounds,
-        maxiter=pyargs.maxiter,
-        popsize=pyargs.popsize,
-        workers=pyargs.workers,
-        tol=0,
-        polish=not pyargs.skip_polish,
-        mutation=(0, 1.6),
-        seed=seed,
-    )
+    try:
+        pall = np.loadtxt(output_dir / "popt.csv")
+        pfin = pall[0]
+        popt = pall[1:]
+        assert len(pall) == len(x0_bounds) + 1
+        print(f"Loaded popt from {output_dir / 'popt.csv'}")
+    except:
+        res = sp.optimize.differential_evolution(
+            objective_function,
+            # x0,
+            args=(set_params, pdata, iterations_data, x0_bounds, False, True),
+            # method="L-BFGS-B",
+            bounds=bounds,
+            maxiter=pyargs.maxiter,
+            popsize=pyargs.popsize,
+            workers=pyargs.workers,
+            tol=0,
+            polish=not pyargs.skip_polish,
+            mutation=(0, 1.6),
+            seed=seed,
+        )
+        pfin = res.fun
+        popt = res.x
+        np.savetxt(output_dir / "popt.csv", np.array([pfin, *popt]))
 
-    plot_results(
-        res.x, positions_data, iterations_data, x0_bounds, set_params, output_dir
-    )
+    plot_results(popt, pdata, iterations_data, x0_bounds, set_params, output_dir)
 
-    if not pyargs.skip_profiles:
+    try:
+        costs = np.loadtxt(output_dir / "profiles.csv")
+        assert costs.shape == (pyargs.samples_profiles, len(popt))
+        samples = np.loadtxt(output_dir / "samples.csv")
+        print(f"Loaded Costs from {output_dir / 'profiles.csv'}")
+    except:
         b_lower = [x[0] for x in x0_bounds.values()]
         b_upper = [x[2] for x in x0_bounds.values()]
         samples = np.linspace(b_lower, b_upper, pyargs.samples_profiles, endpoint=True)
@@ -497,8 +512,8 @@ def compare_with_data(
         arglist = zip(
             counts.reshape(-1),
             samples.reshape(-1),
-            itertools.repeat(res.x),
-            itertools.repeat(positions_data),
+            itertools.repeat(popt),
+            itertools.repeat(pdata),
             itertools.repeat(iterations_data),
             itertools.repeat(x0_bounds),
             itertools.repeat(set_params),
@@ -512,19 +527,11 @@ def compare_with_data(
             desc="Plotting Profiles",
         )
         costs = np.array([r.fun for r in results]).reshape(counts.shape)
+        np.savetxt(output_dir / "samples.csv", samples)
+        np.savetxt(output_dir / "profiles.csv", costs)
 
-        for n in range(len(x0_bounds)):
-            plot_profile(
-                n,
-                samples[:, n],
-                costs[:, n],
-                res.x,
-                res.fun,
-                x0_bounds,
-                output_dir,
-            )
-
-    return {k: res.x[n] for n, (k, _) in enumerate(x0_bounds.items())}
+    params = {k: popt[n] for n, (k, _) in enumerate(x0_bounds.items())}
+    return pfin, popt, costs, samples, params
 
 
 def __render_single_snapshot(iter, agent, parameters, render_settings, output_dir):
@@ -592,15 +599,9 @@ def crm_amir_main():
         "-w", "--workers", type=int, default=-1, help="Number of threads"
     )
     parser.add_argument(
-        "--skip-profiles",
-        default=False,
-        help="Skips Plotting of profiles for parameters",
-        action="store_true",
-    )
-    parser.add_argument(
         "--maxiter",
         type=int,
-        default=50,
+        default=150,
         help="Maximum iterations of the optimization routine",
     )
     parser.add_argument(
@@ -619,16 +620,19 @@ def crm_amir_main():
         "--maxiter-profiles",
         type=int,
         default=150,
+        help="See MAXITER",
     )
     parser.add_argument(
         "--popsize-profiles",
         type=int,
         default=30,
+        help="See POPSIZE",
     )
     parser.add_argument(
         "--skip-polish-profiles",
         default=True,
         action="store_false",
+        help="See POLISH",
     )
     parser.add_argument(
         "--samples-profiles",
@@ -644,12 +648,12 @@ def crm_amir_main():
 
     parameters = generate_parameters()
     agents = [x[1].agent for x in crm_amir.run_sim(parameters)]
-    render_snapshots(agents, parameters, Path("out/crm_amir/"))
+    # render_snapshots(agents, parameters, Path("out/crm_amir/"))
 
     positions_data, iterations_data = obtain_data("out/crm_amir/", n_vertices=20)
 
     # Define globals for all optimizations
-    rod_rigidity = (0.0, 20.0, 250, "[pix/s²]")
+    rod_rigidity = (0.0, 20.0, 250, "[µm/s²]")
     drag_force = (0.0000, 0.1, 1.5, "[1/s²]")
     damping = (0.000, 1.0, 1.0, "[1/s]")
     growth_rate = (0.0, 0.01, 0.05, "[1/s]")
@@ -663,7 +667,7 @@ def crm_amir_main():
         "growth_rate": growth_rate,
         "spring_tension": spring_tension,
     }
-    compare_with_data(
+    pfin1, popt1, costs1, samples1, params1 = compare_with_data(
         x0_bounds,
         positions_data,
         iterations_data,
@@ -671,16 +675,19 @@ def crm_amir_main():
     )
 
     x0_bounds_reduced = {
+        "rod_rigidity": rod_rigidity,
         "drag_force": drag_force,
-        "damping": damping,
+        # "damping": damping,
         "growth_rate": growth_rate,
-        "rigidity_to_spring_tension_ratio": (0.0, 1.0, 10.0, "[pix]"),
+        # "rigidity_to_spring_tension_ratio": (0.0, 1.0, 4.0, "[µm]"),
+        "damping_to_spring_tension_ratio": (0.01, 1.0, 2.0, "[s]"),
     }
     set_params = {
-        "rod_rigidity": 150.0,
+        "damping": 0.18,
+        # "rod_rigidity": 150.0,
         "spring_tension": 18.0,
     }
-    compare_with_data(
+    pfin2, popt2, costs2, samples2, params2 = compare_with_data(
         x0_bounds_reduced,
         positions_data,
         iterations_data,
@@ -690,3 +697,68 @@ def crm_amir_main():
     )
 
     # plot_angles_and_endpoints()
+
+    output_dir = Path("out/crm_amir/profiles/")
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    fig, ax = plt.subplots(figsize=(8, 8))
+    crm.configure_ax(ax)
+
+    for n, name in enumerate(list(params1.keys())):
+        plot_profile(
+            n,
+            samples1[:, n],
+            costs1[:, n],
+            popt1,
+            pfin1,
+            x0_bounds,
+            ax,
+            color=COLOR3,
+            label="Before Reduction",
+        )
+
+        names2 = np.array(list(params2.keys()))
+        if name in names2:
+            m = np.where(name == names2)[0][0]
+            plot_profile(
+                m,
+                samples2[:, m],
+                costs2[:, m],
+                popt2,
+                pfin2,
+                x0_bounds_reduced,
+                ax,
+                color=COLOR5,
+                label="After Reduction",
+            )
+
+        ax.legend(
+            loc="upper center",
+            bbox_to_anchor=(0.5, 1.10),
+            ncol=2,
+            frameon=False,
+        )
+
+        fig.savefig(output_dir / f"{name}.png")
+        fig.savefig(output_dir / f"{name}.pdf")
+        ax.cla()
+
+    n_ratio = len(popt2) - 1
+    plot_profile(
+        n_ratio,
+        samples2[:, n_ratio],
+        costs2[:, n_ratio],
+        popt2,
+        pfin2,
+        x0_bounds_reduced,
+        ax,
+        color=COLOR5,
+        label="After Reduction",
+    )
+
+    name = list(params2.keys())[n_ratio]
+    fig.savefig(output_dir / f"{name}.png")
+    fig.savefig(output_dir / f"{name}.pdf")
+    ax.cla()
+
+    plt.close(fig)
