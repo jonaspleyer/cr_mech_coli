@@ -139,16 +139,31 @@ pdfkeywords={},
 \vfill
 \pagebreak
 
+\begin{itemize}
+    \item Adapt introduction; \acp{abm} not focus of paper, but rather tool to do the job
+    \begin{itemize}
+        \item model division, growth of bacteria
+        \item \acp{abm} are good for this tool
+    \end{itemize}
+    \item Exchange $\sigma \rightarrow R_1+R_2$
+    \item Equation 8 make double norm $||\vec{F}||$
+    \item Remove auxiliary variable $\vec{F}$ only use $\vec{\nabla}V$
+    \item Table 2 in supplement? (probably not)
+    \item numerical implementation verschieben?
+    \item numerical implementation: waht do we need to simulate this?
+    \begin{itemize}
+        \item \acp{abm} are common tools to realize this
+        \item cellular\_raza is THE tool to do it
+    \end{itemize}
+    \item Methodology: single-cell parameter estimation as motivation for techniques
+    \item Which parameters are global which are individual? Discuss this in general; not in detail
+    \item depends on data, number of parameters (computational efficiency)
+    \item page 12; yes this is Discussion
+    \item page 12: maybe extend the paragraph wrt comparison in intervals
+\end{itemize}
+
 %###################################################################################################
 \section{Introduction}
-\textbf{
-    Mein Vorgehen: ich passe Formulierungen an, wenn ich im Prinzip mit der Aussage einverstanden
-    bin, aber den Wortlaut verbesserungswürdig finde.
-    Ich schreibe Kommentare, dort wo ich eher grundsätzliche Schwierigkeiten sehe.
-    Dort wo ich nichts geändert habe und keinen Kommentar gegeben habe, kann ich zu einem späteren
-    Zeitpunkt doch Änderungen vornehmen wollen.
-}
-
 \acp{abm} have proven to be powerfull tools in the study of complex cellular
 systems~\cite{Pleyer2023}.
 They have been applied in various scenarios, such as cancer
@@ -564,6 +579,8 @@ low amount of parameters that can be estimated.
 
 To simulate cellular growth, we introduce an exponential growth term for the spring lengths $l$
 \cite{Takeuchi2005}.
+
+\textbf{TODO adapt naming to appliations section}
 
 \begin{equation}
     \partial_t l = \mu l
@@ -1000,6 +1017,11 @@ In cases where the simpler approach of comparing positions of the agents is poss
 should be preferred.
 \textbf{[Wir müssen darüber reden, mir ist hier vieles unklar. Es könnte nützlich sein, vor der Application Sektion, eine Zusammenfassung zu setzen.]}
 
+\begin{itemize}
+    \item go from simple to more complex: single-cell, many cells, with division
+    \item explain data in a generalized way; detailed explanations within subsections
+\end{itemize}
+
 %###################################################################################################
 \section{Application 1: Elastic deformations of \textit{E.Coli}}
 
@@ -1044,12 +1066,10 @@ can not be said for the rod rigidity and spring tension, which both are not iden
 However this behaviour is expected since, the shape of the rod is almost exclusively straight, thus
 adding no further information except that a lower threshold of rigidity and spring tension should be
 present.
-\textbf{[Ist mir nicht ganz klar]}
 
 Note that each point represented in the subfigures~\ref{fig:amir-bending-simulation} (C-G) was
 optimized again, meaning that higher values of rigidity and spring tension can also lead to higher
 values of drag forces.
-\textbf{[Ist mir nicht ganz klar.]}
 
 Furthermore the used images only contain snapshots of a fully-bent or fully-relaxed rod without any
 intermediate steps.
@@ -1058,12 +1078,15 @@ minima observed in the damping profile.
 This is further supported by the observation that the contributions to the cost function is evenly
 distributed between the bent and relaxed position of our system.
 
+\textbf{TODO what is the parameter $s$? Explain more clearly.}\\
 To remove this non-identifiability we reduce the number of parameters by setting $\gamma=\gamma_0/s$
 and $\eta=\eta_0 s$ for the rod rigidity and spring tension, resp.
 We then optimize for this parameter and pick $\gamma_0=\SI{15}{\micro\metre}$ with
 $\eta_0=\SI{150}{\micro\metre\per\second\squared}$ which corresponds to $60\%$ of the previously considered
 interval.
 The corresponding plots can be seen in \ref{subsec:supplement-parameter-profiles-amir}.
+\textbf{TODO Make this more clear. Transient information would lead to more information. We only
+have initial and final snapshots.}
 
 \begin{figure}[H]
     \centering
@@ -1100,9 +1123,7 @@ The corresponding plots can be seen in \ref{subsec:supplement-parameter-profiles
         \end{tikzonimage}%
     \end{minipage}
     \caption{
-        \textbf{TODO remove pixels in units}
-        \textbf{@Christian is it okay to change the units here to seconds from minutes? (compare
-        table above)}
+        \textbf{TODO rework caption}
         Subfigure (A) shows a snapshot of the experiments performed by \cite{Amir2014_2}.
         Division of the bacteria is inhibited and they are partially trapped within a mother machine
         such that a controlled flow can be exerted on them.
@@ -1124,6 +1145,18 @@ The data we use~\cite{https://doi.org/10.3203/iwf/k-129} (see
 section~\ref{section:data-code-availability}) has been automatically segmented with the
 omnipose~\cite{Cutler2022} algorithm to obtain the required cell masks.
 
+\textbf{Possibly explain data more clearly}
+
+\begin{itemize}
+    \item show dataset (few snapshots)
+\end{itemize}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{figures/crm_fit-data-progression.png}
+    \caption{TODO}
+\end{figure}
+
 % --------------------------------------------------------------------------------------------------
 \subsection{Individual Treatment}
 
@@ -1141,13 +1174,17 @@ It is clear, that we should avoid, to needlessly treat parameters non-globally s
 the size of the parameter space considerably.
 The volume that needs to be sampled to optimize within a given parameter space scales exponentially
 with the dimension ie. the total number of parameters $N_{p,\text{tot}}$.
-\textbf{[Das ist leider komplett unverständlich. Ich glaube, ich weiss schon, was du sagen möchtest, aber das muss umformuliert werden. Stichworte sind hier: Cell Variability, Heterogeneity, latent variables. Parameter per cell and individual parameters versteht auch niemand den Unterschied.]}
-\textit{Ich habe versucht, es klarer zu machen. Bitte dazu Feedback!}
+\textbf{[Das ist leider komplett unverständlich. Ich glaube, ich weiss schon, was du sagen möchtest, aber das muss umformuliert werden. Stichworte sind hier: Cell Variability, Heterogeneity, latent variables. Parameter per cell and individual parameters versteht auch niemand den Unterschied.]}\\
+\textit{Ich habe versucht, es klarer zu machen. Bitte dazu Feedback!}\\
+\textbf{Es muss noch im Methoden Teil mehr erwähnt werden.}
 
 However, we will now present data that indicate that an individual treatment is in fact necessary.
 Figure~\ref{fig:estimated-growth-rates} shows the rod-lengths of individual bacteria which have been
 calculated from the extracted positions.
 We fit a delayed exponential function to them which is defined by
+
+\textbf{Explain fit parameter. Explain $t_0$. Give citation for exponential growth. Also link to
+equation in cell-cycle section}
 
 \begin{equation}
     x(t) =
@@ -1212,7 +1249,16 @@ individually.
 \end{figure}
 
 % --------------------------------------------------------------------------------------------------
-\subsection{Without Division}
+\subsubsection{Without Division}
+
+\begin{itemize}
+    \item refer to which data?
+    \item refer to table of all parameters which are fitted
+    \item refer to equations which are fitted
+    \item "fit full mechanical model"
+    \item link to everything
+\end{itemize}
+
 In this section we will focus on a time-interval which does not contain any division events.
 By doing so, we can utilize the simpler and more performant direct comparison scheme (see
 \ref{paragraph:direct-comparison}) for our cost function.
