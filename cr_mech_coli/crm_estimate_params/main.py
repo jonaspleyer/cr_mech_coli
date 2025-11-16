@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 import cr_mech_coli as crm
-from cr_mech_coli.plotting import COLOR3, COLOR5
+from cr_mech_coli.plotting import COLOR2, COLOR3, COLOR4, COLOR5
 import scipy as sp
 import multiprocessing as mp
 from pathlib import Path
@@ -176,8 +176,74 @@ def estimate_growth_curves_individual(filenames, out_path, delay=None):
     fig.tight_layout()
     fig.savefig(out_path / "rod-lengths-individual.png")
     fig.savefig(out_path / "rod-lengths-individual.pdf")
-
     ax.cla()
+
+    growth_rates = [p[1] for p in parameters]
+    growth_rates_uncert = [p[1][1] ** 0.5 for p in covariances]
+
+    xmin = np.min(np.array(growth_rates) - 2 * np.array(growth_rates_uncert))
+    xmax = np.max(np.array(growth_rates) + 2 * np.array(growth_rates_uncert))
+
+    x = np.linspace(xmin, xmax, 200)
+    dx = (xmax - xmin) / len(x)
+
+    yfin = np.zeros(x.shape)
+    for n in range(len(growth_rates)):
+        mu = growth_rates[n]
+        sigma = growth_rates_uncert[n]
+        y = (
+            1
+            / np.sqrt(2 * np.pi * sigma**2)
+            * np.exp(-((x - mu) ** 2) / (2 * sigma**2))
+        )
+        yfin += y
+        ax.plot(x, y, color=COLOR2, alpha=0.6, linestyle="--", label="Individual Fits")
+    yfin /= len(growth_rates)
+
+    # Plot curve fillings for 20% intervals
+    z = np.array([np.sum(yfin[:i]) for i in range(len(yfin))]) * dx
+
+    ind0 = 0
+    for n, q in enumerate(np.arange(0, 1.2, 0.2)):
+        ind1 = np.argmin(q >= z)
+        if ind1 == 0:
+            ind1 = len(z)
+        ind2 = min(ind1 + 1, len(z))
+        ax.fill_between(
+            x[ind0:ind2],
+            np.zeros(ind2 - ind0),
+            yfin[ind0:ind2],
+            color=COLOR2 if n % 2 == 0 else COLOR4,
+            alpha=0.5,
+        )
+        ind0 = ind1
+
+    i0 = np.argmin(0.5 >= z)
+    i1 = i0 + 1
+    q = z[i0] - 0.5
+    xmean = q * x[i0] + (1 - q) * x[i1]
+    ymean = q * yfin[i0] + (1 - q) * yfin[i1]
+
+    ax.plot(x, yfin, color=COLOR3, label="Sum")
+    ax.vlines(xmean, 0, ymean, color="red")
+
+    ax.set_xlabel("Growth Rate [1/min]")
+    ax.set_ylabel("Probability")
+
+    handles, labels = ax.get_legend_handles_labels()
+    ax.legend(
+        [handles[0], handles[-1]],
+        [labels[0], labels[-1]],
+        loc="upper center",
+        bbox_to_anchor=(0.5, 1.10),
+        ncol=2,
+        frameon=False,
+    )
+
+    fig.savefig(out_path / "growth-rates-distribution.png")
+    fig.savefig(out_path / "growth-rates-distribution.pdf")
+    ax.cla()
+
     crm.plotting.configure_ax(ax)
 
     parameters = np.array(parameters)
