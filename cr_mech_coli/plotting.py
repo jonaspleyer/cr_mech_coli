@@ -34,8 +34,11 @@ def set_mpl_rc_params():
     )
 
 
-def configure_ax(ax):
+def configure_ax(ax, minor=True):
     ax.grid(True, which="major", linestyle="-", linewidth=0.75, alpha=0.25)
     ax.minorticks_on()
-    ax.grid(True, which="minor", linestyle="-", linewidth=0.25, alpha=0.15)
+    if minor:
+        ax.grid(True, which="minor", linestyle="-", linewidth=0.25, alpha=0.15)
+    else:
+        ax.grid(False, which="minor")
     ax.set_axisbelow(True)
