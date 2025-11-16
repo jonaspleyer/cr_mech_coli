@@ -700,22 +700,31 @@ The resulting image is shown in subfigure (B).
 
 \begin{figure}[H]
     \centering
-    \begin{tikzonimage}[width=0.4\textwidth]
+    \begin{tikzonimage}[width=0.32\textwidth]
+        {docs/source/_static/imaging-mesh.png}
+        \node at (0.025, 0.975)[anchor=north west, rectangle, draw, minimum width=15pt, minimum height=15pt]{\textbf{A}};
+    \end{tikzonimage}%
+    \hspace{0.01\textwidth}%
+    \begin{tikzonimage}[width=0.32\textwidth]
         {docs/source/_static/11571737453049821261/raw_pv/000000400.png}
-        \node at (0.025, 0.975)[anchor=north west, rectangle, draw, white, minimum width=15pt, minimum height=15pt]{\textbf{A}};
-    \end{tikzonimage}
-    \hspace{0.01\textwidth}
-    \begin{tikzonimage}[width=0.4\textwidth]
-        {docs/source/_static/11571737453049821261/masks/000000400.png}
         \node at (0.025, 0.975)[anchor=north west, rectangle, draw, white, minimum width=15pt, minimum height=15pt]{\textbf{B}};
+    \end{tikzonimage}%
+    \hspace{0.01\textwidth}%
+    \begin{tikzonimage}[width=0.32\textwidth]
+        {docs/source/_static/11571737453049821261/masks/000000400.png}
+        \node at (0.025, 0.975)[anchor=north west, rectangle, draw, white, minimum width=15pt, minimum height=15pt]{\textbf{C}};
     \end{tikzonimage}
     \caption{
-        (A) shows the result from combining sphere and cylinder meshes to obtain the shape of a
+        (A) Cells are rendered by combining spheres and cylinders into a single mesh.
+        Spheres are highlighted in blue and cylinders in gray.
+        (B) shows the result from combining sphere and cylinder meshes to obtain the shape of a
         bacterial rod.
         This render contains lighting coming from 2 light sources which thus produces a small glow
         on the upper part of the meshes.
-        (B) Unique color values are assigned to each agent and light sources are removed.
+        (C) Unique color values are assigned to each agent and light sources are removed.
         Afterwards, the image is rendered by projecting along the z-axis.
+        Modifiers such as lighting or anti-aliasing are deactivated to ensure that each cell is made
+        up of exactly one RGB color.
     }
     \label{fig:progression-image-generation}
 \end{figure}
