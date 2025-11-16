@@ -1030,13 +1030,15 @@ In cases where the simpler approach of comparing positions of the agents is poss
 should be preferred.
 \textbf{[Wir müssen darüber reden, mir ist hier vieles unklar. Es könnte nützlich sein, vor der Application Sektion, eine Zusammenfassung zu setzen.]}
 
+\section{Applications}
+
 \begin{itemize}
     \item go from simple to more complex: single-cell, many cells, with division
     \item explain data in a generalized way; detailed explanations within subsections
 \end{itemize}
 
 %###################################################################################################
-\section{Application 1: Elastic deformations of \textit{E.Coli}}
+\subsection{Application 1: Elastic deformations of \textit{E.Coli}}
 
 To assess that our model can be applied to single cells and showcase the usefulness of the
 previously developed comparison techniques,
@@ -1149,7 +1151,7 @@ have initial and final snapshots.}
 
 
 %###################################################################################################
-\section{Application 2: \textit{E.Coli.} growing on Agar}
+\subsection{Application 2: \textit{E.Coli.} growing on Agar}
 \label{section:application-2}
 To show the usefulness of our previously developed methods
 (see section~\ref{section:parameter-estimation}), we will use them to estimate the parameters of
@@ -1171,7 +1173,7 @@ omnipose~\cite{Cutler2022} algorithm to obtain the required cell masks.
 \end{figure}
 
 % --------------------------------------------------------------------------------------------------
-\subsection{Individual Treatment}
+\subsubsection{The role of Heterogeneity}
 
 We have already suspected (see Table~\ref{table:simulation-aspects}) that in order to properly
 estimate parameters of our system, we need to account for natural cell-variability, thus assigning
@@ -1366,7 +1368,7 @@ These plots also show that the individual growth rates of the bacteria can be es
 \end{figure}
 
 % --------------------------------------------------------------------------------------------------
-\subsection{With Division}
+\subsubsection{With Division}
 
 In the next step, we extend our previously used time-series with successive images including
 cell division events which means that we now have to use the imaging-based comparison algorithm (see
