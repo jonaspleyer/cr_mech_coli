@@ -414,7 +414,7 @@ def plot_profile(
     costs = costs[ind]
 
     ax.plot(p_samples, costs, color=color, label=label)
-    ax.scatter(popt[n], final_cost, marker="x", color="red", alpha=0.7)
+    ax.scatter(popt[n], final_cost, marker="x", color="red", alpha=0.7, s=10**2)
     name = list(x0_bounds.keys())[n].replace("_", " ")
     units = list(x0_bounds.items())[n][1][3]
     ax.set_xlabel(f"{name} {units}")
