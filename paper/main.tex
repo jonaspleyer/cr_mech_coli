@@ -1162,12 +1162,6 @@ omnipose~\cite{Cutler2022} algorithm to obtain the required cell masks.
     \item show dataset (few snapshots)
 \end{itemize}
 
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.5\textwidth]{figures/crm_fit-data-progression.png}
-    \caption{TODO}
-\end{figure}
-
 % --------------------------------------------------------------------------------------------------
 \subsubsection{The role of Heterogeneity}
 
@@ -1231,20 +1225,26 @@ individually.
 \label{subsec:parameter-estimation-individual-treatment}
 \begin{figure}[H]
     \centering
-    \begin{tikzonimage}[width=0.4\textwidth]
-        {figures/crm_estimate_params/IWF-Goettingen/rod-lengths-individual.pdf}%
-        \node at (0, 1)[anchor=north west, rectangle, draw, black, minimum width=15pt, minimum height=15pt]{\textbf{A}};
+    \begin{tikzonimage}[width=0.28\textwidth]
+        {figures/crm_fit-data-progression.png}
+        \node at (0.02, 0.98)[anchor=north west, rectangle, draw, white, minimum width=15pt, minimum height=15pt]{\textbf{A}};
     \end{tikzonimage}%
-    \begin{tikzonimage}[width=0.4\textwidth]
-        {figures/crm_estimate_params/IWF-Goettingen/growth-rates-distribution.pdf}%
+    \hspace{0.01\textwidth}%
+    \begin{tikzonimage}[width=0.35\textwidth]
+        {figures/crm_estimate_params/IWF-Goettingen/rod-lengths-individual.pdf}%
         \node at (0, 1)[anchor=north west, rectangle, draw, black, minimum width=15pt, minimum height=15pt]{\textbf{B}};
     \end{tikzonimage}%
+    \begin{tikzonimage}[width=0.35\textwidth]
+        {figures/crm_estimate_params/IWF-Goettingen/growth-rates-distribution.pdf}%
+        \node at (0, 1)[anchor=north west, rectangle, draw, black, minimum width=15pt, minimum height=15pt]{\textbf{C}};
+    \end{tikzonimage}%
     \caption{
+        \textbf{TODO Fix caption!}\\
         % TODO use same y-axis across the plots
-        (A) The subfigure shows the time-evolution of the rod-lengths for every individual
+        (B) The subfigure shows the time-evolution of the rod-lengths for every individual
         bacterium.
         These growth curves are fitted individually with delayed exponential function.
-        (B) The datapoints are created by averaging the rod-lengths shown in subfigure (A) and then
+        (C) The datapoints are created by averaging the rod-lengths shown in subfigure (A) and then
         fitted with an exponential function.
         The uncertainty band is the standard deviation of the averaged datapoints.
         (C) Blue dots show the combination of estimated growth rates and delays for individual
