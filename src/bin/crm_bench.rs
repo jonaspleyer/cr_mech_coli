@@ -68,6 +68,8 @@ fn main() {
                     std: 0.,
                 },
                 spring_length_threshold: 6.0,
+                spring_length_threshold_setter:
+                    cr_mech_coli::SpringLengthThresholdSetter::Explicit { l1: 6.0, l2: 6.0 },
                 neighbor_reduction: None,
             };
             <RodAgent as cellular_raza::concepts::Position<_>>::set_pos(&mut agent, &p);

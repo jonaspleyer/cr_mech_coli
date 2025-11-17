@@ -7,7 +7,7 @@ use pyo3::{prelude::*, types::PyString};
 use serde::{Deserialize, Serialize};
 
 use crate::agent::{PhysInt, PhysicalInteraction, RodAgent};
-use crate::GrowthRateSetter;
+use crate::{GrowthRateSetter, SpringLengthThresholdSetter};
 
 use cellular_raza::prelude::{RodInteraction, RodMechanics, StorageOption};
 
@@ -157,6 +157,9 @@ pub struct AgentSettings {
     pub growth_rate_setter: Py<GrowthRateSetter>,
     /// Threshold when the bacterium divides
     pub spring_length_threshold: f32,
+    /// Sets the spring_length_threshold after a division event
+    #[approx(map = |b| Python::attach(|py| Some(crate::crm_fit::get_inner(b, py))))]
+    pub spring_length_threshold_setter: Py<SpringLengthThresholdSetter>,
     /// Reduces the growth rate with multiplier $((max - N)/max)^q $
     #[approx(map = |x: &Option<(usize, f32)>| x.map(|(x, y)| (x as f32, y)))]
     #[approx(epsilon_map = |x| (x, x,))]
@@ -171,6 +174,7 @@ impl PartialEq for AgentSettings {
             growth_rate,
             growth_rate_setter,
             spring_length_threshold,
+            spring_length_threshold_setter,
             neighbor_reduction,
         } = &self;
         Python::attach(|py| {
@@ -186,6 +190,10 @@ impl PartialEq for AgentSettings {
                     .deref()
                     .eq(&other.growth_rate_setter.borrow(py))
                 && spring_length_threshold.eq(&other.spring_length_threshold)
+                && spring_length_threshold_setter
+                    .borrow(py)
+                    .deref()
+                    .eq(&other.spring_length_threshold_setter.borrow(py))
                 && neighbor_reduction.eq(&other.neighbor_reduction)
         })
     }
@@ -200,17 +208,20 @@ impl From<AgentSettings> for RodAgent {
                 growth_rate,
                 growth_rate_setter,
                 spring_length_threshold,
+                spring_length_threshold_setter,
                 neighbor_reduction,
             } = value;
             let mechanics = mechanics.borrow(py).clone().into();
             let interaction = RodInteraction(interaction.borrow(py).clone());
             let growth_rate_setter = growth_rate_setter.borrow(py).clone();
+            let spring_length_threshold_setter = spring_length_threshold_setter.borrow(py).clone();
             RodAgent {
                 mechanics,
                 interaction,
                 growth_rate,
                 growth_rate_setter,
                 spring_length_threshold,
+                spring_length_threshold_setter,
                 neighbor_reduction,
             }
         })
@@ -254,6 +265,10 @@ impl AgentSettings {
                     },
                 )?,
                 spring_length_threshold: 6.0,
+                spring_length_threshold_setter: Py::new(
+                    py,
+                    SpringLengthThresholdSetter::Explicit { l1: 6.0, l2: 6.0 },
+                )?,
                 neighbor_reduction: None,
             },
         )?;
@@ -314,6 +329,7 @@ impl AgentSettings {
             growth_rate,
             growth_rate_setter,
             spring_length_threshold,
+            spring_length_threshold_setter,
             neighbor_reduction,
         } = self;
         use pyo3::types::IntoPyDict;
@@ -325,6 +341,14 @@ impl AgentSettings {
             ("spring_tension", mechanics.getattr(py, "spring_tension")?),
             ("rigidity", mechanics.getattr(py, "rigidity")?),
             ("spring_length", mechanics.getattr(py, "spring_length")?),
+            (
+                "spring_length_threshold_setter",
+                spring_length_threshold_setter
+                    .clone()
+                    .into_pyobject_or_pyerr(py)?
+                    .into_any()
+                    .unbind(),
+            ),
             ("damping", mechanics.getattr(py, "damping")?),
             (
                 "interaction",

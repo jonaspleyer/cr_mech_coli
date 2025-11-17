@@ -87,6 +87,7 @@ fn cr_mech_coli(py: Python, m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<PhysicalInteraction>()?;
     m.add_class::<AgentSettings>()?;
     m.add_class::<GrowthRateSetter>()?;
+    m.add_class::<SpringLengthThresholdSetter>()?;
     m.add_class::<RodAgent>()?;
     m.add_class::<CellContainer>()?;
     m.add_class::<CellIdentifier>()?;

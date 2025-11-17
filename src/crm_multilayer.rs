@@ -1,6 +1,6 @@
 use crate::{
     AgentSettings, Configuration, GrowthRateSetter, PhysInt, PhysicalInteraction,
-    RodMechanicsSettings, MICRO_METRE, MINUTE,
+    RodMechanicsSettings, SpringLengthThresholdSetter, MICRO_METRE, MINUTE,
 };
 use approx::AbsDiffEq;
 use cellular_raza::prelude::MorsePotentialF32;
@@ -130,6 +130,13 @@ impl MultilayerConfig {
                             },
                         )?,
                         spring_length_threshold: 6. * MICRO_METRE,
+                        spring_length_threshold_setter: Py::new(
+                            py,
+                            SpringLengthThresholdSetter::NormalDistr {
+                                mean: 6. * MICRO_METRE,
+                                std: 0.0,
+                            },
+                        )?,
                         neighbor_reduction: Some((16, 1.)),
                     },
                 )?,

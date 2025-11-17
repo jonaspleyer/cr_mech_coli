@@ -94,6 +94,10 @@ pub fn generate_agents(
             growth_rate: agent_settings.growth_rate,
             growth_rate_setter: agent_settings.growth_rate_setter.borrow(py).clone(),
             spring_length_threshold: agent_settings.spring_length_threshold,
+            spring_length_threshold_setter: agent_settings
+                .spring_length_threshold_setter
+                .borrow(py)
+                .clone(),
             neighbor_reduction: agent_settings.neighbor_reduction,
         })
         .collect()

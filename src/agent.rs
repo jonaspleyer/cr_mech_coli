@@ -8,6 +8,90 @@ use serde::{Deserialize, Serialize};
 /// Defines how the growth rates of the daughter cells will be set
 #[pyclass]
 #[derive(Clone, Debug, Deserialize, Serialize, AbsDiffEq, PartialEq)]
+pub enum SpringLengthThresholdSetter {
+    /// Pick the new growth rates from a normal distribution
+    NormalDistr {
+        /// Mean of the distribution
+        mean: f32,
+        /// Standard deviation of the distribution
+        std: f32,
+    },
+    /// Explicitly define the two new growth rates
+    Explicit {
+        /// Growth rate 1
+        l1: f32,
+        /// Growth rate 2
+        l2: f32,
+    },
+}
+
+impl Default for SpringLengthThresholdSetter {
+    fn default() -> Self {
+        Self::NormalDistr {
+            mean: 0.01,
+            std: 0.0,
+        }
+    }
+}
+
+impl SpringLengthThresholdSetter {
+    pub(crate) fn from_pydict(dict: &Bound<PyDict>) -> PyResult<Self> {
+        let extract_key = |key: &str| -> PyResult<Option<f32>> {
+            if let Some(item) = dict.get_item(key)? {
+                Ok(Some(item.extract()?))
+            } else {
+                Ok(None)
+            }
+        };
+        let mean = extract_key("mean")?;
+        let std = extract_key("std")?;
+        let g1 = extract_key("l1")?;
+        let g2 = extract_key("l2")?;
+        match (mean, std, g1, g2) {
+            (Some(mean), Some(std), None, None) => Ok(SpringLengthThresholdSetter::NormalDistr { mean, std }),
+            (None, None, Some(l1), Some(l2)) => Ok(SpringLengthThresholdSetter::Explicit { l1, l2 }),
+            _ => Err(pyo3::exceptions::PyKeyError::new_err("could not find suitable combination of either ('mean', 'std') or ('l1', 'l2') keys in dict.")),
+        }
+    }
+
+    pub(crate) fn to_pydict<'py>(&self, py: Python<'py>) -> PyResult<Bound<'py, PyDict>> {
+        use pyo3::types::IntoPyDict;
+        use SpringLengthThresholdSetter::*;
+        match self {
+            NormalDistr { mean, std } => [
+                (
+                    "mean",
+                    pyo3::types::PyFloat::new(py, *mean as f64).into_py_any(py)?,
+                ),
+                (
+                    "std",
+                    pyo3::types::PyFloat::new(py, *std as f64).into_py_any(py)?,
+                ),
+            ],
+            Explicit { l1, l2 } => [
+                (
+                    "l1",
+                    pyo3::types::PyFloat::new(py, *l1 as f64).into_py_any(py)?,
+                ),
+                (
+                    "l2",
+                    pyo3::types::PyFloat::new(py, *l2 as f64).into_py_any(py)?,
+                ),
+            ],
+        }
+        .into_py_dict(py)
+    }
+
+    unsafe fn default_dict() -> Bound<'static, PyDict> {
+        let setter = Self::default();
+        let py = Python::assume_attached();
+        setter.to_pydict(py).unwrap()
+    }
+}
+
+/// Defines how the growth rates of the daughter cells will be set
+#[pyclass]
+#[derive(Clone, Debug, Deserialize, Serialize, AbsDiffEq, PartialEq)]
 pub enum GrowthRateSetter {
     /// Pick the new growth rates from a normal distribution
     NormalDistr {
@@ -142,6 +226,9 @@ pub struct RodAgent {
     /// Threshold at which the cell will divide in units `MICROMETRE`.
     #[pyo3(set, get)]
     pub spring_length_threshold: f32,
+    /// Defines how the new division length will be set during division event
+    #[pyo3(set, get)]
+    pub spring_length_threshold_setter: SpringLengthThresholdSetter,
     /// Reduces the growth rate with multiplier $((max - N)/max)^q $
     #[pyo3(set, get)]
     #[approx(epsilon_map = |x| (x, x))]
@@ -328,6 +415,7 @@ impl RodAgent {
         growth_rate=0.01,
         growth_rate_setter=GrowthRateSetter::default_dict(),
         spring_length_threshold=6.0,
+        spring_length_threshold_setter=SpringLengthThresholdSetter::default_dict(),
         neighbor_reduction=None,
     ))]
     #[allow(clippy::too_many_arguments)]
@@ -344,6 +432,7 @@ impl RodAgent {
         growth_rate: f32,
         growth_rate_setter: Bound<'py, PyDict>,
         spring_length_threshold: f32,
+        spring_length_threshold_setter: Bound<'py, PyDict>,
         neighbor_reduction: Option<(usize, f32)>,
     ) -> pyo3::PyResult<Self> {
         let pos = pos.as_array();
@@ -366,6 +455,9 @@ impl RodAgent {
             growth_rate,
             growth_rate_setter: GrowthRateSetter::from_pydict(&growth_rate_setter)?,
             spring_length_threshold,
+            spring_length_threshold_setter: SpringLengthThresholdSetter::from_pydict(
+                &spring_length_threshold_setter,
+            )?,
             neighbor_reduction,
         })
     }
@@ -468,8 +560,23 @@ impl Cycle<RodAgent, f32> for RodAgent {
             }
             GrowthRateSetter::Explicit { g1, g2 } => (g1, g2),
         };
+        let (l1, l2) = match cell.spring_length_threshold_setter {
+            SpringLengthThresholdSetter::NormalDistr { mean, std } => {
+                let distr = rand_distr::Normal::new(mean, std)
+                    .map_err(|e| DivisionError(format!("{e}")))?;
+                (distr.sample(rng), distr.sample(rng))
+            }
+            SpringLengthThresholdSetter::Explicit { l1, l2 } => (l1, l2),
+        };
+
+        // Set parameter for cell 1
         cell.growth_rate = g1;
+        cell.spring_length_threshold = l1;
+
+        // Set parameter for cell 2
         c2.growth_rate = g2;
+        c2.spring_length_threshold = l2;
+
         c2.mechanics = c2_mechanics;
         Ok(c2)
     }

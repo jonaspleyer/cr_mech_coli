@@ -1,5 +1,7 @@
 use super::settings::*;
-use crate::{run_simulation_with_agents, PhysInt, PhysicalInteraction};
+use crate::{
+    run_simulation_with_agents, PhysInt, PhysicalInteraction, SpringLengthThresholdSetter,
+};
 use cellular_raza::prelude::{
     CellIdentifier, MiePotentialF32, MorsePotentialF32, RodInteraction, SimulationError,
 };
@@ -184,6 +186,10 @@ pub fn define_initial_agents(
                     std: 0.0,
                 },
                 spring_length_threshold: f32::INFINITY,
+                spring_length_threshold_setter: SpringLengthThresholdSetter::Explicit {
+                    l1: f32::INFINITY,
+                    l2: f32::INFINITY,
+                },
                 neighbor_reduction: None,
             }
         })

@@ -10,7 +10,9 @@ use core::f32;
 use itertools::Itertools;
 use pyo3::prelude::*;
 
-use crate::{GrowthRateSetter, PhysInt, PhysicalInteraction, RodAgent};
+use crate::{
+    GrowthRateSetter, PhysInt, PhysicalInteraction, RodAgent, SpringLengthThresholdSetter,
+};
 use approx::AbsDiffEq;
 use cellular_raza::prelude::*;
 use serde::{Deserialize, Serialize};
@@ -286,6 +288,10 @@ fn run_sim(
                 std: 0.,
             },
             spring_length_threshold: f32::INFINITY,
+            spring_length_threshold_setter: SpringLengthThresholdSetter::Explicit {
+                l1: f32::INFINITY,
+                l2: f32::INFINITY,
+            },
             neighbor_reduction: None,
         },
         domain_size,
