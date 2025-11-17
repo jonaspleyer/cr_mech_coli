@@ -309,12 +309,12 @@ def plot_results(
     # Plot Comparison of fit with positional data
     fig, ax = plt.subplots(figsize=(8, 8))
     crm.configure_ax(ax, minor=False)
-    ax.plot(p0[:, 1], p0[:, 0], color=crm.plotting.COLOR5, linestyle=":")
+    ax.plot(p0[:, 1], p0[:, 0], color=crm.plotting.COLOR2, linestyle=":")
     ax.plot(p1[:, 1], p1[:, 0], color=crm.plotting.COLOR3, linestyle=":")
     ax.plot(
         positions_data[0, :, 1],
         positions_data[0, :, 0],
-        color=crm.plotting.COLOR5,
+        color=crm.plotting.COLOR2,
         linestyle="--",
         alpha=0.5,
     )
