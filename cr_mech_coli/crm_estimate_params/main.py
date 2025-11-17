@@ -240,8 +240,22 @@ def estimate_growth_curves_individual(filenames, out_path, delay=None):
         frameon=False,
     )
 
-    fig.savefig(out_path / "growth-rates-distribution.png")
-    fig.savefig(out_path / "growth-rates-distribution.pdf")
+    fig.savefig(out_path / "growth-rates-with-uncert.png")
+    fig.savefig(out_path / "growth-rates-with-uncert.pdf")
+    ax.cla()
+
+    crm.plotting.configure_ax(ax, minor=False)
+
+    ax.hist(growth_rates, color=COLOR3)
+    ax.set_xlabel("Growth Rate [1/min]")
+    ax.set_ylabel("Count")
+
+    yticks = ax.get_yticks()
+    yticks = list(filter(lambda x: int(x) == x, yticks))
+    ax.set_yticks(yticks, minor=False)
+
+    fig.savefig(out_path / "growth-rates-bar-plot.png")
+    fig.savefig(out_path / "growth-rates-bar-plot.pdf")
     ax.cla()
 
     crm.plotting.configure_ax(ax)
