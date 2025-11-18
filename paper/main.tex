@@ -677,6 +677,8 @@ section~\ref{subsec:spatial-representation}.
 Consequently, these methods can be applied to a broader class of mechanical models that may exhibit
 varied cellular behaviours.
 
+\textbf{TODO Talk about how to fit individual bacteria and why it is important.}
+
 % --------------------------------------------------------------------------------------------------
 \subsection{Visualization}
 \label{subsection:visualization}
@@ -941,6 +943,7 @@ Often times, the exact time at which the fission event has commenced can not be 
 accurately, thus leading to uncertainties with respect to the question when the life of the daughter
 cells begins and the one of the mother ends.
 
+\textbf{Put this in Supplement and discuss it further. Still link to it here.}\\
 In a different approach, one might be tempted to utilize the previously constructed direct
 comparison algorithm for time intervals that do not contain any division events.
 But this attempt would quickly lead to multiple problems.
@@ -951,11 +954,7 @@ division event is observed.
 The latter situation is equivalent to two microscopic images as input data between which a division
 event has occured.
 
-\textbf{@Christian is this Supplement?}
-
-\textbf{[Wir müssen darüber reden, mir ist hier vieles unklar.]}
-
-\paragraph{Testing the Comparison Algorithms with Division Events}
+\subsubsection{Testing the Comparison Algorithms with Division Events}
 When utilizing a computational model (see section~\ref{sec:computational-model}), we can generate
 data and use the generated masks to provide a benchmark of our algorithm.
 To do this, we set out to calculate the cost between two successive iteration steps
@@ -1172,11 +1171,7 @@ The data we use~\cite{https://doi.org/10.3203/iwf/k-129} (see
 section~\ref{section:data-code-availability}) has been automatically segmented with the
 omnipose~\cite{Cutler2022} algorithm to obtain the required cell masks.
 
-\textbf{Possibly explain data more clearly}
-
-\begin{itemize}
-    \item show dataset (few snapshots)
-\end{itemize}
+\textbf{Explain data more clearly. Refer to figure.}
 
 % --------------------------------------------------------------------------------------------------
 \subsubsection{The role of Heterogeneity}
@@ -1256,6 +1251,7 @@ individually.
     \end{tikzonimage}%
     \caption{
         \textbf{TODO Fix caption!}\\
+        \textbf{Link to supplement for discussion of bar plot}\\
         % TODO use same y-axis across the plots
         (B) The subfigure shows the time-evolution of the rod-lengths for every individual
         bacterium.
@@ -1517,6 +1513,7 @@ Combining these two values, the position-comparison algorithm is $\approx 6.13(8
         \node at (0.15, 0.85)[anchor=north west, rectangle, draw, black, minimum width=15pt, minimum height=15pt]{\textbf{L}};
     \end{tikzonimage}%
     \caption{
+        \text{TODO include missing profiles here}
         Likelihood profiles of every estimated parameter.
         (A-D) Division Lengths of initially placed cells.
         (E-H) Growth rates of daughter cells.
