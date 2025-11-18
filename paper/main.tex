@@ -1067,20 +1067,24 @@ To model this configuration, the lowermost vertex of the rod is fixed at the bas
 domain and vertices which are inside the tubulus are restricted to move only in the y-direction.
 
 We model the force exerted by the fluid flow onto the individual vertices by
-\begin{equation}
-    \vec{F}_{i,\text{external}} = \frac{C}{2} |\vec{x}_i - \vec{x}_{i+1}|(yR - y^2)\sin(\beta_i)\vec{e}_x
-\end{equation}
+\begin{align}
+    \vec{G}_i &= C
+    \underbrace{|\vec{x}_i - \vec{x}_{i+1}|\sin(\beta_i)}_\text{proj. rod segment length}
+    \underbrace{(yR - y^2)}_\text{flow contribution}\vec{e}_x\\
+    \vec{F}_{i,\text{external}} &= \frac{1}{2}(\vec{G}_{i-1}+\vec{G}_i)
+\end{align}
 which is proportional to the length of the rod segment projected along the y-axis.
 Similarly to Stoke's Law~\cite{Stokes1856}, it acts along the axis of the fluid flow (x-axis).
 Here $\beta_i$ is the angle of the rod edge between $\vec{x}_{i+1}-\vec{x}_i$ and the x-axis.
-The flow profile for this particular setup is proportional to $(2yR-y^2)$ where $y$ is the vertical
-displacement measured from the end of the tube~\cite{Wolschin2021}
-(see Figure~\ref{fig:amir-bending-simulation}) and $R$ is the total size of the chamber along the
-y-axis.
-Since the bacterium does not reach the peak of the velocity profile, we can estimate the slope via a
-linear dependence on the pertruding segment along the y-axis~\cite{Wolschin2021}.
+The flow profile for this particular setup is proportional~\cite{Wolschin2021} to $(2yR-y^2)$ where
+$y=0.5(\vec{x}_i+\vec{x}_{i+1})_y-y_b$ is the vertical displacement measured from the end of the
+tube $y_b$ (see Figure~\ref{fig:amir-bending-simulation}) and $R$ is the total size of the chamber
+along the y-axis.
 In particular, this enforces the correct boundary values the flow profile and the resulting force
 $\vec{F}_{i,\text{external}}|_{y=0}=0$.
+In addition we confine vertices who belong to segments that are partially within the tube
+$(\vec{x}_i)_y\leq y_b$ via $(\vec{x}_{i+1})_x=x_0$ and also fix the value for the first vertex
+$\vec{x}_0$ such that the bacterium is attached to the bottom.
 
 We extract the positions of the rod from the data images (see
 Figure~\ref{fig:amir-bending-simulation} (A)) and compare the simulated positions with the extracted
@@ -1149,13 +1153,13 @@ Gathering additional transient information would allow us to better estimate the
         \end{tikzonimage}%
     \end{minipage}
     \caption{
-        \textbf{TODO rework caption}
-        Subfigure (A) shows a snapshot of the experiments performed by \cite{Amir2014_2}.
-        Division of the bacteria is inhibited and they are partially trapped within a mother machine
-        such that a controlled flow can be exerted on them.
+        (A) Microscopic image containing a single bacterium which is partially confined in a narrow
+        tube on the bottom and free at the top where a controlled flow can be exerted on them.
+        Division of the bacteria is inhibited.
         (B) A comparison of the initial and bent state show good visual agreement of our prediction
         with the experimental data.
-        Subfigures (C-G) show likelihood profiles for the individual parameters.
+        (C-G) Likelihood profiles for the individual parameters before and after performing model
+        reduction.
     }
     \label{fig:amir-bending-simulation}
 \end{figure}
