@@ -857,7 +857,7 @@ is not dominated by outliers.
 \end{figure}
 
 % --------------------------------------------------------------------------------------------------
-\subsection{Parameter Estimation}
+\subsection{Parameter Estimation Methods}
 \label{section:parameter-estimation}
 In order to effectively estimate the parameters of our model, we need to set up a cost function
 which can be minimized.
@@ -873,7 +873,7 @@ tools~\cite{Cutler2022,Stringer2020,Hardo2022} or manually annotating microscopi
 \textit{Tue ich aber nicht grundsätzlich. Es gibt globale und individuelle parameter; also ein "mixed approach". Ich habe aber einen Hinweis eingefügt.}
 
 \subsubsection{Direct Comparison}
-\label{paragraph:direct-comparison}
+\label{subsec:direct-comparison}
 In the scenario where no cells divide during the observed interval, we can use our extraction
 algorithm to obtain the position of the cells and then compare them directly to the positions
 calculated from the computational results.
@@ -1280,7 +1280,7 @@ individually.
 
 In this section we will focus on a time-interval which does not contain any division events.
 By doing so, we can utilize the simpler and more performant direct comparison scheme (see
-\ref{paragraph:direct-comparison}) for our cost function.
+\ref{subsec:direct-comparison}) for our cost function.
 We have chosen said interval such that effects related to the lag phase can be neglected which
 allows us to sample a lower amount of paremeters thus improving runtime performance of our
 optimization scheme.
