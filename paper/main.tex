@@ -1069,12 +1069,15 @@ domain and vertices which are inside the tubulus are restricted to move only in 
 
 We model the force exerted by the fluid flow onto the individual vertices by
 \begin{equation}
-    \vec{F}_{i,\text{external}} = C |\vec{x}_i - \vec{x}_{i+1}|(y-y_b)\sin(\beta_i)\vec{e}_x
+    \vec{F}_{i,\text{external}} = \frac{C}{2} |\vec{x}_i - \vec{x}_{i+1}|(yR - y^2)\sin(\beta_i)\vec{e}_x
 \end{equation}
 which is proportional to the length of the rod segment projected along the y-axis.
-It acts similarly to Stoke's Law~\cite{Stokes1856} along the axis of the fluid flow (x-axis).
+Similarly to Stoke's Law~\cite{Stokes1856}, it acts along the axis of the fluid flow (x-axis).
 Here $\beta_i$ is the angle of the rod edge between $\vec{x}_{i+1}-\vec{x}_i$ and the x-axis.
-Amir et. al~\cite{Amir2014_2} calculated the flow profile for this particular setup.
+The flow profile for this particular setup is proportional to $(2yR-y^2)$ where $y$ is the vertical
+displacement measured from the end of the tube~\cite{Wolschin2021}
+(see Figure~\ref{fig:amir-bending-simulation}) and $R$ is the total size of the chamber along the
+y-axis.
 Since the bacterium does not reach the peak of the velocity profile, we can estimate the slope via a
 linear dependence on the pertruding segment along the y-axis~\cite{Wolschin2021}.
 In particular, this enforces the correct boundary values the flow profile and the resulting force
@@ -1083,42 +1086,34 @@ $\vec{F}_{i,\text{external}}|_{y=0}=0$.
 We extract the positions of the rod from the data images (see
 Figure~\ref{fig:amir-bending-simulation} (A)) and compare the simulated positions with the extracted
 ones using the direct comparison algorithm (see Subsection~\ref{subsec:direct-comparison}).
-Our simulation is split into two phases; one with an external force that initially bends the rod,
-and a second one during which the force is disabled and the cell returns to its original shape.
-We assume that these time intervals are identically long since the data from the movies does not
-allow for a finer resolution of the dynamics.
+Our simulation is split into two phases; One with the external flow force that initially bends the
+rod and lasts $\SI{7}{\second}$ and a second phase during which the force is disabled and the cell
+returns to its original shape over a span of $\SI{17}{\second}$.
 
-Since this model is void of any cell-cell interactions or cell division, the dynamics of the cell
+Since this setup is void of any cell-cell interactions or cell division, the dynamics of the cell
 can be described by a combination of growth and physical mechanics (see
 subsection~\ref{subsection:mechanical-model-mechanics}).
 We are thus left with 5 parameters:
 Magnitude of the drag force $C$, growth rate $\alpha$, rigidity of the rod $\eta$, spring tension
 $\gamma$ and damping constant $\lambda$ (see table~\ref{table:list-of-parameters}).
-Figure~\ref{fig:amir-bending-simulation} (B) shows a snapshot of the initial (orange) and final
-(blue) position of the rod using the optimized parameters.
-While the parameters for the dragging force, growth rate and damping can be identified, the same
-can not be said for the rod rigidity and spring tension, which both are not identifiable.
-However this behaviour is expected since, the shape of the rod is almost exclusively straight, thus
-adding no further information except that a lower threshold of rigidity and spring tension should be
-present.
+Figure~\ref{fig:amir-bending-simulation} (B) shows a snapshot of the initial (upright, light blue)
+and intermediate (bent, dark blue) position of the rod using the optimized parameters.
+The likelihood profiles displayed in figure~\ref{fig:amir-bending-simulation} (C-D, blue curves)
+show that each parameter is identifiable from the given data.
+However when it comes to the damping constant $\lambda$, its overall numerical value and steepness
+of the curve compared to the results for the other parameters are much lower.
+We can assess if the system could be described by a reduced model by setting $\lambda=0$, thus
+effectively removing any damping.
+The curves which are obtained in this way are displayed in orange and show that the system is also
+fully identifiable in its reduced version.
 
-Furthermore the used images only contain snapshots of a fully-bent or fully-relaxed rod without any
-intermediate steps.
-This effectively limits us to 2 datapoints and is likely the key factor that leads to the two local
-minima observed in the damping profile.
-This is further supported by the observation that the contributions to the cost function is evenly
-distributed between the bent and relaxed position of our system.
-
-\textbf{TODO what is the parameter $s$? Explain more clearly.}\\
-To remove this non-identifiability we reduce the number of parameters by setting $\gamma=\gamma_0/s$
-and $\eta=\eta_0 s$ for the rod rigidity and spring tension, resp.
-We then optimize for this parameter and pick $\gamma_0=\SI{15}{\micro\metre}$ with
-$\eta_0=\SI{150}{\micro\metre\per\second\squared}$ which corresponds to $60\%$ of the previously considered
-interval.
-\textbf{Plots are not in supplement anymore}
-The corresponding plots can be seen in \textbf{TODO}.
-\textbf{TODO Make this more clear. Transient information would lead to more information. We only
-have initial and final snapshots.}
+It should be noted that the used images only contain snapshots of a fully-bent or fully-relaxed rod
+without any intermediate steps.
+This effectively limits us to effectively 2 datapoints and is likely the key factor that leads to
+the previously described phenomenon.
+The damping force is of dynamic nature, and takes no effect in the two steady states of the rod
+being either fully bent or fully relaxed.
+Gathering additional transient information would allow us to better estimate the damping parameter.
 
 \begin{figure}[H]
     \centering
