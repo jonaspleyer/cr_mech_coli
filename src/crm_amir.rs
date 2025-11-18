@@ -26,6 +26,8 @@ short_default::default! {
         domain_size: f32 = 200.0,
         /// Size for which to block movement along additional coordinate
         block_size: f32 = 30.0,
+        /// Overall width of the tube
+        tube_width: f32 = 100.0,
         /// Drag force exerted by the flow
         drag_force: f32 = 0.1,
         /// Maximum simulation time
@@ -168,6 +170,7 @@ impl Cycle<FixedRod, f32> for FixedRod {
 struct MyDomain {
     domain: CartesianCuboidRods<f32, 3>,
     block_size: f32,
+    tube_width: f32,
 }
 
 impl Domain<FixedRod, MySubDomain> for MyDomain {
@@ -192,6 +195,7 @@ impl Domain<FixedRod, MySubDomain> for MyDomain {
             rng_seed,
         } = self.domain.decompose(n_subdomains, cells)?;
         let block_size = self.block_size;
+        let tube_width = self.tube_width;
         let index_subdomain_cells = index_subdomain_cells
             .into_iter()
             .map(|(index, subdomain, cells)| {
@@ -200,6 +204,7 @@ impl Domain<FixedRod, MySubDomain> for MyDomain {
                     MySubDomain {
                         subdomain,
                         block_size,
+                        tube_width,
                     },
                     cells,
                 )
@@ -221,6 +226,7 @@ struct MySubDomain {
     #[SortCells]
     subdomain: CartesianSubDomainRods<f32, 3>,
     block_size: f32,
+    tube_width: f32,
 }
 
 impl SubDomainForce<RodPos, RodPos, RodPos, f32> for MySubDomain {
@@ -240,7 +246,8 @@ impl SubDomainForce<RodPos, RodPos, RodPos, f32> for MySubDomain {
                 let dir = (p2 - p1).normalize();
                 let angle = dir.angle(&nalgebra::matrix![0.0, 1.0, 0.0]);
                 let y = ((p1[0] + p2[0]) / 2.0 - self.block_size).max(0.0);
-                let f = self.subdomain.gel_pressure * length * angle.sin() * y;
+                let r = self.tube_width;
+                let f = self.subdomain.gel_pressure * length * angle.sin() * (y * r - y.powi(2));
                 force.row_mut(n1)[2] -= f / 2.0;
                 force.row_mut(n2)[2] -= f / 2.0;
             });
@@ -339,6 +346,7 @@ fn run_sim(
             surface_friction_distance: f32::INFINITY,
         },
         block_size: parameters.block_size,
+        tube_width: parameters.tube_width,
     };
 
     let storage = cellular_raza::prelude::run_simulation!(
