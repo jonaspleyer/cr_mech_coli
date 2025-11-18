@@ -1067,24 +1067,31 @@ The experimental setup is displayed in figure~\ref{fig:amir-bending-simulation} 
 To model this configuration, the lowermost vertex of the rod is fixed at the base of the simulation
 domain and vertices which are inside the tubulus are restricted to move only in the y-direction.
 
-\textbf{@Christian is this more clear now?}
-
 We model the force exerted by the fluid flow onto the individual vertices by
-
 \begin{equation}
-    \vec{F}_i = C |\vec{x}_i - \vec{x}_{i+1}|\sin(\alpha_i)\vec{e}_x
+    \vec{F}_{i,\text{external}} = C |\vec{x}_i - \vec{x}_{i+1}|(y-y_b)\sin(\beta_i)\vec{e}_x
 \end{equation}
+which is proportional to the length of the rod segment projected along the y-axis.
+It acts similarly to Stoke's Law~\cite{Stokes1856} along the axis of the fluid flow (x-axis).
+Here $\beta_i$ is the angle of the rod edge between $\vec{x}_{i+1}-\vec{x}_i$ and the x-axis.
+Amir et. al~\cite{Amir2014_2} calculated the flow profile for this particular setup.
+Since the bacterium does not reach the peak of the velocity profile, we can estimate the slope via a
+linear dependence on the pertruding segment along the y-axis~\cite{Wolschin2021}.
+In particular, this enforces the correct boundary values the flow profile and the resulting force
+$\vec{F}_{i,\text{external}}|_{y=0}=0$.
 
-which acts similarly to Stoke's Law \textbf{TODO Citation} onto the normal component of each
-rod-segment where $\alpha_i$ is the angle of the rod edge between $\vec{x}_i$ and $\vec{x}_{i+1}$
-and the x-axis.
-We extract the position of the rod from the provided image and use it as initial value.
-Our simulation is split into two phases, one with an external force that initially bends the rod,
+We extract the positions of the rod from the data images (see
+Figure~\ref{fig:amir-bending-simulation} (A)) and compare the simulated positions with the extracted
+ones using the direct comparison algorithm (see Subsection~\ref{subsec:direct-comparison}).
+Our simulation is split into two phases; one with an external force that initially bends the rod,
 and a second one during which the force is disabled and the cell returns to its original shape.
-We compare the simulated positions with the extracted ones and calculate the euclidean distance
-between them, which we use as the cost function to estimate the parameters of this model.
+We assume that these time intervals are identically long since the data from the movies does not
+allow for a finer resolution of the dynamics.
 
-Since this model is void of any cell-cell interactions or cell division, we are left with 5 parameters:
+Since this model is void of any cell-cell interactions or cell division, the dynamics of the cell
+can be described by a combination of growth and physical mechanics (see
+subsection~\ref{subsection:mechanical-model-mechanics}).
+We are thus left with 5 parameters:
 Magnitude of the drag force $C$, growth rate $\alpha$, rigidity of the rod $\eta$, spring tension
 $\gamma$ and damping constant $\lambda$ (see table~\ref{table:list-of-parameters}).
 Figure~\ref{fig:amir-bending-simulation} (B) shows a snapshot of the initial (orange) and final
@@ -1094,10 +1101,6 @@ can not be said for the rod rigidity and spring tension, which both are not iden
 However this behaviour is expected since, the shape of the rod is almost exclusively straight, thus
 adding no further information except that a lower threshold of rigidity and spring tension should be
 present.
-
-Note that each point represented in the subfigures~\ref{fig:amir-bending-simulation} (C-G) was
-optimized again, meaning that higher values of rigidity and spring tension can also lead to higher
-values of drag forces.
 
 Furthermore the used images only contain snapshots of a fully-bent or fully-relaxed rod without any
 intermediate steps.
