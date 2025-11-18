@@ -165,7 +165,10 @@ impl Cycle<FixedRod, f32> for FixedRod {
     }
 }
 
-struct MyDomain(CartesianCuboidRods<f32, 3>);
+struct MyDomain {
+    domain: CartesianCuboidRods<f32, 3>,
+    block_size: f32,
+}
 
 impl Domain<FixedRod, MySubDomain> for MyDomain {
     type VoxelIndex = <CartesianCuboidRods<f32, 3> as Domain<
@@ -187,10 +190,20 @@ impl Domain<FixedRod, MySubDomain> for MyDomain {
             index_subdomain_cells,
             neighbor_map,
             rng_seed,
-        } = self.0.decompose(n_subdomains, cells)?;
+        } = self.domain.decompose(n_subdomains, cells)?;
+        let block_size = self.block_size;
         let index_subdomain_cells = index_subdomain_cells
             .into_iter()
-            .map(|(index, sbd, cells)| (index, MySubDomain(sbd), cells))
+            .map(|(index, subdomain, cells)| {
+                (
+                    index,
+                    MySubDomain {
+                        subdomain,
+                        block_size,
+                    },
+                    cells,
+                )
+            })
             .collect();
         Ok(DecomposedDomain {
             n_subdomains,
@@ -202,12 +215,13 @@ impl Domain<FixedRod, MySubDomain> for MyDomain {
 }
 
 #[derive(Clone, Serialize, Deserialize, SubDomain)]
-struct MySubDomain(
+struct MySubDomain {
     #[Base]
     #[Mechanics]
     #[SortCells]
-    CartesianSubDomainRods<f32, 3>,
-);
+    subdomain: CartesianSubDomainRods<f32, 3>,
+    block_size: f32,
+}
 
 impl SubDomainForce<RodPos, RodPos, RodPos, f32> for MySubDomain {
     #[inline]
@@ -225,7 +239,8 @@ impl SubDomainForce<RodPos, RodPos, RodPos, f32> for MySubDomain {
                 let length = (p2 - p1).norm();
                 let dir = (p2 - p1).normalize();
                 let angle = dir.angle(&nalgebra::matrix![0.0, 1.0, 0.0]);
-                let f = self.0.gel_pressure * length * angle.sin();
+                let y = ((p1[0] + p2[0]) / 2.0 - self.block_size).max(0.0);
+                let f = self.subdomain.gel_pressure * length * angle.sin() * y;
                 force.row_mut(n1)[2] -= f / 2.0;
                 force.row_mut(n2)[2] -= f / 2.0;
             });
@@ -316,12 +331,15 @@ fn run_sim(
     let domain_size = [domain_size, 0.1, domain_size];
     let domain = CartesianCuboid::from_boundaries_and_n_voxels([0.0; 3], domain_size, [1, 1, 1])
         .map_err(SimulationError::from)?;
-    let domain = MyDomain(CartesianCuboidRods {
-        domain,
-        gel_pressure: parameters.drag_force,
-        surface_friction: 0.0,
-        surface_friction_distance: f32::INFINITY,
-    });
+    let domain = MyDomain {
+        domain: CartesianCuboidRods {
+            domain,
+            gel_pressure: parameters.drag_force,
+            surface_friction: 0.0,
+            surface_friction_distance: f32::INFINITY,
+        },
+        block_size: parameters.block_size,
+    };
 
     let storage = cellular_raza::prelude::run_simulation!(
         agents: agents,
