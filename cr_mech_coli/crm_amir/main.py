@@ -45,7 +45,7 @@ def generate_parameters(**kwargs) -> crm_amir.Parameters:
     parameters.save_interval = 20
     parameters.damping = 0.02
     parameters.spring_tension = 10.0
-    parameters.drag_force = 0.005
+    parameters.drag_force = 0.001
 
     for k, v in kwargs:
         parameters.__setattr__(k, v)
@@ -446,7 +446,7 @@ def compare_with_data(
     pyargs,
     set_params={},
     seed: int = 20,
-    output_dir="out/crm_amir/profiles-full/",
+    output_dir="out/crm_amir/result-full/",
 ):
     output_dir = Path(output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -633,18 +633,15 @@ def crm_amir_main():
 
     crm.plotting.set_mpl_rc_params()
 
-    parameters = generate_parameters()
-    agents = [x[1].agent for x in crm_amir.run_sim(parameters)]
-    # render_snapshots(agents, parameters, Path("out/crm_amir/"))
 
     positions_data, iterations_data = obtain_data("out/crm_amir/", n_vertices=20)
 
     # Define globals for all optimizations
     rod_rigidity = (0.0, 20.0, 250, "[µm/s²]")
-    drag_force = (0.0000, 0.1, 1.5, "[1/s²]")
-    damping = (0.000, 1.0, 1.0, "[1/s]")
+    drag_force = (0.0000, 0.001, 0.1, "[1/s²µm]")
+    damping = (0.000, 0.1, 0.1, "[1/s]")
     growth_rate = (0.0, 0.01, 0.05, "[1/s]")
-    spring_tension = (5, 30.0, 30.0, "[1/s²]")
+    spring_tension = (10, 30.0, 60.0, "[1/s²]")
 
     # Define which parameters should be optimized
     x0_bounds = {
@@ -669,7 +666,7 @@ def crm_amir_main():
         "spring_tension": spring_tension,
     }
     set_params = {
-        "damping": params1["damping"],
+        "damping": 0.0,
     }
     pfin2, popt2, costs2, samples2, params2 = compare_with_data(
         x0_bounds_reduced,
@@ -677,7 +674,7 @@ def crm_amir_main():
         iterations_data,
         pyargs,
         set_params=set_params,
-        output_dir="out/crm_amir/profiles-reduced/",
+        output_dir="out/crm_amir/result-reduced/",
     )
 
     # plot_angles_and_endpoints()
