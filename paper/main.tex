@@ -1056,13 +1056,13 @@ To assess that our model can be applied to single cells and showcase the usefuln
 previously developed comparison techniques,
 will use our previously developed computational model and apply it directly to the data provided
 by the experiments of Amir et. al~\cite{Amir2014,Amir2014_2}.
+The experimental setup is displayed in figure~\ref{fig:amir-bending-simulation} (A).
 They studied how a single \textit{E.Coli}, which is partially confined within a narrow tube, reacts
 to a horizontal fluid flow that exerts a force onto the bacterium.
 The experiment is particularly suited as a first attempt since it excludes cell-cell interactions
 and focusses on the behaviour of a single cell.
 It therefore reduces the total amount of parameters and allows for fast iteration times when
 performing parameter estimations.
-The experimental setup is displayed in figure~\ref{fig:amir-bending-simulation} (A).
 To model this configuration, the lowermost vertex of the rod is fixed at the base of the simulation
 domain and vertices which are inside the tubulus are restricted to move only in the y-direction.
 
@@ -1079,7 +1079,7 @@ Here $\beta_i$ is the angle of the rod edge between $\vec{x}_{i+1}-\vec{x}_i$ an
 The flow profile for this particular setup is proportional~\cite{Wolschin2021} to $(2yR-y^2)$ where
 $y=0.5(\vec{x}_i+\vec{x}_{i+1})_y-y_b$ is the vertical displacement measured from the end of the
 tube $y_b$ (see Figure~\ref{fig:amir-bending-simulation}) and $R$ is the total size of the chamber
-along the y-axis.
+along the y-axis which is hidden in Figure~\ref{fig:amir-bending-simulation} (A).
 In particular, this enforces the correct boundary values the flow profile and the resulting force
 $\vec{F}_{i,\text{external}}|_{y=0}=0$.
 In addition we confine vertices who belong to segments that are partially within the tube
