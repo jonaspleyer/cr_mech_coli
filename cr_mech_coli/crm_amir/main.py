@@ -208,25 +208,11 @@ def objective_function(
     parameters, t_relax = create_default_parameters(positions_data, iterations_data)
 
     for k, v in set_params.items():
-        if k == "rigidity_to_spring_tension_ratio":
-            parameters.rod_rigidity = set_params["rod_rigidity"] * v
-            parameters.spring_tension = set_params["spring_tension"] / v
-        elif k == "damping_to_spring_tension_ratio":
-            parameters.damping = set_params["damping"] * v
-            parameters.spring_tension = set_params["spring_tension"] / v
-        else:
-            parameters.__setattr__(k, v)
+        parameters.__setattr__(k, v)
 
     # Variable Parameters
     for name, value in zip(x0_bounds.keys(), params):
-        if name == "rigidity_to_spring_tension_ratio":
-            parameters.rod_rigidity = set_params["rod_rigidity"] * value
-            parameters.spring_tension = set_params["spring_tension"] / value
-        elif name == "damping_to_spring_tension_ratio":
-            parameters.damping = set_params["damping"] * value
-            parameters.spring_tension = set_params["spring_tension"] / value
-        else:
-            parameters.__setattr__(name, value)
+        parameters.__setattr__(name, value)
 
     try:
         rods = crm_amir.run_sim_with_relaxation(parameters, t_relax)
@@ -680,13 +666,10 @@ def crm_amir_main():
         "drag_force": drag_force,
         # "damping": damping,
         "growth_rate": growth_rate,
-        # "rigidity_to_spring_tension_ratio": (0.0, 1.0, 4.0, "[µm]"),
-        "damping_to_spring_tension_ratio": (0.01, 1.0, 2.0, "[s]"),
+        "spring_tension": spring_tension,
     }
     set_params = {
-        "damping": 0.18,
-        # "rod_rigidity": 150.0,
-        "spring_tension": 18.0,
+        "damping": params1["damping"],
     }
     pfin2, popt2, costs2, samples2, params2 = compare_with_data(
         x0_bounds_reduced,
@@ -746,57 +729,3 @@ def crm_amir_main():
         ax.cla()
 
     crm.configure_ax(ax, minor=False)
-
-    n_ratio = len(popt2) - 1
-    plot_profile(
-        n_ratio,
-        samples2[:, n_ratio],
-        costs2[:, n_ratio],
-        popt2,
-        pfin2,
-        x0_bounds_reduced,
-        ax,
-        color=COLOR5,
-        label="After Reduction",
-    )
-
-    name = list(params2.keys())[n_ratio]
-    fig.savefig(output_dir / f"{name}.png")
-    fig.savefig(output_dir / f"{name}.pdf")
-    ax.cla()
-
-    # Plot combination of damping and spring tension
-    ax2 = ax.twiny()
-    crm.configure_ax(ax, minor=False)
-    ax2.grid(False)
-
-    for a, name, color in [(ax, "damping", COLOR2), (ax2, "spring_tension", COLOR3)]:
-        n = np.where([p == name for p in params1.keys()])[0][0]
-        plot_profile(
-            n,
-            samples1[:, n],
-            costs1[:, n],
-            popt1,
-            pfin1,
-            x0_bounds,
-            a,
-            color=color,
-            label=name,
-        )
-
-    handles1, labels1 = ax.get_legend_handles_labels()
-    handles2, labels2 = ax2.get_legend_handles_labels()
-    ax.legend(
-        handles=[*handles1, *handles2],
-        labels=[*labels1, *labels2],
-        loc="upper center",
-        bbox_to_anchor=(0.5, 1.10),
-        ncol=2,
-        frameon=False,
-    )
-    ax2.tick_params(axis="x", direction="in", pad=-25)
-    ax2.set_xlabel(ax2.get_xlabel(), labelpad=-40)
-
-    fig.savefig(output_dir / "damping-spring_tension.png")
-    fig.savefig(output_dir / "damping-spring_tension.pdf")
-    plt.close(fig)
