@@ -168,7 +168,7 @@ pdfkeywords={},
 systems~\cite{Pleyer2023}.
 They have been applied in various scenarios, such as cancer
 research~\cite{Ghaffarizadeh2018,Cooper2020}, Immuno-Oncology~\cite{Karolak2021} or the modeling
-of mechanical intercellular connections in plant cells \textbf{TODO CITATION}.
+of mechanical intercellular connections in plant cells~\cite{DeRybel2014}.
 By treating cells as individual entities, these tools allow researchers to think in terms of
 cellular properties and processes thus allowing for a better understanding of the biological
 reality.
@@ -182,24 +182,25 @@ Even if the existing tool is designed to be generalizable, it often comes with a
 of parameters that need to be specified.
 Furthermore, as we have discussed in our previous work~\cite{Pleyer2023}, these tools were most
 often not designed to be flexible but rather built for specific purposes thus limiting their
-generalizability \textbf{TODO CITATION}.
-Typically researchers estimate the parameter of their model using methods such as Maximum Likelihood
+generalizability~\cite{Pleyer2025Flexibility}.
+
+Typically researchers estimate the parameters of their model using methods such as Maximum Likelihood
 or Maximum a Posteriori~\cite{Gbor2015,Banga2008,Ashyraliyev2009}, check for parameter
 identifiability using methods like profile-likelihood or apply model reduction
 techniques~\cite{Kreutz2013,Raue2014,Simpson2025}.
-
-In the context of \acp{abm}, however, it is often only shown that the generated results lead to the
+However, in the context of \acp{abm} this practice is almost never followed and instead only shown
+that the generated results lead to the
 desired phenomenon aligning with the observed biological reality.
-But this process does not actually estimate the necessary parameters directly \textbf{TODO CITATION}.
+This lack of systematic analysis of the involved parameters leaves a large gap of explainability of
+the underlying models.
 Consequently, it reduces the confidence in the constructed models and raises concerns with respect
 to the validity of the obtained results.
-In this work, we address these challenges using a general-purpose mechanical model for rod-shaped
-bacteria as an example.
-Our approach provides various methods which can be combined to systematically estimate the
-parameters of our model. We deliberately distinguish between conceptually separate components within
-this framework.
 
-Mechanical properties of rod-shaped bacteria have been studied in great detail
+In this work, we showcase how a systematic analysis of parameters can be performed using a
+general-purpose mechanical model for rod-shaped bacteria.
+Rod-shaped Bacteria present an interesting target system since their physical form provides more
+surface information compared to other forms such as spherical cells.
+Their mechanical properties have been studied in great detail
 experimentally~\cite{Chatterjee1988,Takeuchi2005,IWAI2002}.
 It was found that the MreB protein is the driving force in maintaining their distinct elongated
 shape~\cite{Ursell2014}, which plays an important role in the dynamics of
@@ -207,11 +208,9 @@ growth~\cite{Billaudeau2017}, division~\cite{Harry2001} and their collective
 behaviour~\cite{vanGestel2015,Balagam2015}.
 Furthermore, it has been discovered that the rod can be bent thus introducing temporary elastic or
 permanent plastic deformations~\cite{Amir2014_2}.
-Rod-shaped Bacteria are an interesting target system since their physical form provides more surface
-information compared to other forms such as spherical cells.
-In addition, parameters such as growth rates have been found to vary across multiple
-cells~\cite{Koutsoumanis2013} which highlights the need to incorporate this heterogeneity on a
-single-cell level.
+In addition, parameters such as growth rates have been found to vary within a given cell
+population~\cite{Koutsoumanis2013} which highlights the need to incorporate this heterogeneity when
+constructing models on the single-cell level.
 
 Computational models for rod-shaped bacteria allow researchers to systematically analyze their
 properties and infer emergent phenomena~\cite{Cho2007,Jnsson2005}.
@@ -220,24 +219,19 @@ expansion~\cite{Matyjaszkiewicz2017,Doumic2020} but they are limited in describi
 aforementioned plastic or elastic deformations of the rod. Furthermore, the literature on how to
 estimate the parameters of such models directly from data is very sparse.
 
-\textbf{
-    Was mir hier nicht gefällt, ist, dass du von Parameter schätzen bei ABMs kommend ziemlich
-    detailliert über Mechanik redest.
-    Das passt nicht.
-    Man erwartet mehr Infos über den Blueprint und ist verwirrt.
-    Worum geht es hier?
-}
-\textit{Ich habe den blueprint vollkommen entfernt. Er macht kein Sinn im MS. Der Rest sollte noch
-angepasst werden.}
-
-This work addresses some of these limitations.
+This work addresses some of these previously listed limitations.
 We use microscopic image time series as inputs to obtain information about the spatial configuration
 of the cells.
-This information can be used as initial values for a numerical simulation.
+This information can be used as initial values for a numerical simulation and also serves as ground
+truth.
 By varying the parameters of the model and comparing the results to the microscopic data, we can
 estimate and quantify the parameters of our model.
 Our approach takes a general stance which incorporates effects that are observed within
 \textit{B.Subtilis} and \textit{E.Coli}.
+We deliberately distinguish between conceptually separate components within this framework to allow
+for downstream reusability.
+The developed computational methods can be combined to systematically estimate the parameters of our
+model and are readily available as a Python package.
 
 %###################################################################################################
 \section{Overview}
