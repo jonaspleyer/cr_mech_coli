@@ -733,6 +733,7 @@ The resulting image is shown in subfigure (B).
 
 % --------------------------------------------------------------------------------------------------
 \subsection{Position Extraction}
+\label{subsec:position-extraction-algorithm}
 
 This section will explain how we can determine the collection of vertices $\vec{x}_i$ introduced in
 subsection~\ref{subsection:mechanical-model-mechanics} from microscopic images
@@ -894,6 +895,7 @@ One important detail is that the ordering of vertices must be identical in the n
 experimental values.
 
 \subsubsection{Imaging-based Comparison Algorithm}
+\label{subsec:imaging-based-comparison}
 The preceding algorithm is performant and effective but can not be applied in the event of a
 division process.
 Due to possibly differing division times, a cell which is present in the simulation might not yet
@@ -1034,8 +1036,8 @@ should be preferred.
 In this section we apply the previously developed methods to the problem of parameter estimation
 of our model.
 We cover 3 distinct cases with increasing level of complexity.
-In the first study, we utilize results previously obtained by \cite{Amir2014,Amir2014_2} who
-investigated elastic deformations of \textit{E.Coli} that are partially trapped within a narrow
+In the first study, we utilize results previously obtained by Amir et. al~\cite{Amir2014,Amir2014_2}
+who investigated elastic deformations of \textit{E.Coli} that are partially trapped within a narrow
 tube and subject to a force resulting from a fluidic flow.
 This setup does not involve any cell-cell interactions but specifically requires a flexible rod.
 It is therefore well suited as a starting point to assess the usefulness of our methods and the
@@ -1046,8 +1048,9 @@ full mechanical model.
 The approach is split into a first part which considers a time interval that does not contain any
 division events and a second part which extends the initially chosen interval to include division
 events.
-In the first part, we utilize the direct comparison algorithm while the latter requires usage of the
-imaging-based comparison algorithm.
+In the first part, we cover a time interval which does not contain division events and thus utilize
+the direct comparison algorithm while the second case contains division events and in turn requires
+usage of the imaging-based comparison algorithm.
 
 %###################################################################################################
 \subsection{Application 1: Elastic deformations of \textit{E.Coli}}
@@ -1164,10 +1167,30 @@ Gathering additional transient information would allow us to better estimate the
     \label{fig:amir-bending-simulation}
 \end{figure}
 
-
 %###################################################################################################
 \subsection{Application 2: \textit{E.Coli.} growing on Agar}
 \label{section:application-2}
+
+In this section we study a collection of growing, dividing and physically interacting
+\textit{E.Coli}.
+We use a series of microscopic images and corresponding segmentation masks for the individual
+bacteria as the underlying dataset which is partially displayed in
+Figure~\ref{fig:application-2-data-overview}.
+With the previously developed extraction algorithm (see
+section~\ref{subsec:position-extraction-algorithm}) we obtain the positions of our agents at all
+time points.
+These can be used as initial values and later within our parameter estimation routine.
+We initialize our computational model (see section~\ref{sec:computational-model}) with the obtained
+positions and optimize the parameters in order to find a set which best describes the observed
+results.
+The first case considers a time interval without cell-division while the second case does contain
+division events.
+Therefore, the first approach will optimize the direct comparison cost function (see
+section~\ref{subsec:direct-comparison}) while the latter approach has to account for division events
+and thus requires the imaging-based method (see section~\ref{subsec:imaging-based-comparison}).
+These two scenarios present an opportunity to apply the previously developed methods within a
+realistic context and validate our approach.
+
 To show the usefulness of our previously developed methods
 (see section~\ref{section:parameter-estimation}), we will use them to estimate the parameters of
 individually growing \textit{E.Coli} using a sequence of microscopic images.
@@ -1176,6 +1199,31 @@ section~\ref{section:data-code-availability}) has been automatically segmented w
 omnipose~\cite{Cutler2022} algorithm to obtain the required cell masks.
 
 \textbf{Explain data more clearly. Refer to figure.}
+
+\begin{figure}[H]
+    \centering
+    \begin{tikzonimage}[width=0.24\textwidth]
+        {../data/crm_divide/0003/images/001044.png}%
+        \node at (0.02, 0.98)[anchor=north west, white, minimum width=15pt, minimum height=15pt]{\textbf{A}};
+    \end{tikzonimage}%
+    \hspace{0.01\textwidth}%
+    \begin{tikzonimage}[width=0.24\textwidth]
+        {../data/crm_divide/0003/images/001054.png}%
+        \node at (0.02, 0.98)[anchor=north west, white, minimum width=15pt, minimum height=15pt]{\textbf{B}};
+    \end{tikzonimage}%
+    \hspace{0.01\textwidth}%
+    \begin{tikzonimage}[width=0.24\textwidth]
+        {../data/crm_divide/0003/images/001063.png}%
+        \node at (0.02, 0.98)[anchor=north west, white, minimum width=15pt, minimum height=15pt]{\textbf{C}};
+    \end{tikzonimage}%
+    \hspace{0.01\textwidth}%
+    \begin{tikzonimage}[width=0.24\textwidth]
+        {../data/crm_divide/0003/images/001074.png}%
+        \node at (0.02, 0.98)[anchor=north west, white, minimum width=15pt, minimum height=15pt]{\textbf{D}};
+    \end{tikzonimage}%
+    \caption{TODO insert segmentation masks here}
+    \label{fig:application-2-data-overview}
+\end{figure}
 
 % --------------------------------------------------------------------------------------------------
 \subsubsection{The role of Heterogeneity}
