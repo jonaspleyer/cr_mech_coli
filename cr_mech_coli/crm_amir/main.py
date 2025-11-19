@@ -12,7 +12,7 @@ import multiprocessing as mp
 import argparse
 import itertools
 
-from cr_mech_coli.plotting import COLOR2, COLOR3, COLOR5
+from cr_mech_coli.plotting import COLOR1, COLOR3, COLOR5
 
 GREEN_COLOR = np.array([95, 231, 76])
 
@@ -637,11 +637,11 @@ def crm_amir_main():
     positions_data, iterations_data = obtain_data("out/crm_amir/", n_vertices=20)
 
     # Define globals for all optimizations
-    rod_rigidity = (0.0, 20.0, 250, "[µm/s²]")
-    drag_force = (0.0000, 0.001, 0.1, "[1/s²µm]")
+    rod_rigidity = (0.0, 20.0, 450, "[µm/s²]")
+    drag_force = (0.0000, 0.0001, 0.001, "[1/s²µm²]")
     damping = (0.000, 0.1, 0.1, "[1/s]")
-    growth_rate = (0.0, 0.01, 0.05, "[1/s]")
-    spring_tension = (10, 30.0, 60.0, "[1/s²]")
+    growth_rate = (0.0, 0.01, 0.04, "[1/s]")
+    spring_tension = (10, 30.0, 200.0, "[1/s²]")
 
     # Define which parameters should be optimized
     x0_bounds = {
@@ -656,6 +656,7 @@ def crm_amir_main():
         positions_data,
         iterations_data,
         pyargs,
+        output_dir="out/crm_amir/result-1",
     )
 
     x0_bounds_reduced = {
@@ -665,16 +666,32 @@ def crm_amir_main():
         "growth_rate": growth_rate,
         "spring_tension": spring_tension,
     }
-    set_params = {
-        "damping": 0.0,
-    }
+    set_params = {"damping": params1["damping"]}
     pfin2, popt2, costs2, samples2, params2 = compare_with_data(
         x0_bounds_reduced,
         positions_data,
         iterations_data,
         pyargs,
         set_params=set_params,
-        output_dir="out/crm_amir/result-reduced/",
+        output_dir="out/crm_amir/result-2/",
+    )
+
+    x0_bounds_3 = {
+        "rod_rigidity": rod_rigidity,
+        "drag_force": drag_force,
+        "damping": damping,
+        # "growth_rate": growth_rate,
+        "spring_tension": spring_tension,
+    }
+    # set_params_3 = {"spring_tension": params2["spring_tension"]}
+    set_params_3 = {"growth_rate": params2["growth_rate"]}
+    pfin3, popt3, costs3, samples3, params3 = compare_with_data(
+        x0_bounds_3,
+        positions_data,
+        iterations_data,
+        pyargs,
+        set_params=set_params_3,
+        output_dir="out/crm_amir/result-3/",
     )
 
     # plot_angles_and_endpoints()
@@ -696,7 +713,7 @@ def crm_amir_main():
             x0_bounds,
             ax,
             color=COLOR3,
-            label="Before Reduction",
+            label="Full",
         )
 
         names2 = np.array(list(params2.keys()))
@@ -711,13 +728,28 @@ def crm_amir_main():
                 x0_bounds_reduced,
                 ax,
                 color=COLOR5,
-                label="After Reduction",
+                label="$\\lambda=\\lambda_\\text{opt}$",
+            )
+
+        names3 = np.array(list(params3.keys()))
+        if name in names3:
+            m = np.where(name == names3)[0][0]
+            plot_profile(
+                m,
+                samples3[:, m],
+                costs3[:, m],
+                popt3,
+                pfin3,
+                x0_bounds_3,
+                ax,
+                color=COLOR1,
+                label="$\\mu=\\mu_\\text{opt}$",
             )
 
         ax.legend(
             loc="upper center",
             bbox_to_anchor=(0.5, 1.10),
-            ncol=2,
+            ncol=3,
             frameon=False,
         )
 
