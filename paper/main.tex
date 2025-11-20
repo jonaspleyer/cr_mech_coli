@@ -164,74 +164,97 @@ pdfkeywords={},
 
 %###################################################################################################
 \section{Introduction}
-\acp{abm} have proven to be powerfull tools in the study of complex cellular
-systems~\cite{Pleyer2023}.
-They have been applied in various scenarios, such as cancer
-research~\cite{Ghaffarizadeh2018,Cooper2020}, Immuno-Oncology~\cite{Karolak2021} or the modeling
-of mechanical intercellular connections in plant cells~\cite{DeRybel2014}.
+
+% \textbf{Restructure Introduction with these bullet points}
+% \begin{itemize}
+%     \item Problem 1: Parameter estimation of \acp{abm}: how to do at all?
+%     \item Problem 2: Many \acp{abm} have very many parameters
+%     \item Problem 3: No \ac{abm} framework with support for flexible rod-shaped bacteria
+%     \item Literature Gap 1: noone really does parameter estimation for \acp{abm}
+%     \item Literature Gap 2: also no methods do this
+%     \item Literture  Gap 3: Some literature on flexible rods and some models but often not with
+%         growth, reactions etc.
+%     \item Why matter 1: No explainability without values of parameters.
+%     \item Why matter 2: How can we be sure to actually model biological reality?
+%     \item Why matter 3: Bacteria especially elongated are fundamental. Understanding them is
+%         important.
+%     \item What we do 1: Construct new mechanical model for rod-shaped bacteria
+%     \item What we do 2: Develop methods to compare numerical results with data (for previous model)
+%     \item What we do 3: Apply these methods in 3 scenarios covering different aspects
+%     \item Why my contribution significant 1: Show that parameter estimation can be done
+%     \item Why my contribution significant 2: Show how to treat heterogeneity and that we can map 1:1
+%         of model to cells
+% \end{itemize}
+
+\acp{abm} are powerful toosl to study complex cellular systems~\cite{Pleyer2023}.
 By treating cells as individual entities, these tools allow researchers to think in terms of
 cellular properties and processes thus allowing for a better understanding of the biological
 reality.
+Their applications range from cancer research~\cite{Ghaffarizadeh2018,Cooper2020} over
+Immuno-Oncology~\cite{Karolak2021} to the modeling of mechanical intercellular connections in plant
+cells~\cite{DeRybel2014} which demonstrates their ability to capture complex emergent multicellular
+behavior.
+However, despite their popularity \acp{abm} face multiple practical challenges.
 
-Despite their popularity, \acp{abm} face multiple challenges in practise.
-The construction of a fully functional \ac{abm} simulation from the ground up constitutes an
-intricate and laborious process, necessitating a comprehensive array of skills. It is therefore
-common practise to reuse existing simulation tools, which, in turn, brings along a number of
-other problems.
-Even if the existing tool is designed to be generalizable, it often comes with a pre-defined set
-of parameters that need to be specified.
-Furthermore, as we have discussed in our previous work~\cite{Pleyer2023}, these tools were most
-often not designed to be flexible but rather built for specific purposes thus limiting their
-generalizability~\cite{Pleyer2025Flexibility}.
+One major problem is how to effectively perform parameter estimations for \acp{abm}.
+Classical approaches in systems biology—such as maximum
+likelihood~\cite{Kreutz2013,Raue2014} or maximum a posteriori estimation, identifiability analysis
+and model reduction~\cite{Simpson2025,Gbor2015,Banga2008,Ashyraliyev2009}.
+While some attempts have been made to properly calibrate the \ac{abm} at hand and estimate its
+parameters~\cite{An2016,Lima2021,Dancik2010,Thiele2014} these methods are not widely applied and are
+generally not used to explicitly capture any possible heterogeneity within the cellular population.
 
-Typically researchers estimate the parameters of their model using methods such as Maximum Likelihood
-or Maximum a Posteriori~\cite{Gbor2015,Banga2008,Ashyraliyev2009}, check for parameter
-identifiability using methods like profile-likelihood or apply model reduction
-techniques~\cite{Kreutz2013,Raue2014,Simpson2025}.
-However, in the context of \acp{abm} this practice is almost never followed and instead only shown
-that the generated results lead to the
-desired phenomenon aligning with the observed biological reality.
-This lack of systematic analysis of the involved parameters leaves a large gap of explainability of
-the underlying models.
-Consequently, it reduces the confidence in the constructed models and raises concerns with respect
-to the validity of the obtained results.
+Many \acp{abm} contain a substantial amount of parameters which poses another major problem
+related to the tuning of the model and can limit it's biology interpretability.
+Therefore, many studies only show that a suitably chosen set of parameters produces the desired
+biological behavior and asses how a subset of parameters can effect their results.
+However, this can leave important questions unanswered:
+Which combination of parameters drive the observed phenomena?
+Can these parameters be identified given a set of datapoints?
+Is there a more simple, i.e. reduced model that can describe the same phenomena?
+If \acp{abm} are not able to answer these questions, their results will significantly lack in
+explanatory power and ability to link to the biological problem at hand.
+In addition, biolgical \ac{abm} are typically designed with specific systems in mind and come with a
+predefined set of parameters which need to be specified and are not easily adaptable.
+This circumstance leads to problems when aiming to find a minimal set of identifiable parameters
+that can describe the desired phenomena.
 
-In this work, we showcase how a systematic analysis of parameters can be performed using a
-general-purpose mechanical model for rod-shaped bacteria.
-Rod-shaped Bacteria present an interesting target system since their physical form provides more
-surface information compared to other forms such as spherical cells.
-Their mechanical properties have been studied in great detail
-experimentally~\cite{Chatterjee1988,Takeuchi2005,IWAI2002}.
-It was found that the MreB protein is the driving force in maintaining their distinct elongated
-shape~\cite{Ursell2014}, which plays an important role in the dynamics of
-growth~\cite{Billaudeau2017}, division~\cite{Harry2001} and their collective
-behaviour~\cite{vanGestel2015,Balagam2015}.
-Furthermore, it has been discovered that the rod can be bent thus introducing temporary elastic or
-permanent plastic deformations~\cite{Amir2014_2}.
-In addition, parameters such as growth rates have been found to vary within a given cell
-population~\cite{Koutsoumanis2013} which highlights the need to incorporate this heterogeneity when
-constructing models on the single-cell level.
+Within our approach we will utilize a new computational model of flexible, elongated bacteria which
+is a mechanical setup that most \acp{abm} are not capable of describing.
+So far, only a few computational studies have considered flexible rods~\cite{Duman2018,Joshi2019}
+but their model can not be transferred directly to more complex biolgical systems which might
+involve intracellular reactions, extracellular processes, growth and division.
+This poses another problem in the computational study of these systems.
 
-Computational models for rod-shaped bacteria allow researchers to systematically analyze their
-properties and infer emergent phenomena~\cite{Cho2007,Jnsson2005}.
-Existing tools can describe growth, division and many effects such as colony formation and
-expansion~\cite{Matyjaszkiewicz2017,Doumic2020} but they are limited in describing the
-aforementioned plastic or elastic deformations of the rod. Furthermore, the literature on how to
-estimate the parameters of such models directly from data is very sparse.
+The aforementioned problems present scientific significant gaps.
+First, no model can be explained or interpreted without knowing the roles and values of its
+parameters or how they are constrained.
+Furthermore, models which are not properly calibrated can not guarantee to accurately represent the
+underlying biolgical reality beyond numerical coincidence.
+Finally, elongated bacteria are fundamental biolgical organisms which can be seen as a precursor to
+more complex shapes such as spiral bacteria.
+Obtaining a mechanistic understanding of their mechanical properties is essential to understand
+emergent phenomana such as the formation of biofilms~\cite{Li2025} or bacterial
+swarming~\cite{Starru2007}.
 
-This work addresses some of these previously listed limitations.
-We use microscopic image time series as inputs to obtain information about the spatial configuration
-of the cells.
-This information can be used as initial values for a numerical simulation and also serves as ground
-truth.
-By varying the parameters of the model and comparing the results to the microscopic data, we can
-estimate and quantify the parameters of our model.
-Our approach takes a general stance which incorporates effects that are observed within
-\textit{B.Subtilis} and \textit{E.Coli}.
-We deliberately distinguish between conceptually separate components within this framework to allow
-for downstream reusability.
-The developed computational methods can be combined to systematically estimate the parameters of our
-model and are readily available as a Python package.
+In this work, we address these challenges and aim to further close the previously identified gaps.
+We construct a novel mechanical model for flexible, elongated bacteria that captures growth,
+division, elastic deformations of the rod and mechanical interactions between cells.
+We develop computational methods which utilize segmented microscopic images to quantitatively
+compare numerical results with biolgical data on a single-cell level.
+With these methods we can estimate the parameters of our model in three scenarios, each probing
+different aspects of our model with increasing level of complexity.
+
+Our approach demonstrates that parameter estimation of \acp{abm} is indeed feasible, even for
+complex models and when incorporating cellular heterogeneity.
+The developed methods fill a methodological gap and present a novel way of fitting individual-based
+models to data which can be readily adapted to various other scenarios.
+We present a novel mechanical model for flexible elongated bacteria which seamlessly integrates into
+the \texttt{cellular\_raza} framework, enabling researchers to extend and adapt it in future
+studies.
+In total, these contributions push for a more rigorous, interpretable and biolgically grounded
+development process for \acp{abm} which provide deeper mechanistic insights into the nature of
+cellular behaviors.
 
 %###################################################################################################
 \section{Overview}
