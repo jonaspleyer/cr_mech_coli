@@ -1,6 +1,10 @@
 Model
 #####
 
+.. warning:: We have a pending publication which will explain our developed model in much more detail.
+   The explanations below should be considered incomplete or incorrect until this publication is
+   available either as a preprint or otherwise.
+
 Bacteria exist in many physical shapes such as spheroidal, rod-shaped or spiral
 :cite:`Zapun2008,Young2006`.
 
