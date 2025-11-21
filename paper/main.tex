@@ -1861,65 +1861,70 @@ $r\geq\xi$.
 \end{figure}
 
 %###################################################################################################
-\subsection{More Simulation Aspects (TODO)}
-\label{section:supplement-more-simulation-aspects}
-%TODO insert this into the discussion later
-\begin{table}[H]
-    \centering
-    \def\arraystretch{1.3}
-    \begin{tabularx}{\textwidth}{c l X}
-        &\textbf{Aspect} & \textbf{Description}\\
-        \toprule
-        &\textbf{(C) Cellular}\\
-        \midrule
-        (1) & Rod-Shaped Mechanics &
-            Rod-shaped bacteria are flexible rods which are able to freely move around (off-lattice
-            approach) \cite{Takeuchi2005,Ursell2014,Amir2014_2}.\\
-        (2) & Growth &
-            Cells grow exponentially by inserting new material either along the circular part of the
-            rod or at the tip~\cite{Robert2014,Takeuchi2005}.\\
-        (3) & Differentiation &
-            \ac{bsubtilis} is known to differentiate into matrix-producing and
-            surfactin-producing cells \cite{vanGestel2015,Lpez2010}.\\
-        (4) & Division &
-            The formation and continuation of van Gogh bundles is driven by cell division
-            \cite{vanGestel2015}.
-            Bacteria can form multilayers during their growth phase \cite{Duvernoy2018}.\\
-        (5) & Variable Parameters &
-            Parameters for individual cells are not fixed values but rather taken from a
-            distribution \cite{Koutsoumanis2013}.\\
-        &\textbf{(CC) Cell-Cell Interactions}\\
-        \midrule
-        (6) & Adhesion &
-            Bacteria adhere to each other at longer distances and attach when in close contact
-            \cite{Verwey1947,Trejo2013}.
-            The interaction between rods can be polarized \cite{Duvernoy2018}.\\
-        (7) & Friction &
-            Friction between cells \cite{Grant2014} can be asymmetrical \cite{Doumic2020}.\\
-        &\textbf{(DC) Domain-Cell Interactions}\\
-        \midrule
-        (8) & External Forces &
-            Bacteria tend to stick to surfaces \cite{vanLoosdrecht1989}.
-            The extracellular gel exerts a force onto the cells \cite{Grant2014}.\\
-        (9) & Extracellular Reactions &
-            Bacteria can take up nutrients or possible secrete/take up signalling molecules
-            \cite{Li2025}.\\
-        \bottomrule
-    \end{tabularx}
-    \label{table:simulation-aspects-supplement}
-    \caption{
-        This table extends table~\ref{table:simulation-aspects} with additional observations.
-        It has to be noted that this table includes more specific behaviour that might not be
-        generalizable across all types of rod-shaped bacteria.
-    }
-\end{table}
+\subsection{How to use obtained heterogenous results}
+In order to reuse this model, we also provide the option to assign growth rates by sampling from a
+normal distribution with user-defined parameters.
 
-\begin{itemize}
-    \item new class of aspects: (DC) Domain-Cell Interactions
-    \item List which aspects are here additionally
-    \item discuss which of them might need specific models and can not be paired with others
-    \item which can be bundled together without problems?
-\end{itemize}
+%###################################################################################################
+% \subsection{More Simulation Aspects (TODO)}
+% \label{section:supplement-more-simulation-aspects}
+% %TODO insert this into the discussion later
+% \begin{table}[H]
+%     \centering
+%     \def\arraystretch{1.3}
+%     \begin{tabularx}{\textwidth}{c l X}
+%         &\textbf{Aspect} & \textbf{Description}\\
+%         \toprule
+%         &\textbf{(C) Cellular}\\
+%         \midrule
+%         (1) & Rod-Shaped Mechanics &
+%             Rod-shaped bacteria are flexible rods which are able to freely move around (off-lattice
+%             approach) \cite{Takeuchi2005,Ursell2014,Amir2014_2}.\\
+%         (2) & Growth &
+%             Cells grow exponentially by inserting new material either along the circular part of the
+%             rod or at the tip~\cite{Robert2014,Takeuchi2005}.\\
+%         (3) & Differentiation &
+%             \ac{bsubtilis} is known to differentiate into matrix-producing and
+%             surfactin-producing cells \cite{vanGestel2015,Lpez2010}.\\
+%         (4) & Division &
+%             The formation and continuation of van Gogh bundles is driven by cell division
+%             \cite{vanGestel2015}.
+%             Bacteria can form multilayers during their growth phase \cite{Duvernoy2018}.\\
+%         (5) & Variable Parameters &
+%             Parameters for individual cells are not fixed values but rather taken from a
+%             distribution \cite{Koutsoumanis2013}.\\
+%         &\textbf{(CC) Cell-Cell Interactions}\\
+%         \midrule
+%         (6) & Adhesion &
+%             Bacteria adhere to each other at longer distances and attach when in close contact
+%             \cite{Verwey1947,Trejo2013}.
+%             The interaction between rods can be polarized \cite{Duvernoy2018}.\\
+%         (7) & Friction &
+%             Friction between cells \cite{Grant2014} can be asymmetrical \cite{Doumic2020}.\\
+%         &\textbf{(DC) Domain-Cell Interactions}\\
+%         \midrule
+%         (8) & External Forces &
+%             Bacteria tend to stick to surfaces \cite{vanLoosdrecht1989}.
+%             The extracellular gel exerts a force onto the cells \cite{Grant2014}.\\
+%         (9) & Extracellular Reactions &
+%             Bacteria can take up nutrients or possible secrete/take up signalling molecules
+%             \cite{Li2025}.\\
+%         \bottomrule
+%     \end{tabularx}
+%     \label{table:simulation-aspects-supplement}
+%     \caption{
+%         This table extends table~\ref{table:simulation-aspects} with additional observations.
+%         It has to be noted that this table includes more specific behaviour that might not be
+%         generalizable across all types of rod-shaped bacteria.
+%     }
+% \end{table}
+% 
+% \begin{itemize}
+%     \item new class of aspects: (DC) Domain-Cell Interactions
+%     \item List which aspects are here additionally
+%     \item discuss which of them might need specific models and can not be paired with others
+%     \item which can be bundled together without problems?
+% \end{itemize}
 
 %###################################################################################################
 \subsection{Implementation \& Performance (TODO)}
