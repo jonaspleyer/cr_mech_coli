@@ -325,8 +325,6 @@ When describing the bacterial system, we distinguish between intra-cellular proc
 interactions.
 We restrict ourselves to the features discussed below and summarize them in
 Table~\ref{table:simulation-aspects}.
-% For a collection of other known aspects which could be considered, we refer to the supplementary
-% section~\ref{section:discussion}, and~\ref{section:supplement-more-simulation-aspects}.
 
 While some rod-shaped bacteria grow by inserting new material at the ends, \ac{ecoli} and
 \ac{bsubtilis} utilize a method where new material is inserted along the cylindrical part of
@@ -405,20 +403,6 @@ But researchers are in general free to adapt the model for the specific problem 
 By building on our discretization scheme, future modeling approaches will be able to directly reuse
 our established theoretical methods and computational functionalities.
 
-\textbf{TODO mention this in sections below}
-\begin{itemize}
-    \item plastic/elastic deformations
-    \item non-uniform thickness of the rod
-    \item polar interactions \cite{Duvernoy2018}
-    \item other dynamics
-\end{itemize}
-
-% \begin{enumerate}
-%     \item represent bacteria as polygon with vertices $\vec{x}_i$
-%     \item Assumes that these vertices are not fundamental but rather a discretization of the actual
-%         problem
-% \end{enumerate}
-
 \begin{figure}[H]
     \centering
     \begin{tikzonimage}[width=0.3\textwidth]
@@ -441,8 +425,6 @@ our established theoretical methods and computational functionalities.
         equilibrium state of a straight rod with no curvature.
         (B) Potential curves of the Mie potential for various combinations of exponents $n,m$ with
         upper bound $\beta=2.5U_0$ and cutoff $\zeta=3(R_1+R_2)$.
-        \textbf{TODO insert more (possibly schematic depictions of how the model works
-        (Interactions, Cycle))}
     }
     \label{fig:model-bacterium}
 \end{figure}
@@ -463,11 +445,9 @@ As explained above, MReB will counteract the bending of the rod, resulting in a 
 We model the bacterium as a bending beam.
 % In principle, this stress will be dependent on the position inside the cell~\cite{Chatterjee1988},
 % but for sake of simplicity we chose to model the bacterium as a bending beam.
-% \textbf{[", thus utilizing the simplest solution which can still produce the desired effects." Es ist unklar was die "desired effects" sind. ]}\\
 Using our discretization $\vec{x}_i$, we connect the vertices by springs of length $l$.
 % which can be represented by a collection of vertices $\vec{x}_i$ which are connected by a
 % springs of lengths $l$.
-% \textbf{[Das klingt nach einer Wiederholung von Spatial Representation. Du erklärst ziemlich umständlich. Konzentriere dich auf das wesentliche und überlege, was du eigentlich sagen möchtest.]}\\
 We use the notation $\vec{w}_i:=\vec{x}_i-\vec{x}_{i-1}$ with which the resulting force acting
 between two vertices if given by
 
@@ -567,7 +547,6 @@ The resulting force is given by
     % \vec{F} \theta(r-\zeta) \min\left(1, \beta / |\vec{F}|\right)
 \end{equation}
 
-\textbf{@Christian Can you find a more elegant notation than this equation?}\\
 where the first case ensures that the norm is bound and the second case ensures the cutoff.
 A collection of configurations are displayed in figure~\ref{fig:model-bacterium} (B).
 
@@ -586,8 +565,6 @@ low amount of parameters that can be estimated.
 
 To simulate cellular growth, we introduce an exponential growth term for the spring lengths $l$
 \cite{Takeuchi2005}.
-
-\textbf{TODO adapt naming to appliations section}
 
 \begin{equation}
     \partial_t l = \mu l
@@ -617,8 +594,6 @@ $n_vl>2R$.
 We set the growth rates of the daughter cells explicitly during the division event.
 This approach allows us to treat the growth rates of the daughter cells as full individual
 parameters within our model.
-In order to reuse this model, we also provide the option to assign growth rates by sampling from a
-normal distribution with user-defined parameters.\textbf{@Christian Supplement?}
 Every other intracellular parameter is copied identically to the daughter cells.
 Table~\ref{table:list-of-parameters} shows a list of all parameters used within our model.
 
@@ -655,8 +630,6 @@ Table~\ref{table:list-of-parameters} shows a list of all parameters used within 
 
 % --------------------------------------------------------------------------------------------------
 \subsection{Numerical Implementation}
-\textbf{TODO move this somewhere else (maybe parameter estimation)?}
-
 We implemented the described model in our recently developed \ac{abm} framework
 \texttt{cellular\_raza}~\cite{Pleyer2025}.
 By design \texttt{cellular\_raza} does not assume any particular cellular representation, thus makes
