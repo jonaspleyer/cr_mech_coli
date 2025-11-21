@@ -644,6 +644,7 @@ comparison algorithm (see section~\ref{subsec:imaging-based-comparison}).
 
 %###################################################################################################
 \section{Methodology}
+\label{sec:methodology}
 These sections introduce methods which can be combined in order to estimate the parameters of our
 computational model.
 It has to be noted that they only depend on the spatial representation described in
@@ -896,22 +897,28 @@ experimental values.
 
 \subsubsection{Imaging-based Comparison Algorithm}
 \label{subsec:imaging-based-comparison}
-The preceding algorithm is performant and effective but can not be applied in the event of a
-division process.
-Due to possibly differing division times, a cell which is present in the simulation might not yet
-have a corresponding cell in the experimental data at this time point yet (or vice-versa) (see
-Figure~\ref{fig:mask-difference-metric} (E)).
-In order to still be able to compare these datapoints, we require additional methods which can be
-used for comparisons across division events.
-\textbf{[Es bleibt unklar, was du hier verhandeln möchtest.]}
-\textit{Jetzt klarer?}
+The preceding algorithm is performant and effective but can not be applied in the case when a
+division event splits apart the bacterium since this would involve the comparison of two sets of
+vertices with only one.
+This configuration is displayed in figure~\ref{fig:mask-difference-metric} (E) where two distinct
+bacterial configurations originate from the same initial state but contain different amounts of
+bacteria.
+This mismatch can happen, e.g. due to non-matching division times.
+Thus a cell which is present in the simulation might not yet have a corresponding cell in the
+experimental data at this time point yet (or vice-versa).
+To explain why the previous developed direct comparison algorithm can not be reused on confined
+intervals which do not include division events and for further details, we refer the interested
+reader to the supplementary
+material~\ref{sec:supplement-imaging-based-comparison-algorithm-details}.
 
+In order to be able to compare the differing cellular configurations, we require additional
+methods which can be used in time intervals containing cellular divison events.
 To this end we use the numerical results of the \ac{abm} simulation and our visualization
 algorithms to generate cell-masks (see section~\ref{subsection:visualization}).
-Each pixel has a unique color value which is directly related to one particular cell or background
-(black).
-We compare the generated masks to the experimentally obtained ones pixel by pixel.
-Whenever two colors are not matching, a penalty of $1$ is assigned.
+Since each pixel has a unique color value which is directly related to one particular cell or
+background (black), we compare the generated masks to the experimentally obtained ones pixel by
+pixel.
+Whenever two colors are not matching, a penalty is assigned for each pixel.
 The total cost is the sum of all penalties.
 % This algorithm is an implementation of a signed area measure.
 It is important to take into account the parental relationship between the cells, by checking if
@@ -930,13 +937,6 @@ We assign a penalty $0\leq p \leq 1$ which is a hyperparameter for this optimiza
 % It is possible to assign a custom value for the parental cost value.
 Settings its value to $0$ results in a contiuous cost function in time.
 
-Future extensions should introduce a time-dependent parent penalty $p=p(t)$ which grows with the age
-of the daughter cells.
-Furthermore, the developed algorithm relies on the comparison of two images and can as such make use
-of existing machine-learning workflows that construct cost functions for such
-scenarios~\cite{Dice1945}.\\
-\textbf{@Christian are these two sentences Discussion?}
-
 Although this optimization scheme was driven by technical challenges, it is also biologically
 motivated.
 In the infenitisemal time point after the division event the resulting two daughter cells will cover
@@ -944,17 +944,6 @@ precisely the space that the mother had taken up.
 Often times, the exact time at which the fission event has commenced can not be determined
 accurately, thus leading to uncertainties with respect to the question when the life of the daughter
 cells begins and the one of the mother ends.
-
-\textbf{Put this in Supplement and discuss it further. Still link to it here.}\\
-In a different approach, one might be tempted to utilize the previously constructed direct
-comparison algorithm for time intervals that do not contain any division events.
-But this attempt would quickly lead to multiple problems.
-It will not be able to deal with the uncertainties of the timing of the division event.
-As the number of investigated cells grows, more division events will occurr even in a fixed
-amount of time thus greatly decreasing or completely vanishing the effective interval at which no
-division event is observed.
-The latter situation is equivalent to two microscopic images as input data between which a division
-event has occured.
 
 \subsubsection{Testing the Comparison Algorithms with Division Events}
 When utilizing a computational model (see section~\ref{sec:computational-model}), we can generate
@@ -1565,6 +1554,21 @@ Combining these two values, the position-comparison algorithm is $\approx 6.13(8
 %###################################################################################################
 \section{Discussion}
 
+\textbf{TODO decide if we mention these}
+\begin{itemize}
+    \item plastic/elastic deformations
+    \item non-uniform thickness of the rod
+    \item polar interactions \cite{Duvernoy2018}
+    \item other dynamics
+\end{itemize}
+
+Future extensions should introduce a time-dependent parent penalty $p=p(t)$ which grows with the age
+of the daughter cells.
+Furthermore, the developed algorithm relies on the comparison of two images and can as such make use
+of existing machine-learning workflows that construct cost functions for such
+scenarios~\cite{Dice1945}.\\
+\textbf{@Christian are these two sentences Discussion?}
+
 With this work we have layed out how to estimate the parameters of \acp{abm} using
 microscopic image time series.
 Our approach is modularized such that its structure can be applied to a variety of problems.
@@ -1785,6 +1789,21 @@ showcases the exponential growth of bacteria.
     \item clean borders of images if needed
     \item know domain size; otherwise use pixels
 \end{enumerate}
+
+%###################################################################################################
+\subsection{Details for the Imaging-Based Comparison Algorithm}
+\label{sec:supplement-imaging-based-comparison-algorithm-details}
+
+In a different approach, one might be tempted to utilize the previously constructed direct
+comparison algorithm for time intervals that do not contain any division events.
+But this attempt would quickly lead to multiple problems.
+It will not be able to deal with the uncertainties of the timing of the division event.
+As the number of investigated cells grows, more division events will occurr even in a fixed
+amount of time thus greatly decreasing or completely vanishing the effective interval at which no
+division event is observed.
+The latter situation is equivalent to two microscopic images as input data between which a division
+event has occured.
+
 
 %###################################################################################################
 \subsection{Parameter Estimation Results (TODO)}
