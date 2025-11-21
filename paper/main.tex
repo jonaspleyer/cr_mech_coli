@@ -770,7 +770,7 @@ The skeletonization algorithm supplies us with a collection of unordered lattice
 We identify the endpoints $\vec{q}_0,\vec{q}_1$ by counting the number of neighbors in the von
 Neumann neighborhood for each lattice point.
 Any point with exactly one neighboring point must be and endpoint.
-If we encounter more or less than two points which fit this criterion, the routine can not commence
+If we encounter more or less than two points which fit this criterion, the routine cannot commence
 and is aborted.
 Next, we start with one of the endpoints and determine the next neighbor which was not yet picked.
 We list the points in this order, thus forming a sorted polygon of pixel coordinates.\\
@@ -864,15 +864,13 @@ is not dominated by outliers.
 In order to effectively estimate the parameters of our model, we need to set up a cost function
 which can be minimized.
 In doing so, we hope to identify all parameters, given relevant experimental data.
-Parameters may be defined as global ones, which are identical across all cells or individual per
-cell.
+As we have explained in the preceding section~\ref{sec:methodology}, parameters may be specified as
+global ones, which are identical across all cells or individual per cell which allows us to capture
+cell-cell variability.
 We utilize the preceding algorithms to extract data from cell-masks, simulate from an initial state
 and then compare both results.
 The cell-masks are easily obtainable by either using existing segmentation
 tools~\cite{Cutler2022,Stringer2020,Hardo2022} or manually annotating microscopic image series.
-
-\textbf{Du solltest hier erwähnen, dass du die Parameter per Bakterium fittest und nicht globale Parameter.}
-\textit{Tue ich aber nicht grundsätzlich. Es gibt globale und individuelle parameter; also ein "mixed approach". Ich habe aber einen Hinweis eingefügt.}
 
 \subsubsection{Direct Comparison}
 \label{subsec:direct-comparison}
