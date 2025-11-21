@@ -691,10 +691,11 @@ such that its core is identical to the connecting line segment between the two v
 Finally, we combine the meshes of all of these objects to obtain a single mesh of one bacterium.
 
 A render of this result can be seen in figure~\ref{fig:progression-image-generation}.
-Since we use a 3D rendering engine for our visualization, the resulting image can have
+Since we use a 3D rendering engine for our visualization, the resulting image can display
 overlaps of bacteria which are placed at higher or lower values along the z-direction.
-To generate masks, we assign unique colours to every mesh of the respective cellular agent, ensuring
-no two agents will use identical colours. \textbf{TODO semantic segmentation Citation}
+To generate masks, we use a pixel-based (in-image) encoding scheme~\cite{JianboShi2000}, thus
+assigning unique colours to every mesh of the respective cellular agent, ensuring no two agents
+will use identical colours.
 We then use a parallel projection and remove any existing light sources in order to obtain a solid
 color for every cell-agent.
 The resulting image is shown in subfigure (B).
