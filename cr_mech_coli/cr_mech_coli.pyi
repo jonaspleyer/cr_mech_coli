@@ -42,6 +42,12 @@ class MorsePotentialF32:
     @staticmethod
     def __new__(cls, **kwargs) -> MorsePotentialF32: ...
 
+class SpringLengthThresholdSetter:
+    l1: np.float32
+    l2: np.float32
+    mean: np.float32
+    std: np.float32
+
 class GrowthRateSetter:
     g1: np.float32
     g2: np.float32
@@ -147,6 +153,7 @@ class RodAgent:
         growth_rate=0.01,
         growth_rate_setter={"mean": 0.01, "std": 0.0},
         spring_length_threshold=6.0,
+        spring_length_threshold_setter={"mean": 6.0, "std": 0.0},
         neighbor_reduction=None,
     ): ...
     def __repr__(self) -> str: ...
