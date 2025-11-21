@@ -76,32 +76,6 @@
 \usepackage{enumitem}
 \setlist{nolistsep}
 
-%%% Add PDF metadata to help others organize their library
-%%% Once the PDF is generated, you can check the metadata with
-%%% $ pdfinfo template.pdf
-\hypersetup{
-pdftitle={% TODO
-},
-pdfsubject={q-bio.NC, q-bio.QM},
-pdfauthor={Jonas Pleyer, Christian Fleck},
-pdfkeywords={},
-}
-
-% Change numbering of equations
-% \numberwithin{equation}{section}
-
-% MAKE TITLES IN THEOREMS BOLD
-\makeatletter
-\def\th@plain{%
-  \thm@notefont{}% same as heading font
-  \itshape % body font
-}
-\def\th@definition{%
-  \thm@notefont{}% same as heading font
-  \normalfont % body font
-}
-\makeatother
-
 \begin{document}
 \maketitle
 
@@ -141,28 +115,28 @@ pdfkeywords={},
 \vfill
 \pagebreak
 
-\begin{itemize}
-    \item Adapt introduction; \acp{abm} not focus of paper, but rather tool to do the job
-    \begin{itemize}
-        \item model division, growth of bacteria
-        \item \acp{abm} are good for this tool
-    \end{itemize}
-    \item Exchange $\sigma \rightarrow R_1+R_2$
-    \item Equation 8 make double norm $||\vec{F}||$
-    \item Remove auxiliary variable $\vec{F}$ only use $\vec{\nabla}V$
-    \item Table 2 in supplement? (probably not)
-    \item numerical implementation verschieben?
-    \item numerical implementation: waht do we need to simulate this?
-    \begin{itemize}
-        \item \acp{abm} are common tools to realize this
-        \item cellular\_raza is THE tool to do it
-    \end{itemize}
-    \item Methodology: single-cell parameter estimation as motivation for techniques
-    \item Which parameters are global which are individual? Discuss this in general; not in detail
-    \item depends on data, number of parameters (computational efficiency)
-    \item page 12; yes this is Discussion
-    \item page 12: maybe extend the paragraph wrt comparison in intervals
-\end{itemize}
+% \begin{itemize}
+%     \item Adapt introduction; \acp{abm} not focus of paper, but rather tool to do the job
+%     \begin{itemize}
+%         \item model division, growth of bacteria
+%         \item \acp{abm} are good for this tool
+%     \end{itemize}
+%     \item Exchange $\sigma \rightarrow R_1+R_2$
+%     \item Equation 8 make double norm $||\vec{F}||$
+%     \item Remove auxiliary variable $\vec{F}$ only use $\vec{\nabla}V$
+%     \item Table 2 in supplement? (probably not)
+%     \item numerical implementation verschieben?
+%     \item numerical implementation: waht do we need to simulate this?
+%     \begin{itemize}
+%         \item \acp{abm} are common tools to realize this
+%         \item cellular\_raza is THE tool to do it
+%     \end{itemize}
+%     \item Methodology: single-cell parameter estimation as motivation for techniques
+%     \item Which parameters are global which are individual? Discuss this in general; not in detail
+%     \item depends on data, number of parameters (computational efficiency)
+%     \item page 12; yes this is Discussion
+%     \item page 12: maybe extend the paragraph wrt comparison in intervals
+% \end{itemize}
 
 %###################################################################################################
 \section{Introduction}
@@ -177,21 +151,21 @@ pdfkeywords={},
 %     \end{itemize}
 %     \item Problem 2: How to estimate parameters for individual-based models of cells/bacteria
 %     \item Problem 3: How to incorporate division and heterogeneity in parameter estimation?
-% 
+%
 %     \item Literature Gap 1: No \acp{abm} support flexible elongated bacteria
 %     \item Literature Gap 2: Noone really does parameter estimations
 %     \item Literature Gap 3: Cellular heterogeneity sometimes accounted for in simulation but not
 %         in parameter estimation
-% 
+%
 %     \item Why matter 1: No explainability without parameters
 %     \item Why matter 2: How can we be sure to actually model biological reality?
 %     \item Why matter 3: Bacteria especially elongated are fundamental. Understanding them is
 %         important.
-% 
+%
 %     \item What we do 1: Construct new mechanical model for rod-shaped bacteria
 %     \item What we do 2: Develop methods to compare numerical results with data
 %     \item What we do 3: Apply these methods in 3 scenarios covering different aspects
-% 
+%
 %     \item Why contribution significant 1: Show that parameter estimation can be done
 %     \item Why contribution significant 2: Show how to treat heterogeneity and that we can map 1:1
 %         of model to cells
