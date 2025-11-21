@@ -415,6 +415,10 @@ fn cell_container_de_serialize() {
                 std: 0.0,
             },
             spring_length_threshold: 2.0,
+            spring_length_threshold_setter: SpringLengthThresholdSetter::NormalDistr {
+                mean: 2.0,
+                std: 0.0,
+            },
             neighbor_reduction: None,
         })
         .collect();
