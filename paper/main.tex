@@ -167,88 +167,109 @@ pdfkeywords={},
 %###################################################################################################
 \section{Introduction}
 
-% \textbf{Restructure Introduction with these bullet points}
 % \begin{itemize}
-%     \item Problem 1: Parameter estimation of \acp{abm}: how to do at all?
-%     \item Problem 2: Many \acp{abm} have very many parameters
-%     \item Problem 3: No \ac{abm} framework with support for flexible rod-shaped bacteria
-%     \item Literature Gap 1: noone really does parameter estimation for \acp{abm}
-%     \item Literature Gap 2: also no methods do this
-%     \item Literture  Gap 3: Some literature on flexible rods and some models but often not with
-%         growth, reactions etc.
-%     \item Why matter 1: No explainability without values of parameters.
+%     \item Problem 1: How to model flexibel rods and validate these models?
+%     \begin{itemize}
+%         \item Flexible rods so far only covered in soft-matter studies; rarely applied in direct
+%             biological contexts
+%         \item \acp{abm} are \textit{the} tool to use for individual-based modeling (combine with
+%             reactions, cell cycle, division, differentiation, etc.)
+%     \end{itemize}
+%     \item Problem 2: How to estimate parameters for individual-based models of cells/bacteria
+%     \item Problem 3: How to incorporate division and heterogeneity in parameter estimation?
+% 
+%     \item Literature Gap 1: No \acp{abm} support flexible elongated bacteria
+%     \item Literature Gap 2: Noone really does parameter estimations
+%     \item Literature Gap 3: Cellular heterogeneity sometimes accounted for in simulation but not
+%         in parameter estimation
+% 
+%     \item Why matter 1: No explainability without parameters
 %     \item Why matter 2: How can we be sure to actually model biological reality?
 %     \item Why matter 3: Bacteria especially elongated are fundamental. Understanding them is
 %         important.
+% 
 %     \item What we do 1: Construct new mechanical model for rod-shaped bacteria
-%     \item What we do 2: Develop methods to compare numerical results with data (for previous model)
+%     \item What we do 2: Develop methods to compare numerical results with data
 %     \item What we do 3: Apply these methods in 3 scenarios covering different aspects
-%     \item Why my contribution significant 1: Show that parameter estimation can be done
-%     \item Why my contribution significant 2: Show how to treat heterogeneity and that we can map 1:1
+% 
+%     \item Why contribution significant 1: Show that parameter estimation can be done
+%     \item Why contribution significant 2: Show how to treat heterogeneity and that we can map 1:1
 %         of model to cells
+%     \item Why contribution significant 3: New model for flexible rods which integrates in
+%         \texttt{cellular\_raza} and can thus be readily reused by researchers
 % \end{itemize}
 
-\acp{abm} are powerful toosl to study complex cellular systems~\cite{Pleyer2023}.
-By treating cells as individual entities, these tools allow researchers to think in terms of
-cellular properties and processes thus allowing for a better understanding of the biological
-reality.
-Their applications range from cancer research~\cite{Ghaffarizadeh2018,Cooper2020} over
-Immuno-Oncology~\cite{Karolak2021} to the modeling of mechanical intercellular connections in plant
-cells~\cite{DeRybel2014} which demonstrates their ability to capture complex emergent multicellular
-behavior.
-However, despite their popularity \acp{abm} face multiple practical challenges.
+Bacteria come in various shapes~\cite{Young2006,Young2007}, ranging from simple spheres to complex
+spirals and helices.
+Elongated bacteria form an important subclass that includes some of the most studied model
+organisms such as \ac{ecoli} or \ac{bsubtilis}.
+Their filamentous structure underlies distinct mechanical~\cite{Daniel2003} and physiological
+constraints~\cite{Jones2001}, thus influencing other cellular aspects such as
+growth~\cite{Chang2014} and division~\cite{Li2007}.
+It also facilitates processes such as swarming~\cite{Harshey1994} or biofilm
+formation~\cite{Duvernoy2018}.
 
-One major problem is how to effectively perform parameter estimations for \acp{abm}.
+Computational methods can allow for a systematic analysis of the underlying biological reality.
+To this end, \acp{abm} provide a natural way of mapping cellular processes to computational
+routines.
+By treating cells as individual entities with their own state, these tools enable researchers to
+think in terms of cellular properties and processes, thereby allowing for a mechanistic
+understanding of the system.
+This bottom-up perspective has transformed the analysis of complex cellular
+systems~\cite{Pleyer2023} over a wide range of
+topics~\cite{Ghaffarizadeh2018,Cooper2020,Karolak2021,DeRybel2014}.
+\acp{abm} are generally capable of incorporating gene regulatory networks, cell cycle, division,
+differentiation, transport of extracellular compounds and many other processes which makes them the
+ideal tool to study the individual behavior of cells.
+
+Within our approach we develop a new computational model for flexible, elongated bacteria which
+is a mechanical setup that most \acp{abm} are not capable of describing.
+So far, only a few computational studies have considered flexible rods~\cite{Duman2018,Joshi2019},
+but their models cannot be transferred directly to more complex biological systems which might
+involve intracellular reactions, extracellular compounds, growth and division.
+Only a few \acp{abm} support even the less complex cylindrical
+shapes~\cite{Kang2014,breitwieser_biodynamo_2022,Gorochowski2012} but none are able to capture
+flexible filamentous bacteria.
+This poses a problem in the computational study of these systems.
+
+Although \acp{abm} seem destined to be applied to the modeling of individual elongated bacteria,
+this potential has not been fully realized yet.
+Another major problem is how to perform parameter estimations for \acp{abm}.
 Classical approaches in systems biology—such as maximum
 likelihood~\cite{Kreutz2013,Raue2014} or maximum a posteriori estimation, identifiability analysis
 and model reduction~\cite{Simpson2025,Gbor2015,Banga2008,Ashyraliyev2009}.
 While some attempts have been made to properly calibrate the \ac{abm} at hand and estimate its
 parameters~\cite{An2016,Lima2021,Dancik2010,Thiele2014} these methods are not widely applied and are
 generally not used to explicitly capture any possible heterogeneity within the cellular population.
-
-Many \acp{abm} contain a substantial amount of parameters which poses another major problem
-related to the tuning of the model and can limit it's biology interpretability.
-Therefore, many studies only show that a suitably chosen set of parameters produces the desired
-biological behavior and asses how a subset of parameters can effect their results.
 However, this can leave important questions unanswered:
 Which combination of parameters drive the observed phenomena?
 Can these parameters be identified given a set of datapoints?
-Is there a more simple, i.e. reduced model that can describe the same phenomena?
+Is there a simpler, i.e. reduced model that can describe the same phenomena?
 If \acp{abm} are not able to answer these questions, their results will significantly lack in
-explanatory power and ability to link to the biological problem at hand.
-In addition, biolgical \ac{abm} are typically designed with specific systems in mind and come with a
-predefined set of parameters which need to be specified and are not easily adaptable.
-This circumstance leads to problems when aiming to find a minimal set of identifiable parameters
-that can describe the desired phenomena.
+explanatory power and ability to link to the specific problem at hand.
 
-Within our approach we will utilize a new computational model of flexible, elongated bacteria which
-is a mechanical setup that most \acp{abm} are not capable of describing.
-So far, only a few computational studies have considered flexible rods~\cite{Duman2018,Joshi2019}
-but their model can not be transferred directly to more complex biolgical systems which might
-involve intracellular reactions, extracellular processes, growth and division.
-This poses another problem in the computational study of these systems.
-
-The aforementioned problems present scientific significant gaps.
+The aforementioned problems present significant gaps in the scientific literature.
 First, no model can be explained or interpreted without knowing the roles and values of its
 parameters or how they are constrained.
-Furthermore, models which are not properly calibrated can not guarantee to accurately represent the
-underlying biolgical reality beyond numerical coincidence.
-Finally, elongated bacteria are fundamental biolgical organisms which can be seen as a precursor to
+Furthermore, models which are not properly calibrated cannot guarantee to accurately represent the
+underlying biological reality beyond numerical coincidence.
+Finally, elongated bacteria are fundamental organisms which can be seen as a precursor to
 more complex shapes such as spiral bacteria.
 Obtaining a mechanistic understanding of their mechanical properties is essential to understand
-emergent phenomana such as the formation of biofilms~\cite{Li2025} or bacterial
+emergent phenomena such as the formation of biofilms~\cite{Li2025} or bacterial
 swarming~\cite{Starru2007}.
 
 In this work, we address these challenges and aim to further close the previously identified gaps.
 We construct a novel mechanical model for flexible, elongated bacteria that captures growth,
 division, elastic deformations of the rod and mechanical interactions between cells.
 We develop computational methods which utilize segmented microscopic images to quantitatively
-compare numerical results with biolgical data on a single-cell level.
+compare numerical results with biological data on a single-cell level.
 With these methods we can estimate the parameters of our model in three scenarios, each probing
-different aspects of our model with increasing level of complexity.
+different aspects of our model with increasing levels of complexity.
 
-Our approach demonstrates that parameter estimation of \acp{abm} is indeed feasible, even for
-complex models and when incorporating cellular heterogeneity.
+Our approach demonstrates that parameter estimation of \acp{abm} is indeed feasible, even in
+the case of complex models such as single-cell modeling of flexible elongated bacteria and when
+incorporating cellular heterogeneity.
 The developed methods fill a methodological gap and present a novel way of fitting individual-based
 models to data which can be readily adapted to various other scenarios.
 We present a novel mechanical model for flexible elongated bacteria which seamlessly integrates into
