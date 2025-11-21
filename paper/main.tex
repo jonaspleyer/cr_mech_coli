@@ -59,6 +59,8 @@
 \newacro{ode}[ODE]{Ordinary Differential Equation}
 \newacro{pbr}[PBR]{Physically-Based Rendering}
 \newacro{ib}[IB]{Individual-based}
+\newacro{ecoli}[\textit{E. coli}]{\textit{Escherichia coli}}
+\newacro{bsubtilis}[\textit{B. subtilis}]{\textit{Bacillus subtilis}}
 
 % Define new units
 \DeclareSIUnit\pixel{pix}
@@ -116,7 +118,7 @@ pdfkeywords={},
     We use time series of microscopic images as input data and incorporate advanced effects as the
     elasticity of the rod.
     The developed model serves as a generalized foundation to describe multiple species of
-    rod-shaped bacteria such as \textit{E.Coli} or \textit{B.Subtilis}.
+    rod-shaped bacteria such as \acl{ecoli} or \acl{bsubtilis}.
 \end{abstract}
 
 \textbf{Discussed Keywords (Working Title)}
@@ -342,8 +344,8 @@ Table~\ref{table:simulation-aspects}.
 % For a collection of other known aspects which could be considered, we refer to the supplementary
 % section~\ref{section:discussion}, and~\ref{section:supplement-more-simulation-aspects}.
 
-While some rod-shaped bacteria grow by inserting new material at the ends, \textit{E.Coli} and
-\textit{B.Subtilis} utilize a method where new material is inserted along the cylindrical part of
+While some rod-shaped bacteria grow by inserting new material at the ends, \ac{ecoli} and
+\ac{bsubtilis} utilize a method where new material is inserted along the cylindrical part of
 the rod. The details of the division event (i.e. Z-Ring formation) are very intricate and are heavily
 studied as a subject on their own~\cite{Harry2001}.
 On a higher level view, the rod is split apart at a point close to the center of the cell, thus
@@ -1054,7 +1056,7 @@ In this section we apply the previously developed methods to the problem of para
 of our model.
 We cover 3 distinct cases with increasing level of complexity.
 In the first study, we utilize results previously obtained by Amir et. al~\cite{Amir2014,Amir2014_2}
-who investigated elastic deformations of \textit{E.Coli} that are partially trapped within a narrow
+who investigated elastic deformations of \ac{ecoli} that are partially trapped within a narrow
 tube and subject to a force resulting from a fluidic flow.
 This setup does not involve any cell-cell interactions but specifically requires a flexible rod.
 It is therefore well suited as a starting point to assess the usefulness of our methods and the
@@ -1070,14 +1072,14 @@ the direct comparison algorithm while the second case contains division events a
 usage of the imaging-based comparison algorithm.
 
 %###################################################################################################
-\subsection{Application 1: Elastic deformations of \textit{E.Coli}}
+\subsection{Application 1: Elastic deformations of \acl{ecoli}}
 
 To assess that our model can be applied to single cells and showcase the usefulness of the
 previously developed comparison techniques,
 will use our previously developed computational model and apply it directly to the data provided
 by the experiments of Amir et. al~\cite{Amir2014,Amir2014_2}.
 The experimental setup is displayed in figure~\ref{fig:amir-bending-simulation} (A).
-They studied how a single \textit{E.Coli}, which is partially confined within a narrow tube, reacts
+They studied how a single \ac{ecoli}, which is partially confined within a narrow tube, reacts
 to a horizontal fluid flow that exerts a force onto the bacterium.
 The experiment is particularly suited as a first attempt since it excludes cell-cell interactions
 and focusses on the behaviour of a single cell.
@@ -1185,11 +1187,11 @@ Gathering additional transient information would allow us to better estimate the
 \end{figure}
 
 %###################################################################################################
-\subsection{Application 2: \textit{E.Coli.} growing on Agar}
+\subsection{Application 2: \acl{ecoli} growing on Agar}
 \label{section:application-2}
 
 In this section we study a collection of growing, dividing and physically interacting
-\textit{E.Coli}.
+\ac{ecoli}.
 We use a series of microscopic images and corresponding segmentation masks for the individual
 bacteria as the underlying dataset which is partially displayed in
 Figure~\ref{fig:application-2-data-overview}.
@@ -1210,7 +1212,7 @@ realistic context and validate our approach.
 
 To show the usefulness of our previously developed methods
 (see section~\ref{section:parameter-estimation}), we will use them to estimate the parameters of
-individually growing \textit{E.Coli} using a sequence of microscopic images.
+individually growing \ac{ecoli} using a sequence of microscopic images.
 The data we use~\cite{https://doi.org/10.3203/iwf/k-129} (see
 section~\ref{section:data-code-availability}) has been automatically segmented with the
 omnipose~\cite{Cutler2022} algorithm to obtain the required cell masks.
@@ -1922,7 +1924,7 @@ $r\geq\xi$.
             Cells grow exponentially by inserting new material either along the circular part of the
             rod or at the tip~\cite{Robert2014,Takeuchi2005}.\\
         (3) & Differentiation &
-            \textit{B.subtilis} is known to differentiate into matrix-producing and
+            \ac{bsubtilis} is known to differentiate into matrix-producing and
             surfactin-producing cells \cite{vanGestel2015,Lpez2010}.\\
         (4) & Division &
             The formation and continuation of van Gogh bundles is driven by cell division
