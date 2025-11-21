@@ -291,6 +291,7 @@ def predict(
             growth_rate=growth_rate,
             growth_rate_setter={"g1": g1, "g2": g2},
             spring_length_threshold=spring_length_threshold,
+            spring_length_threshold_setter={"l1": np.inf, "l2": np.inf},
             neighbor_reduction=None,
         )
         for spring_length_threshold, pos, growth_rate, (g1, g2) in zip(
