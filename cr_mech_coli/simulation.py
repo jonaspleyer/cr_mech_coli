@@ -38,4 +38,6 @@ from .cr_mech_coli import (
     MiePotentialF32,
     PhysicalInteraction,
     StorageOption,
+    GrowthRateSetter,
+    SpringLengthThresholdSetter,
 )
