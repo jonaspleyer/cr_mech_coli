@@ -12,7 +12,7 @@ classifiers = [
 ]
 dynamic = ["version"]
 dependencies = [
-    "pyvista>=0.40",
+    "pyvista",
     "numpy",
     "opencv-python",
     "tqdm>=4.60",
