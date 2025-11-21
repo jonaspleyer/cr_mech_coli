@@ -344,8 +344,8 @@ impl AgentSettings {
             (
                 "spring_length_threshold_setter",
                 spring_length_threshold_setter
-                    .clone()
-                    .into_pyobject_or_pyerr(py)?
+                    .borrow(py)
+                    .to_pydict(py)?
                     .into_any()
                     .unbind(),
             ),
