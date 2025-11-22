@@ -935,13 +935,15 @@ We assign a penalty $0\leq p \leq 1$ which is a hyperparameter for this optimiza
 % It is possible to assign a custom value for the parental cost value.
 Settings its value to $0$ results in a contiuous cost function in time.
 
-Although this optimization scheme was driven by technical challenges, it is also biologically
-motivated.
-In the infenitisemal time point after the division event the resulting two daughter cells will cover
-precisely the space that the mother had taken up.
+The developed optimization scheme was mainly driven by technical challenges, but it is also
+biologically motivated.
+In the short time period after the division event, the two resulting daughter cells will cover
+the space that the mother had taken up.
 Often times, the exact time at which the fission event has commenced can not be determined
 accurately, thus leading to uncertainties with respect to the question when the life of the daughter
 cells begins and the one of the mother ends.
+These uncertainties which are also common problems for segmentation methods, further highlight the
+importance of this comparison scheme.
 
 \subsubsection{Testing the Comparison Algorithms with Division Events}
 When utilizing a computational model (see section~\ref{sec:computational-model}), we can generate
