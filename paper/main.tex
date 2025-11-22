@@ -669,23 +669,27 @@ identical within margin of error.
 Furthermore, mixed approaches where some parameters are assigned globally and others individually
 can be realized as well.
 
-For the presented model a list of parameters can be seen in table~\ref{table:list-of-parameters} but
-the following calculations are equally true for any model with $N_p$ number of parameters.
-Consider the case where we filter out a subset $N_g\leq N_p$ of parameters which will be treated
+In order to properly estimate the parameters of our model on the single-cell level, we need to be
+able to take into account any heterogeneity that may be present.
+For the particular model chosen here, a list of parameters can be seen in
+table~\ref{table:list-of-parameters} but the following calculations are equally true for any
+single-cell model with $N_p$ number of parameters.
+Consider the case where we identify a subset $N_g\leq N_p$ of parameters which will be treated
 globally, thus with equal numerical value for every cell.
 This means that $N_p - N_g$ parameters will be assigned individually for each of $N_c$ number of
 cells.
-The total amount of parameters in the system is then given by
+The total amount of parameters $N_\text{tot}$ in the system is then given by
 \begin{equation}
     N_\text{tot} = N_g + N_c (N_p - N_g).
 \end{equation}
+where $N_c$ is the number of unique cells which we encounter over the time interval of interest.
 It is clear, that we should avoid, to needlessly treat parameters non-globally since this increases
 the size of the parameter space considerably.
 The volume of parameter space which needs to be sampled by optimization schemes scales exponentially
 with the dimension ie. the total number of parameters $N_\text{tot}$.
 Notice that the presented approach reflects our current work but can easily be adapted to other
 scenarios where different strategies of parameters assignment are desired, e.g. when considering
-two distinct species of cells which should be displayed by 2 parameters in total regardless of the
+two distinct species of cells which should be described by 2 parameters in total regardless of the
 number of cells.
 
 % --------------------------------------------------------------------------------------------------
@@ -958,11 +962,11 @@ importance of this comparison scheme.
 When utilizing a computational model (see section~\ref{sec:computational-model}), we can generate
 data and use the generated masks to provide a benchmark of our algorithm.
 To do this, we set out to calculate the cost between two successive iteration steps
-$t_n$ with $t_{n+1}$.
+$t_n$ and $t_{n+1}$.
 We expect to obtain an exponential growth in the cost.
 This can be explained by the fact that the growth of the total area is exponential in time.
-Furthermore, the temporal area difference can be viewed as a derivative of the total area in time,
-which is again an exponential function.
+Furthermore, the temporal area difference can be viewed as a derivative of the total area with
+respect to time, which is again an exponential function.
 Figure~\ref{fig:mask-difference-metric} (F) shows the total cost for this approach.
 We can see that by accounting for the parental relationship, we get the overall desired effect.
 This method allows us to compare results between states that have a different number of cells.
