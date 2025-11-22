@@ -697,24 +697,26 @@ individual per cell.
 % --------------------------------------------------------------------------------------------------
 \subsection{Visualization}
 \label{subsection:visualization}
-To visualize the spatial configuration of the results we employ pyvista, which provides high-level
-wrappers around the popular VTK library~\cite{vtkBook,Sullivan2019}.
+To visualize the spatial configuration of the results we employ \texttt{pyvista}, which provides
+high-level wrappers around the popular VTK library~\cite{vtkBook,Sullivan2019}.
 The initial phase of the visualization process entails the generation of three-dimensional meshes
-for each bacterium as an intermediate representation.
+for each bacterium as an intermediate representation (see
+Figure~\ref{fig:progression-image-generation}).
 We insert spheres matching the thickness of the rod $R$ at each vertex $\vec{x}_i$ and connect
-adjacent vertices $\vec{x}_i,\vec{x}_{i+1}$ with a cylinder, also of radius $r$ which is positioned
+adjacent vertices $\vec{x}_i,\vec{x}_{i+1}$ with a cylinder, of radius $r$ which is positioned
 such that its core is identical to the connecting line segment between the two vertices.
 Finally, we combine the meshes of all of these objects to obtain a single mesh of one bacterium.
+A render including smoothened meshes and external light sources of this configuration can be seen in
+Figure~\ref{fig:progression-image-generation} (B).
 
-A render of this result can be seen in figure~\ref{fig:progression-image-generation}.
 Since we use a 3D rendering engine for our visualization, the resulting image can display
 overlaps of bacteria which are placed at higher or lower values along the z-direction.
 To generate masks, we use a pixel-based (in-image) encoding scheme~\cite{JianboShi2000}, thus
 assigning unique colours to every mesh of the respective cellular agent, ensuring no two agents
-will use identical colours.
-We then use a parallel projection and remove any existing light sources in order to obtain a solid
-color for every cell-agent.
-The resulting image is shown in subfigure (B).
+will use identical colours and colors are unique across the duration of the simulation.
+We then use a parallel projection and remove any existing lighting effects in order to obtain an
+image solely comprised of solid colors.
+The resulting image is shown in Figure~\ref{fig:progression-image-generation} (C).
 
 \begin{figure}[H]
     \centering
