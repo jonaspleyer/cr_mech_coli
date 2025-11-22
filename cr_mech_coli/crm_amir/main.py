@@ -367,9 +367,14 @@ def calculate_profile_point(
         bounds=bounds,
         maxiter=pyargs.maxiter_profiles,
         popsize=pyargs.popsize_profiles,
-        mutation=(0, 1.6),
+        mutation=(0, 1.9),
         seed=n,
         polish=not pyargs.skip_polish_profiles,
+        tol=pyargs.optim_tol_profiles,
+        atol=pyargs.optim_atol_profiles,
+        updating="immediate",
+        recombination=0.3,
+        init="sobol",
     )
     return res
 
@@ -476,8 +481,11 @@ def compare_with_data(
             workers=pyargs.workers,
             tol=0,
             polish=not pyargs.skip_polish,
-            mutation=(0, 1.6),
+            mutation=(0, 1.9),
             seed=seed,
+            updating="immediate",
+            recombination=0.3,
+            init="sobol",
         )
         pfin = res.fun
         popt = res.x
@@ -608,6 +616,18 @@ def crm_amir_main():
         type=int,
         default=350,
         help="See MAXITER",
+    )
+    parser.add_argument(
+        "--optim-tol-profiles",
+        type=float,
+        default=1e-4,
+        help="Relative Tolerance for optimization within profiles",
+    )
+    parser.add_argument(
+        "--optim-atol-profiles",
+        type=float,
+        default=0,
+        help="Absolute Tolerance for optimization within profiles",
     )
     parser.add_argument(
         "--popsize-profiles",
