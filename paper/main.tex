@@ -652,32 +652,33 @@ It is split into 3 parts, each covering distinct purposes.
 We begin by explaining the visualization process which will later be used within our imaging-based
 comparison algorithm (see section~\ref{subsec:imaging-based-comparison}) and for testing purposes.
 Afterwards, we introduce a position extraction algorithm which extracts cellular information in the
-form of collections of vertices from segmented microscopic images.
+form of polygons from segmented microscopic images.
 Finally, we will provide two distinct comparison algorithms which can be used to compare numerically
-calculated results with experimental data.
-We will test and benchmark the constructed algorithms within the coming sections.
-
+obtained results with experimental data.
+We will test and benchmark the constructed algorithms within the respective sections.
 As highlighted before, the developed methods only depend on the spatial representation described in
 section~\ref{subsec:spatial-representation}.
 Consequently, these methods can be applied to a broader class of mechanical models that can exhibit
 varied cellular behaviours.
-Furthermore, the developed methods are independent of how we assign parameters within our model.
-This means we can opt to incorporate intracellular variability by specifying parameters on a
-per-cell basis.
-Or we can employ shared parameters between all agents for processes which can be expected to behave
-identical within margin of error.
-Furthermore, mixed approaches where some parameters are assigned globally and others individually
-can be realized as well.
 
 In order to properly estimate the parameters of our model on the single-cell level, we need to be
 able to take into account any heterogeneity that may be present.
-For the particular model chosen here, a list of parameters can be seen in
-table~\ref{table:list-of-parameters} but the following calculations are equally true for any
-single-cell model with $N_p$ number of parameters.
-Consider the case where we identify a subset $N_g\leq N_p$ of parameters which will be treated
-globally, thus with equal numerical value for every cell.
-This means that $N_p - N_g$ parameters will be assigned individually for each of $N_c$ number of
-cells.
+Therefore, the developed methods are independent of how we assign parameters within our model.
+This means we can opt to incorporate cell-cell variability by specifying parameters on a
+per-cell basis.
+Or we can employ shared parameters with identical numerical values across all agents for properties
+which are expected to be identical across the population.
+Furthermore, mixed approaches where some parameters are assigned globally and others are chosen
+individually can be realized as well.
+
+For our particular model presented in section~\ref{sec:computational-model}, a list of parameters
+is presented in table~\ref{table:list-of-parameters} but the following calculations are equally
+true for any single-cell model.
+We assume that each cell contains $N_p$ number of parameters that need to be assigned numerical
+values.
+We identify a subset $N_g\leq N_p$ of parameters which will be treated globally, thus with equal
+numerical value for every cell.
+This means that $N_p - N_g$ parameters will be assigned individually for each of number of cells.
 The total amount of parameters $N_\text{tot}$ in the system is then given by
 \begin{equation}
     N_\text{tot} = N_g + N_c (N_p - N_g).
@@ -688,9 +689,10 @@ the size of the parameter space considerably.
 The volume of parameter space which needs to be sampled by optimization schemes scales exponentially
 with the dimension ie. the total number of parameters $N_\text{tot}$.
 Notice that the presented approach reflects our current work but can easily be adapted to other
-scenarios where different strategies of parameters assignment are desired, e.g. when considering
-two distinct species of cells which should be described by 2 parameters in total regardless of the
-number of cells.
+scenarios where different strategies of parameters assignment are desired.
+This can be usefull e.g. when considering two distinct species where the value of a particular
+parameter only depends on the species and is thus neither identical across all cells, nor
+individual per cell.
 
 % --------------------------------------------------------------------------------------------------
 \subsection{Visualization}
