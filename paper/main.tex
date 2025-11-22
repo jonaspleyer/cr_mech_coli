@@ -648,12 +648,20 @@ Further details can be found in the supplement (see section~\ref{section:supplem
 \label{sec:methodology}
 These sections introduce methods which can be combined in order to estimate the parameters of our
 computational model.
-It has to be noted that they only depend on the spatial representation described in
-section~\ref{subsec:spatial-representation}.
-Consequently, these methods can be applied to a broader class of mechanical models that may exhibit
-varied cellular behaviours.
+It is split into 3 parts, each covering distinct purposes.
+We begin by explaining the visualization process which will later be used within our imaging-based
+comparison algorithm (see section~\ref{subsec:imaging-based-comparison}) and for testing purposes.
+Afterwards, we introduce a position extraction algorithm which extracts cellular information in the
+form of collections of vertices from segmented microscopic images.
+Finally, we will provide two distinct comparison algorithms which can be used to compare numerically
+calculated results with experimental data.
+We will test and benchmark the constructed algorithms within the coming sections.
 
-The developed methods are independent of how we assign parameters within our model.
+It should be noted that these methods only depend on the spatial representation described in
+section~\ref{subsec:spatial-representation}.
+Consequently, these methods can be applied to a broader class of mechanical models that can exhibit
+varied cellular behaviours.
+Furthermore, the developed methods are independent of how we assign parameters within our model.
 This means we can opt to incorporate intracellular variability by specifying parameters on a
 per-cell basis.
 Or we can employ shared parameters between all agents for processes which can be expected to behave
