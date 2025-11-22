@@ -164,6 +164,7 @@ def plot_3d_grid(points, radius):
         add_mesh(cylinder)
 
     plotter.screenshot(filename="docs/source/_static/imaging-mesh.png")
+    plotter.save_graphic(filename="docs/source/_static/imaging-mesh.pdf")
 
 
 if __name__ == "__main__":
