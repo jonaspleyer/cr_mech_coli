@@ -1,8 +1,16 @@
 import cr_mech_coli as crm
 import cv2 as cv
 from pathlib import Path
+from PIL import Image
 
 from fitting_extract_positions import create_simulation_result
+
+
+def store_image(mask, path, name):
+    pil_img = Image.fromarray(mask).convert("RGB")
+    pil_img.save(str(path / name) + ".pdf")
+    cv.imwrite(filename=str(path / name) + ".png", img=mask)
+
 
 if __name__ == "__main__":
     config, cell_container = create_simulation_result(8)
@@ -13,16 +21,20 @@ if __name__ == "__main__":
     i1 = iterations[25]
     i2 = iterations[35]
 
+    color_to_cell = cell_container.color_to_cell
+    parent_map = cell_container.parent_map
+
     rs = crm.RenderSettings()
     mask1 = crm.render_mask(all_cells[i1], colors, config.domain_size, rs)
     mask2 = crm.render_mask(all_cells[i2], colors, config.domain_size, rs)
     mask3 = crm.area_diff_mask(mask1, mask2)
-    mask4 = crm.parents_diff_mask(mask1, mask2, cell_container, 0.5)
+    mask4 = crm.parents_diff_mask(mask1, mask2, color_to_cell, parent_map, 0.5)
 
     # Save first mask
     path = Path("docs/source/_static/fitting-methods/")
     path.mkdir(parents=True, exist_ok=True)
-    cv.imwrite(filename=str(path / "progressions-1.png"), img=mask1)
-    cv.imwrite(filename=str(path / "progressions-2.png"), img=mask2)
-    cv.imwrite(filename=str(path / "progressions-3.png"), img=mask3 * 255.0)
-    cv.imwrite(filename=str(path / "progressions-4.png"), img=mask4 * 255.0)
+
+    store_image(mask1, path, "progressions-1")
+    store_image(mask2, path, "progressions-2")
+    store_image(mask3 * 255.0, path, "progressions-3")
+    store_image(mask4 * 255.0, path, "progressions-4")
