@@ -7,6 +7,7 @@ import matplotlib as mpl
 from tqdm import tqdm
 import argparse
 import time
+from PIL import Image
 
 
 def calculate_lengths_distances(
@@ -66,10 +67,10 @@ def create_simulation_result(n_vertices: int, rng_seed: int = 3):
         domain_size=np.array([200, 200]),
     )
     config.storage_options = [crm.StorageOption.Memory]
-    config.show_progressbar = True
+    config.progressbar = ""
     agent_settings = crm.AgentSettings(
         growth_rate=0.012,
-        growth_rate_distr=(0.012, 0.002),
+        growth_rate_setter={"mean": 0.012, "std": 0.002},
     )
     agent_settings.mechanics.rigidity = 8.0
     config.domain_height = 0.2
@@ -174,9 +175,11 @@ if __name__ == "__main__":
 
             path = Path("docs/source/_static/fitting-methods/")
             cv.imwrite(
-                filename=str(path / "extract_positions-{:06}.png".format(iteration)),
+                filename=str(path / f"extract_positions-{iteration:06}.png"),
                 img=mask,
             )
+            pil_img = Image.fromarray(mask)
+            pil_img.save(str(path / f"extract_positions-{iteration:06}.pdf"))
 
     ccs = cell_container.serialize()
     arglist = tqdm(
