@@ -492,7 +492,7 @@ def compare_with_data(
             seed=seed,
             updating="immediate",
             recombination=0.3,
-            init="sobol",
+            init=pyargs.init,
         )
         pfin = res.fun
         popt = res.x
@@ -635,6 +635,12 @@ def crm_amir_main():
         type=float,
         default=0,
         help="Absolute Tolerance for optimization within profiles",
+    )
+    parser.add_argument(
+        "--init",
+        type=str,
+        default="latinhypercube",
+        help="Initialization method for the sampling of parameters.",
     )
     parser.add_argument(
         "--popsize-profiles",
