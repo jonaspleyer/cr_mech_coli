@@ -83,13 +83,18 @@ if __name__ == "__main__":
 
     fig.tight_layout()
     fig.savefig(
+        "docs/source/_static/fitting-methods/algorithm/mask-zoom.pdf",
+        bbox_inches="tight",
+        pad_inches=0,
+    )
+    fig.savefig(
         "docs/source/_static/fitting-methods/algorithm/mask-zoom.png",
         bbox_inches="tight",
         pad_inches=0,
     )
     plt.close(fig)
 
-    pos, _, _ = crm.extract_positions(mask)
+    pos = crm.extract_positions(mask)[0]
     submask = np.copy(mask[xmin:xmax, ymin:ymax, :])
 
     fig, ax = plt.subplots()
@@ -116,6 +121,11 @@ if __name__ == "__main__":
         ax.plot(q1 + dx / 2, q2 + dy / 2, color="white", marker="+", markersize=15)
 
     fig.tight_layout()
+    fig.savefig(
+        "docs/source/_static/fitting-methods/algorithm/interpolate-positions.pdf",
+        bbox_inches="tight",
+        pad_inches=0,
+    )
     fig.savefig(
         "docs/source/_static/fitting-methods/algorithm/interpolate-positions.png",
         bbox_inches="tight",
