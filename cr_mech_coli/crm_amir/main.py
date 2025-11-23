@@ -349,12 +349,19 @@ def calculate_profile_point(
     pyargs,
 ):
     x0_bounds_new = {k: v for i, (k, v) in enumerate(x0_bounds.items()) if i != n}
-    x0 = [p for i, p in enumerate(popt) if i != n]
-    bounds = [(x[0], x[2]) for x in x0_bounds_new.values()]
+    x0 = np.array([p for i, p in enumerate(popt) if i != n])
+    bounds = np.array([(x[0], x[2]) for x in x0_bounds_new.values()])
 
     assert len(x0_bounds_new) + 1 == len(x0_bounds)
     assert len(x0) == len(x0_bounds_new)
     assert len(x0) == len(bounds)
+
+    init = np.repeat(x0[np.newaxis, :], pyargs.popsize_profiles, axis=0)
+
+    sampler = sp.stats.qmc.LatinHypercube(len(x0))
+    sample = sampler.random(pyargs.popsize_profiles - 1)
+    sample = bounds[:, 0] + sample * (bounds[:, 1] - bounds[:, 0])
+    init = np.vstack([*sample, x0])
 
     res = sp.optimize.differential_evolution(
         objective_function,
@@ -374,7 +381,7 @@ def calculate_profile_point(
         atol=pyargs.optim_atol_profiles,
         updating="immediate",
         recombination=0.3,
-        init="sobol",
+        init=init,
     )
     return res
 
