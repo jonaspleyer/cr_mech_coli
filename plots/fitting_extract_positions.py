@@ -16,7 +16,7 @@ OPATH = Path("docs/source/_static/fitting-methods")
 
 def calculate_lengths_distances(
     n, ccs, domain_size, skel_method, n_vertices
-) -> tuple[list, list, list]:
+) -> tuple[list, list, list, list]:
     cell_container = crm.CellContainer.deserialize(ccs)
     cells_at_iteration = cell_container.get_cells()[n]
     colors = cell_container.cell_to_color
@@ -30,6 +30,7 @@ def calculate_lengths_distances(
         )[0]
     )
 
+    vertices = []
     distances = []
     lengths_extracted = []
     lengths_exact = []
@@ -48,8 +49,10 @@ def calculate_lengths_distances(
 
         if d1 <= d2:
             distances.append(d1t / len(p))
+            vertices.append(p - q)
         else:
             distances.append(d2t / len(p))
+            vertices.append(p - q[::-1])
         # distances_i.append(d)
 
         # Compare total length
@@ -57,7 +60,7 @@ def calculate_lengths_distances(
         l2 = np.sum((q[1:] - q[:-1]) ** 2) ** 0.5
         lengths_extracted.append(l1)
         lengths_exact.append(l2)
-    return distances, lengths_extracted, lengths_exact
+    return vertices, distances, lengths_extracted, lengths_exact
 
 
 def calculate_lengths_distances_wrapper(args):
@@ -197,6 +200,7 @@ if __name__ == "__main__":
     if not pyargs.skip_graph or not pyargs.skip_distribution:
         crm.plotting.set_mpl_rc_params()
         try:
+            vertices = np.load(OPATH / "vertices.npy", allow_pickle=True)
             distances = np.load(OPATH / "distances.npy", allow_pickle=True)
             distances_vertices = np.load(
                 OPATH / "distances_vertices.npy", allow_pickle=True
@@ -229,16 +233,18 @@ if __name__ == "__main__":
                         total=len(iterations),
                     )
                 )
-            distances = [np.sum(r[0]) / pyargs.n_vertices for r in results]
-            distances_vertices = [np.array(r[0]).reshape(-1) for r in results]
-            lengths_extracted = [r[1] for r in results]
-            lengths_exact = [r[2] for r in results]
+            vertices = [r[0] for r in results]
+            distances = [np.sum(r[1]) / pyargs.n_vertices for r in results]
+            distances_vertices = [np.array(r[1]).reshape(-1) for r in results]
+            lengths_extracted = [r[2] for r in results]
+            lengths_exact = [r[3] for r in results]
 
             # Store results in files
             def store_list_of_arrays(name, li):
                 OPATH.mkdir(parents=True, exist_ok=True)
                 np.save(OPATH / name, np.array(li, dtype=object))
 
+            store_list_of_arrays("vertices", vertices)
             store_list_of_arrays("distances", distances)
             store_list_of_arrays("distances_vertices", distances_vertices)
             store_list_of_arrays("lengths_extracted", lengths_extracted)
