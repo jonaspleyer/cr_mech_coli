@@ -9,6 +9,8 @@ import argparse
 import time
 from PIL import Image
 
+OPATH = Path("docs/source/_static/fitting-methods")
+
 
 def calculate_lengths_distances(
     n, ccs, domain_size, skel_method, n_vertices
@@ -173,13 +175,12 @@ if __name__ == "__main__":
                         2,
                     )
 
-            path = Path("docs/source/_static/fitting-methods/")
             cv.imwrite(
-                filename=str(path / f"extract_positions-{iteration:06}.png"),
+                filename=str(OPATH / f"extract_positions-{iteration:06}.png"),
                 img=mask,
             )
             pil_img = Image.fromarray(mask)
-            pil_img.save(str(path / f"extract_positions-{iteration:06}.pdf"))
+            pil_img.save(str(OPATH / f"extract_positions-{iteration:06}.pdf"))
 
     ccs = cell_container.serialize()
     arglist = tqdm(
@@ -245,8 +246,8 @@ if __name__ == "__main__":
             frameon=False,
         )
 
-        fig.savefig("docs/source/_static/fitting-methods/displacement-distribution.png")
-        fig.savefig("docs/source/_static/fitting-methods/displacement-distribution.pdf")
+        fig.savefig(OPATH / "displacement-distribution.png")
+        fig.savefig(OPATH / "displacement-distribution.pdf")
         plt.close(fig)
 
     if not pyargs.skip_graph:
@@ -292,6 +293,6 @@ if __name__ == "__main__":
         ax.set_ylabel("Rod Length [µm]")
         ax.set_xlabel("Time [min]")
         # ax.set_title("Evaluation of Position Extraction Algorithm")
-        fig.savefig("docs/source/_static/fitting-methods/displacement-calculations.png")
-        fig.savefig("docs/source/_static/fitting-methods/displacement-calculations.pdf")
+        fig.savefig(OPATH / "displacement-calculations.png")
+        fig.savefig(OPATH / "displacement-calculations.pdf")
         plt.close(fig)
