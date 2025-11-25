@@ -8,6 +8,8 @@ from tqdm import tqdm
 import argparse
 import time
 from PIL import Image
+import scipy as sp
+import multiprocessing as mp
 
 OPATH = Path("docs/source/_static/fitting-methods")
 
@@ -56,6 +58,10 @@ def calculate_lengths_distances(
         lengths_extracted.append(l1)
         lengths_exact.append(l2)
     return distances, lengths_extracted, lengths_exact
+
+
+def calculate_lengths_distances_wrapper(args):
+    return calculate_lengths_distances(*args)
 
 
 def create_simulation_result(n_vertices: int, rng_seed: int = 3):
@@ -183,32 +189,60 @@ if __name__ == "__main__":
             pil_img.save(str(OPATH / f"extract_positions-{iteration:06}.pdf"))
 
     ccs = cell_container.serialize()
-    arglist = tqdm(
-        [
-            (n, ccs, config.domain_size, pyargs.skel_method, pyargs.n_vertices)
-            for n in iterations
-        ],
-        total=len(iterations),
-    )
+    arglist = [
+        (n, ccs, config.domain_size, pyargs.skel_method, pyargs.n_vertices)
+        for n in iterations
+    ]
 
     if not pyargs.skip_graph or not pyargs.skip_distribution:
         crm.plotting.set_mpl_rc_params()
-        if pyargs.workers < 0:
-            import multiprocessing as mp
+        try:
+            distances = np.load(OPATH / "distances.npy", allow_pickle=True)
+            distances_vertices = np.load(
+                OPATH / "distances_vertices.npy", allow_pickle=True
+            )
+            lengths_extracted = np.load(
+                OPATH / "lengths_extracted.npy", allow_pickle=True
+            )
+            lengths_exact = np.load(OPATH / "lengths_exact.npy", allow_pickle=True)
+        except:
+            if pyargs.workers < 0:
+                import multiprocessing as mp
 
-            pool = mp.Pool()
-            results = pool.starmap(calculate_lengths_distances, arglist)
-        elif pyargs.workers == 1:
-            results = [calculate_lengths_distances(*a) for a in arglist]
-        else:
-            import multiprocessing as mp
+                pool = mp.Pool()
+                results = list(
+                    tqdm(
+                        pool.imap(calculate_lengths_distances_wrapper, arglist),
+                        total=len(arglist),
+                    ),
+                )
+            elif pyargs.workers == 1:
+                results = [
+                    calculate_lengths_distances(*a)
+                    for a in tqdm(arglist, total=len(arglist))
+                ]
+            else:
+                pool = mp.Pool(pyargs.workers)
+                results = list(
+                    tqdm(
+                        pool.imap(calculate_lengths_distances_wrapper, arglist),
+                        total=len(iterations),
+                    )
+                )
+            distances = [np.sum(r[0]) / pyargs.n_vertices for r in results]
+            distances_vertices = [np.array(r[0]).reshape(-1) for r in results]
+            lengths_extracted = [r[1] for r in results]
+            lengths_exact = [r[2] for r in results]
 
-            pool = mp.Pool(pyargs.workers)
-            results = pool.starmap(calculate_lengths_distances, arglist)
-        distances = [np.sum(r[0]) / pyargs.n_vertices for r in results]
-        distances_vertices = [np.array(r[0]).reshape(-1) for r in results]
-        lengths_extracted = [r[1] for r in results]
-        lengths_exact = [r[2] for r in results]
+            # Store results in files
+            def store_list_of_arrays(name, li):
+                OPATH.mkdir(parents=True, exist_ok=True)
+                np.save(OPATH / name, np.array(li, dtype=object))
+
+            store_list_of_arrays("distances", distances)
+            store_list_of_arrays("distances_vertices", distances_vertices)
+            store_list_of_arrays("lengths_extracted", lengths_extracted)
+            store_list_of_arrays("lengths_exact", lengths_exact)
     else:
         exit()
 
