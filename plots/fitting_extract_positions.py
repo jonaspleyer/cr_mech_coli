@@ -381,7 +381,7 @@ if __name__ == "__main__":
             t,
             means[:, 0],
             color=crm.plotting.COLOR5,
-            label="Mean (parallel)",
+            label="parallel",
             linestyle="-",
         )
         ax.fill_between(
@@ -395,7 +395,7 @@ if __name__ == "__main__":
             t,
             means[:, 1],
             color=crm.plotting.COLOR3,
-            label="Mean (orthogonal)",
+            label="orthogonal",
             linestyle="--",
         )
         ax.fill_between(
@@ -410,7 +410,7 @@ if __name__ == "__main__":
         dlim = np.max([1.2 * dmean, dmean + dcovs])
         ax.set_ylim(-dlim, dlim)
         ax.set_xlabel("Time [min]")
-        ax.set_ylabel("Length [µm]")
+        ax.set_ylabel("Mean [µm]")
         ax.legend(
             loc="upper center",
             bbox_to_anchor=(0.5, 1.10),
