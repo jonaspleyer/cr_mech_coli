@@ -264,44 +264,6 @@ if __name__ == "__main__":
         fig, ax = plt.subplots(figsize=(8, 8))
         crm.plotting.configure_ax(ax)
 
-        q = len(distances_vertices)
-        c1 = np.array(mpl.colors.to_rgba(crm.plotting.COLOR3))
-        c2 = np.array(mpl.colors.to_rgba(crm.plotting.COLOR1))
-        colors = [c2 * i / q + (1 - i / q) * c1 for i in range(q)]
-        # ax.set_title("Distribution of distances between individual vertices")
-        n_bins = 50
-        logbins = np.logspace(
-            np.log10(np.min([np.min(d) for d in distances_vertices])),
-            np.log10(np.max([np.max(d) for d in distances_vertices])),
-            n_bins + 1,
-        )
-        values, bins, _ = ax.hist(
-            distances_vertices,
-            logbins,
-            stacked=True,
-            color=colors,
-            label="Vertex Diff",
-        )
-
-        ax.set_xscale("log")
-        ax.set_yscale("log")
-        ax.set_xlabel("Distance [µm]")
-        ax.set_ylabel("Count")
-        ax.legend(
-            loc="upper center",
-            bbox_to_anchor=(0.5, 1.10),
-            ncol=3,
-            frameon=False,
-        )
-
-        fig.savefig(OPATH / "displacement-distribution.png")
-        fig.savefig(OPATH / "displacement-distribution.pdf")
-        plt.close(fig)
-
-    if not False:
-        fig, ax = plt.subplots(figsize=(8, 8))
-        crm.plotting.configure_ax(ax)
-
         all_points = np.vstack(directed_diffs).reshape((-1, 2))
         c = sp.stats.gaussian_kde(all_points.T)(all_points.T)
         ax.scatter(
