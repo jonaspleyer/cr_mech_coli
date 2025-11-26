@@ -277,7 +277,7 @@ if __name__ == "__main__":
         ax.set_xlabel("Parallel to Segment [µm]")
         ax.set_ylabel("Orthogonal to Segment [µm]")
 
-        dx = np.percentile(np.abs(all_points), 99.73)
+        dx = float(np.percentile(np.abs(all_points), 99.73))
         # dx = np.max(np.abs(all_points))
         ax.set_xlim(-1.2 * dx, 1.2 * dx)
         ax.set_ylim(-1.2 * dx, 1.2 * dx)
@@ -371,8 +371,8 @@ if __name__ == "__main__":
         dcovs = np.max([np.abs(covs[:, 0, 0]) ** 0.5, np.abs(covs[:, 1, 1]) ** 0.5])
         dlim = np.max([1.2 * dmean, dmean + dcovs])
         ax.set_ylim(-dlim, dlim)
+        ax.set_ylabel("Length [µm]")
         ax.set_xlabel("Time [min]")
-        ax.set_ylabel("Mean [µm]")
         ax.legend(
             loc="upper center",
             bbox_to_anchor=(0.5, 1.10),
@@ -381,6 +381,21 @@ if __name__ == "__main__":
         )
         fig.savefig(OPATH / "displacement-fit-over-time.png")
         fig.savefig(OPATH / "displacement-fit-over-time.pdf")
+
+        ax.cla()
+        crm.plotting.configure_ax(ax)
+        ax.plot(
+            t,
+            covs[:, 0, 1] / covs[:, 0, 0],
+            color=crm.plotting.COLOR4,
+            label="$\\sigma_{01}/\\sigma_{00}$",
+        )
+        ax.set_xlabel("Time [min]")
+        dy = np.max(np.abs(covs[:, 0, 1] / covs[:, 0, 0]))
+        ax.set_ylim(-1, 1)
+        ax.legend(loc="upper center", bbox_to_anchor=(0.5, 1.1), ncol=1, frameon=False)
+        fig.savefig(OPATH / "displacement-fit-over-time-covariance.png")
+        fig.savefig(OPATH / "displacement-fit-over-time-covariance.pdf")
         plt.close(fig)
 
     if not pyargs.skip_graph:
