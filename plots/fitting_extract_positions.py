@@ -30,7 +30,7 @@ def calculate_lengths_distances(
         )[0]
     )
 
-    vertices = []
+    directed_diffs = []
     distances = []
     lengths_extracted = []
     lengths_exact = []
@@ -47,20 +47,28 @@ def calculate_lengths_distances(
         d1 = np.sum(d1t)
         d2 = np.sum(d2t)
 
+        dirs_exact = np.zeros(p.shape)
+        dirs_exact[0] = (p[1] - p[0]) / np.linalg.norm(p[1] - p[0])
+        dirs_exact[-1] = (p[-1] - p[-2]) / np.linalg.norm(p[-1] - p[-2])
+        norm = np.linalg.norm(p[2:] - p[0:-2], axis=1)
+        dirs_exact[1:-1] = (p[2:] - p[0:-2]) / norm[:, np.newaxis]
+        rotation_mats = np.array([[[d[0], d[1]], [-d[1], d[0]]] for d in dirs_exact])
         if d1 <= d2:
             distances.append(d1t / len(p))
-            vertices.append(p - q)
+            diff = q - p
         else:
             distances.append(d2t / len(p))
-            vertices.append(p - q[::-1])
-        # distances_i.append(d)
+            diff = q[::-1] - p
+
+        rotated = np.array([r @ v for r, v in zip(rotation_mats, diff)])
+        directed_diffs.append(rotated)
 
         # Compare total length
         l1 = np.sum((p[1:] - p[:-1]) ** 2) ** 0.5
         l2 = np.sum((q[1:] - q[:-1]) ** 2) ** 0.5
         lengths_extracted.append(l1)
         lengths_exact.append(l2)
-    return vertices, distances, lengths_extracted, lengths_exact
+    return directed_diffs, distances, lengths_extracted, lengths_exact
 
 
 def calculate_lengths_distances_wrapper(args):
@@ -200,7 +208,7 @@ if __name__ == "__main__":
     if not pyargs.skip_graph or not pyargs.skip_distribution:
         crm.plotting.set_mpl_rc_params()
         try:
-            vertices = np.load(OPATH / "vertices.npy", allow_pickle=True)
+            directed_diffs = np.load(OPATH / "directed_diffs.npy", allow_pickle=True)
             distances = np.load(OPATH / "distances.npy", allow_pickle=True)
             distances_vertices = np.load(
                 OPATH / "distances_vertices.npy", allow_pickle=True
@@ -233,7 +241,7 @@ if __name__ == "__main__":
                         total=len(iterations),
                     )
                 )
-            vertices = [r[0] for r in results]
+            directed_diffs = [r[0] for r in results]
             distances = [np.sum(r[1]) / pyargs.n_vertices for r in results]
             distances_vertices = [np.array(r[1]).reshape(-1) for r in results]
             lengths_extracted = [r[2] for r in results]
@@ -244,7 +252,7 @@ if __name__ == "__main__":
                 OPATH.mkdir(parents=True, exist_ok=True)
                 np.save(OPATH / name, np.array(li, dtype=object))
 
-            store_list_of_arrays("vertices", vertices)
+            store_list_of_arrays("directed_diffs", directed_diffs)
             store_list_of_arrays("distances", distances)
             store_list_of_arrays("distances_vertices", distances_vertices)
             store_list_of_arrays("lengths_extracted", lengths_extracted)
