@@ -298,6 +298,129 @@ if __name__ == "__main__":
         fig.savefig(OPATH / "displacement-distribution.pdf")
         plt.close(fig)
 
+    if not False:
+        fig, ax = plt.subplots(figsize=(8, 8))
+        crm.plotting.configure_ax(ax)
+
+        all_points = np.vstack(directed_diffs).reshape((-1, 2))
+        c = sp.stats.gaussian_kde(all_points.T)(all_points.T)
+        ax.scatter(
+            all_points[:, 0],
+            all_points[:, 1],
+            c=c,
+            cmap=crm.plotting.cmap,
+            marker=".",
+        )
+        ax.set_title("Vertex Displacement (3σ)")
+        ax.set_xlabel("Parallel to Segment [µm]")
+        ax.set_ylabel("Orthogonal to Segment [µm]")
+
+        dx = np.percentile(np.abs(all_points), 99.73)
+        # dx = np.max(np.abs(all_points))
+        ax.set_xlim(-1.2 * dx, 1.2 * dx)
+        ax.set_ylim(-1.2 * dx, 1.2 * dx)
+
+        fig.savefig(OPATH / "displacement-distribution.png")
+        fig.savefig(OPATH / "displacement-distribution.pdf")
+        plt.close(fig)
+
+        c1 = np.array(mpl.colors.to_rgba(crm.plotting.COLOR3))
+        c2 = np.array(mpl.colors.to_rgba(crm.plotting.COLOR1))
+        q = len(directed_diffs)
+        colors = [c2 * i / q + (1 - i / q) * c1 for i in range(q)]
+
+        for i, name in enumerate(["x", "y"]):
+            fig, ax = plt.subplots(figsize=(8, 8))
+            crm.plotting.configure_ax(ax)
+
+            ax.hist(
+                [np.array(di)[:, :, i].reshape(-1) for di in directed_diffs],
+                bins=100,
+                stacked=True,
+                color=colors,
+                label="Data",
+            )
+
+            ax.legend(
+                loc="upper center",
+                bbox_to_anchor=(0.5, 1.10),
+                ncol=1,
+                frameon=False,
+            )
+            ax.set_yscale("log")
+            ax.set_xlim(-1.1 * dx, 1.1 * dx)
+
+            fig.savefig(OPATH / f"displacement-distr-{name}.png")
+            fig.savefig(OPATH / f"displacement-distr-{name}.pdf")
+            plt.close(fig)
+
+        # Now do plot over time
+        def gauss2d(x, y, mux, muy, sigmax, sigmay, prefactor):
+            gx = sp.stats.norm.pdf(x, mux, sigmax)
+            gy = sp.stats.norm.pdf(y, muy, sigmay)
+            return prefactor * gx * gy
+
+        means = []
+        covs = []
+        for data in directed_diffs:
+            data = np.array(data).reshape((-1, 2))
+            filt = np.all(np.abs(data) <= dx, axis=1)
+            data = data[filt]
+            mean, cov = sp.stats.multivariate_normal.fit(data)
+            means.append(mean)
+            covs.append(cov)
+
+        means = np.array(means)
+        covs = np.array(covs)
+
+        fig, ax = plt.subplots(figsize=(8, 8))
+        crm.plotting.configure_ax(ax)
+
+        t = np.arange(len(directed_diffs)) * config.t_max / (config.n_saves + 1)
+        ax.plot(
+            t,
+            means[:, 0],
+            color=crm.plotting.COLOR5,
+            label="Mean (parallel)",
+            linestyle="-",
+        )
+        ax.fill_between(
+            t,
+            means[:, 0] - covs[:, 0, 0] ** 0.5,
+            means[:, 0] + covs[:, 0, 0] ** 0.5,
+            color=crm.plotting.COLOR5,
+            alpha=0.5,
+        )
+        ax.plot(
+            t,
+            means[:, 1],
+            color=crm.plotting.COLOR3,
+            label="Mean (orthogonal)",
+            linestyle="--",
+        )
+        ax.fill_between(
+            t,
+            means[:, 1] - covs[:, 1, 1] ** 0.5,
+            means[:, 1] + covs[:, 1, 1] ** 0.5,
+            color=crm.plotting.COLOR3,
+            alpha=0.5,
+        )
+        dmean = np.max(np.abs(means))
+        dcovs = np.max([np.abs(covs[:, 0, 0]) ** 0.5, np.abs(covs[:, 1, 1]) ** 0.5])
+        dlim = np.max([1.2 * dmean, dmean + dcovs])
+        ax.set_ylim(-dlim, dlim)
+        ax.set_xlabel("Time [min]")
+        ax.set_ylabel("Length [µm]")
+        ax.legend(
+            loc="upper center",
+            bbox_to_anchor=(0.5, 1.10),
+            ncol=2,
+            frameon=False,
+        )
+        fig.savefig(OPATH / "displacement-fit-over-time.png")
+        fig.savefig(OPATH / "displacement-fit-over-time.pdf")
+        plt.close(fig)
+
     if not pyargs.skip_graph:
         fig, ax = plt.subplots(figsize=(8, 8))
         crm.plotting.configure_ax(ax)
