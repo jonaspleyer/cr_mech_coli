@@ -1,11 +1,12 @@
 \documentclass[10pt,letterpaper]{article}
 \usepackage[top=0.85in,left=2.75in,footskip=0.75in]{geometry}
 
-
 \usepackage[utf8]{inputenc} % allow utf-8 input
 \usepackage[T1]{fontenc}    % use 8-bit T1 fonts
 \usepackage[hidelinks]{hyperref}       % hyperlinks
 \usepackage{url}            % simple URL typesetting
+\usepackage{algorithm}
+\usepackage{algpseudocode}
 \usepackage{booktabs}       % professional-quality tables
 \usepackage{amsmath,amssymb,amsthm}
 \usepackage{amsfonts}       % blackboard math symbols
@@ -13,6 +14,7 @@
 \usepackage{nicefrac}       % compact symbols for 1/2, etc.
 \usepackage{microtype}      % microtypography
 \usepackage{mathrsfs}
+\usepackage{mathtools}
 \usepackage{onimage}
 \usepackage{graphicx}
 \usepackage{doi}
@@ -814,17 +816,43 @@ Figure~\ref{fig:position-extraction-algorithm} (A) shows a typical microscopic i
 Our algorithm requires that images are prepared using a pixel-based (in-image) encoding scheme, as
 we explained in section~\ref{subsection:visualization}.
 
-Having defined the input type of our algorithm, we proceed with the following 5 steps:
-\textbf{TODO possibly restructure this as an algorithm instead of list}
-\begin{enumerate}
-    \item Obtain submasks for each cell individually.
-    \item Skeletonize submask with algorithm from Lee~\cite{Lee1994}
-    \item Determine endpoints $\vec{q}_0,\vec{q}_1$.
-        Assert that there are only 2 endpoints.
-    \item Sort points such that they form a polygon.
-    \item Interpolate vertices $\vec{x}_i$ from obtained polygon.
-\end{enumerate}
+% Having defined the input type of our algorithm, we proceed with the following 5 steps:
 
+\begin{algorithm}
+    \caption{Position Extraction Algorithm}
+    \label{algo:extraction-algorithm}
+    \begin{algorithmic}[1]
+        \Function{Extraction}{\texttt{mask}, \texttt{n\_vertices}}
+        \State $\texttt{positions} \gets [\hspace{6pt}]$
+        \Comment{Initialzie empty array}
+        \For{\texttt{color $\in$ colors(mask)}}
+            \State $\texttt{submask} \gets \texttt{mask}$% \Comment{Obtain submask for each cell}
+            \For{$\texttt{pixel}\in\texttt{submask}$
+                \Comment{Only retain \texttt{background} and \texttt{color}}
+                \If{$\texttt{pixel}\neq\texttt{color}$}}
+                    \State $\texttt{pixel}\gets\texttt{background}$
+                    \Comment{Background is $(0,0,0)$ in \texttt{RGB}}
+                \EndIf
+            \EndFor
+            \State $\mathrlap{\texttt{skeleton}}\hphantom{\texttt{verticess}} \gets \texttt{skeletonization}_\text{Lee}(\texttt{submask})$
+            \Comment{Method by Lee~\cite{Lee1994}}
+            \State $\mathrlap{\texttt{ends}}\hphantom{\texttt{verticess}} \gets \texttt{endpoints}(\texttt{skeleton})$
+            \If{$\#\texttt{ends}\neq2$}
+                \State \textit{Routine Fails}
+            \EndIf
+            \State $\mathrlap{\texttt{polygon}}\hphantom{\texttt{verticess}} \gets \texttt{sort\_points}(\texttt{skeleton},\texttt{ends})$
+            \Comment{Between endpoints}
+            \State $\mathrlap{\texttt{vertices}}\hphantom{\texttt{verticess}} \gets \texttt{interpolate\_}(\texttt{polygon}, \texttt{n\_vertices})$
+            \State $\texttt{append}(\texttt{positions}, \texttt{vertices})$
+        \EndFor
+        \State \Return \texttt{positions}
+        \EndFunction
+    \end{algorithmic}
+\end{algorithm}
+
+Algorithm~\ref{algo:extraction-algorithm} shows the performed steps which allow us to obtain
+vertices for individual bacteria.
+It requires a segmented image and a desired number of vertices to obtain as inputs.
 In the first step, the image will be split into a collection of subimages that only contain
 information for one single cell.
 From there, we apply a skeletonization algorithm~\cite{Lee1994}
