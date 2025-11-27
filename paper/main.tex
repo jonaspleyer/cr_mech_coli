@@ -1946,53 +1946,6 @@ showcases the exponential growth of bacteria.
 \section{Supplementary Material}
 
 %###################################################################################################
-\subsection{Data Preparation (TODO)}
-\begin{enumerate}
-    \item Have masks of data; reference image segmantation tools; or do it by hand
-    \item ensure that colors are matching for bacteria between time-steps
-    \item clean borders of images if needed
-    \item know domain size; otherwise use pixels
-\end{enumerate}
-
-%###################################################################################################
-\subsection{Details for the Imaging-Based Comparison Algorithm}
-\label{sec:supplement-imaging-based-comparison-algorithm-details}
-
-In a different approach, one might be tempted to utilize the previously constructed direct
-comparison algorithm for time intervals that do not contain any division events.
-But this attempt would quickly lead to multiple problems.
-It will not be able to deal with the uncertainties of the timing of the division event.
-As the number of investigated cells grows, more division events will occurr even in a fixed
-amount of time thus greatly decreasing or completely vanishing the effective interval at which no
-division event is observed.
-The latter situation is equivalent to two microscopic images as input data between which a division
-event has occured.
-
-
-%###################################################################################################
-\subsection{Parameter Estimation Results (TODO)}
-\label{sec:supplement-parameter-profiles}
-
-%TODO {explain profiles}
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.33\textwidth]
-        {figures/crm_fit/profiles/growth-rate-0.pdf}%
-    \includegraphics[width=0.33\textwidth]
-        {figures/crm_fit/profiles/growth-rate-1.pdf}%
-    \includegraphics[width=0.33\textwidth]
-        {figures/crm_fit/profiles/growth-rate-2.pdf}\\%
-    \includegraphics[width=0.33\textwidth]
-        {figures/crm_fit/profiles/growth-rate-3.pdf}%
-    \includegraphics[width=0.33\textwidth]
-        {figures/crm_fit/profiles/growth-rate-4.pdf}%
-    \includegraphics[width=0.33\textwidth]
-        {figures/crm_fit/profiles/growth-rate-5.pdf}
-    \caption{Parameter estimation of growth rates for individual cells}%TODO extend caption}
-    \label{fig:parameter-estimates-supplement-growth-rates}
-\end{figure}
-
-%###################################################################################################
 \subsection{Alternative Interaction Potential - Morse Potential}
 \label{sec:supplement-morse-potential}
 The morse potential~\cite{Morse1929} is a common example of numerically inexpensive interaction
@@ -2092,9 +2045,49 @@ event has occured.
 \end{figure}
 
 %###################################################################################################
-\subsection{How to use obtained heterogenous results}
+\subsection{Analysis \& Usage of heterogeneous Parameter Value (TODO)}
 In order to reuse this model, we also provide the option to assign growth rates by sampling from a
 normal distribution with user-defined parameters.
+
+%###################################################################################################
+\subsection{Application Data \& Preparation (TODO)}
+\label{sec:supplement-data-details}
+
+\begin{figure}[H]
+    \centering
+    % TODO include snapshots of utilized data
+    \caption{TODO}
+\end{figure}
+
+\begin{enumerate}
+    \item Have masks of data; reference image segmantation tools; or do it by hand
+    \item ensure that colors are matching for bacteria between time-steps
+    \item clean borders of images if needed
+    \item know domain size; otherwise use pixels
+\end{enumerate}
+
+%###################################################################################################
+\subsection{Parameter Estimation Results (TODO)}
+\label{sec:supplement-parameter-profiles}
+
+%TODO {explain profiles}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.33\textwidth]
+        {figures/crm_fit/profiles/growth-rate-0.pdf}%
+    \includegraphics[width=0.33\textwidth]
+        {figures/crm_fit/profiles/growth-rate-1.pdf}%
+    \includegraphics[width=0.33\textwidth]
+        {figures/crm_fit/profiles/growth-rate-2.pdf}\\%
+    \includegraphics[width=0.33\textwidth]
+        {figures/crm_fit/profiles/growth-rate-3.pdf}%
+    \includegraphics[width=0.33\textwidth]
+        {figures/crm_fit/profiles/growth-rate-4.pdf}%
+    \includegraphics[width=0.33\textwidth]
+        {figures/crm_fit/profiles/growth-rate-5.pdf}
+    \caption{Parameter estimation of growth rates for individual cells}%TODO extend caption}
+    \label{fig:parameter-estimates-supplement-growth-rates}
+\end{figure}
 
 %###################################################################################################
 % \subsection{More Simulation Aspects (TODO)}
