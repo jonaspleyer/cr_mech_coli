@@ -248,7 +248,7 @@ def objective_function(
         return p_rods, positions_data, parameters
 
     diff = p_rods[1:] - positions_data[1:]
-    cost = np.linalg.norm(diff)
+    cost = np.sum(diff**2)
 
     if print_output:
         print(f"f(x)={cost:>7.4f}", end=" ")
@@ -400,6 +400,7 @@ def plot_profile(
     ax,
     color,
     label: str,
+    displacement_error: float,
 ):
     # Filter out results that have produced errors
     filt = costs != ERROR_COST
@@ -412,8 +413,16 @@ def plot_profile(
     p_samples = p_samples[ind]
     costs = costs[ind]
 
-    ax.plot(p_samples, costs, color=color, label=label)
-    ax.scatter(popt[n], final_cost, marker="x", color="red", alpha=0.7, s=10**2)
+    d = displacement_error
+    ax.plot(p_samples, (costs - final_cost) / d**2, color=color, label=label)
+    ax.scatter(
+        popt[n],
+        0 * final_cost / d,
+        marker="x",
+        color=color,
+        alpha=0.7,
+        s=12**2,
+    )
     name = list(x0_bounds.keys())[n].replace("_", " ")
     units = list(x0_bounds.items())[n][1][3]
     ax.set_xlabel(f"{name} {units}")
@@ -728,6 +737,7 @@ def crm_amir_main():
     )
 
     # plot_angles_and_endpoints()
+    displacement_error = 0.8
 
     output_dir = Path("out/crm_amir/profiles/")
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -747,6 +757,7 @@ def crm_amir_main():
             ax,
             color=COLOR3,
             label="Full",
+            displacement_error=displacement_error,
         )
 
         names2 = np.array(list(params2.keys()))
