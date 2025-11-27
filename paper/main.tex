@@ -905,38 +905,79 @@ is not dominated by outliers.
     Damit ich aber schneller durchkomme, verschieben wir das auf später.
 }
 
+\paragraph{Determining the underlying Error Model}
+
+
 \begin{figure}[H]
     \centering
     \begin{tikzonimage}[width=0.36\textwidth]
         {docs/source/_static/fitting-methods/algorithm/image001042.png}
         \node at (0.025, 0.975)[anchor=north west, rectangle, draw, white, minimum width=15pt, minimum height=15pt]{\textbf{A}};
-    \end{tikzonimage}
+    \end{tikzonimage}%
+    \hspace{0.01\textwidth}%
     \begin{tikzonimage}[width=0.36\textwidth]
         {docs/source/_static/fitting-methods/algorithm/mask-zoom.pdf}
         \node at (0.025, 0.975)[anchor=north west, rectangle, draw, white, minimum width=15pt, minimum height=15pt]{\textbf{B}};
-    \end{tikzonimage}
+    \end{tikzonimage}%
+    \hspace{0.01\textwidth}%
     \begin{tikzonimage}[width=0.255\textwidth]
         {docs/source/_static/fitting-methods/algorithm/interpolate-positions.pdf}
         \node at (0.025, 0.975)[anchor=north west, rectangle, draw, white, minimum width=15pt, minimum height=15pt]{\textbf{C}};
-    \end{tikzonimage}
-    \begin{tikzonimage}[width=0.5\textwidth]
-        {docs/source/_static/fitting-methods/displacement-calculations.pdf}%
-        \node at (0.03, 0.99)[anchor=north west, rectangle, draw, black, minimum width=15pt, minimum height=15pt]{\textbf{D}};
+    \end{tikzonimage}\\
+    \vspace{0.005\textwidth}%
+    \begin{tikzonimage}[width=0.195\textwidth]
+        {docs/source/_static/fitting-methods/extract_positions-001800.pdf}
+        \node at (0.03, 0.99)[anchor=north west, rectangle, draw, white, minimum width=15pt, minimum height=15pt]{\textbf{D}};
     \end{tikzonimage}%
-    \begin{tikzonimage}[width=0.5\textwidth]
+    \hspace{0.005\textwidth}%
+    \begin{tikzonimage}[width=0.195\textwidth]
+        {docs/source/_static/fitting-methods/extract_positions-003800.pdf}
+        \node at (0.03, 0.99)[anchor=north west, rectangle, draw, white, minimum width=15pt, minimum height=15pt]{\textbf{E}};
+    \end{tikzonimage}%
+    \hspace{0.005\textwidth}%
+    \begin{tikzonimage}[width=0.195\textwidth]
+        {docs/source/_static/fitting-methods/extract_positions-005800.pdf}
+        \node at (0.03, 0.99)[anchor=north west, rectangle, draw, white, minimum width=15pt, minimum height=15pt]{\textbf{F}};
+    \end{tikzonimage}%
+    \hspace{0.005\textwidth}%
+    \begin{tikzonimage}[width=0.195\textwidth]
+        {docs/source/_static/fitting-methods/extract_positions-007800.pdf}
+        \node at (0.03, 0.99)[anchor=north west, rectangle, draw, white, minimum width=15pt, minimum height=15pt]{\textbf{G}};
+    \end{tikzonimage}%
+    \hspace{0.005\textwidth}%
+    \begin{tikzonimage}[width=0.195\textwidth]
+        {docs/source/_static/fitting-methods/extract_positions-009800.pdf}
+        \node at (0.03, 0.99)[anchor=north west, rectangle, draw, white, minimum width=15pt, minimum height=15pt]{\textbf{H}};
+    \end{tikzonimage}\\
+    \hspace{0.005\textwidth}%
+    \begin{tikzonimage}[width=0.33\textwidth]
+        {docs/source/_static/fitting-methods/displacement-calculations.pdf}%
+        \node at (0, 1)[anchor=north west, rectangle, draw, black, minimum width=15pt, minimum height=15pt]{\textbf{I}};
+    \end{tikzonimage}%
+    \begin{tikzonimage}[width=0.33\textwidth]
         {docs/source/_static/fitting-methods/displacement-distribution.pdf}
-        \node at (0.03, 0.99)[anchor=north west, rectangle, draw, black, minimum width=15pt, minimum height=15pt]{\textbf{E}};
-    \end{tikzonimage}
+        \node at (0, 1)[anchor=north west, rectangle, draw, black, minimum width=15pt, minimum height=15pt]{\textbf{J}};
+    \end{tikzonimage}%
+    \begin{tikzonimage}[width=0.33\textwidth]
+        {docs/source/_static/fitting-methods/displacement-fit-over-time.pdf}
+        \node at (0, 1)[anchor=north west, rectangle, draw, black, minimum width=15pt, minimum height=15pt]{\textbf{K}};
+    \end{tikzonimage}%
     \caption{
-        (A) Input image.
+        (A) Microscopic image used as input for the extraction algorithm.
         (B) Result of the skeletonization algorithm for a single cell.
         (C) Vertices $\vec{x}_i$ which have been interpolated from the skeletonized cell.
-        They represent the position of our cell-agents.
-        Subfigure (D) displayes the average rod length of the exact and extracted data.
+        They can be directly used as the position of our cell-agents.
+        (D-H) Snapshots of simulated data used for benchmarking.
+        (I) Average rod length of the exact and extracted data.
         The light blue region is the mean distance between vertices of extracted and exact
         positions which captures the inherent uncertainty of our method.
-        Subfigure (E) displays all of these distances on a logarithmic scale.
-        The colorscale represents earlier (darker) and later (brighter) temporal states of our
+        (J) Displacement of individual vertices parallel and orthogonal to the rod.
+        The exact value of the vertex is always in the center.
+        Brighter colors indicate higher densities.
+        The range of the plot is restricted to a $3\sigma$ interval, to enhance visualization and
+        exclude outliers.
+        (K) Mean $\mu_{p,o}$ and variance $\sigma_{p,o}$ of fitted normal distribution for
+        displacements parallel and orthogonal to the rod displayed over the duration of the
         simulation.
     }
     \label{fig:benchmarking-extraction-algorithm}
@@ -1970,6 +2011,41 @@ The overall potential strength $V_0$, the radii of the particles $R_1,R_2$ and t
 stiffness $\lambda$ which controls the rate of change as one travels along the radial axis.
 We employ a spatial cutoff which sets the interaction strength to $0$ when exceeding a distance
 $r\geq\xi$.
+
+%###################################################################################################
+\subsection{Details for the Imaging-Based Comparison Algorithm}
+\label{sec:supplement-imaging-based-comparison-algorithm-details}
+
+In a different approach, one might be tempted to utilize the previously constructed direct
+comparison algorithm for time intervals that do not contain any division events.
+But this attempt would quickly lead to multiple problems.
+It will not be able to deal with the uncertainties of the timing of the division event.
+As the number of investigated cells grows, more division events will occurr even in a fixed
+amount of time thus greatly decreasing or completely vanishing the effective interval at which no
+division event is observed.
+The latter situation is equivalent to two microscopic images as input data between which a division
+event has occured.
+
+\begin{figure}
+    \centering
+    \begin{tikzonimage}[width=0.5\textwidth]
+        {docs/source/_static/fitting-methods/displacement-distr-x.pdf}
+        \node at (0.03, 0.99)[anchor=north west, rectangle, draw, black, minimum width=15pt, minimum height=15pt]{\textbf{F}};
+    \end{tikzonimage}%
+    \begin{tikzonimage}[width=0.5\textwidth]
+        {docs/source/_static/fitting-methods/displacement-distr-y.pdf}
+        \node at (0.03, 0.99)[anchor=north west, rectangle, draw, black, minimum width=15pt, minimum height=15pt]{\textbf{G}};
+    \end{tikzonimage}\\
+    \begin{tikzonimage}[width=0.5\textwidth]
+        {docs/source/_static/fitting-methods/displacement-fit-over-time-covariance.pdf}
+        \node at (0.03, 0.99)[anchor=north west, rectangle, draw, black, minimum width=15pt, minimum height=15pt]{\textbf{H}};
+    \end{tikzonimage}%
+    \begin{tikzonimage}[width=0.5\textwidth]
+        {docs/source/_static/fitting-methods/displacement-distribution.pdf}
+        \node at (0.03, 0.99)[anchor=north west, rectangle, draw, black, minimum width=15pt, minimum height=15pt]{\textbf{I}};
+    \end{tikzonimage}
+    \caption{TODO}
+\end{figure}
 
 %###################################################################################################
 \subsection{Experimental Setup of Amir et. al}
