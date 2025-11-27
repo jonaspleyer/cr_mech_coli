@@ -426,7 +426,7 @@ def plot_profile(
     name = list(x0_bounds.keys())[n].replace("_", " ")
     units = list(x0_bounds.items())[n][1][3]
     ax.set_xlabel(f"{name} {units}")
-    ax.set_ylabel("Cost Function")
+    ax.set_ylabel("PL(θ) - L(θ)")
 
 
 def create_default_parameters(positions_data, iterations_data):
@@ -773,6 +773,7 @@ def crm_amir_main():
                 ax,
                 color=COLOR5,
                 label="$\\lambda=\\lambda_\\text{opt}$",
+                displacement_error=displacement_error,
             )
 
         names3 = np.array(list(params3.keys()))
@@ -789,6 +790,37 @@ def crm_amir_main():
                 color=COLOR1,
                 label="$\\mu=\\mu_\\text{opt}$",
             )
+
+        all_costs = [costs1[:, n] - pfin1]
+        if name in names2:
+            all_costs.append(costs2[:, k] - pfin2)
+        if name in names3:
+            all_costs.append(costs3[:, m] - pfin3)
+        min_costs = np.min(all_costs, axis=0) / displacement_error**2
+        p_samples = samples1[:, n]  # This should be identical for all profiles
+
+        # Fill confidence levels
+        thresh_prev = 0
+        for i, q in enumerate([0.68, 0.90, 0.95]):
+            thresh = sp.stats.chi2.ppf(q, 1)
+            color = crm.plotting.COLOR3 if i % 2 == 0 else crm.plotting.COLOR5
+            y = min_costs
+            filt = y <= thresh
+            lower = np.max(np.array([y, np.repeat(thresh_prev, len(y))]), axis=0)
+            ax.fill_between(
+                p_samples,
+                lower,
+                np.repeat(thresh, len(lower)),
+                where=filt,
+                interpolate=True,
+                color=color,
+                alpha=0.3,
+            )
+            thresh_prev = thresh
+
+        upper = np.min([4 * thresh_prev, np.max([np.max(all_costs), thresh_prev])])
+        lower = -0.05 * upper
+        ax.set_ylim(lower, upper)
 
         ax.legend(
             loc="upper center",
