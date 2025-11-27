@@ -1412,7 +1412,7 @@ estimate parameters of our system, we need to account for natural cell-variabili
 selected parameters on a per-cell basis.
 
 However, we will now present data that indicate that an individual treatment is in fact necessary.
-Figure~\ref{fig:estimated-growth-rates} shows the rod-lengths of individual bacteria which have been
+Figure~\ref{fig:application-2-data-overview} shows the rod-lengths of individual bacteria which have been
 calculated from the extracted positions.
 We fit a delayed exponential function to them which is defined by
 
@@ -1429,7 +1429,7 @@ equation in cell-cycle section}
 
 where $\lambda$ is the growth rate and $t_0$ the delay.
 Fitting this function to the individual growth curves of the bacteria and their mean growth curve,
-both results in good agreements (Figure~\ref{fig:estimated-growth-rates} A,B).
+both results in good agreements (Figure~\ref{fig:application-2-data-overview} A,B).
 However, the latter exhibits large amounts of uncertainty within the data which is also illustrated
 in subfigure (C).
 There, we can see much more clearly the difference between considering assigning parameters per cell
@@ -1449,39 +1449,6 @@ individually.
 %         different cells and thus do not "interact" as other parameters with each other?
 %         ie. they are part of the same subspace.
 % \end{enumerate}
-
-\begin{figure}[H]
-    \centering
-    \begin{tikzonimage}[width=0.28\textwidth]
-        {figures/crm_fit-data-progression.png}
-        \node at (0.02, 0.98)[anchor=north west, rectangle, draw, white, minimum width=15pt, minimum height=15pt]{\textbf{A}};
-    \end{tikzonimage}%
-    \hspace{0.01\textwidth}%
-    \begin{tikzonimage}[width=0.35\textwidth]
-        {figures/crm_estimate_params/IWF-Goettingen/rod-lengths-individual.pdf}%
-        \node at (0, 1)[anchor=north west, rectangle, draw, black, minimum width=15pt, minimum height=15pt]{\textbf{B}};
-    \end{tikzonimage}%
-    \begin{tikzonimage}[width=0.35\textwidth]
-        {figures/crm_estimate_params/IWF-Goettingen/growth-rates-distribution.pdf}%
-        \node at (0, 1)[anchor=north west, rectangle, draw, black, minimum width=15pt, minimum height=15pt]{\textbf{C}};
-    \end{tikzonimage}%
-    \caption{
-        \textbf{TODO Fix caption!}\\
-        \textbf{Link to supplement for discussion of bar plot}\\
-        % TODO use same y-axis across the plots
-        (B) The subfigure shows the time-evolution of the rod-lengths for every individual
-        bacterium.
-        These growth curves are fitted individually with delayed exponential function.
-        (C) The datapoints are created by averaging the rod-lengths shown in subfigure (A) and then
-        fitted with an exponential function.
-        The uncertainty band is the standard deviation of the averaged datapoints.
-        (C) Blue dots show the combination of estimated growth rates and delays for individual
-        bacteria while the orange dot corresponds to the average.
-        Ellipses around the datapoints are taken from the uncertainty of the fits.
-        Time is given in units of frames of the movie from which the data have been extracted.
-    }
-    \label{fig:estimated-growth-rates}
-\end{figure}
 
 % --------------------------------------------------------------------------------------------------
 \subsubsection{Without Division}
