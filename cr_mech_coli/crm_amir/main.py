@@ -644,7 +644,7 @@ def crm_amir_main():
     parser.add_argument(
         "--optim-atol-profiles",
         type=float,
-        default=0,
+        default=1e-2,
         help="Absolute Tolerance for optimization within profiles",
     )
     parser.add_argument(
