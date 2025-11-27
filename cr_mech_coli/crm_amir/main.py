@@ -824,7 +824,9 @@ def crm_amir_main():
             )
             thresh_prev = thresh
 
-        upper = np.min([4 * thresh_prev, np.max([np.max(all_costs), thresh_prev])])
+        upper = np.min(
+            [4 * thresh_prev, 1.05 * np.max([np.max(all_costs), thresh_prev])]
+        )
         lower = -0.05 * upper
         ax.set_ylim(lower, upper)
 
