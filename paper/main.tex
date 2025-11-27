@@ -1276,46 +1276,55 @@ Gathering additional transient information would allow us to better estimate the
 
 \begin{figure}[H]
     \centering
-    \begin{minipage}{0.38\textwidth}
-        \begin{tikzonimage}[width=\textwidth]
-            {figures/amir-elastic-000032-with-axes.png}%
-            \node at (0.01, 0.01+17pt)[anchor=north west, rectangle, draw, white, minimum width=15pt, minimum height=15pt]{\textbf{A}};
-        \end{tikzonimage}%
-    \end{minipage}%
-    \begin{minipage}{0.62\textwidth}
-        \begin{tikzonimage}[width=0.33\textwidth]
-            {figures/crm_amir/profiles-reduced/fit-comparison.pdf}%
-            \node at (0.13, 0.88)[anchor=north west, black, minimum width=15pt, minimum height=15pt]{\textbf{B}};
-        \end{tikzonimage}%
-        \begin{tikzonimage}[width=0.33\textwidth]
-            {figures/crm_amir/profiles/drag_force.pdf}%
-            \node at (0.13, 0.88)[anchor=north west, black, minimum width=15pt, minimum height=15pt]{\textbf{C}};
-        \end{tikzonimage}%
-        \begin{tikzonimage}[width=0.33\textwidth]
-            {figures/crm_amir/profiles/growth_rate.pdf}%
-            \node at (0.13, 0.88)[anchor=north west, black, minimum width=15pt, minimum height=15pt]{\textbf{D}};
-        \end{tikzonimage}\\
-        \begin{tikzonimage}[width=0.33\textwidth]
-            {figures/crm_amir/profiles/rod_rigidity.pdf}%
-            \node at (0.13, 0.88)[anchor=north west, black, minimum width=15pt, minimum height=15pt]{\textbf{E}};
-        \end{tikzonimage}%
-        \begin{tikzonimage}[width=0.33\textwidth]
-            {figures/crm_amir/profiles/spring_tension.pdf}%
-            \node at (0.13, 0.88)[anchor=north west, black, minimum width=15pt, minimum height=15pt]{\textbf{F}};
-        \end{tikzonimage}%
-        \begin{tikzonimage}[width=0.33\textwidth]
-            {figures/crm_amir/profiles/damping.pdf}%
-            \node at (0.13, 0.88)[anchor=north west, black, minimum width=15pt, minimum height=15pt]{\textbf{G}};
-        \end{tikzonimage}%
-    \end{minipage}
+    \begin{tikzonimage}[width=0.3\textwidth]
+        {figures/crm_amir/progressions/step4-000010.png}
+        \node at (0.02,17pt)[anchor=north west, white, draw, minimum width=15pt, minimum height=15pt]{\textbf{A}};
+    \end{tikzonimage}%
+    \hspace{0.01\textwidth}%
+    \begin{tikzonimage}[width=0.3\textwidth]
+        {figures/crm_amir/progressions/step4-000017.png}
+        \node at (0.02,17pt)[anchor=north west, white, draw, minimum width=15pt, minimum height=15pt]{\textbf{B}};
+    \end{tikzonimage}%
+    \hspace{0.01\textwidth}%
+    \begin{tikzonimage}[width=0.3\textwidth]
+        {figures/crm_amir/progressions/step4-000034.png}
+            \node at (0.01, 0.01+17pt)[anchor=north west, rectangle, draw, white, minimum width=15pt, minimum height=15pt]{\textbf{C}};
+    \end{tikzonimage}\\
+    \begin{tikzonimage}[width=0.33\textwidth]
+        {figures/crm_amir/profiles-reduced/fit-comparison.pdf}%
+        \node at (0.13, 0.88)[anchor=north west, black, minimum width=15pt, minimum height=15pt]{\textbf{B}};
+    \end{tikzonimage}%
+    \begin{tikzonimage}[width=0.33\textwidth]
+        {figures/crm_amir/profiles/drag_force.pdf}%
+        \node at (0.13, 0.88)[anchor=north west, black, minimum width=15pt, minimum height=15pt]{\textbf{D}};
+    \end{tikzonimage}%
+    \begin{tikzonimage}[width=0.33\textwidth]
+        {figures/crm_amir/profiles/growth_rate.pdf}%
+        \node at (0.13, 0.88)[anchor=north west, black, minimum width=15pt, minimum height=15pt]{\textbf{E}};
+    \end{tikzonimage}\\
+    \begin{tikzonimage}[width=0.33\textwidth]
+        {figures/crm_amir/profiles/rod_rigidity.pdf}%
+        \node at (0.13, 0.88)[anchor=north west, black, minimum width=15pt, minimum height=15pt]{\textbf{F}};
+    \end{tikzonimage}%
+    \begin{tikzonimage}[width=0.33\textwidth]
+        {figures/crm_amir/profiles/spring_tension.pdf}%
+        \node at (0.13, 0.88)[anchor=north west, black, minimum width=15pt, minimum height=15pt]{\textbf{G}};
+    \end{tikzonimage}%
+    \begin{tikzonimage}[width=0.33\textwidth]
+        {figures/crm_amir/profiles/damping.pdf}%
+        \node at (0.13, 0.88)[anchor=north west, black, minimum width=15pt, minimum height=15pt]{\textbf{H}};
+    \end{tikzonimage}%
     \caption{
+        \textbf{TODO fix caption numbers and add missing stuff}
         (A) Microscopic image containing a single bacterium which is partially confined in a narrow
         tube on the bottom and free at the top where a controlled flow can be exerted on them.
         Division of the bacteria is inhibited.
         (B) A comparison of the initial and bent state show good visual agreement of our prediction
         with the experimental data.
-        (C-G) Likelihood profiles for the individual parameters before and after performing model
-        reduction.
+        (C-G) Likelihood profiles for the individual parameters before and after performing two
+        successive model reductions.
+        The first step removes any damping effects by settings $\lambda=0$ while the second fixes
+        the spring tension to its calculated optimum $\gamma=\gamma_\text{opt}$.
     }
     \label{fig:amir-bending-simulation}
 \end{figure}
