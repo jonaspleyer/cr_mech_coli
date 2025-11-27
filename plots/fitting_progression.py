@@ -2,12 +2,14 @@ import cr_mech_coli as crm
 import cv2 as cv
 from pathlib import Path
 from PIL import Image
+import numpy as np
 
 from fitting_extract_positions import create_simulation_result
 
 
 def store_image(mask, path, name):
-    pil_img = Image.fromarray(mask).convert("RGB")
+    image_rgb = cv.cvtColor(mask.astype(np.uint8), cv.COLOR_BGR2RGB)
+    pil_img = Image.fromarray(image_rgb)
     pil_img.save(str(path / name) + ".pdf")
     cv.imwrite(filename=str(path / name) + ".png", img=mask)
 

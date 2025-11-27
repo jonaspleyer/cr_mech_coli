@@ -192,11 +192,10 @@ if __name__ == "__main__":
                         2,
                     )
 
-            cv.imwrite(
-                filename=str(OPATH / f"extract_positions-{iteration:06}.png"),
-                img=mask,
-            )
-            pil_img = Image.fromarray(mask)
+            fname = str(OPATH / f"extract_positions-{iteration:06}.png")
+            cv.imwrite(filename=fname, img=mask)
+            image_rgb = cv.cvtColor(mask, cv.COLOR_BGR2RGB)
+            pil_img = Image.fromarray(image_rgb)
             pil_img.save(str(OPATH / f"extract_positions-{iteration:06}.pdf"))
 
     ccs = cell_container.serialize()
