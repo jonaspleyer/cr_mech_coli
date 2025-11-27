@@ -355,7 +355,7 @@ However, the construction of any mechanistic model also requires prior konwledge
 to inform our analysis methods.
 For example, by extracing the positions of bacteria across a time-series of microscopic images, we
 can also calculate their lengths at these time-points and thus determine their rate of growth and
-type of growth (see section~\ref{subsec:parameter-estimation-individual-treatment}), thus
+type of growth (see section~\ref{paragraph:parameter-estimation-individual-treatment}), thus
 effectively guiding our modeling steps.
 As we will show later, extracted data in the form of cellular positions or segmentation masks can
 also be used for comparing computational results with biological ground truth.
@@ -1333,9 +1333,11 @@ masks.
 % --------------------------------------------------------------------------------------------------
 \subsubsection{The role of Heterogeneity}
 
-We have already suspected (see Table~\ref{table:simulation-aspects}) that in order to properly
+\paragraph{Cell-Cell Variability within the Dataset}
+\label{paragraph:parameter-estimation-individual-treatment}
+We have already discussed (see Section~\ref{sec:role-of-heterogeneity}) that in order to properly
 estimate parameters of our system, we need to account for natural cell-variability, thus assigning
-parameters on a per-cell basis.
+selected parameters on a per-cell basis.
 
 However, we will now present data that indicate that an individual treatment is in fact necessary.
 Figure~\ref{fig:estimated-growth-rates} shows the rod-lengths of individual bacteria which have been
@@ -1376,7 +1378,6 @@ individually.
 %         ie. they are part of the same subspace.
 % \end{enumerate}
 
-\label{subsec:parameter-estimation-individual-treatment}
 \begin{figure}[H]
     \centering
     \begin{tikzonimage}[width=0.28\textwidth]
