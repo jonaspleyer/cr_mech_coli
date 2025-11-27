@@ -1364,26 +1364,43 @@ masks.
 
 \begin{figure}[H]
     \centering
-    \begin{tikzonimage}[width=0.24\textwidth]
-        {../data/crm_divide/0003/images/001044.png}%
-        \node at (0.02, 0.98)[anchor=north west, white, minimum width=15pt, minimum height=15pt]{\textbf{A}};
+    \begin{tikzonimage}[width=0.49\textwidth]
+        {figures/data/crm_fit/001044.png}%
+        \node at (0.02, 0.98)[anchor=north west, draw, white, minimum width=15pt, minimum height=15pt]{\textbf{A}};
     \end{tikzonimage}%
     \hspace{0.01\textwidth}%
-    \begin{tikzonimage}[width=0.24\textwidth]
-        {../data/crm_divide/0003/images/001054.png}%
-        \node at (0.02, 0.98)[anchor=north west, white, minimum width=15pt, minimum height=15pt]{\textbf{B}};
+    \begin{tikzonimage}[width=0.49\textwidth]
+        {figures/data/crm_fit/001044-markers.pdf}%
+        \node at (0.02, 0.98)[anchor=north west, draw, white, minimum width=15pt, minimum height=15pt]{\textbf{B}};
+    \end{tikzonimage}\\
+    \begin{tikzonimage}[width=0.28\textwidth]
+        {figures/crm_fit-data-progression.png}
+        \node at (0.02, 0.98)[anchor=north west, draw, white, minimum width=15pt, minimum height=15pt]{\textbf{C}};
     \end{tikzonimage}%
     \hspace{0.01\textwidth}%
-    \begin{tikzonimage}[width=0.24\textwidth]
-        {../data/crm_divide/0003/images/001063.png}%
-        \node at (0.02, 0.98)[anchor=north west, white, minimum width=15pt, minimum height=15pt]{\textbf{C}};
+    \begin{tikzonimage}[width=0.35\textwidth]
+        {figures/crm_estimate_params/IWF-Goettingen/rod-lengths-individual.pdf}%
+        \node at (0, 1)[anchor=north west, draw, black, minimum width=15pt, minimum height=15pt]{\textbf{D}};
     \end{tikzonimage}%
-    \hspace{0.01\textwidth}%
-    \begin{tikzonimage}[width=0.24\textwidth]
-        {../data/crm_divide/0003/images/001074.png}%
-        \node at (0.02, 0.98)[anchor=north west, white, minimum width=15pt, minimum height=15pt]{\textbf{D}};
+    \begin{tikzonimage}[width=0.35\textwidth]
+        {figures/crm_estimate_params/IWF-Goettingen/growth-rates-bar-plot.pdf}%
+        \node at (0, 1)[anchor=north west, draw, black, minimum width=15pt, minimum height=15pt]{\textbf{E}};
     \end{tikzonimage}%
-    \caption{TODO insert segmentation masks here}
+    \caption{
+        \textbf{TODO also insert vertical in (B) line to indicate when direct comparison algorithm
+        starts.}
+        \textbf{Link to supplement for discussion of bar plot}\\
+        (A) Snapshot of used microscopic images.
+        (B) Segmented microscopic image.
+        (C) Selected time points of the utilized time series showcasing the spatial configurations
+        of the investigated bacteria.
+        A complete list of snapshots is included in the supplementary material (see
+        section~\ref{sec:supplement-data-details}).
+        (D) Growth curves of individual bacteria including a discrete delay before exponential
+        growth is experienced.
+        (E) Distribution of growth parameters shows cell-cell variability of the analyzed sample.
+        The obtained results are further discussed in the supplementary material section~\ref{}.
+    }
     \label{fig:application-2-data-overview}
 \end{figure}
 
