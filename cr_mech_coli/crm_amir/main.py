@@ -681,11 +681,11 @@ def crm_amir_main():
     positions_data, iterations_data = obtain_data("out/crm_amir/", n_vertices=20)
 
     # Define globals for all optimizations
-    rod_rigidity = (0.0, 20.0, 450, "[µm/s²]")
-    drag_force = (0.0000, 0.0001, 0.001, "[1/s²µm²]")
-    damping = (0.000, 0.1, 0.1, "[1/s]")
-    growth_rate = (0.0, 0.01, 0.04, "[1/s]")
-    spring_tension = (10, 30.0, 200.0, "[1/s²]")
+    rod_rigidity = (50, 120.0, 400, "[µm/s²]")
+    drag_force = (0.0, 0.0001, 0.0003, "[1/s²µm²]")
+    damping = (0.000, 0.1, 0.3, "[1/s]")
+    growth_rate = (0.002, 0.01, 0.02, "[1/s]")
+    spring_tension = (10, 30.0, 160.0, "[1/s²]")
 
     # Define which parameters should be optimized
     x0_bounds = {
@@ -710,7 +710,7 @@ def crm_amir_main():
         "growth_rate": growth_rate,
         "spring_tension": spring_tension,
     }
-    set_params = {"damping": params1["damping"]}
+    set_params = {"damping": 0}
     pfin2, popt2, costs2, samples2, params2 = compare_with_data(
         x0_bounds_reduced,
         positions_data,
@@ -723,12 +723,15 @@ def crm_amir_main():
     x0_bounds_3 = {
         "rod_rigidity": rod_rigidity,
         "drag_force": drag_force,
-        "damping": damping,
-        # "growth_rate": growth_rate,
-        "spring_tension": spring_tension,
+        # "damping": damping,
+        "growth_rate": growth_rate,
+        # "spring_tension": spring_tension,
     }
     # set_params_3 = {"spring_tension": params2["spring_tension"]}
-    set_params_3 = {"growth_rate": params2["growth_rate"]}
+    set_params_3 = {
+        "spring_tension": params2["spring_tension"],
+        "damping": 0,
+    }
     pfin3, popt3, costs3, samples3, params3 = compare_with_data(
         x0_bounds_3,
         positions_data,
@@ -764,17 +767,17 @@ def crm_amir_main():
 
         names2 = np.array(list(params2.keys()))
         if name in names2:
-            m = np.where(name == names2)[0][0]
+            k = np.where(name == names2)[0][0]
             plot_profile(
-                m,
-                samples2[:, m],
-                costs2[:, m],
+                k,
+                samples2[:, k],
+                costs2[:, k],
                 popt2,
                 pfin2,
                 x0_bounds_reduced,
                 ax,
                 color=COLOR5,
-                label="$\\lambda=\\lambda_\\text{opt}$",
+                label="$\\lambda=0$",
                 displacement_error=displacement_error,
             )
 
@@ -790,7 +793,8 @@ def crm_amir_main():
                 x0_bounds_3,
                 ax,
                 color=COLOR1,
-                label="$\\mu=\\mu_\\text{opt}$",
+                label="$\\gamma=\\gamma_\\text{opt}$",
+                displacement_error=displacement_error,
             )
 
         all_costs = [costs1[:, n] - pfin1]
