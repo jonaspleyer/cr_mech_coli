@@ -136,20 +136,7 @@ Jonas Pleyer\textsuperscript{1}, Christian Fleck\textsuperscript{1}\\
 
 
 
-%###################################################################################################
-\begin{abstract}
-    \aclp{abm} have become popular tools in the study of complex cellular systems.
-    However, despite their popularity, it is often difficult to systematically estimate their
-    parameters and perform advanced analyses, e.g., using the profile-likelihood.
-    In this work, we study the mechanical properties of rod-shaped bacteria and provide techniques
-    for estimating their parameters and performing identifiability analysis on them.
-    Our approach may serve as a blueprint for a modular framework which can be adapted to other
-    research questions.
-    We use time series of microscopic images as input data and incorporate advanced effects as the
-    elasticity of the rod.
-    The developed model serves as a generalized foundation to describe multiple species of
-    rod-shaped bacteria such as \acl{ecoli} or \acl{bsubtilis}.
-\end{abstract}
+\end{flushleft}
 
 \textbf{Discussed Keywords (Working Title)}
 \begin{itemize}
@@ -164,6 +151,39 @@ Jonas Pleyer\textsuperscript{1}, Christian Fleck\textsuperscript{1}\\
 \end{itemize}
 % keywords can be removed
 % \keywords{}
+
+%###################################################################################################
+\section*{Abstract}
+Elongated bacteria such as \acl{ecoli} and \acl{bsubtilis} possess distinct mechanical
+and physiological properties that shape their growth, division, and collective behaviors.
+Despite the importance of these organisms, existing computational frameworks rarely capture their
+flexible filamentous morphology, limiting the ability to study their mechanics in a systematic and
+quantitatively grounded way.
+Agent-based models are well suited for representing individual cells and their interactions, yet
+their application to flexible rod-shaped bacteria has been hindered by the absence of appropriate
+mechanical formulations and by the lack of practical methods for estimating model parameters from
+experimental data.
+In this work, we introduce a computational model that represents elongated bacteria as deformable
+rods capable of growth, elastic bending, and mechanical interactions.
+We develop a set of imaging-based and geometry-based comparison methods that extract cell shape and
+position information from segmented microscopy data and quantitatively compare it with model
+simulations at the single-cell level.
+These methods enable the estimation of model parameters across multiple experimental scenarios of
+increasing complexity, including cases that exhibit substantial cell-to-cell variability.
+Our results demonstrate that parameter estimation for complex agent-based models of flexible
+bacteria is feasible and can yield biologically interpretable constraints on cellular mechanics.
+The modeling and analysis framework is modular, generalizable, and readily adaptable to a broad
+range of rod-shaped species.
+By integrating our mechanical model into an extensible computational platform, we provide tools that
+support more rigorous model construction, systematic calibration, and mechanistic interpretation.
+This work establishes a foundation for quantitatively studying the mechanical behavior of
+filamentous bacteria and paves the way for future applications ranging from biofilm formation to
+multicellular
+patterning.
+
+\section*{Author summary}
+
+\linenumbers
 
 \pagebreak
 \renewcommand{\contentsname}{Table of Contents (remove before submission)}
