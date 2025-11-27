@@ -505,6 +505,7 @@ def compare_with_data(
         )
         pfin = res.fun
         popt = res.x
+        output_dir.mkdir(parents=True, exist_ok=True)
         np.savetxt(output_dir / "popt.csv", np.array([pfin, *popt]))
 
     plot_results(popt, pdata, iterations_data, x0_bounds, set_params, output_dir)
@@ -538,6 +539,7 @@ def compare_with_data(
             desc="Plotting Profiles",
         )
         costs = np.array([r.fun for r in results]).reshape(counts.shape)
+        output_dir.mkdir(parents=True, exist_ok=True)
         np.savetxt(output_dir / "samples.csv", samples)
         np.savetxt(output_dir / "profiles.csv", costs)
 
