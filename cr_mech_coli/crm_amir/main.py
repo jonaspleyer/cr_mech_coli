@@ -12,7 +12,7 @@ import multiprocessing as mp
 import argparse
 import itertools
 
-from cr_mech_coli.plotting import COLOR1, COLOR3, COLOR5
+from cr_mech_coli.plotting import COLOR2, COLOR3, COLOR5
 
 GREEN_COLOR = np.array([95, 231, 76])
 
@@ -682,7 +682,7 @@ def crm_amir_main():
 
     # Define globals for all optimizations
     rod_rigidity = (50, 120.0, 400, "[µm/s²]")
-    drag_force = (0.0, 0.0001, 0.0003, "[1/s²µm²]")
+    drag_force = (0.00003, 0.0001, 0.0003, "[1/s²µm²]")
     damping = (0.000, 0.1, 0.3, "[1/s]")
     growth_rate = (0.002, 0.01, 0.02, "[1/s]")
     spring_tension = (10, 30.0, 160.0, "[1/s²]")
@@ -760,7 +760,7 @@ def crm_amir_main():
             pfin1,
             x0_bounds,
             ax,
-            color=COLOR3,
+            color=COLOR2,
             label="Full",
             displacement_error=displacement_error,
         )
@@ -776,7 +776,7 @@ def crm_amir_main():
                 pfin2,
                 x0_bounds_reduced,
                 ax,
-                color=COLOR5,
+                color=COLOR3,
                 label="$\\lambda=0$",
                 displacement_error=displacement_error,
             )
@@ -792,7 +792,7 @@ def crm_amir_main():
                 pfin3,
                 x0_bounds_3,
                 ax,
-                color=COLOR1,
+                color=COLOR5,
                 label="$\\gamma=\\gamma_\\text{opt}$",
                 displacement_error=displacement_error,
             )
