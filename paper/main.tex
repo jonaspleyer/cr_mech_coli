@@ -483,15 +483,15 @@ our established theoretical methods and computational functionalities.
     \centering
     \begin{tikzonimage}[width=0.3\textwidth]
         {docs/source/_static/mechanics.pdf}
-        \node at (0, 1)[anchor=north west, rectangle, draw, minimum width=15pt, minimum height=15pt]{\textbf{A}};
+        \node at (0, 1)[anchor=north west, rectangle, minimum width=15pt, minimum height=15pt]{\textbf{A}};
     \end{tikzonimage}%
     \begin{tikzonimage}[width=0.3\textwidth]
         {docs/source/_static/interaction.pdf}
-        \node at (0, 1)[anchor=north west, rectangle, draw, minimum width=15pt, minimum height=15pt]{\textbf{B}};
+        \node at (0, 1)[anchor=north west, rectangle, minimum width=15pt, minimum height=15pt]{\textbf{B}};
     \end{tikzonimage}%
     \begin{tikzonimage}[width=0.3\textwidth]
         {docs/source/_static/mie-potential-shapes.pdf}
-        \node at (0, 1)[anchor=north west, rectangle, draw, minimum width=15pt, minimum height=15pt]{\textbf{C}};
+        \node at (0, 1)[anchor=north west, rectangle, minimum width=15pt, minimum height=15pt]{\textbf{C}};
     \end{tikzonimage}%
     \caption{
         (A) Example of an elonged bacterial rod represented by a collection of vertices which are
@@ -767,17 +767,17 @@ The resulting image is shown in Figure~\ref{fig:progression-image-generation} (C
     \centering
     \begin{tikzonimage}[width=0.32\textwidth]
         {docs/source/_static/imaging-mesh.pdf}
-        \node at (0.025, 0.975)[anchor=north west, rectangle, draw, minimum width=15pt, minimum height=15pt]{\textbf{A}};
+        \node at (0.025, 0.975)[anchor=north west, rectangle, minimum width=15pt, minimum height=15pt]{\textbf{A}};
     \end{tikzonimage}%
     \hspace{0.01\textwidth}%
     \begin{tikzonimage}[width=0.32\textwidth]
         {docs/source/_static/11571737453049821261/raw_pv/000000400.png}
-        \node at (0.025, 0.975)[anchor=north west, rectangle, draw, white, minimum width=15pt, minimum height=15pt]{\textbf{B}};
+        \node at (0.025, 0.975)[anchor=north west, rectangle, white, minimum width=15pt, minimum height=15pt]{\textbf{B}};
     \end{tikzonimage}%
     \hspace{0.01\textwidth}%
     \begin{tikzonimage}[width=0.32\textwidth]
         {docs/source/_static/11571737453049821261/masks/000000400.png}
-        \node at (0.025, 0.975)[anchor=north west, rectangle, draw, white, minimum width=15pt, minimum height=15pt]{\textbf{C}};
+        \node at (0.025, 0.975)[anchor=north west, rectangle, white, minimum width=15pt, minimum height=15pt]{\textbf{C}};
     \end{tikzonimage}
     \caption{
         (A) Cells are rendered by combining spheres and cylinders into a single mesh.
@@ -912,55 +912,59 @@ is not dominated by outliers.
     \centering
     \begin{tikzonimage}[width=0.36\textwidth]
         {docs/source/_static/fitting-methods/algorithm/image001042.png}
-        \node at (0.025, 0.975)[anchor=north west, rectangle, draw, white, minimum width=15pt, minimum height=15pt]{\textbf{A}};
+        \node at (0.025, 0.975)[anchor=north west, white, minimum width=15pt, minimum height=15pt]{\textbf{A}};
     \end{tikzonimage}%
     \hspace{0.01\textwidth}%
     \begin{tikzonimage}[width=0.36\textwidth]
         {docs/source/_static/fitting-methods/algorithm/mask-zoom.pdf}
-        \node at (0.025, 0.975)[anchor=north west, rectangle, draw, white, minimum width=15pt, minimum height=15pt]{\textbf{B}};
+        \node at (0.025, 0.975)[anchor=north west, white, minimum width=15pt, minimum height=15pt]{\textbf{B}};
     \end{tikzonimage}%
     \hspace{0.01\textwidth}%
     \begin{tikzonimage}[width=0.255\textwidth]
         {docs/source/_static/fitting-methods/algorithm/interpolate-positions.pdf}
-        \node at (0.025, 0.975)[anchor=north west, rectangle, draw, white, minimum width=15pt, minimum height=15pt]{\textbf{C}};
+        \node at (0.025, 0.975)[anchor=north west, white, minimum width=15pt, minimum height=15pt]{\textbf{C}};
     \end{tikzonimage}\\
-    \vspace{0.005\textwidth}%
-    \begin{tikzonimage}[width=0.195\textwidth]
+    \vspace{0.004\textwidth}%
+    \begin{tikzonimage}[width=0.1625\textwidth]
         {docs/source/_static/fitting-methods/extract_positions-001800.pdf}
-        \node at (0.03, 0.99)[anchor=north west, rectangle, draw, white, minimum width=15pt, minimum height=15pt]{\textbf{D}};
+        \node at (0.03, 0.99)[anchor=north west, white, minimum width=15pt, minimum height=15pt]{\textbf{D}};
     \end{tikzonimage}%
-    \hspace{0.005\textwidth}%
-    \begin{tikzonimage}[width=0.195\textwidth]
+    \hspace{0.004\textwidth}%
+    \begin{tikzonimage}[width=0.1625\textwidth]
         {docs/source/_static/fitting-methods/extract_positions-003800.pdf}
-        \node at (0.03, 0.99)[anchor=north west, rectangle, draw, white, minimum width=15pt, minimum height=15pt]{\textbf{E}};
+        \node at (0.03, 0.99)[anchor=north west, white, minimum width=15pt, minimum height=15pt]{\textbf{E}};
     \end{tikzonimage}%
-    \hspace{0.005\textwidth}%
-    \begin{tikzonimage}[width=0.195\textwidth]
+    \hspace{0.004\textwidth}%
+    \begin{tikzonimage}[width=0.1625\textwidth]
         {docs/source/_static/fitting-methods/extract_positions-005800.pdf}
-        \node at (0.03, 0.99)[anchor=north west, rectangle, draw, white, minimum width=15pt, minimum height=15pt]{\textbf{F}};
+        \node at (0.03, 0.99)[anchor=north west, white, minimum width=15pt, minimum height=15pt]{\textbf{F}};
     \end{tikzonimage}%
-    \hspace{0.005\textwidth}%
-    \begin{tikzonimage}[width=0.195\textwidth]
+    \hspace{0.004\textwidth}%
+    \begin{tikzonimage}[width=0.1625\textwidth]
         {docs/source/_static/fitting-methods/extract_positions-007800.pdf}
-        \node at (0.03, 0.99)[anchor=north west, rectangle, draw, white, minimum width=15pt, minimum height=15pt]{\textbf{G}};
+        \node at (0.03, 0.99)[anchor=north west, white, minimum width=15pt, minimum height=15pt]{\textbf{G}};
     \end{tikzonimage}%
-    \hspace{0.005\textwidth}%
-    \begin{tikzonimage}[width=0.195\textwidth]
+    \hspace{0.004\textwidth}%
+    \begin{tikzonimage}[width=0.1625\textwidth]
         {docs/source/_static/fitting-methods/extract_positions-009800.pdf}
-        \node at (0.03, 0.99)[anchor=north west, rectangle, draw, white, minimum width=15pt, minimum height=15pt]{\textbf{H}};
+        \node at (0.03, 0.99)[anchor=north west, white, minimum width=15pt, minimum height=15pt]{\textbf{H}};
+    \end{tikzonimage}%
+    \hspace{0.004\textwidth}%
+    \begin{tikzonimage}[width=0.1625\textwidth]
+        {docs/source/_static/fitting-methods/extract_positions-007800-cropped.pdf}%
+        \node at (0, 1)[anchor=north west, white, minimum width=15pt, minimum height=15pt]{\textbf{I}};
     \end{tikzonimage}\\
-    \hspace{0.005\textwidth}%
     \begin{tikzonimage}[width=0.33\textwidth]
         {docs/source/_static/fitting-methods/displacement-calculations.pdf}%
-        \node at (0, 1)[anchor=north west, rectangle, draw, black, minimum width=15pt, minimum height=15pt]{\textbf{I}};
+        \node at (0, 1)[anchor=north west, black, minimum width=15pt, minimum height=15pt]{\textbf{J}};
     \end{tikzonimage}%
     \begin{tikzonimage}[width=0.33\textwidth]
         {docs/source/_static/fitting-methods/displacement-distribution.pdf}
-        \node at (0, 1)[anchor=north west, rectangle, draw, black, minimum width=15pt, minimum height=15pt]{\textbf{J}};
+        \node at (0, 1)[anchor=north west, black, minimum width=15pt, minimum height=15pt]{\textbf{K}};
     \end{tikzonimage}%
     \begin{tikzonimage}[width=0.33\textwidth]
         {docs/source/_static/fitting-methods/displacement-fit-over-time.pdf}
-        \node at (0, 1)[anchor=north west, rectangle, draw, black, minimum width=15pt, minimum height=15pt]{\textbf{K}};
+        \node at (0, 1)[anchor=north west, black, minimum width=15pt, minimum height=15pt]{\textbf{L}};
     \end{tikzonimage}%
     \caption{
         (A) Microscopic image used as input for the extraction algorithm.
@@ -1093,32 +1097,32 @@ should be preferred.
     \centering
     \begin{tikzonimage}[width=0.24\textwidth]
         {docs/source/_static/fitting-methods/progressions-1.pdf}
-        \node at (0.025, 0.975)[anchor=north west, rectangle, draw, white, minimum width=15pt, minimum height=15pt]{\textbf{A}};
+        \node at (0.025, 0.975)[anchor=north west, rectangle, white, minimum width=15pt, minimum height=15pt]{\textbf{A}};
     \end{tikzonimage}%
     \hspace{0.01\textwidth}%
     \begin{tikzonimage}[width=0.24\textwidth]
         {docs/source/_static/fitting-methods/progressions-2.pdf}
-        \node at (0.025, 0.975)[anchor=north west, rectangle, draw, white, minimum width=15pt, minimum height=15pt]{\textbf{B}};
+        \node at (0.025, 0.975)[anchor=north west, rectangle, white, minimum width=15pt, minimum height=15pt]{\textbf{B}};
     \end{tikzonimage}%
     \hspace{0.01\textwidth}%
     \begin{tikzonimage}[width=0.24\textwidth]
         {docs/source/_static/fitting-methods/progressions-3.pdf}
-        \node at (0.025, 0.975)[anchor=north west, rectangle, draw, white, minimum width=15pt, minimum height=15pt]{\textbf{C}};
+        \node at (0.025, 0.975)[anchor=north west, rectangle, white, minimum width=15pt, minimum height=15pt]{\textbf{C}};
     \end{tikzonimage}%
     \hspace{0.01\textwidth}%
     \begin{tikzonimage}[width=0.24\textwidth]
         {docs/source/_static/fitting-methods/progressions-4.pdf}
-        \node at (0.025, 0.975)[anchor=north west, rectangle, draw, white, minimum width=15pt, minimum height=15pt]{\textbf{D}};
+        \node at (0.025, 0.975)[anchor=north west, rectangle, white, minimum width=15pt, minimum height=15pt]{\textbf{D}};
     \end{tikzonimage}\\
     \begin{minipage}{\textwidth}
         \begin{tikzonimage}[width=0.48\textwidth]
             {docs/source/_static/fitting-methods/extract_positionsdivision-comparison.pdf}
-            \node at (0, 1)[anchor=north west, draw, rectangle, minimum width=15pt, minimum height=15pt]{\textbf{E}};
+            \node at (0, 1)[anchor=north west, rectangle, minimum width=15pt, minimum height=15pt]{\textbf{E}};
         \end{tikzonimage}%
         \hspace{0.01\textwidth}%
         \begin{tikzonimage}[width=0.48\textwidth]
             {docs/source/_static/fitting-methods/penalty-time-flow.pdf}
-            \node at (0, 0.975)[anchor=north west, draw, rectangle, minimum width=15pt, minimum height=15pt]{\textbf{F}};
+            \node at (0, 0.975)[anchor=north west, rectangle, minimum width=15pt, minimum height=15pt]{\textbf{F}};
         \end{tikzonimage}%
     \end{minipage}
     \caption{
@@ -1278,17 +1282,17 @@ Gathering additional transient information would allow us to better estimate the
     \centering
     \begin{tikzonimage}[width=0.3\textwidth]
         {figures/crm_amir/progressions/step4-000010.png}
-        \node at (0.02,17pt)[anchor=north west, white, draw, minimum width=15pt, minimum height=15pt]{\textbf{A}};
+        \node at (0.02,17pt)[anchor=north west, white, minimum width=15pt, minimum height=15pt]{\textbf{A}};
     \end{tikzonimage}%
     \hspace{0.01\textwidth}%
     \begin{tikzonimage}[width=0.3\textwidth]
         {figures/crm_amir/progressions/step4-000017.png}
-        \node at (0.02,17pt)[anchor=north west, white, draw, minimum width=15pt, minimum height=15pt]{\textbf{B}};
+        \node at (0.02,17pt)[anchor=north west, white, minimum width=15pt, minimum height=15pt]{\textbf{B}};
     \end{tikzonimage}%
     \hspace{0.01\textwidth}%
     \begin{tikzonimage}[width=0.3\textwidth]
         {figures/crm_amir/progressions/step4-000034.png}
-            \node at (0.01, 0.01+17pt)[anchor=north west, rectangle, draw, white, minimum width=15pt, minimum height=15pt]{\textbf{C}};
+            \node at (0.01, 0.01+17pt)[anchor=north west, rectangle, white, minimum width=15pt, minimum height=15pt]{\textbf{C}};
     \end{tikzonimage}\\
     \begin{tikzonimage}[width=0.33\textwidth]
         {figures/crm_amir/profiles-reduced/fit-comparison.pdf}%
@@ -1366,25 +1370,26 @@ masks.
     \centering
     \begin{tikzonimage}[width=0.49\textwidth]
         {figures/data/crm_fit/001044.png}%
-        \node at (0.02, 0.98)[anchor=north west, draw, white, minimum width=15pt, minimum height=15pt]{\textbf{A}};
+        \node at (0.02, 0.98)[anchor=north west, white, minimum width=15pt, minimum height=15pt]{\textbf{A}};
     \end{tikzonimage}%
     \hspace{0.01\textwidth}%
     \begin{tikzonimage}[width=0.49\textwidth]
         {figures/data/crm_fit/001044-markers.pdf}%
-        \node at (0.02, 0.98)[anchor=north west, draw, white, minimum width=15pt, minimum height=15pt]{\textbf{B}};
+        \node at (0.02, 0.98)[anchor=north west, white, minimum width=15pt, minimum height=15pt]{\textbf{B}};
     \end{tikzonimage}\\
+    \vspace{0.01\textwidth}%
     \begin{tikzonimage}[width=0.28\textwidth]
         {figures/crm_fit-data-progression.png}
-        \node at (0.02, 0.98)[anchor=north west, draw, white, minimum width=15pt, minimum height=15pt]{\textbf{C}};
+        \node at (0.02, 0.98)[anchor=north west, white, minimum width=15pt, minimum height=15pt]{\textbf{C}};
     \end{tikzonimage}%
     \hspace{0.01\textwidth}%
     \begin{tikzonimage}[width=0.35\textwidth]
         {figures/crm_estimate_params/IWF-Goettingen/rod-lengths-individual.pdf}%
-        \node at (0, 1)[anchor=north west, draw, black, minimum width=15pt, minimum height=15pt]{\textbf{D}};
+        \node at (0, 1)[anchor=north west, black, minimum width=15pt, minimum height=15pt]{\textbf{D}};
     \end{tikzonimage}%
     \begin{tikzonimage}[width=0.35\textwidth]
         {figures/crm_estimate_params/IWF-Goettingen/growth-rates-bar-plot.pdf}%
-        \node at (0, 1)[anchor=north west, draw, black, minimum width=15pt, minimum height=15pt]{\textbf{E}};
+        \node at (0, 1)[anchor=north west, black, minimum width=15pt, minimum height=15pt]{\textbf{E}};
     \end{tikzonimage}%
     \caption{
         \textbf{TODO also insert vertical in (B) line to indicate when direct comparison algorithm
@@ -1491,12 +1496,12 @@ These plots also show that the individual growth rates of the bacteria can be es
     \centering
     \begin{tikzonimage}[width=0.49\textwidth]
         {figures/crm_fit/snapshots/predicted-003889.png}%
-        \node at (0.025, 0.975)[anchor=north west, rectangle, draw, white, minimum width=15pt, minimum height=15pt]{\textbf{A}};
+        \node at (0.025, 0.975)[anchor=north west, rectangle, white, minimum width=15pt, minimum height=15pt]{\textbf{A}};
     \end{tikzonimage}%
     \hspace{0.01\textwidth}%
     \begin{tikzonimage}[width=0.49\textwidth]
         {figures/crm_fit/celldiffs/diff-003889.png}%
-        \node at (0.025, 0.975)[anchor=north west, rectangle, draw, white, minimum width=15pt, minimum height=15pt]{\textbf{B}};
+        \node at (0.025, 0.975)[anchor=north west, rectangle, white, minimum width=15pt, minimum height=15pt]{\textbf{B}};
     \end{tikzonimage}%
     \caption{
         (A) Final microscopic image of the time series with the predicted positions of the cells
@@ -1511,35 +1516,35 @@ These plots also show that the individual growth rates of the bacteria can be es
     \centering
     \begin{tikzonimage}[width=0.25\textwidth]
         {figures/crm_fit/profiles/damping.pdf}%
-        \node at (0, 1.1)[anchor=north west, rectangle, draw, black, minimum width=15pt, minimum height=15pt]{\textbf{A}};
+        \node at (0, 1.1)[anchor=north west, rectangle, black, minimum width=15pt, minimum height=15pt]{\textbf{A}};
     \end{tikzonimage}%
     \begin{tikzonimage}[width=0.25\textwidth]
         {figures/crm_fit/profiles/exponent-m.pdf}%
-        \node at (0, 1.1)[anchor=north west, rectangle, draw, black, minimum width=15pt, minimum height=15pt]{\textbf{B}};
+        \node at (0, 1.1)[anchor=north west, rectangle, black, minimum width=15pt, minimum height=15pt]{\textbf{B}};
     \end{tikzonimage}%
     \begin{tikzonimage}[width=0.25\textwidth]
         {figures/crm_fit/profiles/exponent-n.pdf}%
-        \node at (0, 1.1)[anchor=north west, rectangle, draw, black, minimum width=15pt, minimum height=15pt]{\textbf{C}};
+        \node at (0, 1.1)[anchor=north west, rectangle, black, minimum width=15pt, minimum height=15pt]{\textbf{C}};
     \end{tikzonimage}%
     \begin{tikzonimage}[width=0.25\textwidth]
         {figures/crm_fit/profiles/strength.pdf}%
-        \node at (0, 1.1)[anchor=north west, rectangle, draw, black, minimum width=15pt, minimum height=15pt]{\textbf{D}};
+        \node at (0, 1.1)[anchor=north west, rectangle, black, minimum width=15pt, minimum height=15pt]{\textbf{D}};
     \end{tikzonimage}\\
     \begin{tikzonimage}[width=0.25\textwidth]
         {figures/crm_fit/profiles/radius.pdf}%
-        \node at (0, 1.1)[anchor=north west, rectangle, draw, black, minimum width=15pt, minimum height=15pt]{\textbf{E}};
+        \node at (0, 1.1)[anchor=north west, rectangle, black, minimum width=15pt, minimum height=15pt]{\textbf{E}};
     \end{tikzonimage}%
     \begin{tikzonimage}[width=0.25\textwidth]
         {figures/crm_fit/profiles/growth-rate-0.pdf}%
-        \node at (0, 1.1)[anchor=north west, rectangle, draw, black, minimum width=15pt, minimum height=15pt]{\textbf{F}};
+        \node at (0, 1.1)[anchor=north west, rectangle, black, minimum width=15pt, minimum height=15pt]{\textbf{F}};
     \end{tikzonimage}%
     \begin{tikzonimage}[width=0.25\textwidth]
         {figures/crm_fit/profiles/growth-rate-1.pdf}%
-        \node at (0, 1.1)[anchor=north west, rectangle, draw, black, minimum width=15pt, minimum height=15pt]{\textbf{G}};
+        \node at (0, 1.1)[anchor=north west, rectangle, black, minimum width=15pt, minimum height=15pt]{\textbf{G}};
     \end{tikzonimage}%
     \begin{tikzonimage}[width=0.25\textwidth]
         {figures/crm_fit/profiles/growth-rate-2.pdf}%
-        \node at (0, 1.1)[anchor=north west, rectangle, draw, black, minimum width=15pt, minimum height=15pt]{\textbf{H}};
+        \node at (0, 1.1)[anchor=north west, rectangle, black, minimum width=15pt, minimum height=15pt]{\textbf{H}};
     \end{tikzonimage}%
     \caption{
         We calculated the likelihood profiles for every optimized parameter of our model.
@@ -1622,17 +1627,17 @@ Combining these two values, the position-comparison algorithm is $\approx 6.13(8
     \centering
     \begin{tikzonimage}[width=0.32\textwidth]
         {figures/crm_divide/masks_diff/000000.png}%
-        \node at (0.025, 0.975)[anchor=north west, rectangle, draw, white, minimum width=15pt, minimum height=15pt]{\textbf{A}};
+        \node at (0.025, 0.975)[anchor=north west, rectangle, white, minimum width=15pt, minimum height=15pt]{\textbf{A}};
     \end{tikzonimage}%
     \hspace{0.01\textwidth}%
     \begin{tikzonimage}[width=0.32\textwidth]
         {figures/crm_divide/masks_diff/000010.png}%
-        \node at (0.025, 0.975)[anchor=north west, rectangle, draw, white, minimum width=15pt, minimum height=15pt]{\textbf{B}};
+        \node at (0.025, 0.975)[anchor=north west, rectangle, white, minimum width=15pt, minimum height=15pt]{\textbf{B}};
     \end{tikzonimage}%
     \hspace{0.01\textwidth}%
     \begin{tikzonimage}[width=0.32\textwidth]
         {figures/crm_divide/masks_diff/000020.png}%
-        \node at (0.025, 0.975)[anchor=north west, rectangle, draw, white, minimum width=15pt, minimum height=15pt]{\textbf{C}};
+        \node at (0.025, 0.975)[anchor=north west, rectangle, white, minimum width=15pt, minimum height=15pt]{\textbf{C}};
     \end{tikzonimage}%
     \caption{
         Snapshots of differences between cell masks obtained from the data and predicted by the best
@@ -1649,51 +1654,51 @@ Combining these two values, the position-comparison algorithm is $\approx 6.13(8
     \centering
     \begin{tikzonimage}[width=0.25\textwidth]
         {figures/crm_divide/profiles/profile-000000.png}%
-        \node at (0.15, 0.85)[anchor=north west, rectangle, draw, black, minimum width=15pt, minimum height=15pt]{\textbf{A}};
+        \node at (0.15, 0.85)[anchor=north west, rectangle, black, minimum width=15pt, minimum height=15pt]{\textbf{A}};
     \end{tikzonimage}%
     \begin{tikzonimage}[width=0.25\textwidth]
         {figures/crm_divide/profiles/profile-000001.png}%
-        \node at (0.15, 0.85)[anchor=north west, rectangle, draw, black, minimum width=15pt, minimum height=15pt]{\textbf{B}};
+        \node at (0.15, 0.85)[anchor=north west, rectangle, black, minimum width=15pt, minimum height=15pt]{\textbf{B}};
     \end{tikzonimage}%
     \begin{tikzonimage}[width=0.25\textwidth]
         {figures/crm_divide/profiles/profile-000002.png}%
-        \node at (0.15, 0.85)[anchor=north west, rectangle, draw, black, minimum width=15pt, minimum height=15pt]{\textbf{C}};
+        \node at (0.15, 0.85)[anchor=north west, rectangle, black, minimum width=15pt, minimum height=15pt]{\textbf{C}};
     \end{tikzonimage}%
     \begin{tikzonimage}[width=0.25\textwidth]
         {figures/crm_divide/profiles/profile-000003.png}%
-        \node at (0.15, 0.85)[anchor=north west, rectangle, draw, black, minimum width=15pt, minimum height=15pt]{\textbf{D}};
+        \node at (0.15, 0.85)[anchor=north west, rectangle, black, minimum width=15pt, minimum height=15pt]{\textbf{D}};
     \end{tikzonimage}\\
     \begin{tikzonimage}[width=0.25\textwidth]
         {figures/crm_divide/profiles/profile-000004.png}%
-        \node at (0.15, 0.85)[anchor=north west, rectangle, draw, black, minimum width=15pt, minimum height=15pt]{\textbf{E}};
+        \node at (0.15, 0.85)[anchor=north west, rectangle, black, minimum width=15pt, minimum height=15pt]{\textbf{E}};
     \end{tikzonimage}%
     \begin{tikzonimage}[width=0.25\textwidth]
         {figures/crm_divide/profiles/profile-000005.png}%
-        \node at (0.15, 0.85)[anchor=north west, rectangle, draw, black, minimum width=15pt, minimum height=15pt]{\textbf{F}};
+        \node at (0.15, 0.85)[anchor=north west, rectangle, black, minimum width=15pt, minimum height=15pt]{\textbf{F}};
     \end{tikzonimage}%
     \begin{tikzonimage}[width=0.25\textwidth]
         {figures/crm_divide/profiles/profile-000006.png}%
-        \node at (0.15, 0.85)[anchor=north west, rectangle, draw, black, minimum width=15pt, minimum height=15pt]{\textbf{G}};
+        \node at (0.15, 0.85)[anchor=north west, rectangle, black, minimum width=15pt, minimum height=15pt]{\textbf{G}};
     \end{tikzonimage}%
     \begin{tikzonimage}[width=0.25\textwidth]
         {figures/crm_divide/profiles/profile-000007.png}%
-        \node at (0.15, 0.85)[anchor=north west, rectangle, draw, black, minimum width=15pt, minimum height=15pt]{\textbf{H}};
+        \node at (0.15, 0.85)[anchor=north west, rectangle, black, minimum width=15pt, minimum height=15pt]{\textbf{H}};
     \end{tikzonimage}\\
     \begin{tikzonimage}[width=0.25\textwidth]
         {figures/crm_divide/profiles/profile-000008.png}%
-        \node at (0.15, 0.85)[anchor=north west, rectangle, draw, black, minimum width=15pt, minimum height=15pt]{\textbf{I}};
+        \node at (0.15, 0.85)[anchor=north west, rectangle, black, minimum width=15pt, minimum height=15pt]{\textbf{I}};
     \end{tikzonimage}%
     \begin{tikzonimage}[width=0.25\textwidth]
         {figures/crm_divide/profiles/profile-000009.png}%
-        \node at (0.15, 0.85)[anchor=north west, rectangle, draw, black, minimum width=15pt, minimum height=15pt]{\textbf{J}};
+        \node at (0.15, 0.85)[anchor=north west, rectangle, black, minimum width=15pt, minimum height=15pt]{\textbf{J}};
     \end{tikzonimage}%
     \begin{tikzonimage}[width=0.25\textwidth]
         {figures/crm_divide/profiles/profile-000010.png}%
-        \node at (0.15, 0.85)[anchor=north west, rectangle, draw, black, minimum width=15pt, minimum height=15pt]{\textbf{K}};
+        \node at (0.15, 0.85)[anchor=north west, rectangle, black, minimum width=15pt, minimum height=15pt]{\textbf{K}};
     \end{tikzonimage}%
     \begin{tikzonimage}[width=0.25\textwidth]
         {figures/crm_divide/profiles/profile-000011.png}%
-        \node at (0.15, 0.85)[anchor=north west, rectangle, draw, black, minimum width=15pt, minimum height=15pt]{\textbf{L}};
+        \node at (0.15, 0.85)[anchor=north west, rectangle, black, minimum width=15pt, minimum height=15pt]{\textbf{L}};
     \end{tikzonimage}%
     \caption{
         \text{TODO include missing profiles here}
@@ -1985,19 +1990,19 @@ event has occured.
     \centering
     \begin{tikzonimage}[width=0.5\textwidth]
         {docs/source/_static/fitting-methods/displacement-distr-x.pdf}
-        \node at (0.03, 0.99)[anchor=north west, rectangle, draw, black, minimum width=15pt, minimum height=15pt]{\textbf{F}};
+        \node at (0.03, 0.99)[anchor=north west, rectangle, black, minimum width=15pt, minimum height=15pt]{\textbf{F}};
     \end{tikzonimage}%
     \begin{tikzonimage}[width=0.5\textwidth]
         {docs/source/_static/fitting-methods/displacement-distr-y.pdf}
-        \node at (0.03, 0.99)[anchor=north west, rectangle, draw, black, minimum width=15pt, minimum height=15pt]{\textbf{G}};
+        \node at (0.03, 0.99)[anchor=north west, rectangle, black, minimum width=15pt, minimum height=15pt]{\textbf{G}};
     \end{tikzonimage}\\
     \begin{tikzonimage}[width=0.5\textwidth]
         {docs/source/_static/fitting-methods/displacement-fit-over-time-covariance.pdf}
-        \node at (0.03, 0.99)[anchor=north west, rectangle, draw, black, minimum width=15pt, minimum height=15pt]{\textbf{H}};
+        \node at (0.03, 0.99)[anchor=north west, rectangle, black, minimum width=15pt, minimum height=15pt]{\textbf{H}};
     \end{tikzonimage}%
     \begin{tikzonimage}[width=0.5\textwidth]
         {docs/source/_static/fitting-methods/displacement-distribution.pdf}
-        \node at (0.03, 0.99)[anchor=north west, rectangle, draw, black, minimum width=15pt, minimum height=15pt]{\textbf{I}};
+        \node at (0.03, 0.99)[anchor=north west, rectangle, black, minimum width=15pt, minimum height=15pt]{\textbf{I}};
     \end{tikzonimage}
     \caption{TODO}
 \end{figure}
@@ -2011,32 +2016,32 @@ event has occured.
     \centering
     \begin{tikzonimage}[width=0.3\textwidth]
         {figures/crm_amir/progressions/step4-000010.png}
-        \node at (0.02,17pt)[anchor=north west, white, draw, minimum width=15pt, minimum height=15pt]{\textbf{A}};
+        \node at (0.02,17pt)[anchor=north west, white, minimum width=15pt, minimum height=15pt]{\textbf{A}};
     \end{tikzonimage}%
     \hspace{0.01\textwidth}%
     \begin{tikzonimage}[width=0.3\textwidth]
         {figures/crm_amir/progressions/step4-000017.png}
-        \node at (0.02,17pt)[anchor=north west, white, draw, minimum width=15pt, minimum height=15pt]{\textbf{B}};
+        \node at (0.02,17pt)[anchor=north west, white, minimum width=15pt, minimum height=15pt]{\textbf{B}};
     \end{tikzonimage}%
     \hspace{0.01\textwidth}%
     \begin{tikzonimage}[width=0.3\textwidth]
         {figures/crm_amir/progressions/step4-000034.png}
-        \node at (0.02,17pt)[anchor=north west, white, draw, minimum width=15pt, minimum height=15pt]{\textbf{C}};
+        \node at (0.02,17pt)[anchor=north west, white, minimum width=15pt, minimum height=15pt]{\textbf{C}};
     \end{tikzonimage}\\
     \vspace{0.01\textwidth}%
     \begin{tikzonimage}[width=0.3\textwidth]
         {figures/crm_amir/result-full/0000000000.png}
-        \node at (0.02, 0.98)[anchor=north west, rectangle, draw, minimum width=15pt, minimum height=15pt]{\textbf{D}};
+        \node at (0.02, 0.98)[anchor=north west, rectangle, minimum width=15pt, minimum height=15pt]{\textbf{D}};
     \end{tikzonimage}%
     \hspace{0.01\textwidth}%
     \begin{tikzonimage}[width=0.3\textwidth]
         {figures/crm_amir/result-full/0000000001.png}
-        \node at (0.02, 0.98)[anchor=north west, rectangle, draw, minimum width=15pt, minimum height=15pt]{\textbf{E}};
+        \node at (0.02, 0.98)[anchor=north west, rectangle, minimum width=15pt, minimum height=15pt]{\textbf{E}};
     \end{tikzonimage}%
     \hspace{0.01\textwidth}%
     \begin{tikzonimage}[width=0.3\textwidth]
         {figures/crm_amir/result-full/0000000002.png}
-        \node at (0.02, 0.98)[anchor=north west, rectangle, draw, minimum width=15pt, minimum height=15pt]{\textbf{F}};
+        \node at (0.02, 0.98)[anchor=north west, rectangle, minimum width=15pt, minimum height=15pt]{\textbf{F}};
     \end{tikzonimage}%
     \caption{
         (A-C) Images by Amir et. al~\cite{Amir2014_2} which have been manually segmented.
