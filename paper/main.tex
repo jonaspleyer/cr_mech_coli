@@ -865,45 +865,45 @@ the desired number of vertices $\vec{x}_i$.
 % --------------------------------------------------------------------------------------------------
 \paragraph{Benchmarking the Extraction Algorithm}
 
-In order to determine if our extraction algorithm provides reliable results, we set out to compare
-extracted data with known real data.
-Our methodology makes use of the fact that we have already set up our model and solving scheme and
-are able to produce cell masks from these numerical results.
-In doing so, we have exact knowledge about the position of our agents since we can simply obtain
-this information from our computational model.
-But on the other hand we can also try to extract these positions from the generated cell-masks.
-By comparing the differences between them, we get a good estimate of how well our extraction
-algorithm can determine the true position of the bacteria.
+To validate the reliability of the extraction algorithm
+(Algorithm~\ref{algo:extraction-algorithm}), we benchmarked it using synthetic data with known
+ground truth.
+This reference data in the form of vertices can be obtained directly from our computational model.
+Furthermore as we have explained in section~\ref{subsection:visualization}, we generate cell masks
+from a given set of vertices and thickness of the rod which will serve as inputs for our extraction
+algorithm.
+By comparing the extracted positions with known ground truth, we will obtain quantitative measures
+of the extraction accuracy.
 
-In figure~\ref{fig:benchmarking-extraction-algorithm} (A-C) we see snapshots of a time series of
-masks.
-This particular simulation includes division events between images (B) and (C).
-For all images (A-C), we have drawn the exact position of the agents with white lines and indicated
-the extracted positions with crosses.
-They align very well visually.
-It may be hard to spot with the bare eye, but the agreement between extracted and exact positions is
-visually worse at the endpoints of the rods.
-To quantify this disparity, we calculate the distance between these individual vertices.
-Figure~\ref{fig:benchmarking-extraction-algorithm} (D) shows the estimated length of the rods from
-the extracted and exact vertices which is surrounded by the average vertex distance.
-Division events lead to steps in our rod-length function since the bacterial length is halved.
-We can clearly see that the agreement is very good in the beginning but right after every division
-event, the uncertainty becomes large.
-To illustrate this, we can see that in figure~\ref{fig:benchmarking-extraction-algorithm} (C) some
-of the rods are partially overlapping which hides parts of the individual cell-masks and thus
-changes the extraction result.
-We also plotted the distribution of individual vertex distances in
-figure~\ref{fig:benchmarking-extraction-algorithm} (E).
-Darker areas in the plot correspond to distances at time-points earlier in the simulatin time.
-We can see that brighter areas tend to shift towards the right, thus increasing the uncertainty of
-the extraction.
-However, the overall distribution shows small values of distances for a large number of vertices and
-is not dominated by outliers.
+Figure~\ref{fig:benchmarking-extraction-algorithm} (D-H) shows snapshots of the synthetically
+generated cell masks.
+The initial configuration consists of 4 bacteria which grow and ultimately divide thus expanding
+the filled up area.
+Meanwhile figure~\ref{fig:benchmarking-extraction-algorithm} (I) shows a zoomed-in version of
+snapshot (G), highlighting the direct comparison of the exact (dark cross) and extracted vertices.
+Visual comparison of this time series indicates strong alignment between exact and extracted
+results.
+Upon closer inspection with figure~\ref{fig:benchmarking-extraction-algorithm} (I), we can see
+that small differences start to manifest, especially at the tip of the rods in more crowded regions.
 
-\textbf{
-    Die Verständlichkeit und die Formulierungen hier bedürfen noch der Verbesserung.
-    Damit ich aber schneller durchkomme, verschieben wir das auf später.
-}
+In order to quantitatively analyze this disparity we use both data to calculate the average rod
+length of the bacteria (Figure~\ref{fig:benchmarking-extraction-algorithm} (J)) over the course of
+the simulated time interval.
+The results show good agreement with larger discrepancies directly after division events.
+In addition figure~\ref{fig:benchmarking-extraction-algorithm} (K) displays individual displacements
+of exact and extracted vertices which have been reoriented with respect to the direction of the rod.
+Values closer to the center represent better agreement.
+The distribution of these displacements can be well described by a normal distribution with mean
+$\mu$ and variance $\sigma$.
+These parameters can be obtained by fitting the distribution to the displacements at every time
+point which is displayed in Figure~\ref{fig:benchmarking-extraction-algorithm}.
+Here we can also see that the overall variance in the displacements increases directly after
+division events.
+However, the center of the distributions remain concentrated near zero without significant outliers
+which demonstrates the robustness of our method in these densely packed scenarios.
+Further details are given in the supplementary
+materialsec:supsec:supplement-imaging-based-comparison-algorithm-details
+(section~\ref{sec:supplement-imaging-based-comparison-algorithm-details}).
 
 \paragraph{Determining the underlying Error Model}
 
