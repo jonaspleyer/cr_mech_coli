@@ -175,6 +175,15 @@ if __name__ == "__main__":
                 p2 = crm.convert_pixel_to_position(
                     p0, config.domain_size, mask.shape[:2]
                 )
+                for pi in p1[:, ::-1]:
+                    mask = cv.drawMarker(
+                        mask,
+                        pi,
+                        (250, 250, 250),
+                        cv.MARKER_CROSS,
+                        14,
+                        2,
+                    )
                 mask = cv.polylines(
                     mask,
                     [p0[:, ::-1]],
@@ -182,13 +191,13 @@ if __name__ == "__main__":
                     color=(250, 250, 250),
                     thickness=1,
                 )
-                for pi in p1[:, ::-1]:
+                for qi in p0[:, ::-1]:
                     mask = cv.drawMarker(
                         mask,
-                        pi,
-                        (50, 50, 50),
+                        qi,
+                        (42, 112, 232),
                         cv.MARKER_TILTED_CROSS,
-                        14,
+                        9,
                         2,
                     )
 
@@ -311,6 +320,9 @@ if __name__ == "__main__":
             ax.set_yscale("log")
             ax.set_xlim(-1.1 * dx, 1.1 * dx)
 
+            ax.set_ylabel("Count")
+            ax.set_xlabel("Displacement [µm]")
+
             fig.savefig(OPATH / f"displacement-distr-{name}.png")
             fig.savefig(OPATH / f"displacement-distr-{name}.pdf")
             plt.close(fig)
@@ -386,7 +398,7 @@ if __name__ == "__main__":
         ax.plot(
             t,
             covs[:, 0, 1] / covs[:, 0, 0],
-            color=crm.plotting.COLOR4,
+            color=crm.plotting.COLOR3,
             label="$\\sigma_{01}/\\sigma_{00}$",
         )
         ax.set_xlabel("Time [min]")
