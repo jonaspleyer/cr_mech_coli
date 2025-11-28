@@ -741,6 +741,8 @@ varied cellular behaviours.
 % --------------------------------------------------------------------------------------------------
 \subsection{Visualization}
 \label{subsection:visualization}
+Our visualization routine relies on just the spatial representation in the form of vertices and the
+thickness of the rod which is assumed to be uniform along the rod.
 To visualize the spatial configuration of the results we employ
 \texttt{pyvista}~\cite{sullivan2019pyvista}, which provides
 high-level wrappers around the popular VTK library~\cite{vtkBook,Sullivan2019}.
@@ -877,10 +879,10 @@ of the extraction accuracy.
 
 Figure~\ref{fig:benchmarking-extraction-algorithm} (D-H) shows snapshots of the synthetically
 generated cell masks.
-The initial configuration consists of 4 bacteria which grow and ultimately divide thus expanding
-the filled up area.
+The initial configuration consists of four bacteria which grow and divide thus expanding the
+occupied area.
 Meanwhile figure~\ref{fig:benchmarking-extraction-algorithm} (I) shows a zoomed-in version of
-snapshot (G), highlighting the direct comparison of the exact (dark cross) and extracted vertices.
+snapshot (G), highlighting the direct comparison of the exact (white cross) and extracted vertices.
 Visual comparison of this time series indicates strong alignment between exact and extracted
 results.
 Upon closer inspection with figure~\ref{fig:benchmarking-extraction-algorithm} (I), we can see
@@ -896,16 +898,17 @@ Values closer to the center represent better agreement.
 The distribution of these displacements can be well described by a normal distribution with mean
 $\mu$ and variance $\sigma$.
 These parameters can be obtained by fitting the distribution to the displacements at every time
-point which is displayed in Figure~\ref{fig:benchmarking-extraction-algorithm}.
-Here we can also see that the overall variance in the displacements increases directly after
-division events.
-However, the center of the distributions remain concentrated near zero without significant outliers
-which demonstrates the robustness of our method in these densely packed scenarios.
+point.
+The parameters resulting from this fit are displayed in
+Figure~\ref{fig:benchmarking-extraction-algorithm} (L), where the overall variance (filled area) in
+the displacements significantly increases directly after division events.
+However, the centers of the distributions (solid curves) remain concentrated near zero without
+significant outliers which demonstrates the robustness of our method in these densely packed
+scenarios.
+These observations provide us with enough information to construct an error model for the extraction
+algorithm.
 Further details are given in the supplementary materials
 (section~\ref{sec:supplement-imaging-based-comparison-algorithm-details}).
-
-\paragraph{Determining the underlying Error Model}
-
 
 \begin{figure}[H]
     \centering
@@ -950,7 +953,7 @@ Further details are given in the supplementary materials
     \end{tikzonimage}%
     \hspace{0.004\textwidth}%
     \begin{tikzonimage}[width=0.1625\textwidth]
-        {docs/source/_static/fitting-methods/extract_positions-007800-cropped.pdf}%
+        {docs/source/_static/fitting-methods/extract_positions-009800-cropped.pdf}%
         \node at (0, 1)[anchor=north west, white, minimum width=15pt, minimum height=15pt]{\textbf{I}};
     \end{tikzonimage}\\
     \begin{tikzonimage}[width=0.33\textwidth]
@@ -971,17 +974,18 @@ Further details are given in the supplementary materials
         (C) Vertices $\vec{x}_i$ which have been interpolated from the skeletonized cell.
         They can be directly used as the position of our cell-agents.
         (D-H) Snapshots of simulated data used for benchmarking.
-        (I) Average rod length of the exact and extracted data.
+        (I) Zoomed-in version of (H).
+        (J) Average rod length of the exact and extracted data.
         The light blue region is the mean distance between vertices of extracted and exact
         positions which captures the inherent uncertainty of our method.
-        (J) Displacement of individual vertices parallel and orthogonal to the rod.
+        (K) Displacement of individual vertices parallel and orthogonal to the rod.
         The exact value of the vertex is always in the center.
         Brighter colors indicate higher densities.
         The range of the plot is restricted to a $3\sigma$ interval, to enhance visualization and
         exclude outliers.
-        (K) Mean $\mu_{p,o}$ and variance $\sigma_{p,o}$ of fitted normal distribution for
-        displacements parallel and orthogonal to the rod displayed over the duration of the
-        simulation.
+        (L) Mean $\mu_{p,o}$ (curve) and variance $\sigma_{p,o}$ (filled space) of fitted normal
+        distribution for displacements parallel and orthogonal to the rod displayed over the
+        duration of the simulation.
     }
     \label{fig:benchmarking-extraction-algorithm}
     \label{fig:position-extraction-algorithm}
