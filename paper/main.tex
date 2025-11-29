@@ -895,8 +895,8 @@ The results show good agreement with larger discrepancies directly after divisio
 In addition figure~\ref{fig:benchmarking-extraction-algorithm} (K) displays individual displacements
 of exact and extracted vertices which have been reoriented with respect to the direction of the rod.
 Values closer to the center represent better agreement.
-The distribution of these displacements can be well described by a normal distribution with mean
-$\mu$ and variance $\sigma$.
+The distribution of these displacements can be well described by a multivariate normal
+distribution with mean $\mu$ and variances $\sigma_{ij}$.
 These parameters can be obtained by fitting the distribution to the displacements at every time
 point.
 The parameters resulting from this fit are displayed in
@@ -907,8 +907,8 @@ significant outliers which demonstrates the robustness of our method in these de
 scenarios.
 These observations provide us with enough information to construct an error model for the extraction
 algorithm.
-Further details are given in the supplementary materials
-(section~\ref{sec:supplement-imaging-based-comparison-algorithm-details}).
+Further details such as information about the covariances are given in the supplementary materials
+(section~\ref{sec:supplement-extraction-algorithm}).
 
 \begin{figure}[H]
     \centering
@@ -2010,14 +2010,14 @@ at each vertex and apply them to the displacements via
 The resulting points are displayed in Figure~\ref{fig:supplement-extraction-algorithm} (A) which is
 identical to the one in the main text.
 
-The main text claims that this distribution is well described by a multimodal normal distribution
+The main text claims that this distribution is well described by a multivariate normal distribution
 with diagonal covariance matrix.
 Figure~\ref{fig:supplement-extraction-algorithm} (C,D) show slices of the full distribution along
 the parallel and orthogonal axis.
 Darker colors indicate earlier stages of the simulation while lighter colors indicate later stages.
 Visually, we can already see that the distribution is quite narrow initially but widens with
 increased simulation time.
-To quantify this behaviour, we fit a multimodal normal distribution at each time point to the
+To quantify this behaviour, we fit a multivariate normal distribution at each time point to the
 distribution of displacements.
 The main text has already discussed results for the variances $\sigma_{00}$ and $\sigma_{11}$.
 Figure~\ref{fig:supplement-extraction-algorithm} (B) shows the trajectory of the covariance
