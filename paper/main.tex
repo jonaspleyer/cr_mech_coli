@@ -2025,11 +2025,16 @@ $\sigma_{01}=\sigma_{10}$ which has been normalized to the value of $\sigma_{00}
 Its small relative value justifies the statement in the main text and shows no correlation between
 parallel and orthogonal displacement values.
 
-\begin{itemize}
-    \item for low resolution pictures this can be a problem
-    \item in our benchmarking it is not important since we chose large resolution where such
-        artifacts can not occur
-\end{itemize}
+Another detail is the resolution of the utilized image.
+Situations of high resolution generally present no concerns but images with low resolutions where a
+single bacterium is only made up of a few pixels in its diameter can present problems.
+Firstly, the skeletonization algorithm will not be able to accurately determine the middle of the
+rod due to the discreteness of the pixel-grid.
+Secondly, the same discreteness presents a minimal error threshold which should probably always be
+considered.
+Within our performed benchmarks, we did not run into such situations since we chose large enough
+resolutions.
+In general, we do not anticipate that these scenarios are common for most practical applications.
 
 \begin{figure}[H]
     \centering
@@ -2049,7 +2054,14 @@ parallel and orthogonal displacement values.
         {docs/source/_static/fitting-methods/displacement-distr-y.pdf}
         \node at (0, 1)[anchor=north west, black]{\textbf{D}};
     \end{tikzonimage}
-    \caption{TODO}
+    \caption{
+        (A) Distribution of displacements between exact and extracted vertices parallel and
+        orthogonal to the rod.
+        (B) Covariance $\sigma_{01}$ normalized by $\sigma_{00}$ over the course of the simulation.
+        (C,D) Distributions of displacements sliced parallel (C) and orthogonal (D) to the rod.
+        Darker colors indicate earlier stages of the simulation while brighter colors indicate later
+        stages.
+    }
     \label{fig:supplement-extraction-algorithm}
 \end{figure}
 
