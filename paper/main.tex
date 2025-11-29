@@ -1026,59 +1026,82 @@ which minimizes the distance between the corresponding vertices at each time poi
 One important detail is that the ordering of vertices must be identical in the numerical and
 experimental values.
 
-\subsubsection{Imaging-based Comparison Algorithm}
-\label{subsec:imaging-based-comparison}
+\subsubsection{Imaging-Space Metric}
+\label{subsec:image-space-metric}
+\paragraph{Motivation}
 The preceding algorithm is performant and effective but can not be applied in the case when a
-division event splits apart the bacterium since this would involve the comparison of two sets of
-vertices with only one.
-This configuration is displayed in figure~\ref{fig:mask-difference-metric} (E) where two distinct
-bacterial configurations originate from the same initial state but contain different amounts of
-bacteria.
-This mismatch can happen, e.g. due to non-matching division times.
+division event splits apart the bacterium since this would require comparing sets of unequal
+cardinality.
+This situation is displayed in figure~\ref{fig:mask-difference-metric} (E) where two distinct
+bacterial configurations originate from the same initial state but contain varying numbers of
+bacteria at the next time step.
+Such a mismatch can happen, e.g. due to non-matching division times of model and data.
 Thus a cell which is present in the simulation might not yet have a corresponding cell in the
 experimental data at this time point yet (or vice-versa).
-To explain why the direct skeleton-space metric can not be reused on confined
-intervals which do not include division events and for further details, we refer the interested
-reader to the supplementary material~\ref{sec:supplement-comparison-algorithms}.
 
-In order to be able to compare the differing cellular configurations, we require additional
-methods which can be used in time intervals containing cellular divison events.
-To this end we use the numerical results of the \ac{abm} simulation and our visualization
-algorithms to generate cell-masks (see section~\ref{subsection:visualization}).
-Since each pixel has a unique color value which is directly related to one particular cell or
-background (black), we compare the generated masks to the experimentally obtained ones pixel by
-pixel.
-Whenever two colors are not matching, a penalty is assigned for each pixel.
+In addition to these technical challenges come practical ones.
+Within a short time period after the division event, the two resulting daughter cells will cover
+the space that the mother had taken up.
+However, the exact time point for the fission event can not be determined accurately in practice,
+thus leading to natural uncertainties with respect to the question when the lives of the daughter
+cells begin and the one of the mother ends.
+Such uncertainties which are also common problems for segmentation methods, further highlight the
+importance of a purely imaging-based comparison scheme.
+
+These thoughts explain why the direct metric can not be simply reused on confined intervals which
+do not include division events:
+It does not account for the inaccuracy of the division timing.
+Furthermore, finding such confined intervals becomes increasingly difficult for larger numbers of
+bacteria where division events occur much more frequently.
+This fundamental limitation will be circumvented by the imaging-based method which we propose.
+
+\paragraph{The Metric}
+We develop an approach which can be understood as a metric in image space where we quantify
+differences in the visual footprint of two bacterial configurations.
+Within the realm of image segmentation many metrics such as the Jaccard Index~\cite{Murphy1996},
+Dice-Sørensen Coefficient~\cite{Dice1945}, Precision and Recall~\cite{Takaya2015} or F1
+Score~\cite{Taha2015} are actively used to deal with similar questions.
+However, these statistical methods are all based upon the notion of identifying matching and
+non-matching regions.
+It is therefore first necessary to define a criterion for this.
+
+% To compare the differing cellular configurations, we require additional
+% methods which can be used in time intervals containing cellular divison events.
+We can use the previously introduced \nameref{subsection:visualization} methods to obtain cell-masks
+from the numerical results of the \ac{abm} simulation.
+Since we utilize an in-image encoding scheme, each pixel has a unique color value which is directly
+related to one particular cell or background (black).
+We can now compare the two masks pixel by pixel.
+Whenever two colors are not matching, a penalty is assigned for each point in the pixel-grid.
 The total cost is the sum of all penalties.
-% This algorithm is an implementation of a signed area measure.
-It is important to take into account the parental relationship between the cells, by checking if
-either one of the colors corresponding to the compared colors is a daughter of the other cell.
-Figure~\ref{fig:mask-difference-metric} (A,B) shows two successive states of a numerical simulation
+With this approach it is important to take into account the parental relationship between the cells,
+by checking if either one of the colors corresponding to the compared cells is a daughter of the
+other cell.
+Figure~\ref{fig:mask-difference-metric} (A,B) shows two states of a numerical simulation
 with varying amounts of cells.
-We can see that some cells have divided while others have only grown without completing a division
-step.
+We can see that some cells have divided while others have only extended in the same time interval.
 The resulting penalties without accounting for the parental relationships are displayed in
 Figure~\ref{fig:mask-difference-metric} (C).
-Black indicates that the pixels are matching and no penalty is assigned while a white pixel
+Black indicates that the pixels are matching and no penalty is assigned while white
 indicates that the original pixels are not matching, thus adding to the overall cost.
 In contrast, Figure~\ref{fig:mask-difference-metric} (D) takes the parental relationship into
 account and highlights regions where compared pixels belong to mother-daughter cells in gray.
-We assign a penalty $0\leq p \leq 1$ which is a hyperparameter for this optimization algorithm.
+We assign a specific parent penalty $0\leq p\leq 1$ value for these points which should be seen as
+an additional hyperparameter for this optimization algorithm.
 % It is possible to assign a custom value for the parental cost value.
 Settings its value to $0$ results in a contiuous cost function in time.
+In the future, more complex choices for this parent penalty might be feasible such as
+time-dependence $p(t-t_\text{division})$.
 
-The developed optimization scheme was mainly driven by technical challenges, but it is also
-biologically motivated.
-In the short time period after the division event, the two resulting daughter cells will cover
-the space that the mother had taken up.
-Often times, the exact time at which the fission event has commenced can not be determined
-accurately, thus leading to uncertainties with respect to the question when the life of the daughter
-cells begins and the one of the mother ends.
-These uncertainties which are also common problems for segmentation methods, further highlight the
-importance of this comparison scheme.
+While our primary concern is to compare numerically obtained results with experimental data,
+this approach allows us to compare all spatial configurations which can be represented
+by segmented microscopic images irrespective of how these are obtained.
+On a higher level, this means that our method is agnostic to the underlying cellular representation.
+This means that other models who even utilize very distinct cellular representations but are able to
+render segmented images can reuse our method.
 
 \subsubsection{Testing the Comparison Algorithms with Division Events}
-When utilizing a computational model (see section~\ref{sec:computational-model}), we can generate
+When utilizing a computational model (see \ref{sec:computational-model}), we can generate
 data and use the generated masks to provide a benchmark of our algorithm.
 To do this, we set out to calculate the cost between two successive iteration steps
 $t_n$ and $t_{n+1}$.
