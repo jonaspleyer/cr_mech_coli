@@ -1944,49 +1944,17 @@ opportunities for future quantitative studies in cellular biolgoy.
 %     \end{itemize}
 % \end{itemize}
 
-%###################################################################################################
-\section{Acknowledgements}
-\subsection{Author Contributions}
-\textbf{Conceptualization:} Jonas Pleyer\\
-\textbf{Investigation:} Jonas Pleyer\\
-\textbf{Methodology} Jonas Pleyer\\
-\textbf{Software:} Jonas Pleyer\\
-\textbf{Supervision:} Christian Fleck\\
-\textbf{Writing – original draft:} Jonas Pleyer\\
-\textbf{Writing – review \& editing:} Christian Fleck \& Jonas Pleyer
-
-\subsection{Declaration of AI Use}
-The authors acknowledge the use of Gemini (Google) for assistance with language editing and
-proofreading.
-In particular, no generative aspect was used and each suggested change was carefully reviewed and
-utilized only as additional feedback source.
-All contents of the paper are written and audited by the authors which is why they take full
-responsibility for the contents presented in this publication.
-
-\section{Data and Code Availability}
-\label{section:data-code-availability}
-All data and code which has been used in this study is available at the github repository
-\url{https://github.com/jonaspleyer/cr\_mech\_coli}.
-It includes detailed descriptions of how to obtain the used data and bring it into a usable format.
-The package which bundles the developed funtionality is published at
-\url{https://pypi.org/project/cr-mech-coli/} from which it is readily available as a python
-dependency.\\
-The time series of microscopic images which has been studied in section~\ref{section:application-2}
-was extracted from individual frames of a video~\cite{Trude1982} that
-showcases the exponential growth of bacteria.
-
-% \bibliographystyle{IEEEtran}
-\bibliography{references}
-
 \newpage
-\appendix
 %###################################################################################################
-\renewcommand{\thesection}{}
-\renewcommand{\thesubsection}{S\arabic{subsection}}
-\section{Supplementary Material}
+% \addcontentsline{toc}{chapter}{Supporting Information}
+% \section*{Supplementary Material}
+% \renewcommand{\thesection}{S\arabic{section}}
+% \renewcommand{\thesubsection}{S\arabic{subsection}}
+
+\section*{Supporting Information}
 
 %###################################################################################################
-\subsection{Alternative Interaction Potential - Morse Potential}
+\paragraph*{Alternative Interaction Potential - Morse Potential}
 \label{sec:supplement-morse-potential}
 The morse potential~\cite{Morse1929} is a common example of numerically inexpensive interaction
 potential.
@@ -2005,7 +1973,7 @@ stiffness $\lambda$ which controls the rate of change as one travels along the r
 As done with our approach towards the Mie potential, we are free to assign a spatial cutoff $\xi$
 to the range of the interaction potential.
 
-\subsection{Further Details of the Extraction Algorithm}
+\paragraph*{Further Details of the Extraction Algorithm}
 \label{sec:supplement-extraction-algorithm}
 
 The main text stated that the distribution of displacements which has been split up into parallel
@@ -2154,12 +2122,12 @@ event has occured.
 \end{figure}
 
 %###################################################################################################
-\subsection{Analysis \& Usage of heterogeneous Parameter Value (TODO)}
+\paragraph*{Analysis \& Usage of heterogeneous Parameter Value (TODO)}
 In order to reuse this model, we also provide the option to assign growth rates by sampling from a
 normal distribution with user-defined parameters.
 
 %###################################################################################################
-\subsection{Application Data \& Preparation (TODO)}
+\paragraph*{Application Data \& Preparation (TODO)}
 \label{sec:supplement-data-details}
 
 \begin{figure}[H]
@@ -2176,7 +2144,7 @@ normal distribution with user-defined parameters.
 \end{enumerate}
 
 %###################################################################################################
-\subsection{Parameter Estimation Results (TODO)}
+\paragraph*{Parameter Estimation Results (TODO)}
 \label{sec:supplement-parameter-profiles}
 
 %TODO {explain profiles}
@@ -2260,7 +2228,7 @@ normal distribution with user-defined parameters.
 % \end{itemize}
 
 %###################################################################################################
-\subsection{Implementation \& Performance (TODO)}
+\paragraph*{Implementation \& Performance (TODO)}
 \label{section:supplement-performance}
 
 On the programming side, we are using the \texttt{pyo3} and \texttt{maturin} crates which allow us
@@ -2299,5 +2267,40 @@ Figure~\ref{fig:performance}).
     \caption{TODO}
     \label{fig:timings-crm_divide}
 \end{figure}
+
+%###################################################################################################
+\section*{Acknowledgements}
+\paragraph{Author Contributions}
+\textbf{Conceptualization:} Jonas Pleyer\\
+\textbf{Investigation:} Jonas Pleyer\\
+\textbf{Methodology} Jonas Pleyer\\
+\textbf{Software:} Jonas Pleyer\\
+\textbf{Supervision:} Christian Fleck\\
+\textbf{Writing – original draft:} Jonas Pleyer\\
+\textbf{Writing – review \& editing:} Christian Fleck \& Jonas Pleyer
+
+\paragraph*{Declaration of AI Use}
+The authors acknowledge the use of Gemini (Google) for assistance with language editing and
+proofreading.
+In particular, no generative aspect was used and each suggested change was carefully reviewed and
+utilized only as additional feedback source.
+All contents of the paper are written and audited by the authors which is why they take full
+responsibility for the contents presented in this publication.
+
+\section*{Data and Code Availability}
+\label{section:data-code-availability}
+All data and code which has been used in this study is available at the github repository
+\url{https://github.com/jonaspleyer/cr\_mech\_coli}.
+It includes detailed descriptions of how to obtain the used data and bring it into a usable format.
+The package which bundles the developed funtionality is published at
+\url{https://pypi.org/project/cr-mech-coli/} from which it is readily available as a python
+dependency.\\
+The time series of microscopic images which has been studied in section~\ref{section:application-2}
+was extracted from individual frames of a video~\cite{Trude1982} that
+showcases the exponential growth of bacteria.
+
+\nolinenumbers
+\newpage
+\bibliography{references}
 
 \end{document}
