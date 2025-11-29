@@ -1110,23 +1110,32 @@ On a higher level, this means that our method is agnostic to the underlying cell
 This means that other models who potentially utilize very distinct cellular representations but are
 able to render segmented images can reuse our method.
 
-\subsubsection{Testing the Comparison Algorithms with Division Events}
-When utilizing a computational model (see \ref{sec:computational-model}), we can generate
-data and use the generated masks to provide a benchmark of our algorithm.
-To do this, we set out to calculate the cost between two successive iteration steps
-$t_n$ and $t_{n+1}$.
-We expect to obtain an exponential growth in the cost.
-This can be explained by the fact that the growth of the total area is exponential in time.
-Furthermore, the temporal area difference can be viewed as a derivative of the total area with
-respect to time, which is again an exponential function.
-Figure~\ref{fig:mask-difference-metric} (F) shows the total cost for this approach.
-We can see that by accounting for the parental relationship, we get the overall desired effect.
-This method allows us to compare results between states that have a different number of cells.
-However, since this algorithm requires us to calculate a cell-mask for each comparison and then also
-process this mask as well as the comparator, it is much more computationally demanding.
-After all, for each comparison step, we need to run a full 3D visualization pipeline.
-In cases where the simpler approach of comparing positions of the agents is possible, this method
-should be preferred.
+\subsubsection{Benchmarking the Image-Space Metric under Division Events}
+To benchmark the stability and robustness of the developed metric under division events, we compute
+the cost between successive simulation steps $t_n$ and $t_{n+1}$ and compare the obtained values to
+expected behaviour.
+We utilize our previously defined computational model (see \nameref{sec:computational-model}), to
+generate data which includes division events.
+Since the total bacterial area $A_{t_n}$ grows exponentially in time, the differences between total
+area of successive time steps $A_{t_{n+1}}-A_{t_n}$, which can be viewed as the area's derivative in
+time, is expected to follow this trend.
+
+Figure~\ref{fig:mask-difference-metric} (F) confirms this behaviour, showcasing exponential scaling
+of the difference with larger deviations initially and better overall goodness of fit in the later
+stages of the simulation.
+In the beginning, division events introduced by individual bacteria introduce larger deviations in
+relation to the total area compared to later time points.
+Every division event introduces a spike in the cost function which is stabilized when accounting
+for parental relationships as explained earlier.
+This shows that the metric is able to interpret growth and division as a continuous biological
+process rather than an instantaneous topological break.
+
+Although this metric allows us to investigate previously unaccessible cellular dynamics, the
+algorithm is computationally expensive.
+Unlike the direct approach, it requires the rendering of segmentation masks for each time point in
+question which is currently handled by a full 3D visualization pipeline.
+Consequently, this method should be reserved for cases where the direct method is not applicable,
+e.g. when dealing with division events.
 
 \begin{figure}[H]
     \centering
