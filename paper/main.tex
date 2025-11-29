@@ -393,7 +393,7 @@ algorithms.
 \section{A Computational Model for Rod-Shaped Bacteria}
 \label{sec:computational-model}
 
-The mechanical behaviour of rod-shaped bacteria is governed by a plethora of effects.
+The mechanical behavior of rod-shaped bacteria is governed by a plethora of effects.
 In this work, we aim to establish a model which is general enough such that it can be reused as the
 basis for many variants of rod-shaped bacteria but also explicit enough such that we can quantify
 its parameters.
@@ -449,7 +449,7 @@ We therefore need account for this phenomenon as well.
         \bottomrule
     \end{tabularx}
     \caption{
-        This table lists aspects of cellular behaviour which we consider in our computational model.
+        This table lists aspects of cellular behavior which we consider in our computational model.
         It is split into cellular aspects (C) which concern only an individual bacterium and
         interactions between cells (CC).
         These aspects are generalized in order to fit to as many types of rod-shaped bacteria as
@@ -633,10 +633,10 @@ By varying its parameters, the Mie potential is capable of describing a wide ran
 types from softer ones that permit some level of overlap to rigid ones with steep ascends for
 distance valuels that correspond to overlaps.
 In contrast, a popular alternative is the Morse potential~\cite{Morse1929}, which is less
-customizable due to the lower amount of parameters and more restrictive mathematical formulation
+customizable due to the lower number of parameters and more restrictive mathematical formulation
 (see \nameref{sec:supplement-morse-potential}).
 Therefore, the Mie potential is a good choice for a simple, interpretable interaction potential with
-low amount of parameters that can be estimated.
+low number of parameters that can be estimated.
 
 % --------------------------------------------------------------------------------------------------
 \subsection{Cell-Cycle}
@@ -737,7 +737,7 @@ We will test and benchmark the constructed algorithms within the respective sect
 As highlighted before, the developed methods only depend on the spatial representation described in
 section~\ref{subsec:spatial-representation}.
 Consequently, these methods can be applied to a broader class of mechanical models that can exhibit
-varied cellular behaviours.
+varied cellular behaviors.
 
 % --------------------------------------------------------------------------------------------------
 \subsection{Visualization}
@@ -1113,14 +1113,14 @@ able to render segmented images can reuse our method.
 \subsubsection{Benchmarking the Image-Space Metric under Division Events}
 To benchmark the stability and robustness of the developed metric under division events, we compute
 the cost between successive simulation steps $t_n$ and $t_{n+1}$ and compare the obtained values to
-expected behaviour.
+expected behavior.
 We utilize our previously defined computational model (see \nameref{sec:computational-model}), to
 generate data which includes division events.
 Since the total bacterial area $A_{t_n}$ grows exponentially in time, the differences between total
 area of successive time steps $A_{t_{n+1}}-A_{t_n}$, which can be viewed as the area's derivative in
 time, is expected to follow this trend.
 
-Figure~\ref{fig:mask-difference-metric} (F) confirms this behaviour, showcasing exponential scaling
+Figure~\ref{fig:mask-difference-metric} (F) confirms this behavior, showcasing exponential scaling
 of the difference with larger deviations initially and better overall goodness of fit in the later
 stages of the simulation.
 In the beginning, division events introduced by individual bacteria introduce larger deviations in
@@ -1256,8 +1256,8 @@ The experimental setup is displayed in figure~\ref{fig:amir-bending-simulation} 
 They studied how a single \ac{ecoli}, which is partially confined within a narrow tube, reacts
 to a horizontal fluid flow that exerts a force onto the bacterium.
 The experiment is particularly suited as a first attempt since it excludes cell-cell interactions
-and focusses on the behaviour of a single cell.
-It therefore reduces the total amount of parameters and allows for fast iteration times when
+and focusses on the behavior of a single cell.
+It therefore reduces the total number of parameters and allows for fast iteration times when
 performing parameter estimations.
 To model this configuration, the lowermost vertex of the rod is fixed at the base of the simulation
 domain and vertices which are inside the tubulus are restricted to move only in the y-direction.
@@ -1506,7 +1506,7 @@ In this section we will focus on a time-interval which does not contain any divi
 By doing so, we can utilize the simpler and more performant direct comparison scheme (see
 \ref{subsec:skeleton-metric}) for our cost function.
 We have chosen said interval such that effects related to the lag phase can be neglected which
-allows us to sample a lower amount of paremeters thus improving runtime performance of our
+allows us to sample a lower number of paremeters thus improving runtime performance of our
 optimization scheme.
 
 % For this dataset, we assumed that all parameters which specify the interaction potential are
@@ -1588,7 +1588,7 @@ These plots also show that the individual growth rates of the bacteria can be es
         still optimizing for the remaining ones.
         Every plot indicates that a minimum was achieved, thus every parameter could be identified.
         We show only one of the 6 individually-chosen growth rate as an example.
-        The remaining plots show similar behaviour although with varying values and can be found in
+        The remaining plots show similar behavior although with varying values and can be found in
         the supplementary material in section~\ref{sec:supplement-parameter-profiles}.
     }
     \label{fig:parameter-estimates-single-step}
@@ -1634,7 +1634,7 @@ The results displayed in Figure~\ref{fig:likelihood-profiles-comparison-with-div
 some curves exhibit a plateau close to the calculated optimum of the estimated parameter.
 This concerns the division lengths and some growth rates of the mother bacteria which both determine
 if and when a cell divides.
-Such behaviour can be attributed to the missing images around the division events of the cells which
+Such behavior can be attributed to the missing images around the division events of the cells which
 were not able to be segmented.
 \textbf{TODO check this with results}
 It can be argued that this leads to a non-identifiability for the first division length while the
@@ -1804,7 +1804,7 @@ The developed methods are publicly available as a well-documented python package
 The individual treatment of the cells allows us in principle to estimate the distribution of the
 parameters directly without having to resort to any assumptions on the form of said distribution.
 This is true for any parameter, not just the growth rates, since our approach can be generalized to
-other individual cellular behaviours.
+other individual cellular behaviors.
 
 Future work should focus on multiple aspects that target challenges with respect to computational
 efficiency and accuracy and extending the described model.
@@ -1934,7 +1934,7 @@ We will aim to generate near-realistic microscopic brightfield images together w
 segmentation masks in order to train segmentation and tracking algorithms.
 On the biological side, a plethora of cellular properties waits to be investigated using this novel
 tecnhique.
-Another open question is how to efficiently scale up this operation in order to treat large amounts
+Another open question is how to efficiently scale up this operation in order to treat large numbers
 of cells such that distributions of parameters themselves can be estimated.
 Put together, this work establishes a promising platform which is able to directly combine
 microscopic data with single-cell agent-based modeling techniques and offers a wide range of
@@ -2027,7 +2027,7 @@ the parallel and orthogonal axis.
 Darker colors indicate earlier stages of the simulation while lighter colors indicate later stages.
 Visually, we can already see that the distribution is quite narrow initially but widens with
 increased simulation time.
-To quantify this behaviour, we fit a multivariate normal distribution at each time point to the
+To quantify this behavior, we fit a multivariate normal distribution at each time point to the
 distribution of displacements.
 The main text has already discussed results for the variances $\sigma_{00}$ and $\sigma_{11}$.
 Figure~\ref{fig:supplement-extraction-algorithm} (B) shows the trajectory of the covariance
@@ -2219,7 +2219,7 @@ normal distribution with user-defined parameters.
 %     \label{table:simulation-aspects-supplement}
 %     \caption{
 %         This table extends table~\ref{table:simulation-aspects} with additional observations.
-%         It has to be noted that this table includes more specific behaviour that might not be
+%         It has to be noted that this table includes more specific behavior that might not be
 %         generalizable across all types of rod-shaped bacteria.
 %     }
 % \end{table}
