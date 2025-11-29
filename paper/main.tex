@@ -1040,7 +1040,7 @@ experimental data at this time point yet (or vice-versa).
 To explain why the previous developed direct comparison algorithm can not be reused on confined
 intervals which do not include division events and for further details, we refer the interested
 reader to the supplementary
-material~\ref{sec:supplement-imaging-based-comparison-algorithm-details}.
+material~\ref{sec:supplement-comparison-algorithms}.
 
 In order to be able to compare the differing cellular configurations, we require additional
 methods which can be used in time intervals containing cellular divison events.
@@ -1975,21 +1975,63 @@ stiffness $\lambda$ which controls the rate of change as one travels along the r
 As done with our approach towards the Mie potential, we are free to assign a spatial cutoff $\xi$
 to the range of the interaction potential.
 
-%###################################################################################################
-\subsection{Details for the Imaging-Based Comparison Algorithm}
-\label{sec:supplement-imaging-based-comparison-algorithm-details}
+\subsection{Further Details of the Extraction Algorithm}
+\label{sec:supplement-extraction-algorithm}
 
-In a different approach, one might be tempted to utilize the previously constructed direct
-comparison algorithm for time intervals that do not contain any division events.
-But this attempt would quickly lead to multiple problems.
-It will not be able to deal with the uncertainties of the timing of the division event.
-As the number of investigated cells grows, more division events will occurr even in a fixed
-amount of time thus greatly decreasing or completely vanishing the effective interval at which no
-division event is observed.
-The latter situation is equivalent to two microscopic images as input data between which a division
-event has occured.
+The main text stated that the distribution of displacements which has been split up into parallel
+and orthogonal components along the rod can be represented by a multivariate normal distribution.
+We first describe in more detail how these distributions are obtained.
+Consider the case where we have a set of exactly known vertices $\nu_{j,k}$ and a set of extracted
+vertices $\nu_{j,k}'$.
+We now calculate the displacements simply via
+\begin{equation}
+    \Delta \nu_{j,k} = \nu_{j,k} - \nu_{j,k}'.
+\end{equation}
+In order to calculate their positions with respect to the direction of the rod, we assign a
+direction $d_{j,k}$ at each vertex of the known exact values.
+At the tips of the rod this is done by assigning the direction of the closest edge while vertices in
+the middle are calculated using a central difference approach.
+\begin{align}
+    d_{0,k} &= \frac{(\nu_{1,k}-\nu_{0,k})}{||\nu_1 - \nu_0||}\\
+    d_{N_v,k} &= \frac{(\nu_{N_v,k}-\nu_{N_v-1,k})}{||\nu_{N_v} - \nu_{N_v-1}||}\\
+    d_{j,k} &= \frac{(\nu_{j+1,k}-\nu_{j-1,k})}{||\nu_{j+1} - \nu_{j-1}||}
+\end{align}
+We can use these directions at each vertex to assign rotation matrices
+\begin{equation}
+    M_{j,l}^k = \begin{pmatrix}
+        d_{j,0} & d_{j,1}\\
+        -d_{j,1} & d_{j,0}
+    \end{pmatrix}
+\end{equation}
+at each vertex and apply them to the displacements via
+\begin{equation}
+    (\Delta\nu_{j,k})_\text{directed} = \sum\limits_l M_{j,l}^k \Delta\nu_{j,l}.
+\end{equation}
+The resulting points are displayed in Figure~\ref{fig:supplement-extraction-algorithm} (A) which is
+identical to the one in the main text.
 
-\begin{figure}
+The main text claims that this distribution is well described by a multimodal normal distribution
+with diagonal covariance matrix.
+Figure~\ref{fig:supplement-extraction-algorithm} (C,D) show slices of the full distribution along
+the parallel and orthogonal axis.
+Darker colors indicate earlier stages of the simulation while lighter colors indicate later stages.
+Visually, we can already see that the distribution is quite narrow initially but widens with
+increased simulation time.
+To quantify this behaviour, we fit a multimodal normal distribution at each time point to the
+distribution of displacements.
+The main text has already discussed results for the variances $\sigma_{00}$ and $\sigma_{11}$.
+Figure~\ref{fig:supplement-extraction-algorithm} (B) shows the trajectory of the covariance
+$\sigma_{01}=\sigma_{10}$ which has been normalized to the value of $\sigma_{00}$.
+Its small relative value justifies the statement in the main text and shows no correlation between
+parallel and orthogonal displacement values.
+
+\begin{itemize}
+    \item for low resolution pictures this can be a problem
+    \item in our benchmarking it is not important since we chose large resolution where such
+        artifacts can not occur
+\end{itemize}
+
+\begin{figure}[H]
     \centering
     \begin{tikzonimage}[width=0.5\textwidth]
         {docs/source/_static/fitting-methods/displacement-distribution.pdf}
@@ -2008,7 +2050,22 @@ event has occured.
         \node at (0, 1)[anchor=north west, black]{\textbf{D}};
     \end{tikzonimage}
     \caption{TODO}
+    \label{fig:supplement-extraction-algorithm}
 \end{figure}
+
+%###################################################################################################
+\subsection{Details for the Imaging-Based Comparison Algorithm}
+\label{sec:supplement-comparison-algorithms}
+
+In a different approach, one might be tempted to utilize the previously constructed direct
+comparison algorithm for time intervals that do not contain any division events.
+But this attempt would quickly lead to multiple problems.
+It will not be able to deal with the uncertainties of the timing of the division event.
+As the number of investigated cells grows, more division events will occurr even in a fixed
+amount of time thus greatly decreasing or completely vanishing the effective interval at which no
+division event is observed.
+The latter situation is equivalent to two microscopic images as input data between which a division
+event has occured.
 
 %###################################################################################################
 \subsection{Experimental Setup of Amir et. al}
