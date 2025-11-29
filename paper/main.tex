@@ -356,7 +356,7 @@ However, the construction of any mechanistic model also requires prior konwledge
 to inform our analysis methods.
 For example, by extracing the positions of bacteria across a time-series of microscopic images, we
 can also calculate their lengths at these time-points and thus determine their rate of growth and
-type of growth (see section~\ref{paragraph:parameter-estimation-individual-treatment}), thus
+type of growth (see \nameref{paragraph:parameter-estimation-individual-treatment}), thus
 effectively guiding our modeling steps.
 As we will show later, extracted data in the form of cellular positions or segmentation masks can
 also be used for comparing computational results with biological ground truth.
@@ -380,7 +380,7 @@ algorithms.
         The project can be divided into subcomponents that interact with and depend on
         each other.
         Every component implicitly builds on the spatial representation of rod-shaped bacteria as
-        vertices (see section~\ref{subsec:spatial-representation}).
+        vertices (see \nameref{subsec:spatial-representation}).
         Red boxes highlight the key scientific drivers of this study while yellow boxes indicate
         auxiliary methods.
         The blue box "Data Generation" displays a extension of this approach which is under active
@@ -456,7 +456,7 @@ We therefore need account for this phenomenon as well.
         possible.
         These are the assumptions for the basic model that we are presenting here.
         In order for our methods to work, we are really only required to satisfy the assumption of
-        our spatial representation (see section~\ref{subsec:spatial-representation}) and thus, these
+        our spatial representation (see \nameref{subsec:spatial-representation}) and thus, these
         assumptions can also be loosened if required.
     }
     \label{table:simulation-aspects}
@@ -634,7 +634,7 @@ types from softer ones that permit some level of overlap to rigid ones with stee
 distance valuels that correspond to overlaps.
 In contrast, a popular alternative is the Morse potential~\cite{Morse1929}, which is less
 customizable due to the lower amount of parameters and more restrictive mathematical formulation
-(see section~\ref{sec:supplement-morse-potential}).
+(see \nameref{sec:supplement-morse-potential}).
 Therefore, the Mie potential is a good choice for a simple, interpretable interaction potential with
 low amount of parameters that can be estimated.
 
@@ -718,8 +718,8 @@ It is furthermore able to seamlessly integrate into Python code-bases thus allow
 methods from other popular software libraries such as \texttt{numpy} and \texttt{scipy}.
 Furthermore, it is an \ac{abm} which is able to natively track mother-daughter relations of cells
 over the course of a numerical simulation which is an integral component of our image-space metric
-comparison algorithm (see section~\ref{subsec:image-space-metric}).
-Further details can be found in the supplement (see section~\ref{section:supplement-performance})
+comparison algorithm (see \nameref{subsec:image-space-metric}).
+Further details can be found in the supplement (see \nameref{section:supplement-performance})
 
 %###################################################################################################
 \section{Methodology}
@@ -728,7 +728,7 @@ These sections introduce methods which can be combined in order to estimate the 
 computational model.
 It is split into 3 parts, each covering distinct purposes.
 We begin by explaining the visualization process which will later be used within our image-space
-metric (see section~\ref{subsec:image-space-metric}) and for testing purposes.
+metric (see \nameref{subsec:image-space-metric}) and for testing purposes.
 Afterwards, we introduce a position extraction algorithm which extracts cellular information in the
 form of polygons from segmented microscopic images.
 Finally, we will provide two distinct comparison algorithms which can be used to compare numerically
@@ -799,7 +799,7 @@ The resulting image is shown in Figure~\ref{fig:progression-image-generation} (C
 \label{subsec:position-extraction-algorithm}
 
 This section explains how we can transform a segmented microscopic image such that we obtain a
-collection of vertices (see Section~\ref{subsection:mechanical-model-mechanics}) that can be used
+collection of vertices (see \nameref{subsection:mechanical-model-mechanics}) that can be used
 to initialize our agents and to perform parameter estimation.
 There exists a plethora of tools to perform segmentation of
 images~\cite{Stringer2020,Cutler2022,Hardo2022}
@@ -909,7 +909,7 @@ scenarios.
 These observations provide us with enough information to construct an error model for the extraction
 algorithm.
 Further details such as information about the covariances are given in the supplementary materials
-(section~\ref{sec:supplement-extraction-algorithm}).
+(see \nameref{sec:supplement-extraction-algorithm}).
 
 \begin{figure}[H]
     \centering
@@ -1425,7 +1425,7 @@ masks.
         (C) Selected time points of the utilized time series showcasing the spatial configurations
         of the investigated bacteria.
         A complete list of snapshots is included in the supplementary material (see
-        section~\ref{sec:supplement-data-details}).
+        \nameref{sec:supplement-data-details}).
         (D) Growth curves of individual bacteria including a discrete delay before exponential
         growth is experienced.
         (E) Distribution of growth parameters shows cell-cell variability of the analyzed sample.
@@ -1636,7 +1636,7 @@ There are 4 main steps which are executed within any single optimization iterati
 to the total wall time.
 These steps are prediction via the computational model ($15.63(21)\%$), mask adjustment of the data
 masks ($14.49(19)\%$), mask rendering for the numerical results ($69.2(1.4)\%$) and finally
-comparison of the masks ($0.68(5)\%$) (see section \ref{section:supplement-performance}).
+comparison of the masks ($0.68(5)\%$) (see section \nameref{section:supplement-performance}).
 The second step alters the masks provided by the data for every individual numerical simulation.
 This is required since we need to ensure that the colors of the data-masks match the colors of the
 masks produced by our computational model.
