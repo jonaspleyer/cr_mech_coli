@@ -42,6 +42,7 @@
 \newacro{ib}[IB]{Individual-based}
 \newacro{ecoli}[\textit{E. coli}]{\textit{Escherichia coli}}
 \newacro{bsubtilis}[\textit{B. subtilis}]{\textit{Bacillus subtilis}}
+\newacro{ls}[LS]{Least Squares}
 %
 % % Uncomment to remove the date
 % %\date{}
@@ -363,8 +364,8 @@ also be used for comparing computational results with biological ground truth.
 Visualization methods are an integral part of any modeling endevaour.
 They allow researchers to obtain feedback quickly and improve iteration times when constructing new
 models.
-Furthermore, we utilize them in our more advanced imaging-based comparison methods (see
-section~\ref{subsec:imaging-based-comparison}) where they enable us to effectively compare
+Furthermore, we utilize them in our image-space metric (see
+section~\ref{subsec:image-space-metric}) where they enable us to effectively compare
 two bacterial configurations while accounting for division events.
 In the future, we are planning to extend the the rendering capabilities of our approach and
 generate realistic microscopic images and time-series.
@@ -716,8 +717,8 @@ explorative capabilities of researchers.
 It is furthermore able to seamlessly integrate into Python code-bases thus allowing us to utilize
 methods from other popular software libraries such as \texttt{numpy} and \texttt{scipy}.
 Furthermore, it is an \ac{abm} which is able to natively track mother-daughter relations of cells
-over the course of a numerical simulation which is an integral component of our imaging-based
-comparison algorithm (see section~\ref{subsec:imaging-based-comparison}).
+over the course of a numerical simulation which is an integral component of our image-space metric
+comparison algorithm (see section~\ref{subsec:image-space-metric}).
 Further details can be found in the supplement (see section~\ref{section:supplement-performance})
 
 %###################################################################################################
@@ -726,8 +727,8 @@ Further details can be found in the supplement (see section~\ref{section:supplem
 These sections introduce methods which can be combined in order to estimate the parameters of our
 computational model.
 It is split into 3 parts, each covering distinct purposes.
-We begin by explaining the visualization process which will later be used within our imaging-based
-comparison algorithm (see section~\ref{subsec:imaging-based-comparison}) and for testing purposes.
+We begin by explaining the visualization process which will later be used within our image-space
+metric (see section~\ref{subsec:image-space-metric}) and for testing purposes.
 Afterwards, we introduce a position extraction algorithm which extracts cellular information in the
 form of polygons from segmented microscopic images.
 Finally, we will provide two distinct comparison algorithms which can be used to compare numerically
@@ -1005,17 +1006,16 @@ and then compare both results.
 The cell-masks are easily obtainable by either using existing segmentation
 tools~\cite{Cutler2022,Stringer2020,Hardo2022} or manually annotating microscopic image series.
 
-\subsubsection{Direct Comparison}
-\label{subsec:direct-comparison}
+\subsubsection{Direct Skeleton-Space Metric}
+\label{subsec:skeleton-metric}
 In the scenario where no cells divide during the observed interval, we can use our extraction
-algorithm to obtain the position of the cells and then compare them directly to the positions
-calculated from the computational results.
-Each cell contains a collection of vertices.
+algorithm to obtain the position of the cells and then compare them directly to the cellular
+skeletons obtained from the computational results.
 Given $N_c$ cells with $N_v$ vertices in $d$ dimensions at $N_t$ time points, the total information
 can be stored in an array $\nu_{i,j,k,l}$ of shape $(N_c,N_v,d,N_t)$.
 Comparing the results of a simulation $\nu$ with experimental values $\tilde{\nu}$ is thus only a
-matter of comparing two of these arrays within a suitable cost function~\cite{Wang2020}.
-In our approach we utilize a least squares approach given by
+matter of comparing two of these arrays via a suitable cost function~\cite{Wang2020}.
+In our approach we utilize a \ac{ls} approach given by
 
 \begin{equation}
     L_{\text{LS}}(\vec{x}, \vec{y})
@@ -1037,10 +1037,9 @@ bacteria.
 This mismatch can happen, e.g. due to non-matching division times.
 Thus a cell which is present in the simulation might not yet have a corresponding cell in the
 experimental data at this time point yet (or vice-versa).
-To explain why the previous developed direct comparison algorithm can not be reused on confined
+To explain why the direct skeleton-space metric can not be reused on confined
 intervals which do not include division events and for further details, we refer the interested
-reader to the supplementary
-material~\ref{sec:supplement-comparison-algorithms}.
+reader to the supplementary material~\ref{sec:supplement-comparison-algorithms}.
 
 In order to be able to compare the differing cellular configurations, we require additional
 methods which can be used in time intervals containing cellular divison events.
@@ -1210,7 +1209,7 @@ division events and a second part which extends the initially chosen interval to
 events.
 In the first part, we cover a time interval which does not contain division events and thus utilize
 the direct comparison algorithm while the second case contains division events and in turn requires
-usage of the imaging-based comparison algorithm.
+usage of the image-space metric.
 
 % --------------------------------------------------------------------------------------------------
 \subsection{Application 1: Elastic deformations of \acl{ecoli}}
@@ -1251,7 +1250,7 @@ $\vec{x}_0$ such that the bacterium is attached to the bottom.
 
 We extract the positions of the rod from the data images (see
 Figure~\ref{fig:amir-bending-simulation} (A)) and compare the simulated positions with the extracted
-ones using the direct comparison algorithm (see Subsection~\ref{subsec:direct-comparison}).
+ones using the direct comparison algorithm (see Subsection~\ref{subsec:skeleton-metric}).
 Our simulation is split into two phases; One with the external flow force that initially bends the
 rod and lasts $\SI{7}{\second}$ and a second phase during which the force is disabled and the cell
 returns to its original shape over a span of $\SI{17}{\second}$.
@@ -1355,8 +1354,8 @@ results.
 The first case considers a time interval without cell-division while the second case does contain
 division events.
 Therefore, the first approach will optimize the direct comparison cost function (see
-section~\ref{subsec:direct-comparison}) while the latter approach has to account for division events
-and thus requires the imaging-based method (see section~\ref{subsec:imaging-based-comparison}).
+section~\ref{subsec:skeleton-metric}) while the latter approach has to account for division events
+and thus requires the image-space metric method (see section~\ref{subsec:image-space-metric}).
 These two scenarios present an opportunity to apply the previously developed methods within a
 realistic context and validate our approach.
 
@@ -1471,7 +1470,7 @@ individually.
 
 In this section we will focus on a time-interval which does not contain any division events.
 By doing so, we can utilize the simpler and more performant direct comparison scheme (see
-\ref{subsec:direct-comparison}) for our cost function.
+\ref{subsec:skeleton-metric}) for our cost function.
 We have chosen said interval such that effects related to the lag phase can be neglected which
 allows us to sample a lower amount of paremeters thus improving runtime performance of our
 optimization scheme.
@@ -1510,7 +1509,7 @@ These plots also show that the individual growth rates of the bacteria can be es
         (A) Final microscopic image of the time series with the predicted positions of the cells
         overlayed on top.
         (B) Differences between extracted and predicted positions.
-        Note that the imaging-based comparison algorithm was not used to optimize this system but is
+        Note that the image-space metric was not used to optimize this system but is
         chosen here as a tool to aid visualization of the prediction difference.
     }
 \end{figure}
@@ -1565,7 +1564,7 @@ These plots also show that the individual growth rates of the bacteria can be es
 \subsubsection{With Division}
 
 In the next step, we extend our previously used time-series with successive images including
-cell division events which means that we now have to use the imaging-based comparison algorithm (see
+cell division events which means that we now have to use the image-space metric (see
 section~\ref{section:parameter-estimation}).
 A practical problem in extending the time series is that the segmentation algorithm was not able to
 properly segment the individual bacteria around the division event which meant that we had to omit
@@ -1609,8 +1608,7 @@ These results highlight a reassuring finding, namely that the method of profile-
 to properly display this lack of data.
 It therefore further underlines the accuracy and predictive power of our methods.
 
-The imaging-based comparison algorithm is computationally much more expensive compared to the
-simpler position-comparison algorithm.
+The image-space metric is computationally much more expensive compared to the direct method.
 There are 4 main steps which are executed within any single optimization iteration that contribute
 to the total wall time.
 These steps are prediction via the computational model ($15.63(21)\%$), mask adjustment of the data
@@ -1779,7 +1777,7 @@ Additional biological effects include polar interactions~\cite{Duvernoy2018},
 differentiation~\cite{vanGestel2015}, extracellular reactions~\cite{Li2025}.
 When it comes to the designed algorithms, we have already discussed that the performance of
 generating masks from computational results is the limiting factor for the performance of the
-imaging-based comparison algorithm.
+image-space metric.
 This problem could be targeted by rewriting existing code in C++ using native VTK~\cite{vtkBook}
 instead of relying on the wrapper library pyvista~\cite{Sullivan2019}.
 Another area of improvement is the position extraction algorithm which works well for cells living
@@ -2066,7 +2064,7 @@ In general, we do not anticipate that these scenarios are common for most practi
 \end{figure}
 
 %###################################################################################################
-\subsection{Details for the Imaging-Based Comparison Algorithm}
+\subsection{Details for the Image-Space Metric}
 \label{sec:supplement-comparison-algorithms}
 
 In a different approach, one might be tempted to utilize the previously constructed direct
