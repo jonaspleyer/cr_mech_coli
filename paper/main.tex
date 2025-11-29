@@ -2153,6 +2153,12 @@ normal distribution with user-defined parameters.
     \label{fig:parameter-estimates-supplement-growth-rates}
 \end{figure}
 
+\begin{figure}
+    \centering
+    \includegraphics[width=0.5\textwidth]{figures/crm_divide/time-evolution.pdf}%
+    \caption{TODO}
+\end{figure}
+
 %###################################################################################################
 % \subsection{More Simulation Aspects (TODO)}
 % \label{section:supplement-more-simulation-aspects}
@@ -2240,18 +2246,26 @@ Figure~\ref{fig:timings-crm_divide}).
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.49\textwidth]
+    \begin{tikzonimage}[width=0.5\textwidth]
         {docs/source/_static/performance/computation-time-with-initial-agents.pdf}
-    \includegraphics[width=0.49\textwidth]{docs/source/_static/performance/flamegraph.pdf}
-    \caption{TODO}
-    \label{fig:performance}
-\end{figure}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.5\textwidth]{figures/crm_divide/timings.pdf}%
-    \includegraphics[width=0.5\textwidth]{figures/crm_divide/time-evolution.pdf}%
-    \caption{TODO}
+        \node at (0, 1)[anchor=north west]{\textbf{A}};
+    \end{tikzonimage}%
+    \begin{tikzonimage}[width=0.5\textwidth]
+        {figures/crm_divide/timings.pdf}
+        \node at (0, 1)[anchor=north west]{\textbf{B}};
+    \end{tikzonimage}\\
+    \begin{tikzonimage}[width=\textwidth]
+        {docs/source/_static/performance/flamegraph.pdf}
+        \node at (0.02, 0.98)[anchor=north west]{\textbf{C}};
+    \end{tikzonimage}\\
+    \caption{
+        (A) Wall time of the performed simulation with increasing number of final agents inside the
+        simulation domain.
+        (B) Distribution of computation time for the division script utilized in
+        section~\ref{sec:application-1-with-division}.
+        (C) Flamegraph of a typical simulation showcasing frequency of function calls for
+        parallelized execution of simulations.
+    }
     \label{fig:timings-crm_divide}
 \end{figure}
 
