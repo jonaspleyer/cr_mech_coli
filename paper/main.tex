@@ -1011,18 +1011,18 @@ In the scenario where no cells divide during the observed interval, we can use o
 algorithm to obtain the position of the cells and then compare them directly to the positions
 calculated from the computational results.
 Each cell contains a collection of vertices.
-Given $M$ cells with $N$ vertices each and dimension $d$, the total information can be stored in an
-array $\nu_{i,j,k}$ of shape $(M,N,2)$.
+Given $N_c$ cells with $N_v$ vertices in $d$ dimensions at $N_t$ time points, the total information
+can be stored in an array $\nu_{i,j,k,l}$ of shape $(N_c,N_v,d,N_t)$.
 Comparing the results of a simulation $\nu$ with experimental values $\tilde{\nu}$ is thus only a
 matter of comparing two of these arrays within a suitable cost function~\cite{Wang2020}.
 In our approach we utilize a least squares approach given by
 
 \begin{equation}
     L_{\text{LS}}(\vec{x}, \vec{y})
-        = \sum\limits_{i,j,k}|\nu_{i,j,k} - \tilde{\nu}_{i,j,k}|^2
+        = \sum\limits_{i,j,k,l}|\nu_{i,j,k,l} - \tilde{\nu}_{i,j,k,l}|^2
 \end{equation}
 
-which minimizes the distance between the corresponding vertices.
+which minimizes the distance between the corresponding vertices at each time point.
 One important detail is that the ordering of vertices must be identical in the numerical and
 experimental values.
 
