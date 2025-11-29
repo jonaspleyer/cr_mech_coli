@@ -1170,25 +1170,17 @@ e.g. when dealing with division events.
         \end{tikzonimage}%
     \end{minipage}
     \caption{
-        The figure shows two masks (A,B) which will be compared against each other.
-        Image (B) contains more cells which are a result of cellular division events that have not
-        yet occurred in image (A).
-        (C) "Naive" comparison of cell masks, which identifies pixels of non-matching colors and
-        assigns a cost by counting these pixels.
-        This simple approach does not take into consideration the parental relationship.
-        This approach is displayed in (D) where pixels of cells that are directly related have been
-        colored in gray.
-        (E) A schematic representation of the comparison problem involving multiple cells at
-        different generations.
-        An initial configuration produces two results by utilizing distinct methods (i.e. evoling
-        our computational model in time or assigning the data for next time point).
-        (F) Comparison of cost functions, exponential regression (ER) and number of cells.
-        % Total cost between successive iteration steps $t_n,t_{n+1}$.
-        The overall shape of the cost is expected to have the slope of an exponential function.
-        We can clearly see that division events introduce jumps within this relationship.
-        In the case where we account for the parental relationship, these jumps are mitigated.
-        The cost value was set to $0$ for pixel-comparisons which belong to cells that are in a
-        parental relationship.
+        (A,B) Sequential simulatin masks before and after division event.
+        (C) Naive pixel-wise comparison, not accounting for parental relationships.
+        White regions indicate mismatches, black indicates matches.
+        (D) Lineage-aware comparison. Parental relationships have been marked in gray, resulting in
+        a modified penalty.
+        (E) Schematic of topological difference between model and data due to division.
+        (F) Evolution of cost functions applied to successive time steps $t_n$ and $t_{n+1}$,
+        exponential regression (ER) and total number of cells.
+        The naive metric (solid line) spikes at division events while the lineage-aware metric
+        (dashed line) eliminates discontinuities, following the expected exponential scaling (ER).
+        The exponential regression is fitted to the lineage-aware data.
     }
     \label{fig:mask-difference-metric}
 \end{figure}
