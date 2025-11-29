@@ -1188,40 +1188,30 @@ e.g. when dealing with division events.
 % --------------------------------------------------------------------------------------------------
 \subsection{The challenge of Cellular Heterogeneity}
 \label{sec:role-of-heterogeneity}
-In order to properly estimate the parameters of our model on the single-cell level, we need to be
-able to take into account any heterogeneity that may be present.
-Therefore, the developed methods are independent of how we assign parameters within our model.
-This means we can opt to incorporate cell-cell variability by specifying parameters on a
-per-cell basis.
-Or we can employ shared parameters with identical numerical values across all agents for properties
-which are expected to be identical across the population.
-Furthermore, mixed approaches where some parameters are assigned globally and others are chosen
-individually can be realized as well.
+To capture cell-cell heterogeneity, the parameter estimation framework needs to support both global
+(population-wide) and local (cell-specific) parameters.
+In practice it is often desirable to utilize a mixed approach in which parameters corresponding to
+shared behavior are treated globally and others are specific per cell.
 
-For our particular model presented in section~\ref{sec:computational-model}, a list of parameters
-is presented in table~\ref{table:list-of-parameters} but the following calculations are equally
-true for any single-cell model.
-We assume that each cell contains $N_p$ number of parameters that need to be assigned numerical
-values.
-We identify a subset $N_g\leq N_p$ of parameters which will be treated globally, thus with equal
-numerical value for every cell.
-This means that $N_p - N_g$ parameters will be assigned individually for each of number of cells.
-The total amount of parameters $N_\text{tot}$ in the system is then given by
+Let $N_p$ be the total number of parameters of a single cell.
+We identify a subset $N_g\leq N_p$ of global parameters for shared behavior and $N_l=N_p-N_g$ local
+parameters assigned individually.
+The total dimension of the parameter space is given by
 \begin{equation}
-    N_\text{tot} = N_g + N_c (N_p - N_g).
+    N_\text{tot} = N_g + N_c (N_p - N_g)
 \end{equation}
-where $N_c$ is the number of unique cells which we encounter over the time interval of interest.
-This value includes cells which have divided or died during the inspected time interval.
+where $N_c$ is the cumulative number of unique cell identifiers existing within the simulated time
+interval.
+This value includes cells which have divided or died during the inspected time interval or may only
+be present for a subset of the total time span.
 
-It is clear, that we should avoid, to needlessly treat parameters non-globally since this increases
-the size of the parameter space considerably.
-The volume of parameter space which needs to be sampled by optimization schemes scales exponentially
-with the dimension ie. the total number of parameters $N_\text{tot}$.
-Notice that the presented approach reflects our current work but can be adapted easily to other
-scenarios where different strategies of parameter assignment are desired.
-This can be usefull e.g. when considering two distinct species where the value of a particular
-parameter only depends on the species and is thus neither identical across all cells, nor
-individual per cell.
+The volume of the search space scales exponentially with $N_\text{tot}$ and therefore also with the
+number of local parameters $N_l$ or number of cells $N_c$ respectively.
+Keeping the number of individually assigned parameters $N_l=N_p-N_g$ minimal is crucial to retain
+computational tractability.
+The presented approach reflects our current work but can be adapted easily for other approaches,
+i.e. assigning distinct parameters only depending on the species in a multi-species biofilm.
+Our developed methods are independent of these choices, allowing for flexible assignment strategies.
 
 %###################################################################################################
 \section{Applications}
