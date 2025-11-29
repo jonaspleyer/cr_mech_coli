@@ -1029,7 +1029,7 @@ experimental values.
 \subsubsection{Imaging-Space Metric}
 \label{subsec:image-space-metric}
 \paragraph{Motivation}
-The preceding algorithm is performant and effective but can not be applied in the case when a
+The preceding algorithm is performant and effective but cannot be applied in the case when a
 division event splits apart the bacterium since this would require comparing sets of unequal
 cardinality.
 This situation is displayed in figure~\ref{fig:mask-difference-metric} (E) where two distinct
@@ -1042,22 +1042,22 @@ experimental data at this time point yet (or vice-versa).
 In addition to these technical challenges come practical ones.
 Within a short time period after the division event, the two resulting daughter cells will cover
 the space that the mother had taken up.
-However, the exact time point for the fission event can not be determined accurately in practice,
+However, the exact time point for the fission event cannot be determined accurately in practice,
 thus leading to natural uncertainties with respect to the question when the lives of the daughter
 cells begin and the one of the mother ends.
 Such uncertainties which are also common problems for segmentation methods, further highlight the
 importance of a purely imaging-based comparison scheme.
 
-These thoughts explain why the direct metric can not be simply reused on confined intervals which
+Consequently the direct metric cannot be simply reused on confined intervals which
 do not include division events:
 It does not account for the inaccuracy of the division timing.
 Furthermore, finding such confined intervals becomes increasingly difficult for larger numbers of
 bacteria where division events occur much more frequently.
-This fundamental limitation will be circumvented by the imaging-based method which we propose.
+Our proposed imaging-based method circumvents this fundamental limitation.
 
 \paragraph{The Metric}
 We develop an approach which can be understood as a metric in image space where we quantify
-differences in the visual footprint of two bacterial configurations.
+differences in the segmentation profile of two bacterial configurations.
 Within the realm of image segmentation many metrics such as the Jaccard Index~\cite{Murphy1996},
 Dice-Sørensen Coefficient~\cite{Dice1945}, Precision and Recall~\cite{Takaya2015} or F1
 Score~\cite{Taha2015} are actively used to deal with similar questions.
@@ -1065,40 +1065,50 @@ However, these statistical methods are all based upon the notion of identifying 
 non-matching regions.
 It is therefore first necessary to define a criterion for this.
 
-% To compare the differing cellular configurations, we require additional
-% methods which can be used in time intervals containing cellular divison events.
 We can use the previously introduced \nameref{subsection:visualization} methods to obtain cell-masks
 from the numerical results of the \ac{abm} simulation.
 Since we utilize an in-image encoding scheme, each pixel has a unique color value which is directly
 related to one particular cell or background (black).
 We can now compare the two masks pixel by pixel.
-Whenever two colors are not matching, a penalty is assigned for each point in the pixel-grid.
-The total cost is the sum of all penalties.
+Whenever two colors are not matching, a penalty of $p\in[0,1]$ is assigned for each point in the
+pixel-grid.
 With this approach it is important to take into account the parental relationship between the cells,
 by checking if either one of the colors corresponding to the compared cells is a daughter of the
 other cell.
 Figure~\ref{fig:mask-difference-metric} (A,B) shows two states of a numerical simulation
-with varying amounts of cells.
+with varying numbers of cells.
 We can see that some cells have divided while others have only extended in the same time interval.
 The resulting penalties without accounting for the parental relationships are displayed in
 Figure~\ref{fig:mask-difference-metric} (C).
-Black indicates that the pixels are matching and no penalty is assigned while white
-indicates that the original pixels are not matching, thus adding to the overall cost.
+% Black indicates that the pixels are matching and no penalty is assigned while white
+% indicates that the original pixels are not matching, thus adding to the overall cost.
 In contrast, Figure~\ref{fig:mask-difference-metric} (D) takes the parental relationship into
 account and highlights regions where compared pixels belong to mother-daughter cells in gray.
-We assign a specific parent penalty $0\leq p\leq 1$ value for these points which should be seen as
+We assign a specific parent penalty $0\leq p_p\leq 1$ value for these points which should be seen as
 an additional hyperparameter for this optimization algorithm.
 % It is possible to assign a custom value for the parental cost value.
-Settings its value to $0$ results in a contiuous cost function in time.
-In the future, more complex choices for this parent penalty might be feasible such as
-time-dependence $p(t-t_\text{division})$.
+Setting its value to $0$ results in a continuous cost function in time.
+% In the future, more complex choices for this parent penalty might be feasible such as
+% time-dependence $p(t-t_\text{division})$.
+The total cost between two images $I^1$ and $I^2$ is the sum of all individual penalties
+\begin{align*}
+    L_I(I^1,I^2) &= \sum\limits_{i,j} p(I^1_{ij}, I^2_{ij})\\
+    p(i^1,i^2) &= \begin{cases*}
+        p_p & \text{if $i^1$ is daughter/mother of $i^2$}\\
+        1 & \text{if } $i^1\neq i^2$\\
+        0 & \text{else}
+    \end{cases*}
+\end{align*}
+where the sum is over all grid points $i,j$ of the two compared images and a penalty of $p=1$ is
+assigned for non-matching pixel values whose corresponding cells are not related by a parental
+relationship.
 
 While our primary concern is to compare numerically obtained results with experimental data,
 this approach allows us to compare all spatial configurations which can be represented
 by segmented microscopic images irrespective of how these are obtained.
 On a higher level, this means that our method is agnostic to the underlying cellular representation.
-This means that other models who even utilize very distinct cellular representations but are able to
-render segmented images can reuse our method.
+This means that other models who potentially utilize very distinct cellular representations but are
+able to render segmented images can reuse our method.
 
 \subsubsection{Testing the Comparison Algorithms with Division Events}
 When utilizing a computational model (see \ref{sec:computational-model}), we can generate
