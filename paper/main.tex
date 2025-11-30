@@ -273,8 +273,8 @@ topics~\cite{Ghaffarizadeh2018,Cooper2020,Karolak2021,DeRybel2014}.
 differentiation, transport of extracellular compounds and many other processes which makes them the
 ideal tool to study the individual behavior of cells.
 
-Within our approach we develop a new computational model for flexible, elongated bacteria which
-is a mechanical setup that most \acp{abm} are not capable of describing.
+We develop a new computational model for flexible, elongated bacteria which
+is a mechanical feature that is absent in most \acp{abm}.
 So far, only a few computational studies have considered flexible rods~\cite{Duman2018,Joshi2019},
 but their models cannot be transferred directly to more complex biological systems which might
 involve intracellular reactions, extracellular compounds, growth and division.
@@ -286,7 +286,7 @@ This poses a problem in the computational study of these systems.
 Although \acp{abm} seem destined to be applied to the modeling of individual elongated bacteria,
 this potential has not been fully realized yet.
 Another major problem is how to perform parameter estimations for \acp{abm}.
-Classical approaches in systems biology—such as maximum
+Classical approaches in systems biology include techniques such as maximum
 likelihood~\cite{Kreutz2013,Raue2014} or maximum a posteriori estimation, identifiability analysis
 and model reduction~\cite{Simpson2025,Gbor2015,Banga2008,Ashyraliyev2009}.
 While some attempts have been made to properly calibrate the \ac{abm} at hand and estimate its
@@ -310,68 +310,78 @@ Obtaining a mechanistic understanding of their mechanical properties is essentia
 emergent phenomena such as the formation of biofilms~\cite{Li2025} or bacterial
 swarming~\cite{Starru2007}.
 
-In this work, we address these challenges and aim to further close the previously identified gaps.
-We construct a novel mechanical model for flexible, elongated bacteria that captures growth,
+In this work, we address these challenges with the aim to further close the previously identified
+gaps.
+We provide a framework that links mechanistic modeling of elongated bacteria with quantitative
+analysis methods (Figure~\ref{fig:flowchart-project-structure}).
+First, we construct a novel mechanical model for flexible, elongated bacteria that captures growth,
 division, elastic deformations of the rod and mechanical interactions between cells.
-We develop computational methods which utilize segmented microscopic images to quantitatively
-compare numerical results with biological data on a single-cell level.
+Second, we develop computational methods which utilize segmented microscopic images to quantitatively
+compare numerical results with biological data on the single-cell level.
 With these methods we can estimate the parameters of our model in three scenarios, each probing
 different aspects of our model with increasing levels of complexity.
+
+A key feature of this framework is its modularity.
+While most subcomponents (see Figure~\ref{fig:flowchart-project-structure}) rely on the spatial
+representation of bacteria as discretized vertices, others i.e. the
+\nameref{subsec:image-space-metric} operate purely on segmentation masks, making them fully
+model-agnostic.
+This enables researchers to freely reuse our developed methods across a wide range of models for
+elongated organisms.
 
 Our approach demonstrates that parameter estimation of \acp{abm} is indeed feasible, even in
 the case of complex models such as single-cell modeling of flexible elongated bacteria and when
 incorporating cellular heterogeneity.
 The developed methods fill a methodological gap and present a novel way of fitting individual-based
 models to data which can be readily adapted to various other scenarios.
-We present a novel mechanical model for flexible elongated bacteria which seamlessly integrates into
-the \texttt{cellular\_raza} framework, enabling researchers to extend and adapt it in future
-studies.
-In total, these contributions push for a more rigorous, interpretable and biolgically grounded
+Our novel mechanical model for flexible elongated bacteria integrates seamlessly into the
+\texttt{cellular\_raza} framework, enabling researchers to extend and adapt it in future studies.
+In total, these contributions push for a more rigorous, interpretable and biologically grounded
 development process for \acp{abm} which provide deeper mechanistic insights into the nature of
 cellular behaviors.
 
 %###################################################################################################
-\section{Overview}
-This work consists of many subcomponents which can be combined in order to achieve various tasks.
-Figure~\ref{fig:flowchart-project-structure} shows a high-level overview of all components.
-We assume that bacterial rods can be represented by a colleciton of vertices (see
-section~\ref{subsec:spatial-representation}).
-This assumption alone is enough to enable a cascade of other components.
-Using the spatial representation, we provide visualization methods that employ a 3D rendering
-engine and can produce cell masks or rendered images from a given configuration.
-The data extraction component determines the vertices from given segmented microscopic images.
-This allows us in particular to turn any sequence of images (movie) into a sequence of bacterial
-positions and is a key feature of the parameter estimation methods.
-The dynamics of the vertices are determined by a computational model which is specific
-to the respective use-case and should be defined by the researcher.
-It merely requires the aforementioned assumption of representing bacterial rods as a
-collection of vertices.
-This work will provide one example of how such a model can be defined.
-Notably, the visualization and data extraction components do not require any knowledge about the
-computational model, thus allowing us to reuse their functionality across differing models.
-
-By utilizing the provided data extraction methods, we can infer properties of the bacteria that aid
-us in constructing a suitable computational model.
-However, the construction of any mechanistic model also requires prior konwledge which can be used
-to inform our analysis methods.
-For example, by extracing the positions of bacteria across a time-series of microscopic images, we
-can also calculate their lengths at these time-points and thus determine their rate of growth and
-type of growth (see \nameref{paragraph:parameter-estimation-individual-treatment}), thus
-effectively guiding our modeling steps.
-As we will show later, extracted data in the form of cellular positions or segmentation masks can
-also be used for comparing computational results with biological ground truth.
-
-Visualization methods are an integral part of any modeling endevaour.
-They allow researchers to obtain feedback quickly and improve iteration times when constructing new
-models.
-Furthermore, we utilize them in our image-space metric (see
-section~\ref{subsec:image-space-metric}) where they enable us to effectively compare
-two bacterial configurations while accounting for division events.
-In the future, we are planning to extend the the rendering capabilities of our approach and
-generate realistic microscopic images and time-series.
-Together with the parameter estimation methods, they can then be used to provide large amounts of
-mechanistic data for the training of cell-segmentation and cell-tracking machine-learning
-algorithms.
+% \section{Overview}
+% This work consists of many subcomponents which can be combined in order to achieve various tasks.
+% Figure~\ref{fig:flowchart-project-structure} shows a high-level overview of all components.
+% We assume that bacterial rods can be represented by a colleciton of vertices (see
+% section~\ref{subsec:spatial-representation}).
+% This assumption alone is enough to enable a cascade of other components.
+% Using the spatial representation, we provide visualization methods that employ a 3D rendering
+% engine and can produce cell masks or rendered images from a given configuration.
+% The data extraction component determines the vertices from given segmented microscopic images.
+% This allows us in particular to turn any sequence of images (movie) into a sequence of bacterial
+% positions and is a key feature of the parameter estimation methods.
+% The dynamics of the vertices are determined by a computational model which is specific
+% to the respective use-case and should be defined by the researcher.
+% It merely requires the aforementioned assumption of representing bacterial rods as a
+% collection of vertices.
+% This work will provide one example of how such a model can be defined.
+% Notably, the visualization and data extraction components do not require any knowledge about the
+% computational model, thus allowing us to reuse their functionality across differing models.
+%
+% By utilizing the provided data extraction methods, we can infer properties of the bacteria that aid
+% us in constructing a suitable computational model.
+% However, the construction of any mechanistic model also requires prior konwledge which can be used
+% to inform our analysis methods.
+% For example, by extracing the positions of bacteria across a time-series of microscopic images, we
+% can also calculate their lengths at these time-points and thus determine their rate of growth and
+% type of growth (see \nameref{paragraph:parameter-estimation-individual-treatment}), thus
+% effectively guiding our modeling steps.
+% As we will show later, extracted data in the form of cellular positions or segmentation masks can
+% also be used for comparing computational results with biological ground truth.
+%
+% Visualization methods are an integral part of any modeling endevaour.
+% They allow researchers to obtain feedback quickly and improve iteration times when constructing new
+% models.
+% Furthermore, we utilize them in our image-space metric (see
+% section~\ref{subsec:image-space-metric}) where they enable us to effectively compare
+% two bacterial configurations while accounting for division events.
+% In the future, we are planning to extend the the rendering capabilities of our approach and
+% generate realistic microscopic images and time-series.
+% Together with the parameter estimation methods, they can then be used to provide large amounts of
+% mechanistic data for the training of cell-segmentation and cell-tracking machine-learning
+% algorithms.
 
 \begin{figure}[H]
     \centering
