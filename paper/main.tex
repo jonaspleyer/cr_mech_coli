@@ -1006,8 +1006,8 @@ and then compare both results.
 The cell-masks are easily obtainable by either using existing segmentation
 tools~\cite{Cutler2022,Stringer2020,Hardo2022} or manually annotating microscopic image series.
 
-\subsubsection{Direct Skeleton-Space Metric}
-\label{subsec:skeleton-metric}
+\subsubsection{Direct Position-Space Metric}
+\label{subsec:direct-metric}
 In the scenario where no cells divide during the observed interval, we can use our extraction
 algorithm to obtain the position of the cells and then compare them directly to the cellular
 skeletons obtained from the computational results.
@@ -1274,7 +1274,7 @@ $\vec{x}_0$ such that the bacterium is attached to the bottom.
 
 We extract the positions of the rod from the data images (see
 Figure~\ref{fig:amir-bending-simulation} (A)) and compare the simulated positions with the extracted
-ones using the direct comparison algorithm (see Subsection~\ref{subsec:skeleton-metric}).
+ones using the direct comparison algorithm (see Subsection~\ref{subsec:direct-metric}).
 Our simulation is split into two phases; One with the external flow force that initially bends the
 rod and lasts $\SI{7}{\second}$ and a second phase during which the force is disabled and the cell
 returns to its original shape over a span of $\SI{17}{\second}$.
@@ -1378,7 +1378,7 @@ results.
 The first case considers a time interval without cell-division while the second case does contain
 division events.
 Therefore, the first approach will optimize the direct comparison cost function (see
-section~\ref{subsec:skeleton-metric}) while the latter approach has to account for division events
+section~\ref{subsec:direct-metric}) while the latter approach has to account for division events
 and thus requires the image-space metric method (see section~\ref{subsec:image-space-metric}).
 These two scenarios present an opportunity to apply the previously developed methods within a
 realistic context and validate our approach.
@@ -1494,7 +1494,7 @@ individually.
 
 In this section we will focus on a time-interval which does not contain any division events.
 By doing so, we can utilize the simpler and more performant direct comparison scheme (see
-\ref{subsec:skeleton-metric}) for our cost function.
+\ref{subsec:direct-metric}) for our cost function.
 We have chosen said interval such that effects related to the lag phase can be neglected which
 allows us to sample a lower number of paremeters thus improving runtime performance of our
 optimization scheme.
