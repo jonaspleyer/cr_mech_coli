@@ -608,11 +608,7 @@ impl Settings {
 
     /// Creates a list of lower and upper bounds for the sampled parameters
     #[allow(unused)]
-    pub fn generate_optimization_infos(
-        &self,
-        py: Python,
-        n_agents: usize,
-    ) -> PyResult<OptimizationInfos> {
+    pub fn generate_optimization_infos(&self, py: Python, n_agents: usize) -> OptimizationInfos {
         let mut param_space_dim = 0;
 
         #[allow(unused)]
@@ -624,7 +620,7 @@ impl Settings {
             strength,
             potential_type,
             growth_rate,
-        } = &self.parameters.extract(py)?;
+        } = &self.parameters.borrow(py).deref().clone();
 
         let mut bounds_lower = Vec::new();
         let mut bounds_upper = Vec::new();
@@ -703,14 +699,14 @@ impl Settings {
             }
         }
 
-        Ok(OptimizationInfos {
+        OptimizationInfos {
             bounds_lower,
             bounds_upper,
             initial_values,
             parameter_infos: infos,
             constants,
             constant_infos,
-        })
+        }
     }
 
     /// Formats the object
@@ -726,11 +722,11 @@ impl Settings {
         optizmization_result: &super::optimize::OptimizationResult,
         n_agents: usize,
         agent_index: usize,
-    ) -> PyResult<f32> {
+    ) -> f32 {
         // Check if the parameter used for optimization contain the queried parameter name
         let param_name_cleaned = param_name.trim().to_lowercase();
         let parameter_infos = self
-            .generate_optimization_infos(py, n_agents)?
+            .generate_optimization_infos(py, n_agents)
             .parameter_infos;
 
         let mut first_last = None;
@@ -748,9 +744,9 @@ impl Settings {
         }
         if let Some((n, m)) = first_last {
             if n == m {
-                return Ok(optizmization_result.params[n]);
+                return optizmization_result.params[n];
             } else {
-                return Ok(optizmization_result.params[n + agent_index]);
+                return optizmization_result.params[n + agent_index];
             }
         }
 
@@ -761,8 +757,8 @@ impl Settings {
                     if let $potential_type(pot) = &self.parameters.bind(py).borrow().potential_type
                     {
                         match &pot.$param_field {
-                            Parameter::Float(value) => return Ok(*value),
-                            Parameter::List(list) => return Ok(list[agent_index]),
+                            Parameter::Float(value) => return *value,
+                            Parameter::List(list) => return list[agent_index],
                             _ => (),
                         }
                     }
@@ -771,8 +767,8 @@ impl Settings {
             ($param_str:literal, $param_field:ident) => {
                 if param_name_cleaned == $param_str.trim().to_lowercase() {
                     match &self.parameters.bind(py).borrow().$param_field {
-                        Parameter::Float(value) => return Ok(*value),
-                        Parameter::List(list) => return Ok(list[agent_index]),
+                        Parameter::Float(value) => return *value,
+                        Parameter::List(list) => return list[agent_index],
                         _ => (),
                     }
                 }
@@ -789,7 +785,7 @@ impl Settings {
         find_param!(@interaction Mie, "Exponent m", em);
         if param_name_cleaned == "bound" {
             if let Mie(pot) = &self.parameters.bind(py).borrow().potential_type {
-                return Ok(pot.bound);
+                return pot.bound;
             }
         }
         find_param!(@interaction Morse, "Potential Stiffness", potential_stiffness);

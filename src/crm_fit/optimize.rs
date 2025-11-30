@@ -161,7 +161,7 @@ pub fn run_optimizer(
     env_logger::init();
 
     let n_agents = positions_all.shape()[1];
-    let oinfs = settings.generate_optimization_infos(py, n_agents)?;
+    let oinfs = settings.generate_optimization_infos(py, n_agents);
     let OptimizationInfos {
         bounds_lower,
         bounds_upper,
