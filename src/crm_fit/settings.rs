@@ -709,6 +709,70 @@ impl Settings {
         }
     }
 
+    /// Obtains all values for individual parameters
+    pub fn get_parameters_distributions(
+        &self,
+        py: Python,
+        n_agents: usize,
+        optizmization_result: &super::optimize::OptimizationResult,
+    ) -> Vec<(usize, String, Vec<f32>)> {
+        let _b = self.parameters.borrow(py);
+        let Parameters {
+            radius,
+            rigidity,
+            spring_tension,
+            damping,
+            strength,
+            #[allow(unused)]
+            potential_type,
+            growth_rate,
+        } = _b.deref();
+
+        let mut counter = 0;
+        let mut values = vec![];
+        macro_rules! append_if_individual(
+            ($var:expr, $var_name:expr) => {
+                #[allow(unused)]
+                match $var {
+                    Parameter::SampledFloat(SampledFloat {
+                        min: _,
+                        max: _,
+                        initial: _,
+                        individual: Some(true),
+                    }) => {
+                        let v = (0..n_agents)
+                            .map(|i| self.get_param(
+                                py,
+                                &$var_name.to_lowercase(),
+                                optizmization_result,
+                                n_agents,
+                                i
+                            ))
+                            .collect::<Vec<_>>();
+                        values.push((counter, $var_name.to_string(), v));
+                        counter += n_agents;
+                    },
+                    Parameter::SampledFloat(SampledFloat {
+                        min: _,
+                        max: _,
+                        initial: _,
+                        individual,
+                    }) => counter += 1,
+                    _ => (),
+                }
+            }
+        );
+
+        append_if_individual!(radius, "Radius");
+        append_if_individual!(rigidity, "Rigidity");
+        append_if_individual!(spring_tension, "Spring Tension");
+        append_if_individual!(damping, "Damping");
+        append_if_individual!(strength, "Strength");
+        append_if_individual!(growth_rate, "Growth Rate");
+
+        values
+    }
+
     /// Formats the object
     pub fn __repr__(&self) -> String {
         format!("{self:#?}")
