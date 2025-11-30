@@ -12,7 +12,7 @@ import scipy as sp
 from tqdm import tqdm
 import warnings
 
-from .plotting import plot_interaction_potential, plot_profile, plot_distributions
+from .plotting import plot_interaction_potential, plot_profile, plot_distribution
 
 
 # Create folder to store output
@@ -443,5 +443,12 @@ def crm_fit_main():
         interval = time.time()
 
     if not pyargs.skip_distributions:
-        plot_distributions(agents_predicted, out)
+        odir = out / "distributions"
+        odir.mkdir(parents=True, exist_ok=True)
+        infos = settings.generate_optimization_infos(positions_all.shape[1])
+        for n, name, values in settings.get_parameters_distributions(
+            len(positions_all[0]), optimization_result
+        ):
+            plot_distribution(n, name, values, odir, infos)
+
         print(f"{time.time() - interval:10.4f}s Plotted Distributions")

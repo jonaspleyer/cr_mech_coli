@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+import matplotlib.ticker as ticker
 import numpy as np
 from pathlib import Path
 from tqdm.contrib.concurrent import process_map
@@ -6,6 +7,8 @@ import cr_mech_coli as crm
 from cr_mech_coli.cr_mech_coli import MorsePotentialF32
 import scipy as sp
 from tqdm import tqdm
+
+from cr_mech_coli.plotting import COLOR2, COLOR3
 
 from .crm_fit_rs import Settings, OptimizationResult, predict_calculate_cost
 
@@ -169,33 +172,24 @@ def plot_interaction_potential(
     fig.savefig(out / "potential-shape.pdf")
 
 
-def plot_distributions(agents_predicted, out: Path):
-    agents = [a[0] for a in agents_predicted.values()]
-    growth_rates = np.array([a.growth_rate for a in agents])
+def plot_distribution(n, name, values, out, infos):
     fig, ax = plt.subplots(figsize=(8, 8))
-    ax2 = ax.twiny()
-    ax.hist(
-        growth_rates,
-        edgecolor="k",
-        linestyle="--",
-        fill=None,
-        label="Growth Rates",
-        hatch=".",
-    )
-    ax.set_xlabel("Growth Rate [µm/min]")
-    ax.set_ylabel("Count")
+    crm.configure_ax(ax)
+    ax.hist(values, color=COLOR3, edgecolor=COLOR3, alpha=0.6)
 
-    radii = np.array([a.radius for a in agents])
-    ax2.hist(
-        radii,
-        edgecolor="gray",
-        linestyle="-",
-        facecolor="gray",
-        alpha=0.5,
-        label="Radii",
-    )
-    ax2.set_xlabel("Radius [µm]")
-    fig.legend(loc="upper center", bbox_to_anchor=(0.5, 1.10), ncol=3, frameon=False)
-    fig.savefig(out / "growth_rates_lengths_distribution.png")
-    fig.savefig(out / "growth_rates_lengths_distribution.pdf")
+    bound_lower = infos.bounds_lower[n]
+    bound_upper = infos.bounds_upper[n]
+    param_info = infos.parameter_infos[n]
+    (_, units, short) = param_info
+
+    ax.yaxis.set_major_locator(ticker.MaxNLocator(integer=True))
+    ax.set_title(name)
+    ax.set_xlabel(f"{short} [{units}]")
+    ax.set_ylabel("Count")
+    ax.set_xlim(bound_lower, bound_upper)
+
+    savename = name.lower().replace(" ", "-")
+
+    fig.savefig(out / f"{savename}.png")
+    fig.savefig(out / f"{savename}.pdf")
     fig.clf()
