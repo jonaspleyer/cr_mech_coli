@@ -1216,24 +1216,23 @@ Our developed methods are independent of these choices, allowing for flexible as
 %###################################################################################################
 \section{Applications}
 
-In this section we apply the previously developed methods to the problem of parameter estimation
-of our model.
-We cover 3 distinct cases with increasing level of complexity.
-In the first study, we utilize results previously obtained by Amir et. al~\cite{Amir2014,Amir2014_2}
-who investigated elastic deformations of \ac{ecoli} that are partially trapped within a narrow
-tube and subject to a force resulting from a fluidic flow.
-This setup does not involve any cell-cell interactions but specifically requires a flexible rod.
-It is therefore well suited as a starting point to assess the usefulness of our methods and the
-ability of our model to describe these results.\\
-The last two cases consider time-series of microscopic images containing multiple cells (see
-subsection~\ref{section:application-2}) which will be used to perform a parameter estimation of our
-full mechanical model.
-The approach is split into a first part which considers a time interval that does not contain any
-division events and a second part which extends the initially chosen interval to include division
-events.
-In the first part, we cover a time interval which does not contain division events and thus utilize
-the direct comparison algorithm while the second case contains division events and in turn requires
-usage of the image-space metric.
+In this section we apply the previously developed methods and model to three case-studies, each
+increasing in complexity.
+We set out to estimate the parameters of every configuration.
+
+First, we fit our model to data of elastically bending bacteria confined in a microfluidic
+apparatus which was previously published by Amir et. al~\cite{Amir2014,Amir2014_2}.
+This scenario isolates the mechanics of the flexible rod and is void of any complex cell-cell
+interactions.
+It is therefore well suited as a starting point in assessing the fidelity of our approach.
+
+Subsequently, we extend our scope by incorporating multiple bacteria with cell-cell interactions
+(see subsection~\ref{section:application-2}).
+Initially, we consider a time interval that does not contain division events and are thus able to
+employ the direct metric (see \nameref{subsec:direct-metric}).
+Finally, we apply the image-space metric (see \nameref{subsec:image-space-metric}) to a time-series
+containing multiple division events, demonstrating the feasibility of our approach in such
+scenarios.
 
 % --------------------------------------------------------------------------------------------------
 \subsection{Application 1: Elastic deformations of \acl{ecoli}}
