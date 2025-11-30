@@ -330,7 +330,7 @@ def crm_fit_main():
             settings, optimization_result, positions_all.shape[1], out
         )
 
-    settings.others = crm_fit.Others(True)
+    settings.others = crm_fit.Others("")
     cell_container = crm_fit.run_simulation(
         optimization_result.params,
         positions_all[0],
@@ -388,8 +388,8 @@ def crm_fit_main():
                 ncol=3,
                 frameon=False,
             )
-            ax.set_xlim(0, domain_size[0])
-            ax.set_ylim(0, domain_size[1])
+            ax.set_xlim(0, float(domain_size[0]))
+            ax.set_ylim(0, float(domain_size[1]))
             iterdir = out / "celldiffs"
             iterdir.mkdir(parents=True, exist_ok=True)
             fig.savefig(iterdir / f"cell-{iteration:06}.png")
@@ -411,7 +411,11 @@ def crm_fit_main():
             )
 
             mask_diff = crm.parents_diff_mask(
-                mask_predicted, mask_transformed, cell_container, 0
+                mask_predicted,
+                mask_transformed,
+                cell_container.color_to_cell,
+                cell_container.parent_map,
+                0,
             ).astype(np.uint8)
             odir = out / "celldiffs"
             cv.imwrite(
