@@ -6,9 +6,8 @@ from tqdm.contrib.concurrent import process_map
 import cr_mech_coli as crm
 from cr_mech_coli.cr_mech_coli import MorsePotentialF32
 import scipy as sp
-from tqdm import tqdm
 
-from cr_mech_coli.plotting import COLOR2, COLOR3
+from cr_mech_coli.plotting import COLOR3, COLOR5
 
 from .crm_fit_rs import Settings, OptimizationResult, predict_calculate_cost
 
@@ -123,14 +122,41 @@ def plot_profile(
     ax.set_xlabel(f"{short} [{units}]")
     ax.scatter(
         final_params[n],
-        final_cost,
-        marker="o",
-        edgecolor=crm.plotting.COLOR3,
-        facecolor=crm.plotting.COLOR2,
+        0,
+        marker="x",
+        color=COLOR5,
+        alpha=0.7,
+        s=12**2,
     )
+
+    y = (y - final_cost) / displacement_error**2
+
+    # Fill confidence levels
+    thresh_prev = 0
+    for i, q in enumerate([0.68, 0.90, 0.95]):
+        thresh = sp.stats.chi2.ppf(q, 1)
+        color = crm.plotting.COLOR3 if i % 2 == 0 else crm.plotting.COLOR5
+        filt = y <= thresh
+        lower = np.max(np.array([y, np.repeat(thresh_prev, len(y))]), axis=0)
+        ax.fill_between(
+            x,
+            lower,
+            np.repeat(thresh, len(lower)),
+            where=filt,
+            interpolate=True,
+            color=color,
+            alpha=0.3,
+        )
+        thresh_prev = thresh
+
     crm.plotting.configure_ax(ax)
-    ax.plot(x, y, color=crm.plotting.COLOR3, linestyle="--")
-    fig.tight_layout()
+    ax.plot(
+        x,
+        # (y - final_cost) / displacement_error**2,
+        y,
+        color=crm.plotting.COLOR3,
+        linestyle="--",
+    )
     odir = out / "profiles"
     odir.mkdir(parents=True, exist_ok=True)
     plt.savefig(f"{odir}/{name}.png".lower().replace(" ", "-"))
