@@ -388,15 +388,15 @@ cellular behaviors.
     \includestandalone[width=0.8\textwidth]{figures/concept/overview}
     \caption{
         Modular framework for parameter estimation of elongated bacteria.
-        The individual components rely on a unified spatial representation (left) which discretizes
-        bacteria into vertices (see \nameref{subsec:spatial-representation}).
+        The framework relies on a unified spatial representation (left) which discretizes
+        bacteria into vertices.
         Building on top are visualization methods (top), a novel computational model for flexible
-        elongated bacteria (middle) and data extraction routines (botom).
-        Analysis methods (bottom, right) utilize extraction methods and can be informed by the model
+        elongated bacteria (middle) and data extraction routines (bottom).
+        Analysis methods (bottom right) utilize extraction methods and can be informed by the model
         or used to guide modeling choices.
-        These components can be combined to estimate the parameters of the developed computational
-        model which can then be used in generating synthetic data (top, right).
-        Colors indicate the componet type; core scientific drivers (red), auxiliary methods (yellow)
+        The parameter estimation module integrates the preceding ones and allows us to calibrate the
+        model which can then be used in generating synthetic data (top right).
+        Colors indicate the component type; core scientific drivers (red), auxiliary methods (yellow)
         and extensions (blue).
     }
     \label{fig:flowchart-project-structure}
