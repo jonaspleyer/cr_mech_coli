@@ -387,14 +387,17 @@ cellular behaviors.
     \centering
     \includestandalone[width=0.8\textwidth]{figures/concept/overview}
     \caption{
-        The project can be divided into subcomponents that interact with and depend on
-        each other.
-        Every component implicitly builds on the spatial representation of rod-shaped bacteria as
-        vertices (see \nameref{subsec:spatial-representation}).
-        Red boxes highlight the key scientific drivers of this study while yellow boxes indicate
-        auxiliary methods.
-        The blue box "Data Generation" displays a extension of this approach which is under active
-        development.
+        Modular framework for parameter estimation of elongated bacteria.
+        The individual components rely on a unified spatial representation (left) which discretizes
+        bacteria into vertices (see \nameref{subsec:spatial-representation}).
+        Building on top are visualization methods (top), a novel computational model for flexible
+        elongated bacteria (middle) and data extraction routines (botom).
+        Analysis methods (bottom, right) utilize extraction methods and can be informed by the model
+        or used to guide modeling choices.
+        These components can be combined to estimate the parameters of the developed computational
+        model which can then be used in generating synthetic data (top, right).
+        Colors indicate the componet type; core scientific drivers (red), auxiliary methods (yellow)
+        and extensions (blue).
     }
     \label{fig:flowchart-project-structure}
 \end{figure}
