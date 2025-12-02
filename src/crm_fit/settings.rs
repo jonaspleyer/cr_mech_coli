@@ -416,6 +416,8 @@ pub struct Constants {
     #[approx(equal)]
     #[serde(default = "default_n_saves")]
     pub n_saves: usize,
+    /// Error used to draw profiles
+    pub displacement_error: f32,
 }
 
 const fn default_n_voxels() -> [core::num::NonZeroUsize; 2] {
@@ -580,6 +582,7 @@ impl Settings {
             cutoff: _,
             n_vertices: _,
             n_saves,
+            displacement_error: _,
         } = constants.extract(py)?;
         let Others { progressbar } = if let Some(o) = others {
             o.borrow(py).deref().clone()
@@ -894,6 +897,7 @@ mod test {
                         cutoff: 20.0,
                         n_vertices: 8.try_into().unwrap(),
                         n_saves: 0,
+                        displacement_error: 0.5,
                     },
                 )?,
                 parameters: Py::new(
