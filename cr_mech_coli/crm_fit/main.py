@@ -298,6 +298,8 @@ def crm_fit_main():
 
     plot_optimization_progression(optimization_result.evals)
 
+    displacement_error = settings.constants.displacement_error
+
     # Plot Cost function against varying parameters
     if not pyargs.skip_profiles:
         warnings.filterwarnings(
@@ -312,6 +314,7 @@ def crm_fit_main():
                 optimization_result,
                 out,
                 pyargs.workers,
+                displacement_error,
                 fig_ax,
                 steps=40,
             )

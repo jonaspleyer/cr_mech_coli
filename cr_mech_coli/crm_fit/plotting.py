@@ -63,6 +63,7 @@ def plot_profile(
     optimization_result: OptimizationResult,
     out: Path,
     n_workers,
+    displacement_error: float,
     fig_ax=None,
     steps: int = 20,
 ):

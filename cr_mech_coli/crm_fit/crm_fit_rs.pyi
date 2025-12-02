@@ -47,6 +47,7 @@ class Constants:
     pixel_per_micron: np.float32
     n_vertices: int
     n_saves: int
+    displacement_error: np.float32
 
 class DifferentialEvolution:
     seed: int
