@@ -251,6 +251,9 @@ def crm_fit_main():
             print(e)
             print("Omitting this particular result.")
 
+    n_agents = len(positions_all[0])
+    initial_params = settings.generate_optimization_infos(n_agents).initial_values
+
     positions_all = np.array(positions_all, dtype=np.float32)
     iterations_all = np.array(iterations_all, dtype=np.uint64) - iterations_all[0]
     settings.constants.n_saves = max(iterations_all)
@@ -261,7 +264,7 @@ def crm_fit_main():
 
     if pyargs.fit_growth_rates:
         gr_ind, gr_count = settings.parameters.set_growth_rate(
-            list(growth_rates), len(positions_all[0])
+            list(growth_rates), n_agents
         )
 
     print(f"{time.time() - interval:10.4f}s Calculated initial values")
@@ -462,7 +465,7 @@ def crm_fit_main():
         odir.mkdir(parents=True, exist_ok=True)
         infos = settings.generate_optimization_infos(positions_all.shape[1])
         for n, name, values in settings.get_parameters_distributions(
-            len(positions_all[0]), optimization_result
+            n_agents, optimization_result
         ):
             plot_distribution(n, name, values, odir, infos)
 
