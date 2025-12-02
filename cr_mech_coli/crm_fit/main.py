@@ -420,7 +420,9 @@ def crm_fit_main():
             mask_transformed = transform_input_mask(
                 colors_data, mask_data, iteration, cell_container
             )
-            rs = crm.RenderSettings(pixel_per_micron=1)
+
+            ppm = np.array(mask_transformed.shape[:2]) / np.array(domain_size)[::-1]
+            rs = crm.RenderSettings(pixel_per_micron=ppm)
             mask_predicted = crm.render_mask(
                 cell_container.get_cells_at_iteration(iteration),
                 cell_container.cell_to_color,
