@@ -993,8 +993,7 @@ progressbar = false
         let (settings, _) = generate_test_settings().unwrap();
 
         for n_agents in 1..10 {
-            let infos =
-                Python::attach(|py| settings.generate_optimization_infos(py, n_agents)).unwrap();
+            let infos = Python::attach(|py| settings.generate_optimization_infos(py, n_agents));
             let lower = infos.bounds_lower;
             let upper = infos.bounds_upper;
             assert_eq!(lower.len(), n_agents + 5);
