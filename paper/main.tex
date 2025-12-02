@@ -1026,18 +1026,52 @@ algorithm to obtain the position of the cells and then compare them directly to 
 skeletons obtained from the computational results.
 Given $N_c$ cells with $N_v$ vertices in $d$ dimensions at $N_t$ time points, the total information
 can be stored in an array $\nu_{i,j,k,l}$ of shape $(N_c,N_v,d,N_t)$.
-Comparing the results of a simulation $\nu$ with experimental values $\tilde{\nu}$ is thus only a
-matter of comparing two of these arrays via a suitable cost function~\cite{Wang2020}.
+Comparing the results of a simulation $\nu$ with parameters $\theta$ with experimental values
+$\tilde{\nu}$ is thus only a matter of comparing two of these arrays via a suitable cost
+function~\cite{Wang2020}.
 In our approach we utilize a \ac{ls} approach given by
-
 \begin{equation}
-    L_{\text{LS}}(\vec{x}, \vec{y})
-        = \sum\limits_{i,j,k,l}|\nu_{i,j,k,l} - \tilde{\nu}_{i,j,k,l}|^2
+    L_{\text{LS}}(\theta|\vec{x}, \vec{y})
+        = \sum\limits_{ijkl}|\nu_{i,j,k,l} - \tilde{\nu}_{ijkl}|^2
 \end{equation}
-
 which minimizes the distance between the corresponding vertices at each time point.
 One important detail is that the ordering of vertices must be identical in the numerical and
 experimental values.
+
+% This metric can be used to compare the model output to datapoints obtained from microscopic images.
+A common technique to investigate identifiability questions and provide insights into confidence
+levels of the obtained results is the
+\textit{profile-likelihood}~\cite{Murphy2000,Kreutz2013,Tnsing2023}.
+It is able to provide confidence intervals which are invariant under parameter
+transformations~\cite{Meeker1995}.
+It builds on the so-called \textit{log-likelihood} which propagates uncertainties $\sigma_{ijkl}$ in
+the datapoints.
+Under the assumption of a constant, known uncertainty, i.e. $\sigma_{ijkl}=\sigma$, we can rewrite
+the log-likelihood in terms of $L_\text{LS}$ via
+\begin{align}
+    L(\theta) &= \sum\limits_{ijkl}\left(\left(\frac{\nu_{ijkl}-\tilde{\nu}_{ijkl}}{\sigma_{ijkl}}\right)^2
+    + 2 \log(\sigma_{ijkl})
+    +\text{const}\right)\\
+    &= \frac{L_\text{LS}(\theta)}{\sigma^2} + \text{const}
+\end{align}
+where we absorbed the terms $\log(\sigma)$ in the sum into the constant term.
+With this simplification, it is important to pick a value for $\sigma$ such that the real
+uncertainty is overestimated.
+Furthermore, the preceding section (\nameref{subsec:position-extraction-algorithm}) has shown that
+the error distribution of the underlying data follows a normal distribution which justifies the core
+assumption of this framework.
+We conclude that minimizing, the least squares value $L_\text{LS}$ under constant $\sigma$ is
+equivalent to minimizing the \textit{log-likelihood} $L$ which is again equivalent to optimizing the
+likelihood that the chosen parameters represent our model.
+
+The \textit{profile likelihood} $PL(\theta_i)$ scans a single parameter $\theta_i$ along its axis
+while reoptimizing the remaining ones.
+We can obtain confidence intervals via
+\begin{equation}
+    PL(\theta_i) - L(\theta) \leq \Delta_\alpha
+\end{equation}
+where the value $\Delta_\alpha$ is calculated from the $(1-\alpha)$ quantile of a $\chi^2$
+distribution with one degree of freedom~\cite{Tnsing2023}.
 
 \subsubsection{Lineage-aware Image-Space Metric}
 \label{subsec:image-space-metric}
