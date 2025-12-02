@@ -80,21 +80,33 @@ def plot_profile(
         fig, ax = fig_ax
         fig.clf()
 
-    x = np.linspace(bound_lower, bound_upper, steps)
-
     (name, units, short) = param_info
 
-    pool_args = [
-        (optimization_result.params, infos.bounds_lower, infos.bounds_upper, n, p, args)
-        for p in x
-    ]
+    x = np.linspace(bound_lower, bound_upper, pyargs.profiles_samples)
+    savename = name.strip().lower().replace(" ", "-")
+    try:
+        y = np.loadtxt(out / "profiles" / f"profile-{savename}")
+    except:
+        pool_args = [
+            (
+                optimization_result.params,
+                infos.bounds_lower,
+                infos.bounds_upper,
+                n,
+                p,
+                args,
+                pyargs,
+            )
+            for p in x
+        ]
 
-    y = process_map(
-        optimize_around_single_param,
-        pool_args,
-        desc=f"Profile: {name}",
-        max_workers=n_workers,
-    )
+        y = process_map(
+            optimize_around_single_param,
+            pool_args,
+            desc=f"Profile: {name}",
+            max_workers=n_workers,
+        )
+        np.savetxt(out / "profiles" / f"profile-{savename}", y)
 
     final_params = optimization_result.params
     final_cost = optimization_result.cost
