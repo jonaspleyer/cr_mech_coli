@@ -6,6 +6,7 @@ n_voxels=[4, 3]
 rng_seed=0
 cutoff=6.66
 n_vertices=8
+displacement_error = 0.5
 
 [parameters]
 radius = { min = 0.01, max=1.0, initial=0.4, individual=false }
