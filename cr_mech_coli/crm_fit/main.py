@@ -181,6 +181,18 @@ def crm_fit_main():
         help="Plot the shape of the interaction potential",
         action="store_true",
     )
+    parser.add_argument(
+        "--profiles-samples",
+        type=int,
+        default=40,
+        help="Number of samples per parameter",
+    )
+    parser.add_argument(
+        "--profiles-maxiter",
+        type=int,
+        default=20,
+        help="Number of optimization steps for each profile point",
+    )
     pyargs = parser.parse_args()
     if pyargs.workers == -1:
         pyargs.workers = mp.cpu_count()
@@ -315,8 +327,8 @@ def crm_fit_main():
                 out,
                 pyargs.workers,
                 displacement_error,
+                pyargs,
                 fig_ax,
-                steps=40,
             )
             fig, _ = fig_ax
             plt.close(fig)

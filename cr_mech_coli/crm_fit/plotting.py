@@ -30,7 +30,7 @@ def prediction_optimize_helper(
 
 
 def optimize_around_single_param(opt_args):
-    all_params, bounds_lower, bounds_upper, n, param_single, args = opt_args
+    all_params, bounds_lower, bounds_upper, n, param_single, args, pyargs = opt_args
 
     params_opt = list(all_params)
     b_low = list(bounds_lower)
@@ -50,8 +50,8 @@ def optimize_around_single_param(opt_args):
         method="Nelder-Mead",
         options={
             "disp": True,
-            "maxiter": 10,
-            "maxfev": 10,
+            "maxiter": pyargs.profiles_maxiter,
+            "maxfev": pyargs.profiles_maxiter,
         },
     )
     return res.fun
@@ -64,8 +64,8 @@ def plot_profile(
     out: Path,
     n_workers,
     displacement_error: float,
+    pyargs,
     fig_ax=None,
-    steps: int = 20,
 ):
     (positions_all, iterations, settings) = args
     infos = settings.generate_optimization_infos(positions_all.shape[1])
