@@ -157,6 +157,11 @@ def plot_profile(
         color=crm.plotting.COLOR3,
         linestyle="--",
     )
+
+    upper = np.min([4 * thresh_prev, 1.05 * np.max([np.max(y), thresh_prev])])
+    lower = -0.05 * upper
+    ax.set_ylim(lower, upper)
+
     odir = out / "profiles"
     odir.mkdir(parents=True, exist_ok=True)
     plt.savefig(f"{odir}/{name}.png".lower().replace(" ", "-"))
