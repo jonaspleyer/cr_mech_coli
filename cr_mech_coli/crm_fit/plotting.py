@@ -81,10 +81,13 @@ def plot_profile(
 
     (name, units, short) = param_info
 
+    odir = out / "profiles"
+    odir.mkdir(parents=True, exist_ok=True)
+
     x = np.linspace(bound_lower, bound_upper, pyargs.profiles_samples)
     savename = name.strip().lower().replace(" ", "-")
     try:
-        y = np.loadtxt(out / "profiles" / f"profile-{savename}")
+        y = np.loadtxt(odir / f"profile-{savename}")
     except:
         pool_args = [
             (
@@ -105,7 +108,7 @@ def plot_profile(
             desc=f"Profile: {name}",
             max_workers=n_workers,
         )
-        np.savetxt(out / "profiles" / f"profile-{savename}", y)
+        np.savetxt(odir / f"profile-{savename}", y)
 
     final_params = optimization_result.params
     final_cost = optimization_result.cost
@@ -162,8 +165,6 @@ def plot_profile(
     lower = -0.05 * upper
     ax.set_ylim(lower, upper)
 
-    odir = out / "profiles"
-    odir.mkdir(parents=True, exist_ok=True)
     plt.savefig(f"{odir}/{name}.png".lower().replace(" ", "-"))
     plt.savefig(f"{odir}/{name}.pdf".lower().replace(" ", "-"))
     return (fig, ax)
