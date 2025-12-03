@@ -175,6 +175,57 @@ def plot_profile(
     return (fig, ax)
 
 
+def plot_mie_potential(x, r, en, em, strength, bound, cutoff, fig_ax, ls):
+    def sigma(r, n, m):
+        return (m / n) ** (1 / (n - m)) * r
+
+    def C(n, m):
+        return n / (n - m) * (n / m) ** (n / (n - m))
+
+    def mie(t, r, n, m, strength, bound, cutoff):
+        v0 = (
+            strength * C(n, m) * ((sigma(r, n, m) / t) ** n - (sigma(r, n, m) / t) ** m)
+        )
+        ds = np.abs(
+            strength
+            * C(n, m)
+            / sigma(r, n, m)
+            * (
+                n * (sigma(1, n, m) / t) ** (n + 1)
+                - m * (sigma(1, n, m) / t) ** (m + 1)
+            )
+        )
+        co = t <= cutoff
+        n = np.argmin(co)
+        bo = ds <= bound
+        m = np.argmax(bo)
+        s = v0 * bo + (1 - bo) * (bound * (t[m] - t) + v0[m])
+        return s * co + (1 - co) * v0[n], m
+
+    if fig_ax is None:
+        crm.plotting.set_mpl_rc_params()
+        fig, ax = plt.subplots(figsize=(8, 8))
+        crm.plotting.configure_ax(ax)
+    else:
+        fig, ax = fig_ax
+
+    yfinmax = -np.inf
+    y, m_bound = mie(x, r, en, em, strength, bound, cutoff)
+    yfinmax = max(yfinmax, y[-1])
+    ax.plot(x[: m_bound + 1], y[: m_bound + 1], linestyle=ls, color=crm.plotting.COLOR2)
+    ax.plot(
+        x[m_bound:],
+        y[m_bound:],
+        label=f"n={en:4.2f},m={em:4.2f}",
+        linestyle=ls,
+        color=crm.plotting.COLOR3,
+    )
+    ymin = 2 * np.max(np.abs(y))
+    ax.vlines(cutoff, -ymin, yfinmax, color=crm.plotting.COLOR5)
+
+    return fig, ax, y
+
+
 def plot_interaction_potential(
     settings: Settings,
     optimization_result: OptimizationResult,
@@ -185,31 +236,29 @@ def plot_interaction_potential(
         return None
 
     agent_index = 0
-    expn = settings.get_param("Exponent n", optimization_result, n_agents, agent_index)
-    expm = settings.get_param("Exponent m", optimization_result, n_agents, agent_index)
-    radius = settings.get_param("Radius", optimization_result, n_agents, agent_index)
+    en = settings.get_param("Exponent n", optimization_result, n_agents, agent_index)
+    em = settings.get_param("Exponent m", optimization_result, n_agents, agent_index)
+    r = settings.get_param("Radius", optimization_result, n_agents, agent_index)
     strength = settings.get_param(
         "Strength", optimization_result, n_agents, agent_index
     )
     bound = settings.get_param("Bound", optimization_result, n_agents, agent_index)
+    cutoff = settings.constants.cutoff
 
-    def mie_potential(x: np.ndarray):
-        c = expn / (expn - expm) * (expn / expm) ** (expm / (expn - expm))
-        sigma = radius * (expm / expn) ** (1 / (expn - expm))
-        return np.minimum(
-            strength * c * ((sigma / x) ** expn - (sigma / x) ** expm),
-            np.array([bound] * len(x)),
-        )
+    x = np.linspace(0.05 * r, settings.constants.cutoff, 500)
+    fig, ax, y = plot_mie_potential(x, r, en, em, strength, bound, cutoff, None, "-")
 
-    x = np.linspace(0.05 * radius, settings.constants.cutoff, 200)
-    y = mie_potential(x)
+    ymax = np.max(y)
+    ymin = np.min(y)
+    dy = ymax - ymin
+    ax.set_ylim(ymin - 0.2 * dy, ymax + 0.2 * dy)
 
-    fig, ax = plt.subplots(figsize=(8, 8))
-    crm.plotting.configure_ax(ax)
-
-    ax.plot(x / radius, y / strength, label="Mie Potential", color=crm.plotting.COLOR3)
+    # ax.plot(x / radius, y / strength, label="Mie Potential", color=crm.plotting.COLOR3)
     ax.set_xlabel("Distance [R]")
     ax.set_ylabel("Normalized Interaction Strength")
+
+    ax.set_xlabel("Distance [µm]")
+    ax.set_ylabel("Interaction Strength [µm^2/min^2]")
 
     ax.legend(
         loc="upper center",
