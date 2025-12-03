@@ -1061,17 +1061,21 @@ Furthermore, the preceding section (\nameref{subsec:position-extraction-algorith
 the error distribution of the underlying data follows a normal distribution which justifies the core
 assumption of this framework.
 We conclude that minimizing, the least squares value $L_\text{LS}$ under constant $\sigma$ is
-equivalent to minimizing the \textit{log-likelihood} $L$ which is again equivalent to optimizing the
+equivalent to minimizing the \textit{log-likelihood} $L$ which is again equivalent to maximizing the
 likelihood that the chosen parameters represent our model.
 
-The \textit{profile likelihood} $PL(\theta_i)$ scans a single parameter $\theta_i$ along its axis
-while reoptimizing the remaining ones.
+The \textit{profile likelihood} $PL(\theta_i)$ makes use of these formalisms and scans a single
+parameter $\theta_i$ along its axis while reoptimizing the remaining ones.
 We can obtain confidence intervals via
 \begin{equation}
     PL(\theta_i) - L(\theta) \leq \Delta_\alpha
+    \label{eq:profile-likelihood-confidence-interval}
 \end{equation}
 where the value $\Delta_\alpha$ is calculated from the $(1-\alpha)$ quantile of a $\chi^2$
 distribution with one degree of freedom~\cite{Tnsing2023}.
+This means that every parameter $\theta_i$ which satisfies
+relation~\eqref{eq:profile-likelihood-confidence-interval} has confidence level $(1-\alpha)$.
+In this work we will use confidence intervals $1-\alpha=68\%,90\%,95\%$.
 
 \subsubsection{Lineage-aware Image-Space Metric}
 \label{subsec:image-space-metric}
