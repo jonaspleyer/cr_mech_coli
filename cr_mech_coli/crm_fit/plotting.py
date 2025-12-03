@@ -121,7 +121,7 @@ def plot_profile(
     y = y[sorter]
 
     ax.set_title(name)
-    ax.set_ylabel("Cost function L")
+    ax.set_ylabel("PL(θ) - L(θ)")
     ax.set_xlabel(f"{short} [{units}]")
     ax.scatter(
         final_params[n],
@@ -133,6 +133,11 @@ def plot_profile(
     )
 
     y = (y - final_cost) / displacement_error**2
+
+    # Filter for nan and infinity values
+    filt = np.logical_and(~np.isnan(y), np.isfinite(y))
+    x = x[filt]
+    y = y[filt]
 
     # Fill confidence levels
     thresh_prev = 0
