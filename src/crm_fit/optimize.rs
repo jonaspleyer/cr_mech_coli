@@ -348,6 +348,7 @@ res = sp.optimize.differential_evolution(
 
             // Loal Minimization at end
             // Required
+            let globals = pyo3::types::PyDict::new(py);
             let locals = pyo3::types::PyDict::new(py);
             locals.set_item("bounds", bounds.to_pyarray(py))?;
             locals.set_item("x0", params.into_pyobject(py)?)?;
@@ -392,7 +393,7 @@ res = sp.optimize.minimize(
 )
             "#
                 ),
-                None,
+                Some(&globals),
                 Some(&locals),
             )?;
             let res = locals.get_item("res")?.unwrap();
@@ -405,10 +406,15 @@ res = sp.optimize.minimize(
                 .and_then(|x| x.extract().ok())
                 .unwrap_or(0);
             let niter = res.get_item("nit").ok().and_then(|x| x.extract().ok());
-            let evals = locals
+            let evals: Vec<f32> = locals
                 .get_item("evals")?
                 .and_then(|x| x.extract().ok())
-                .unwrap_or_default();
+                .unwrap_or(
+                    globals
+                        .get_item("evals")?
+                        .and_then(|x| x.extract().ok())
+                        .unwrap(),
+                );
 
             Ok(OptimizationResult {
                 params,
