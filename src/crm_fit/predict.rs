@@ -208,17 +208,22 @@ pub fn predict_calculate_cost(
     let positions_all = positions_all.as_array();
     // let initial_positions = initial_positions.as_array();
     let config = settings.to_config(py)?;
-    let parameter_defs: Parameters = settings.parameters.extract(py)?;
-    let constants: Constants = settings.constants.extract(py)?;
-    Ok(predict_calculate_cost_rs(
+    let parameter_defs = &settings.parameters.borrow(py);
+    let constants = &settings.constants.borrow(py);
+    let res = predict_calculate_cost_rs(
         parameters,
         positions_all,
         settings.domain_height(),
-        &parameter_defs,
-        &constants,
+        parameter_defs,
+        constants,
         &config,
         &iterations,
-    )?)
+    )?;
+    if !res.is_normal() {
+        Ok(constants.error_cost)
+    } else {
+        Ok(res)
+    }
 }
 
 pub fn predict_calculate_cost_rs(

@@ -418,6 +418,9 @@ pub struct Constants {
     pub n_saves: usize,
     /// Error used to draw profiles
     pub displacement_error: f32,
+    #[serde(default = "default_error_cost")]
+    /// Cost which is assigned when the produced value is not normal i.e. NaN, +/- infinity
+    pub error_cost: f32,
 }
 
 const fn default_n_voxels() -> [core::num::NonZeroUsize; 2] {
@@ -426,6 +429,10 @@ const fn default_n_voxels() -> [core::num::NonZeroUsize; 2] {
 
 const fn default_n_saves() -> usize {
     0
+}
+
+const fn default_error_cost() -> f32 {
+    1e9
 }
 
 pub(crate) fn get_inner<T>(ptp: &Py<T>, py: Python) -> T
@@ -583,6 +590,7 @@ impl Settings {
             n_vertices: _,
             n_saves,
             displacement_error: _,
+            error_cost: _,
         } = constants.extract(py)?;
         let Others { progressbar } = if let Some(o) = others {
             o.borrow(py).deref().clone()
