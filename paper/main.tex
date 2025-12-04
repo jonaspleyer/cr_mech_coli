@@ -273,7 +273,7 @@ topics~\cite{Ghaffarizadeh2018,Cooper2020,Karolak2021,DeRybel2014}.
 differentiation, transport of extracellular compounds and many other processes which makes them the
 ideal tool to study the individual behavior of cells.
 
-We develop a new computational model for flexible, elongated bacteria which
+We develop a new agent-based computational model for flexible, elongated bacteria which
 is a mechanical feature that is absent in most \acp{abm}.
 So far, only a few computational studies have considered flexible rods~\cite{Duman2018,Joshi2019},
 but their models cannot be transferred directly to more complex biological systems which might
@@ -297,13 +297,13 @@ Which combination of parameters drive the observed phenomena?
 Can these parameters be identified given a set of datapoints?
 Is there a simpler, i.e. reduced model that can describe the same phenomena?
 If \acp{abm} are not able to answer these questions, their results will significantly lack in
-explanatory power and ability to link to the specific problem at hand.
+explanatory power and their ability to link to the specific problem at hand.
 
 The aforementioned problems present significant gaps in the scientific literature.
 First, no model can be explained or interpreted without knowing the roles and values of its
 parameters or how they are constrained.
-Furthermore, models which are not properly calibrated cannot guarantee to accurately represent the
-underlying biological reality beyond numerical coincidence.
+Furthermore, models which are not properly calibrated, i.e. by a data-based approach or via
+domain-specific knowledge, cannot guarantee to accurately represent the underlying biological reality.
 Finally, elongated bacteria are fundamental organisms which can be seen as a precursor to
 more complex shapes such as spiral bacteria.
 Obtaining a mechanistic understanding of their mechanical properties is essential to understand
@@ -334,8 +334,12 @@ the case of complex models such as single-cell modeling of flexible elongated ba
 incorporating cellular heterogeneity.
 The developed methods fill a methodological gap and present a novel way of fitting individual-based
 models to data which can be readily adapted to various other scenarios.
-Our novel mechanical model for flexible elongated bacteria integrates seamlessly into the
-\texttt{cellular\_raza} framework, enabling researchers to extend and adapt it in future studies.
+Our novel mechanical model for flexible elongated bacteria integrates seamlessly into our previously
+developed agent-based modeling framework \texttt{cellular\_raza}~\cite{Pleyer2025}.
+It is purposefully designed to provide a flexible platform without any particular assumptions on the
+cellular representation or the nature of their processes.
+This allows researchers to freely adapt the underlying cellular model to their needs and enables
+further usage of the presented approach in future studies.
 In total, these contributions push for a more rigorous, interpretable and biologically grounded
 development process for \acp{abm} which provide deeper mechanistic insights into the nature of
 cellular behaviors.
