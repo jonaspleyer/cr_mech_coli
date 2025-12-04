@@ -170,6 +170,14 @@ def plot_profile(
     lower = -0.05 * upper
     ax.set_ylim(lower, upper)
 
+    nxmin = np.min(np.where(y <= upper))
+    nxmax = np.max(np.where(y <= upper))
+    xmin = x[nxmin]
+    xmax = x[nxmax]
+    dx = xmax - xmin
+
+    ax.set_xlim(xmin - 0.2 * dx, xmax + 0.2 * dx)
+
     plt.savefig(f"{odir}/{name}.png".lower().replace(" ", "-"))
     plt.savefig(f"{odir}/{name}.pdf".lower().replace(" ", "-"))
     return (fig, ax)
