@@ -1306,24 +1306,26 @@ performing parameter estimations.
 To model this configuration, the lowermost vertex of the rod is fixed at the base of the simulation
 domain and vertices which are inside the tubulus are restricted to move only in the y-direction.
 
-We model the force exerted by the fluid flow onto the individual vertices by
+The flow profile for this setup is proportional~\cite{Wolschin2021} to $(2y_iy_\text{max}-y_i^2)$
+where $y_i$ is the vertical displacement measured from the end of the tube and $y_\text{max}$
+is the total size of the champer along the y-axis which is hidden in
+Figure~\ref{fig:amir-bending-simulation} (A).
+For every segment that connects two vertices $\vec{x}_i,\vec{x}_{i+1}$, we evaluate the flow profile
+at $y_i=0.5(\vec{x}_i+\vec{x}_{i+1})_y$.
+In particular, this enforces the correct boundary values the flow profile and the resulting force
+$\vec{F}_{i,\text{external}}|_{y=0}=0$.
+We therefore model the force exerted by the fluid flow onto the individual vertices by
 \begin{align}
     \vec{G}_i &= C
     \underbrace{|\vec{x}_i - \vec{x}_{i+1}|\sin(\beta_i)}_\text{proj. rod segment length}
-    \underbrace{(yR - y^2)}_\text{flow contribution}\vec{e}_x\\
+    \underbrace{(y_iy_\text{max} - y_i^2)}_\text{flow contribution}\vec{e}_x\\
     \vec{F}_{i,\text{external}} &= \frac{1}{2}(\vec{G}_{i-1}+\vec{G}_i)
 \end{align}
 which is proportional to the length of the rod segment projected along the y-axis.
 Similarly to Stoke's Law~\cite{Stokes1856}, it acts along the axis of the fluid flow (x-axis).
 Here $\beta_i$ is the angle of the rod edge between $\vec{x}_{i+1}-\vec{x}_i$ and the x-axis.
-The flow profile for this particular setup is proportional~\cite{Wolschin2021} to $(2yR-y^2)$ where
-$y=0.5(\vec{x}_i+\vec{x}_{i+1})_y-y_b$ is the vertical displacement measured from the end of the
-tube $y_b$ (see Figure~\ref{fig:amir-bending-simulation}) and $R$ is the total size of the chamber
-along the y-axis which is hidden in Figure~\ref{fig:amir-bending-simulation} (A).
-In particular, this enforces the correct boundary values the flow profile and the resulting force
-$\vec{F}_{i,\text{external}}|_{y=0}=0$.
-In addition we confine vertices who belong to segments that are partially within the tube
-$(\vec{x}_i)_y\leq y_b$ via $(\vec{x}_{i+1})_x=x_0$ and also fix the value for the first vertex
+In addition we confine vertices who belong to segments that are within the tube
+via $(\vec{x}_{i+1})_x=x_0$ and fix the value for the first vertex
 $\vec{x}_0$ such that the bacterium is attached to the bottom.
 
 We extract the positions of the rod from the data images (see
