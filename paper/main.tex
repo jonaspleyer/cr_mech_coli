@@ -1484,81 +1484,46 @@ Section~\ref{subsec:image-space-metric}).
 \paragraph{Cell-Cell Variability within the Dataset}
 \label{paragraph:parameter-estimation-individual-treatment}
 We have already discussed (see Section~\ref{sec:role-of-heterogeneity}) that in order to properly
-estimate parameters of our system, we need to account for natural cell-variability, thus assigning
-selected parameters on a per-cell basis.
-
-However, we will now present data that indicate that an individual treatment is in fact necessary.
-Figure~\ref{fig:application-2-data-overview} shows the rod-lengths of individual bacteria which have been
-calculated from the extracted positions.
-We fit a delayed exponential function to them which is defined by
-
-\textbf{Explain fit parameter. Explain $t_0$. Give citation for exponential growth. Also link to
-equation in cell-cycle section}
-
+estimate the parameters of our system, we need to account for natural cell-variability, thus
+assigning optimmized parameters on a per-cell basis.
+A preliminary analysis of the chosen dataset further highlights this necessity.
+Figure~\ref{fig:application-2-data-overview} (D) shows the length of the rods as calculated via our
+extraction algorithm.
+To quantify this heterogeneity, we fit the individual curves with an exponential function
 \begin{equation}
-    l(t) =
-    \left\{\begin{array}{ll}
-            l_0 \exp(\lambda (t-t_0)) & t\geq t_0\\
-            l_0 & \text{ else}
-    \end{array}\right.
+    l(t) = l_0 \exp(\lambda t).
 \end{equation}
-
-where $\lambda$ is the growth rate and $t_0$ the delay.
-Fitting this function to the individual growth curves of the bacteria and their mean growth curve,
-both results in good agreements (Figure~\ref{fig:application-2-data-overview} A,B).
-However, the latter exhibits large amounts of uncertainty within the data which is also illustrated
-in subfigure (C).
-There, we can see much more clearly the difference between considering assigning parameters per cell
-and global ones.
+where $l_0$ is the starting length of the rod and $\lambda$ is the growth rate.
+Figure~\ref{fig:application-2-data-overview} (E) shows the distribution of the obtained growth rates.
+We can see, the distinct phenotypic properties of the cells result in large deviations of the
+individual growth rates.
 These results show that in order to accurately estimate the parameters of this system, we need to
 account for this inherent heterogeneity and hence treat the growth parameters of the bacteria
 individually.
-\textbf{[Man ahnt was du meinst, doch leider ahnt man es nur. Vermeide Aussagen wie "it is clear".]}
-\textit{Jetzt klarer?}
-
-% \begin{enumerate}
-%     \item motivate individual treatment of cells
-%     \item pro: get at distributions of parameters; even more than growth rates
-%     \item pro: probably good idea to do this in this case, since more or less required (see figure)
-%     \item con: computationally more demanding
-%     \item can we improve the optimization algorithm to somehow "know" that some parameters are for
-%         different cells and thus do not "interact" as other parameters with each other?
-%         ie. they are part of the same subspace.
-% \end{enumerate}
 
 % --------------------------------------------------------------------------------------------------
 \subsubsection{Without Division}
 
-\begin{itemize}
-    \item refer to which data?
-    \item refer to table of all parameters which are fitted
-    \item refer to equations which are fitted
-    \item "fit full mechanical model"
-    \item link to everything
-\end{itemize}
+We first resturct our analysis to a time interval prior to the first division event which allows us
+to use the computationally more efficient direct position-space metric
+(Section~\ref{subsec:image-space-metric}).
 
-In this section we will focus on a time-interval which does not contain any division events.
-By doing so, we can utilize the simpler and more performant direct comparison scheme (see
-\ref{subsec:direct-metric}) for our cost function.
-We have chosen said interval such that effects related to the lag phase can be neglected which
-allows us to sample a lower number of paremeters thus improving runtime performance of our
-optimization scheme.
+Utilizing our full mechanical model (Section~\ref{sec:computational-model}), we optimized a total
+of $11$ parameters: $5$ global parameters governing mechanics and interactions (damping
+$\lambda$, radius $R$, and parameters $n,m,V_0$ of the mie potential) together with $6$
+cell-specific growth rates $\mu_i$.
+\ac{ecoli} are short and typically straight, allowing us to fix the rigidity $\eta$ to a high value.
+Furthermore, the spring tension $\gamma$ serves as an auxiliary parameter which is also assumed
+constant.
 
-% For this dataset, we assumed that all parameters which specify the interaction potential are
-% identical across all agents but growth rates of the cells are individual.
-We chose to optimize for the damping of agents' movement within the medium, 3 interaction parameters
-of the Mie potential $n,m,V_0$ a single radius $r$ for all agents and growth rates which were chosen
-individually for each cell.
-This leads to a total of $5+1\times 6=11$ variable parameters.
-As highlighted before, in order to model non-flexible rods, we set the rigidity and spring tension
-of the rod to a high, fixed value.
-To estimate these parameters we used the differential evolution~\cite{Storn1997} global optimization
-algorithm which was initially seeded with a sample generated by the latin-hypercube~\cite{McKay1979}
-method.
+We employed a two-staged optimization strategy.
+The parameter space was first explored using the global Differential Evolution
+algorithm~\cite{Storn1997} which was initially seeded with Latin-Hypercube sampling~\cite{McKay1979}.
 Finally, we performed a local minimization using the L-BFGS-B algorithm~\cite{Liu1989}.
 
 Figure~\ref{fig:parameter-estimates-single-step} shows profile-likelihoods for each optimized
-parameter with respect to the optimization results.
+parameter.
+\textbf{TODO adapt these last sentences to new results}
 We can see that all parameters can be estimated by our optimization approach and that no
 non-identifiability~\cite{Raue2009} is present.
 These plots also show that the individual growth rates of the bacteria can be estimated effectively.
