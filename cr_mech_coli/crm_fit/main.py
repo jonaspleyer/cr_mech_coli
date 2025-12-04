@@ -11,6 +11,7 @@ import argparse
 import scipy as sp
 from tqdm import tqdm
 import warnings
+import shutil
 
 from .plotting import plot_interaction_potential, plot_profile, plot_distribution
 
@@ -217,6 +218,9 @@ def crm_fit_main():
     out = get_out_folder(pyargs.iteration, potential_type)
     if pyargs.output_folder is not None:
         out = Path(pyargs.output_folder)
+    else:
+        # Copy settings toml to output folder
+        shutil.copyfile(filename, out / "settings.toml")
 
     interval = time.time()
 
