@@ -57,7 +57,9 @@ def extract_pos(args):
         return None
 
 
-def estimate_growth_curves_individual(filenames, out_path, delay=None):
+def estimate_growth_curves_individual(
+    filenames, out_path, delay=None, pixel_per_micron=None
+):
     out_path = Path(out_path)
     out_path.mkdir(parents=True, exist_ok=True)
 
@@ -86,7 +88,10 @@ def estimate_growth_curves_individual(filenames, out_path, delay=None):
 
     # Set Labels
     ax.set_xlabel("Time [frames]")
-    ax.set_ylabel("Rod Length [pix]")
+    if pixel_per_micron is not None:
+        ax.set_ylabel("Rod Length [µm]")
+    else:
+        ax.set_ylabel("Rod Length [pix]")
 
     # Plot Data
     ax.plot(y, color=COLOR3, label="Data")
@@ -161,7 +166,10 @@ def estimate_growth_curves_individual(filenames, out_path, delay=None):
         )
 
     ax.set_xlabel("Time [frames]")
-    ax.set_ylabel("Rod Length [pix]")
+    if pixel_per_micron is not None:
+        ax.set_ylabel("Rod Length [µm]")
+    else:
+        ax.set_ylabel("Rod Length [pix]")
 
     handles, labels = ax.get_legend_handles_labels()
     ax.legend(
@@ -292,7 +300,10 @@ def estimate_growth_curves_individual(filenames, out_path, delay=None):
         ax.set_xlabel("Delay [frame]")
         ax.set_ylabel("Growth Rate [1/frame]")
     else:
-        ax.set_xlabel("Starting Length [pix]")
+        if pixel_per_micron is not None:
+            ax.set_xlabel("Starting Length [pix]")
+        else:
+            ax.set_xlabel("Starting Length [µm]")
         ax.set_ylabel("Growth Rate [1/frame]")
 
     handles, labels = ax.get_legend_handles_labels()
