@@ -178,8 +178,8 @@ def plot_profile(
 
     ax.set_xlim(xmin - 0.2 * dx, xmax + 0.2 * dx)
 
-    plt.savefig(f"{odir}/{name}.png".lower().replace(" ", "-"))
-    plt.savefig(f"{odir}/{name}.pdf".lower().replace(" ", "-"))
+    plt.savefig(f"{odir / name.lower().replace(' ', '-')}.png")
+    plt.savefig(f"{odir / name.lower().replace(' ', '-')}.pdf")
     return (fig, ax)
 
 
