@@ -1395,16 +1395,17 @@ Gathering additional transient information would allow us to better estimate the
         \node at (0.13, 0.88)[anchor=north west, black]{\textbf{H}};
     \end{tikzonimage}%
     \caption{
-        \textbf{TODO fix caption numbers and add missing stuff}
-        (A) Microscopic image containing a single bacterium which is partially confined in a narrow
-        tube on the bottom and free at the top where a controlled flow can be exerted on them.
-        Division of the bacteria is inhibited.
-        (B) A comparison of the initial and bent state show good visual agreement of our prediction
-        with the experimental data.
-        (C-G) Likelihood profiles for the individual parameters before and after performing two
-        successive model reductions.
-        The first step removes any damping effects by settings $\lambda=0$ while the second fixes
-        the spring tension to its calculated optimum $\gamma=\gamma_\text{opt}$.
+        (A-C) Manually segmented experimental snapshots of by Amir et al.~\cite{Amir2014_2}.
+        The red line within the green mask shows the extracted position.
+        (A-C) Snapshots of bending experiment by Amir et al.~\cite{Amir2014_2} with overlayed
+        manual segmentation mask (bright green) and extracted position (red).
+        The sequence shows the rod initially (A), under flow (B) and after relaxation (C).
+        (D) Comparison of simulated and experimental rod in bent and relaxed state.
+        (D-H) Profile-likelihoods for the estimated parameters.
+        Brigth blue curves represent the full model, dark blue a reduced model without damping
+        $\lambda=0$ and orange curves when fixing the auxiliary spring tension parameter
+        $\gamma=\gamma_\text{opt}$.
+        With these reductions, every parameter is identifiable.
     }
     \label{fig:amir-bending-simulation}
 \end{figure}
@@ -1415,32 +1416,29 @@ Gathering additional transient information would allow us to better estimate the
 
 In this section we study a collection of growing, dividing and physically interacting
 \ac{ecoli}.
-We use a series of microscopic images and corresponding segmentation masks for the individual
-bacteria as the underlying dataset which is partially displayed in
-Figure~\ref{fig:application-2-data-overview}.
-With the previously developed extraction algorithm (see
-section~\ref{subsec:position-extraction-algorithm}) we obtain the positions of our agents at all
-time points.
-These can be used as initial values and later within our parameter estimation routine.
-We initialize our computational model (see section~\ref{sec:computational-model}) with the obtained
-positions and optimize the parameters in order to find a set which best describes the observed
-results.
-The first case considers a time interval without cell-division while the second case does contain
-division events.
-Therefore, the first approach will optimize the direct comparison cost function (see
-section~\ref{subsec:direct-metric}) while the latter approach has to account for division events
-and thus requires the image-space metric method (see section~\ref{subsec:image-space-metric}).
-These two scenarios present an opportunity to apply the previously developed methods within a
-realistic context and validate our approach.
+We consider two scenarios to apply the previously developed metrics within a realistic context and
+validate our approach.
+Our dataset~\cite{Trude1982} consists of of a time-series of phase-contrast images (see
+Figure~\ref{fig:application-2-data-overview} (A)).
+We segmented them using omnipose~\cite{Cutler2022} (see Figure~\ref{fig:application-2-data-overview}
+(B)) and extracted their trajectories with the previously described pipeline
+(Section~\ref{sec:supplement-extraction-algorithm}).
+The model is initialized with the extracted position of the first snapshot and parameters are
+optimized to minimize the respective metrics.
 
-To show the usefulness of our previously developed methods
-(see section~\ref{section:parameter-estimation}), we will use them to estimate the parameters of
-individually growing \ac{ecoli} using a sequence of microscopic images.
-The data we use~\cite{Trude1982} (see section~\ref{section:data-code-availability}) has been
-automatically segmented with the omnipose~\cite{Cutler2022} algorithm to obtain the required cell
-masks.
+For our first case-study, we select 7 individual images spanning over an interval of
+$\SI{20}{\minute}$ without any division events.
+Figure~\ref{fig:application-2-data-overview} (C) displays the initial (left) an intermediate
+(middle) and final state of this interval.
+From these images we can already see that the cellular growth is the driving factor behind the
+dynamics of the system.
+We estimate the parameters of this systems via the direct position-space metric
+(see Section~\ref{subsec:direct-metric}).
 
-\textbf{Explain data more clearly. Refer to figure.}
+In the second case, we extend the previously used interval to 13 images over $\SI{85}{\minute}$
+therefore including division events.
+This change requires us to use the lineage-aware image-space metric (see
+Section~\ref{subsec:image-space-metric}).
 
 \begin{figure}[H]
     \centering
