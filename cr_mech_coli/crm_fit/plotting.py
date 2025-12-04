@@ -46,7 +46,7 @@ def optimize_around_single_param(opt_args):
         x0=params_opt,
         args=(param_single, n, *args),
         bounds=bounds,
-        method="Nelder-Mead",
+        method=pyargs.profiles_method,
         options={
             "disp": True,
             "maxiter": pyargs.profiles_maxiter,

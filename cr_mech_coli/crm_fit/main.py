@@ -194,6 +194,12 @@ def crm_fit_main():
         default=20,
         help="Number of optimization steps for each profile point",
     )
+    parser.add_argument(
+        "--profiles-method",
+        type=str,
+        default="Nelder-Mead",
+        help="Method to be used to minimize cost function in profiles",
+    )
     pyargs = parser.parse_args()
     if pyargs.workers == -1:
         pyargs.workers = mp.cpu_count()
