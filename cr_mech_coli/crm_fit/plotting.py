@@ -253,7 +253,7 @@ def plot_interaction_potential(
     bound = settings.get_param("Bound", optimization_result, n_agents, agent_index)
     cutoff = settings.constants.cutoff
 
-    x = np.linspace(0.05 * r, settings.constants.cutoff, 500)
+    x = np.linspace(0.05 * r, 1.2 * settings.constants.cutoff, 500)
     fig, ax, y = plot_mie_potential(x, r, en, em, strength, bound, cutoff, None, "-")
 
     ymax = np.max(y)
