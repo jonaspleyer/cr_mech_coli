@@ -191,7 +191,7 @@ def plot_profile(
     xmax = x[nxmax]
     dx = xmax - xmin
 
-    ax.set_xlim(xmin - 0.2 * dx, xmax + 0.2 * dx)
+    ax.set_xlim(xmin - 0.05 * dx, xmax + 0.05 * dx)
 
     plt.savefig(f"{odir / name.lower().replace(' ', '-')}.png")
     plt.savefig(f"{odir / name.lower().replace(' ', '-')}.pdf")
