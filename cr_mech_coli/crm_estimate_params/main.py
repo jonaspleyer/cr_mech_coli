@@ -58,7 +58,11 @@ def extract_pos(args):
 
 
 def estimate_growth_curves_individual(
-    filenames, out_path, delay=None, pixel_per_micron=None
+    filenames,
+    out_path,
+    delay=None,
+    pixel_per_micron=None,
+    minutes_per_frame=None,
 ):
     out_path = Path(out_path)
     out_path.mkdir(parents=True, exist_ok=True)
@@ -71,15 +75,22 @@ def estimate_growth_curves_individual(
 
     results = pool.map(extract_pos, args)
     results = list(filter(lambda x: x is not None, results))
-    iterations = np.array([r[0] for r in results])
     positions = np.array([r[1] for r in results])
 
     rod_lengths = np.sum(
         np.linalg.norm(positions[:, :, 1:] - positions[:, :, :-1], axis=3), axis=2
     )
 
+    t = [int(f.split("/")[-1].split(".csv")[0].split("-")[0]) for f in filenames]
+    t = np.array(t, dtype=float) - np.min(t).astype(float)
     y = np.mean(rod_lengths, axis=1)
     yerr = np.std(rod_lengths, axis=1)
+
+    if pixel_per_micron is not None:
+        y /= pixel_per_micron
+        yerr /= pixel_per_micron
+    if minutes_per_frame is not None:
+        t *= minutes_per_frame
 
     # Prepare Figure
     crm.plotting.set_mpl_rc_params()
@@ -94,12 +105,12 @@ def estimate_growth_curves_individual(
         ax.set_ylabel("Rod Length [pix]")
 
     # Plot Data
-    ax.plot(y, color=COLOR3, label="Data")
-    ax.fill_between(iterations, y - yerr, y + yerr, color=COLOR3, alpha=0.3)
+    ax.plot(t, y, color=COLOR3, label="Data")
+    ax.fill_between(t, y - yerr, y + yerr, color=COLOR3, alpha=0.3)
 
     if delay is None:
         growth_curve = delayed_growth
-        p0 = (y[0], np.log(y[-1] / y[0]), len(iterations) / 2)
+        p0 = (y[0], np.log(y[-1] / y[0]), np.max(t) / 2)
     else:
 
         def special_delayed_growth(t, x0, growth_rate):
@@ -111,15 +122,15 @@ def estimate_growth_curves_individual(
     # Plot Exponential Fit
     popt, pcov = sp.optimize.curve_fit(
         growth_curve,
-        iterations,
+        t,
         y,
         p0=p0,
         sigma=yerr,
         absolute_sigma=True,
     )
     ax.plot(
-        iterations,
-        growth_curve(iterations, *popt),
+        t,
+        growth_curve(t, *popt),
         color=COLOR5,
         linestyle="--",
         label="Fit",
@@ -143,29 +154,34 @@ def estimate_growth_curves_individual(
     crm.plotting.configure_ax(ax)
     for i in range(rod_lengths.shape[1]):
         yi = rod_lengths[:, i]
+        if pixel_per_micron is not None:
+            yi /= pixel_per_micron
         if delay is None:
-            p0 = (yi[0], np.log(yi[-1] / yi[0]), len(iterations) / 2)
+            p0 = (yi[0], np.log(yi[-1] / yi[0]), np.max(t) / 2)
         else:
             p0 = (yi[0], np.log(yi[-1] / yi[0]))
 
         popt, pcov = sp.optimize.curve_fit(
             growth_curve,
-            iterations,
+            t,
             yi,
             p0=p0,
         )
         parameters.append(popt)
         covariances.append(pcov)
-        ax.plot(iterations, yi, color=COLOR3, label="Data")
+        ax.plot(t, yi, color=COLOR3, label="Data")
         ax.plot(
-            iterations,
-            growth_curve(iterations, *popt),
+            t,
+            growth_curve(t, *popt),
             label="Fit",
             color=COLOR5,
             linestyle="--",
         )
 
-    ax.set_xlabel("Time [frames]")
+    if minutes_per_frame is not None:
+        ax.set_xlabel("Time [min]")
+    else:
+        ax.set_xlabel("Time [frames]")
     if pixel_per_micron is not None:
         ax.set_ylabel("Rod Length [µm]")
     else:
@@ -235,7 +251,10 @@ def estimate_growth_curves_individual(
     ax.plot(x, yfin, color=COLOR3, label="Sum")
     ax.vlines(xmean, 0, ymean, color="red")
 
-    ax.set_xlabel("Growth Rate [1/min]")
+    if minutes_per_frame is not None:
+        ax.set_xlabel("Growth Rate [1/frame]")
+    else:
+        ax.set_xlabel("Growth Rate [1/min]")
     ax.set_ylabel("Probability")
 
     handles, labels = ax.get_legend_handles_labels()
@@ -254,7 +273,7 @@ def estimate_growth_curves_individual(
 
     crm.plotting.configure_ax(ax, minor=False)
 
-    ax.hist(growth_rates, color=COLOR3)
+    ax.hist(growth_rates, facecolor=COLOR3, edgecolor=COLOR2)
     ax.set_xlabel("Growth Rate [1/min]")
     ax.set_ylabel("Count")
 
@@ -324,7 +343,11 @@ def estimate_growth_curves_individual(
 def crm_estimate_params_main():
     filenames = list(sorted(glob("data/crm_fit/0004/masks/*.csv")))
     estimate_growth_curves_individual(
-        filenames, "out/crm_estimate_params/IWF-Goettingen/"
+        filenames,
+        "out/crm_estimate_params/IWF-Goettingen/",
+        delay=0,
+        pixel_per_micron=15,
+        minutes_per_frame=20 / 8,
     )
 
     filenames = [
