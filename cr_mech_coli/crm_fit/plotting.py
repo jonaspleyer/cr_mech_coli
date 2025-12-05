@@ -41,16 +41,31 @@ def optimize_around_single_param(opt_args):
 
     bounds = [(b_low[i], b_upp[i]) for i in range(len(b_low))]
 
+    x0 = params_opt
+    if pyargs.profiles_pre_global:
+        res = sp.optimize.differential_evolution(
+            prediction_optimize_helper,
+            x0=params_opt,
+            args=(param_single, n, *args),
+            bounds=bounds,
+            disp=True,
+            maxiter=pyargs.profiles_pre_maxiter,
+            polish=False,
+            workers=1,
+            popsize=5,
+            mutation=(0.5, 1.5),
+        )
+        x0 = res.x
+
     res = sp.optimize.minimize(
         prediction_optimize_helper,
-        x0=params_opt,
+        x0=x0,
         args=(param_single, n, *args),
         bounds=bounds,
         method=pyargs.profiles_method,
         options={
             "disp": True,
             "maxiter": pyargs.profiles_maxiter,
-            "maxfev": pyargs.profiles_maxiter,
         },
     )
     return res.fun

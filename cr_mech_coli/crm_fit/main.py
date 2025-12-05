@@ -200,6 +200,18 @@ def crm_fit_main():
         default="Nelder-Mead",
         help="Method to be used to minimize cost function in profiles",
     )
+    parser.add_argument(
+        "--profiles-pre-global",
+        default=False,
+        action="store_true",
+        help="Perform a pre-optimization with the differential_evolution algorithm before locally minimizing.",
+    )
+    parser.add_argument(
+        "--profiles-pre-maxiter",
+        type=int,
+        default=20,
+        help="Number of iterations for global pre-optimization",
+    )
     pyargs = parser.parse_args()
     if pyargs.workers == -1:
         pyargs.workers = mp.cpu_count()
