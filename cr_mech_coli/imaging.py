@@ -55,9 +55,9 @@ class RenderSettings:
     Others are used by :mod:`cv2`.
     """
 
-    pixel_per_micron: float | np.float32 = (
-        12.8  #: Determines Resolution of the generated image
-    )
+    pixel_per_micron: (
+        float | np.float32 | tuple[float, float] | tuple[np.float32, np.float32]
+    ) = 12.8  #: Determines Resolution of the generated image
     diffuse: float | np.float32 = 0.5  #: Value Between 0 and 1.
     ambient: float | np.float32 = 0.5  #: Value between 0 and 1.
     specular: float | np.float32 = 0.5  #: Value between 0 and 1.
@@ -152,11 +152,16 @@ def render_pv_image(
     if render_distance is None:
         render_distance = max(domain_size)
 
+    try:
+        ppm = (render_settings.pixel_per_micron[0], render_settings.pixel_per_micron[1])
+    except:
+        ppm = (render_settings.pixel_per_micron, render_settings.pixel_per_micron)
+
     plotter = pv.Plotter(
         off_screen=True,
         window_size=[
-            int(np.round(domain_size[0] * render_settings.pixel_per_micron)),
-            int(np.round(domain_size[1] * render_settings.pixel_per_micron)),
+            int(np.round(domain_size[0] * ppm[0])),
+            int(np.round(domain_size[1] * ppm[1])),
         ],
     )
 
