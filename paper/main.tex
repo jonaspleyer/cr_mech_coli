@@ -544,13 +544,11 @@ Using our discretization $\vec{x}_i$, we connect the vertices by springs of leng
 % springs of lengths $l$.
 We use the notation $\vec{w}_i:=\vec{x}_i-\vec{x}_{i-1}$ with which the resulting force acting
 between two vertices if given by
-
 \begin{equation}
     \vec{F}_{i,\text{springs}} =
         -\gamma\left(1 - \frac{l}{\left|\vec{w}_i\right|}\right) \vec{w}_i
         + \gamma\left(1 - \frac{l}{\left|\vec{w}_{i+1}\right|}\right) \vec{w}_{i+1}.
 \end{equation}
-
 The value of the spring constants determines the elasticity with respect to elongation of the cell.
 In situations where this aspect is not relevant, they merely serve as a auxiliary parameters to
 maintain the length of the rod.
@@ -563,29 +561,23 @@ $\kappa_i = 2\tan(\alpha_i/2)$.
 The resulting force acts along the angle bisector which can be calculated from the edge vectors.
 Figure~\ref{fig:model-bacterium} (A) shows an elongated rod represented by $6$ vertices.
 The force acting on vertex $\vec{x}_i$ is given by
-
 \begin{equation}
     \vec{F}_{i,\text{curvature}} = \eta\kappa_i
         \frac{\vec{w}_i - \vec{w}_{i+1}}{|\vec{w}_i-\vec{w}_{i+1}|}
 \end{equation}
-
 where $\eta_i$ is the rigidity at vertex $\vec{x}_i$ (see Figure~\ref{fig:model-bacterium}).
 The adjoining vertices $\vec{x}_{i-1},\vec{x}_{i+1}$ are subject to half of the same force in the
 opposite direction $\vec{F}_{i\pm 1,\text{curvature}} = -0.5\vec{F}_{i,\text{curvature}}$.
 We can see that the curvature force does not move the overall center of the rod in space.
 The total force is the sum of interal and external forces.
-
 \begin{equation}
     \vec{F}_{i,\text{total}} = \vec{F}_{i,\text{springs}}+ \vec{F}_{i,\text{curvature}}
         + \vec{F}_{i,\text{external}}
 \end{equation}
-
 and are integrated via damped newtonian dynamics
-
 \begin{equation}
     \partial_t^2 \vec{x}_i = \vec{F}_{i,\text{total}} - \lambda \partial_t\vec{x}_i
 \end{equation}
-
 where $\lambda$ a damping constant.
 The equations have been rescaled by dividing with the mass, thus effectively eliminating this
 parameter and simplifying the model.
