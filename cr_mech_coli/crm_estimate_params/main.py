@@ -283,6 +283,8 @@ def estimate_growth_curves_individual(
     ax.set_xlabel("Growth Rate [1/min]")
     ax.set_ylabel("Count")
 
+    np.savetxt(out_path / "growth_rates.csv", growth_rates, delimiter=",")
+
     yticks = ax.get_yticks()
     yticks = list(filter(lambda x: int(x) == x, yticks))
     ax.set_yticks(yticks, minor=False)
