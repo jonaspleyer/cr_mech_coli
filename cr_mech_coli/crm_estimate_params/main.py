@@ -274,6 +274,12 @@ def estimate_growth_curves_individual(
     crm.plotting.configure_ax(ax, minor=False)
 
     ax.hist(growth_rates, facecolor=COLOR3, edgecolor=COLOR2)
+    xmin = np.min(growth_rates)
+    xmax = np.max(growth_rates)
+    middle = (xmin + xmax) / 2
+    dx = xmax - xmin
+    xticks = [xmin + 0.05 * dx, middle, xmax - 0.05 * dx]
+    ax.set_xticks(xticks, labels=[f"{x:f}" for x in xticks])
     ax.set_xlabel("Growth Rate [1/min]")
     ax.set_ylabel("Count")
 
