@@ -1468,7 +1468,6 @@ Section~\ref{subsec:image-space-metric}).
         \node at (0, 1)[anchor=north west, black]{\textbf{E}};
     \end{tikzonimage}%
     \caption{
-        \textbf{TODO adjust units in Plots (D-E)}
         (A) Snapshot of initial microscopic images.
         (B) Segmentation result of (A).
         (C) Initial (left), intermediate (middle) and final (right) microscopic snapshots.
@@ -1506,7 +1505,7 @@ individually.
 % --------------------------------------------------------------------------------------------------
 \subsubsection{Without Division}
 
-We first resturct our analysis to a time interval prior to the first division event which allows us
+We first restrict our analysis to a time interval prior to the first division event which allows us
 to use the computationally more efficient direct position-space metric
 (Section~\ref{subsec:image-space-metric}).
 
@@ -1922,8 +1921,8 @@ Combining these methods, our workflow links experimental data to the parameter e
 mechanistic, computational model and allows us to estimate the individual parameters of the
 cell-agents.
 
-Our framework allows researchers to employ well-known methods such as profile-likelihood
-\textbf{TODO CITATION} and sensitivity-analysis.
+Our framework allows researchers to employ well-known methods such as profile-likelihood and
+sensitivity-analysis.
 The code is publicly available as the python package
 \href{https://github.com/jonaspleyer/cr_mech_coli}{cr\_mech\_coli}.
 The utilized cellular properties are contained within the \texttt{cellular\_raza}~\cite{Pleyer2025}
@@ -1940,7 +1939,7 @@ Another open question is how to efficiently scale up this operation in order to 
 of cells such that distributions of parameters themselves can be estimated.
 Put together, this work establishes a promising platform which is able to directly combine
 microscopic data with single-cell agent-based modeling techniques and offers a wide range of
-opportunities for future quantitative studies in cellular biolgoy.
+opportunities for future quantitative studies in cellular biology.
 
 % \begin{itemize}
 %     \item Highlight methodological advancements
@@ -2123,11 +2122,12 @@ In general, we do not anticipate that these scenarios are common for most practi
 
 %###################################################################################################
 \paragraph*{Analysis \& Usage of heterogeneous Parameter Value (TODO)}
+\label{sec:supplement-reuse-estimated-parameters}
 In order to reuse this model, we also provide the option to assign growth rates by sampling from a
 normal distribution with user-defined parameters.
 
 %###################################################################################################
-\paragraph*{Application Data \& Preparation (TODO)}
+\paragraph*{Application Data \& Preparation}
 \label{sec:supplement-data-details}
 
 \subparagraph*{Application 1}
