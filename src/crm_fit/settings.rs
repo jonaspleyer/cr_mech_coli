@@ -906,6 +906,7 @@ mod test {
                         n_vertices: 8.try_into().unwrap(),
                         n_saves: 0,
                         displacement_error: 0.5,
+                        error_cost: default_error_cost(),
                     },
                 )?,
                 parameters: Py::new(
@@ -962,6 +963,7 @@ n_voxels=[1, 1]
 rng_seed=0
 cutoff=20.0
 n_vertices=8
+displacement_error=0.5
 
 [parameters]
 radius = { min = 3.0, max=6.0, initial=4.5, individual=true }
@@ -980,8 +982,8 @@ bound = 8.0
 seed = 0
 tol = 1e-3
 
-[other]
-progressbar = false
+[others]
+# progressbar = false
 "
             .to_string();
             Ok((settings1, toml_string))
