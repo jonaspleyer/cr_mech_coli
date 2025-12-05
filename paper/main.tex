@@ -96,7 +96,7 @@
 \renewcommand{\@biblabel}[1]{\quad#1.}
 \makeatother
 
-
+\DeclareSIUnit\pixel{pixel}
 
 % Header and Footer with logo
 \usepackage{lastpage,fancyhdr,graphicx}
@@ -2135,11 +2135,14 @@ normal distribution with user-defined parameters.
 \paragraph*{Application Data \& Preparation (TODO)}
 \label{sec:supplement-data-details}
 
-\begin{figure}[H]
-    \centering
-    % TODO include snapshots of utilized data
-    \caption{TODO}
-\end{figure}
+\subparagraph*{Application 1}
+
+\subparagraph*{Application 2}
+\begin{itemize}
+    \item Data from IWF Goettingen \cite{Trude1982}
+    \item $\SI{15}{\pixel\per\micro\metre}$
+    \item $8$ images are equivalent to $\SI{20}{\minute}$
+\end{itemize}
 
 \begin{enumerate}
     \item Have masks of data; reference image segmantation tools; or do it by hand
