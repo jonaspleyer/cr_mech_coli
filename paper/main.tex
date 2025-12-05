@@ -1335,22 +1335,25 @@ Magnitude of the drag force $C$, growth rate $\alpha$, rigidity of the rod $\eta
 $\gamma$ and damping constant $\lambda$ (see table~\ref{table:list-of-parameters}).
 Figure~\ref{fig:amir-bending-simulation} (B) shows a snapshot of the initial (upright, light blue)
 and intermediate (bent, dark blue) position of the rod using the optimized parameters.
-The likelihood profiles displayed in figure~\ref{fig:amir-bending-simulation} (C-D, blue curves)
-show that each parameter is identifiable from the given data.
-However when it comes to the damping constant $\lambda$, its overall numerical value and steepness
-of the curve compared to the results for the other parameters are much lower.
+The likelihood profiles displayed in figure~\ref{fig:amir-bending-simulation} (D-H, bright blue
+curves) show that each parameter sits at minimum of the \texttt{profile-likelihood}.
+However, Figure~\ref{fig:amir-bending-simulation} (E-G) exhibit multimodal minima which can not be
+distinguished.
+Furthermore, the damping constant $\lambda$ can not be distinguished from $\lambda=0$ within the
+lowest confidence interval of $68\%$.
 We can assess if the system could be described by a reduced model by setting $\lambda=0$, thus
 effectively removing any damping.
-The curves which are obtained in this way are displayed in orange and show that the system is also
-fully identifiable in its reduced version.
+The resulting curves (dark blue) still exhibit the multimodal minima but a further reduction of
+fixing the spring tension $\gamma$ produces a (orange curves) fully identifiable system.
+As we have explained earlier (Section~\ref{sec:computational-model}), $\gamma$ can be viewed as an
+auxiliary parameter.
 
 It should be noted that the used images only contain snapshots of a fully-bent or fully-relaxed rod
 without any intermediate steps.
 This effectively limits us to effectively 2 datapoints and is likely the key factor that leads to
-the previously described phenomenon.
-The damping force is of dynamic nature, and takes no effect in the two steady states of the rod
-being either fully bent or fully relaxed.
-Gathering additional transient information would allow us to better estimate the damping parameter.
+the non-identifiability of the damping constant $\lambda$, since this force takes no effect in the
+two steady states (fully bent or fully relaxed).
+Gathering additional transient information would allow us to better estimate this parameter.
 
 \begin{figure}[H]
     \centering
