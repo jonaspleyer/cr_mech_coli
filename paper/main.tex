@@ -1758,6 +1758,44 @@ Combining these two values, the position-comparison algorithm is $\approx 6.13(8
     \label{fig:likelihood-profiles-comparison-with-division}
 \end{figure}
 
+\textbf{TODO write text to compare the numerical values. This needs updated input from results.}
+Table~\ref{tab:comparison-growth-rates} shows the obtained values for the growth rates via the
+different techniques.
+Although numerical values differ between the individual settings, each estimation technique was able
+to capture the same trends.
+Cell $0,1,3$ tend to be the fastest growing cells while $2,4,5$ are slower.
+Furthermore, we can see that daughter cells tend to grow quicker compared to mother cells,
+indicating the their parents were still adapting to the new environment.
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{l c c c c c c}
+        \multicolumn{4}{l}{\textbf{Growth Parameters for different Methods}}\\
+        \toprule
+        % \multicolumn{6}{Growth Rates}\\
+        Method & Cell $0$ & Cell $1$ & Cell $2$ & Cell $3$ & Cell $4$ & Cell $5$\\
+        \midrule
+        Fit             & 0.00703 & 0.00540 & 0.01159 & 0.00756 & 0.01024 & 0.00836\\
+        \ac{abm} Direct & 0.00671 & 0.00746 & 0.01138 & 0.00848 & 0.02005 & 0.00952\\
+        \ac{abm} Imaging& 0.00104 & 0.00146 & 0.00206 & 0.00286 & 0.00190 & 0.00171\\
+        & \textbf{Daughters}\\
+        \midrule
+        & Cell $0$ & Cell $1$ & Cell $2$ & Cell $3$ & Cell $4$ & Cell $5$\\
+        & 0.00240 & 0.00494 & 0.00096 & 0.00363\\
+        & 0.00490 & 0.00226 & 0.00448 & 0.00048\\
+        % 0.0014057073 & 0.0010807540 & 0.0023177727 & 0.0015120675 & 0.0020488179 & 0.0016726263\\
+        % direct & 0.0009785162 & 0.0012641432 & 0.0021701728 & 0.0015695889 & 0.0036255661 & 0.0018419186\\
+        \bottomrule
+    \end{tabular}
+    \caption{
+        \textbf{TODO maybe report uncertainties?}
+        \textbf{TODO Update and explain these values. And also add units!}\\
+        \textbf{TODO FIX NUMERICAL VALUES}\\
+        \textbf{TODO check ordering}
+    }
+    \label{tab:comparison-growth-rates}
+\end{table}
+
 %###################################################################################################
 \section{Discussion}
 
@@ -1860,23 +1898,6 @@ As we continue to develop these methods, we expect to be able to reuse many of t
 workflows\textbf{TODO better wording} such as likelihood estimation and uncertainty quantification
 which have already been developed extensively for less complex systems such as \acp{ode}
 \textbf{TODO CITATION}.
-
-\begin{table}[H]
-    \centering
-    \begin{tabular}{l c c c c c c}
-        \toprule
-        % \multicolumn{6}{Growth Rates}\\
-        Method & Cell $0$ & Cell $1$ & Cell $2$ & Cell $3$ & Cell $4$ & Cell $5$\\
-        \midrule
-        Fit   & 0.001405 & 0.001080 & 0.002317 & 0.001512 & 0.002048 & 0.001672\\
-        \ac{abm} Direct & 0.001152 & 0.001410 & 0.001876 & 0.001683 & 0.003610 & 0.001520\\
-        \ac{abm} Imaging\\
-        % 0.0014057073 & 0.0010807540 & 0.0023177727 & 0.0015120675 & 0.0020488179 & 0.0016726263\\
-        % direct & 0.0009785162 & 0.0012641432 & 0.0021701728 & 0.0015695889 & 0.0036255661 & 0.0018419186\\
-        \bottomrule
-    \end{tabular}
-    \caption{TODO Update and explain these values. And also add units!}
-\end{table}
 
 % \begin{itemize}
 %     \item Summary:
