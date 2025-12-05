@@ -317,6 +317,10 @@ pub struct DifferentialEvolution {
     /// Recombination value of the differential evolution algorithm
     #[serde(default = "default_recombination")]
     pub recombination: f32,
+    /// Mutation variable of the differential evolution algorithm
+    #[approx(epsilon_map = |x| (x, x))]
+    #[serde(default = "default_mutation")]
+    pub mutation: (f32, f32),
     /// Determines if the final result should be polished
     #[approx(equal)]
     #[serde(default = "default_polish")]
@@ -383,6 +387,10 @@ pub(crate) const fn default_pop_size() -> usize {
 
 pub(crate) const fn default_recombination() -> f32 {
     0.3
+}
+
+pub(crate) const fn default_mutation() -> (f32, f32) {
+    (0.5, 1.5)
 }
 
 pub(crate) const fn default_polish() -> bool {
@@ -949,6 +957,7 @@ mod test {
                         max_iter: default_max_iter(),
                         pop_size: default_pop_size(),
                         recombination: default_recombination(),
+                        mutation: default_mutation(),
                         polish: default_polish(),
                     }),
                 )?,

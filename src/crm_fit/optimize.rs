@@ -232,6 +232,7 @@ res = sp.optimize.differential_evolution(
     polish=optimization.polish,
     rng=optimization.seed,
     callback=callback,
+    mutation=optimization.mutation,
 )
 "#
                 ),
