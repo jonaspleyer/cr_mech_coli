@@ -4,7 +4,6 @@ import numpy as np
 from pathlib import Path
 from tqdm.contrib.concurrent import process_map
 import cr_mech_coli as crm
-from cr_mech_coli.cr_mech_coli import MorsePotentialF32
 import scipy as sp
 
 from cr_mech_coli.plotting import COLOR3, COLOR5
@@ -249,19 +248,16 @@ def plot_mie_potential(x, r, en, em, strength, bound, cutoff, fig_ax, ls):
     return fig, ax, y
 
 
-def plot_interaction_potential(
+def __plot_mie_potential(
     settings: Settings,
     optimization_result: OptimizationResult,
     n_agents,
     out,
+    agent_index=0,
 ):
-    if settings.parameters.potential_type == MorsePotentialF32:
-        return None
-
-    agent_index = 0
     en = settings.get_param("Exponent n", optimization_result, n_agents, agent_index)
     em = settings.get_param("Exponent m", optimization_result, n_agents, agent_index)
-    r = settings.get_param("Radius", optimization_result, n_agents, agent_index)
+    r = 2 * settings.get_param("Radius", optimization_result, n_agents, agent_index)
     strength = settings.get_param(
         "Strength", optimization_result, n_agents, agent_index
     )
@@ -277,9 +273,6 @@ def plot_interaction_potential(
     ax.set_ylim(ymin - 0.2 * dy, ymax + 0.2 * dy)
 
     # ax.plot(x / radius, y / strength, label="Mie Potential", color=crm.plotting.COLOR3)
-    ax.set_xlabel("Distance [R]")
-    ax.set_ylabel("Normalized Interaction Strength")
-
     ax.set_xlabel("Distance [µm]")
     ax.set_ylabel("Interaction Strength [µm^2/min^2]")
 
@@ -292,6 +285,84 @@ def plot_interaction_potential(
 
     fig.savefig(out / "potential-shape.png")
     fig.savefig(out / "potential-shape.pdf")
+    plt.close(fig)
+
+
+def __plot_morse_potential(
+    settings: Settings,
+    optimization_result: OptimizationResult,
+    n_agents,
+    out,
+    agent_index=0,
+):
+    r = settings.get_param("Radius", optimization_result, n_agents, agent_index)
+    potential_stiffness = settings.get_param(
+        "Potential Stiffness",
+        optimization_result,
+        n_agents,
+        agent_index,
+    )
+    strength = settings.get_param(
+        "Strength",
+        optimization_result,
+        n_agents,
+        agent_index,
+    )
+    cutoff = settings.constants.cutoff
+
+    def morse_potential(x, r, potential_stiffness, cutoff):
+        t = 1 - np.exp(-potential_stiffness * (x - r))
+        c = x <= cutoff
+        n_last = np.argmax(1 - c)
+        y = strength * t**2
+        return y * c + (1 - c) * y[n_last], n_last
+
+    x = np.linspace(0, 1.2 * settings.constants.cutoff, 500)
+    y, n_y_bound = morse_potential(x, 2 * r, potential_stiffness, cutoff)
+
+    crm.plotting.set_mpl_rc_params()
+    fig, ax = plt.subplots(figsize=(8, 8))
+    crm.plotting.configure_ax(ax)
+
+    ax.set_xlabel("Distance [µm]")
+    ax.set_ylabel("Interaction Strength [µm^2/min^2]")
+
+    ax.plot(x, y, linestyle="-", color=crm.plotting.COLOR2)
+    ax.plot(
+        x,
+        y,
+        label=f"λ={potential_stiffness:4.2f}",
+        linestyle="-",
+        color=crm.plotting.COLOR3,
+    )
+
+    ylower = np.min(y)
+    yupper = np.max(y)
+    dy = yupper - ylower
+    ax.set_ylim(ylower - 0.05 * dy, yupper + 0.05 * dy)
+
+    # n_y_bound = len(y) - np.argmax(y[::-1] > 0)
+    yfinmax = y[n_y_bound]
+    ax.vlines(cutoff, ylower - dy, yfinmax, color=crm.plotting.COLOR5)
+
+    fig.savefig(out / "potential-shape.png")
+    fig.savefig(out / "potential-shape.pdf")
+    plt.close(fig)
+
+
+def plot_interaction_potential(
+    settings: Settings,
+    optimization_result: OptimizationResult,
+    n_agents,
+    out,
+):
+    potential = settings.parameters.potential_type.to_short_string()
+    print(potential)
+    if potential == "morse":
+        __plot_morse_potential(settings, optimization_result, n_agents, out)
+    if potential == "mie":
+        print("Mie")
+        __plot_mie_potential(settings, optimization_result, n_agents, out)
 
 
 def plot_distribution(n, name, values, out, infos):
@@ -299,8 +370,6 @@ def plot_distribution(n, name, values, out, infos):
     crm.configure_ax(ax)
     ax.hist(values, color=COLOR3, edgecolor=COLOR3, alpha=0.6)
 
-    bound_lower = infos.bounds_lower[n]
-    bound_upper = infos.bounds_upper[n]
     param_info = infos.parameter_infos[n]
     (_, units, short) = param_info
 
@@ -308,7 +377,12 @@ def plot_distribution(n, name, values, out, infos):
     ax.set_title(name)
     ax.set_xlabel(f"{short} [{units}]")
     ax.set_ylabel("Count")
-    ax.set_xlim(bound_lower, bound_upper)
+
+    xlower = np.min(values)
+    xupper = np.max(values)
+    dx = xupper - xlower
+
+    ax.set_xlim(xlower - 0.05 * dx, xupper + 0.05 * dx)
 
     savename = name.lower().replace(" ", "-")
 
