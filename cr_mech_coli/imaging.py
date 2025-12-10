@@ -39,7 +39,6 @@ from .cr_mech_coli import (
     counter_to_color,
     color_to_counter,
     CellContainer,
-    render_mask_rs,
 )
 from .simulation import Configuration, sort_cellular_identifiers, CellIdentifier
 import pyvista as pv
