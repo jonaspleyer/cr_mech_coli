@@ -34,7 +34,13 @@
       - Creates and stores images in files.
 """
 
-from .cr_mech_coli import RodAgent, counter_to_color, color_to_counter, CellContainer
+from .cr_mech_coli import (
+    RodAgent,
+    counter_to_color,
+    color_to_counter,
+    CellContainer,
+    render_mask_rs,
+)
 from .simulation import Configuration, sort_cellular_identifiers, CellIdentifier
 import pyvista as pv
 import numpy as np

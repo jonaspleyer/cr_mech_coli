@@ -350,3 +350,10 @@ def parents_diff_mask(
             Should be between 0 and 1.
     """
     ...
+
+def render_mask_rs(
+    cells: dict[CellIdentifier, tuple[RodAgent, CellIdentifier | None]],
+    colors: dict[CellIdentifier, tuple[np.uint8, np.uint8, np.uint8]],
+    domain_size: tuple[np.float32, np.float32],
+    resolution: np.float32,
+): ...
