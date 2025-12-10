@@ -1,6 +1,7 @@
 [package]
 name = "cr_mech_coli"
 version = "0.8.0"
+resolver = "2"
 edition = "2021"
 exclude = ["paper", "paper_segmentation_tracking", "data", "docs", "omnipose", "plots"]
 
@@ -11,6 +12,10 @@ crate-type = ["cdylib", "rlib"]
 
 # Due to python docstrings
 doctest = false
+
+[build-dependencies]
+cmake = { version = "0.1.54", optional= true }
+vtk-rs-link = { version = "0.3.1", optional = true }
 
 [dependencies]
 cellular_raza = { version="0.4.0", features = ["pyo3", "approx"] }
@@ -35,3 +40,6 @@ egobox-doe = "0.32.0"
 kdam = "0.6.3"
 log = "0.4.28"
 env_logger = "0.11.8"
+
+[features]
+vtk = ["dep:cmake", "dep:vtk-rs-link"]

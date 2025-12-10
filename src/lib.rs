@@ -8,6 +8,8 @@ mod cell_container;
 mod config;
 mod fitting;
 mod imaging;
+#[cfg(feature = "vtk")]
+mod imaging_vtk;
 
 /// Fit data to publication by (Amir et. al. 2014)
 pub mod crm_amir;
@@ -27,6 +29,8 @@ use cellular_raza::prelude::{MiePotentialF32, MorsePotentialF32, StorageOption};
 pub use config::*;
 pub use fitting::*;
 pub use imaging::*;
+#[cfg(feature = "vtk")]
+pub use imaging_vtk::*;
 pub use simulation::*;
 
 use pyo3::prelude::*;
@@ -96,5 +100,8 @@ fn cr_mech_coli(py: Python, m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add("MINUTE", MINUTE)?;
     m.add("HOUR", HOUR)?;
     m.add("MICRO_METRE", MICRO_METRE)?;
+
+    #[cfg(feature = "vtk")]
+    m.add_function(wrap_pyfunction!(render_mask_rs, m)?)?;
     Ok(())
 }
