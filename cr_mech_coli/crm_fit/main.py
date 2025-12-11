@@ -86,6 +86,13 @@ def estimate_growth_rates(iterations, lengths, settings, out_path):
 
     fig.savefig(out_path / "estimated-growth-rates.png")
     fig.savefig(out_path / "estimated-growth-rates.pdf")
+
+    ax.cla()
+    crm.plotting.configure_ax(ax)
+    ax.hist(growth_rates)
+    fig.savefig(out_path / "estimated-growth-rates-distribution.png")
+    fig.savefig(out_path / "estimated-growth-rates-distribution.pdf")
+
     return growth_rates, growth_rates_err
 
 
