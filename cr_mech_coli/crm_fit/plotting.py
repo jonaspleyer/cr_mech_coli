@@ -369,6 +369,13 @@ def __plot_morse_potential(
 
     plot_morse_potential(
         x,
+        r,
+        potential_stiffness,
+        strength,
+        cutoff,
+        (fig, ax),
+        "-",
+        label=None,
     )
 
     fig.savefig(out / "potential-shape.png")
