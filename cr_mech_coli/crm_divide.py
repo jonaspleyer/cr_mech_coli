@@ -825,6 +825,13 @@ def run_optimizer(
     args,
     pyargs,
 ):
+    evals = []
+
+    def callback(intermediate_result):
+        fun = intermediate_result.fun
+        global evals
+        evals.append(float(fun))
+
     # Try loading data
     if iteration is not None:
         result = np.loadtxt(output_dir / "optimize_result.csv")
@@ -847,6 +854,7 @@ def run_optimizer(
             polish=False,
             init="latinhypercube",
             strategy="best1bin",
+            callback=callback,
         )
         if not pyargs.skip_polish:
             res = sp.optimize.minimize(
@@ -865,7 +873,7 @@ def run_optimizer(
         final_cost = res.fun
         np.savetxt(output_dir / "optimize_result.csv", [*final_parameters, final_cost])
 
-    return final_parameters, final_cost
+    return final_parameters, final_cost, evals
 
 
 def plot_snapshots(
@@ -1080,7 +1088,7 @@ def crm_divide_main():
         parent_penalty,
     )
 
-    final_parameters, final_cost = run_optimizer(
+    final_parameters, final_cost, evals = run_optimizer(
         x0,
         bounds,
         output_dir,
@@ -1088,6 +1096,8 @@ def crm_divide_main():
         args,
         pyargs,
     )
+
+    crm_fit.plot_optimization_progression(evals, output_dir)
 
     if (
         not pyargs.skip_snapshots
