@@ -119,6 +119,28 @@ def transform_input_mask(
         return res
 
 
+def plot_optimization_progression(evals, out):
+    fig, ax = plt.subplots(figsize=(8, 8))
+    crm.plotting.configure_ax(ax)
+    evals = np.sort(evals)[::-1]
+    ax.plot(
+        np.arange(len(evals)),
+        evals,
+        label="Cost Function",
+        color=crm.plotting.COLOR3,
+    )
+    ax.legend(
+        loc="upper center",
+        bbox_to_anchor=(0.5, 1.1),
+        ncol=1,
+        frameon=False,
+    )
+    ax.set_xlabel("Iterations")
+    fig.savefig(out / "optimization-progression.png")
+    fig.savefig(out / "optimization-progression.pdf")
+    plt.close(fig)
+
+
 def crm_fit_main():
     parser = argparse.ArgumentParser(
         description="Fits the Bacterial Rods model to a system of cells."
@@ -312,28 +334,7 @@ def crm_fit_main():
 
     interval = time.time()
 
-    def plot_optimization_progression(evals):
-        fig, ax = plt.subplots(figsize=(8, 8))
-        crm.plotting.configure_ax(ax)
-        evals = np.sort(evals)[::-1]
-        ax.plot(
-            np.arange(len(evals)),
-            evals,
-            label="Cost Function",
-            color=crm.plotting.COLOR3,
-        )
-        ax.legend(
-            loc="upper center",
-            bbox_to_anchor=(0.5, 1.1),
-            ncol=1,
-            frameon=False,
-        )
-        ax.set_xlabel("Iterations")
-        fig.savefig(out / "optimization-progression.png")
-        fig.savefig(out / "optimization-progression.pdf")
-        plt.close(fig)
-
-    plot_optimization_progression(optimization_result.evals)
+    plot_optimization_progression(optimization_result.evals, out)
 
     displacement_error = settings.constants.displacement_error
 

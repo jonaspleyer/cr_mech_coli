@@ -42,5 +42,5 @@
 """
 
 from .plotting import *
-from .main import crm_fit_main
+from .main import crm_fit_main, plot_optimization_progression
 from cr_mech_coli.crm_fit.crm_fit_rs import *
