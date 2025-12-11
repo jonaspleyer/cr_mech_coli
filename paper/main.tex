@@ -593,7 +593,20 @@ parameter and simplifying the model.
 All involved parameters and their units can be viewed in Table~\ref{table:list-of-parameters}.
 
 % --------------------------------------------------------------------------------------------------
-\subsection{Physical Interactions - Mie Potential}
+\subsection{Physical Interactions}
+
+The physical interaction between the bacteria plays a crucial role for the overall dynamics of the
+system.
+The Mie potential~\cite{Mie1903} is capable of describing a wide range of interaction
+types from softer ones that permit some level of overlap to rigid ones with steep ascends for
+distance valuels corresponding to overlaps.
+In contrast, a popular alternative is the Morse potential~\cite{Morse1929}, which is less
+customizable due to the lower number of parameters and more restrictive mathematical formulation
+but may therefore be advantagous in situations of sparse data.
+These potentials are a good choice for a simple, interpretable interaction potential with
+low number of parameters that can be estimated.
+
+\subsubsection{Mie Potential}
 
 Calculating the force between cells requires performing a double integral over the two polygonal
 paths of the cells.
@@ -645,16 +658,25 @@ The resulting force is given by
 where the first case ensures that the norm is bound and the second case ensures the cutoff.
 A collection of configurations are displayed in figure~\ref{fig:model-bacterium} (B).
 
-The physical interaction between the bacteria plays a crucial role for the overall dynamics of the
-system.
-By varying its parameters, the Mie potential is capable of describing a wide range of interaction
-types from softer ones that permit some level of overlap to rigid ones with steep ascends for
-distance valuels that correspond to overlaps.
-In contrast, a popular alternative is the Morse potential~\cite{Morse1929}, which is less
-customizable due to the lower number of parameters and more restrictive mathematical formulation
-(see \nameref{sec:supplement-morse-potential}).
-Therefore, the Mie potential is a good choice for a simple, interpretable interaction potential with
-low number of parameters that can be estimated.
+%###################################################################################################
+\subsubsection{Morse Potential}
+\label{subsec:morse-potential}
+The morse potential~\cite{Morse1929} is a common example of numerically inexpensive interaction
+potential.
+It was originally brought up to describe the interaction of diatomic molecules but has since found
+use in other areas~\cite{Breitwieser2021}.
+It contains a repulsive and attractive part and is bound from above which makes it particularly
+suitable for numerical simulations since unbound potentials can lead to large numerical deviations
+thus compromising the prediction of the model.
+The potential is of the form
+\begin{equation}
+    V(r) = V_0\left(1-e^{-\omega(r-(R_1+R_2))}\right)^2
+\end{equation}
+and has 3 parameters.
+The overall potential strength $V_0$, the radii of the particles $R_1,R_2$ and the potential
+stiffness $\lambda$ which controls the rate of change as one travels along the radial axis.
+We also assign a spatial cutoff $\xi$ to the range of the interaction potential.
+Figure~\ref{fig:model-bacterium} (D) shows various configurations of a morse potential.
 
 % --------------------------------------------------------------------------------------------------
 \subsection{Cell-Cycle}
@@ -2007,26 +2029,6 @@ opportunities for future quantitative studies in cellular biology.
 % \renewcommand{\thesubsection}{S\arabic{subsection}}
 
 \section*{Supporting Information}
-
-%###################################################################################################
-\paragraph*{Alternative Interaction Potential - Morse Potential}
-\label{sec:supplement-morse-potential}
-The morse potential~\cite{Morse1929} is a common example of numerically inexpensive interaction
-potential.
-It was originally designed to describe the interaction of diatomic molecules but has since found use
-in other areas~\cite{Breitwieser2021}.
-It contains a repulsive and attractive part and is bound from above which makes it particularly
-suitable for numerical simulations since unbound potentials can lead to large numerical deviations
-thus compromising the prediction of the model.
-The potential is of the form
-\begin{equation}
-    V(r) = V_0\left(1-e^{-\lambda(r-(R_1+R_2))}\right)^2
-\end{equation}
-and has 3 parameters.
-The overall potential strength $V_0$, the radii of the particles $R_1,R_2$ and the potential
-stiffness $\lambda$ which controls the rate of change as one travels along the radial axis.
-As done with our approach towards the Mie potential, we are free to assign a spatial cutoff $\xi$
-to the range of the interaction potential.
 
 \paragraph*{Further Details of the Extraction Algorithm}
 \label{sec:supplement-extraction-algorithm}
