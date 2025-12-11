@@ -288,6 +288,57 @@ def __plot_mie_potential(
     plt.close(fig)
 
 
+def plot_morse_potential(
+    x,
+    radius,
+    potential_stiffness,
+    strength,
+    cutoff,
+    fig_ax,
+    ls,
+    label=None,
+):
+    def morse_potential(x, r, potential_stiffness, cutoff):
+        t = 1 - np.exp(-potential_stiffness * (x - r))
+        c = x <= cutoff
+        n_last = np.argmax(1 - c)
+        y = strength * t**2
+        return y * c + (1 - c) * y[n_last], n_last
+
+    if fig_ax is None:
+        crm.plotting.set_mpl_rc_params()
+        fig, ax = plt.subplots(figsize=(8, 8))
+        crm.plotting.configure_ax(ax)
+    else:
+        fig, ax = fig_ax
+
+    y, n_y_bound = morse_potential(x, radius, potential_stiffness, cutoff)
+    ax.set_xlabel("Distance [µm]")
+    ax.set_ylabel("Interaction Strength [µm^2/min^2]")
+
+    # ax.plot(x, y, linestyle=ls, color=crm.plotting.COLOR2)
+    if label is None:
+        label = f"ω={potential_stiffness:4.2f}"
+    ax.plot(
+        x,
+        y,
+        label=label,
+        linestyle=ls,
+        color=crm.plotting.COLOR3,
+    )
+
+    ylower = np.min(y)
+    yupper = np.max(y)
+    dy = yupper - ylower
+    ax.set_ylim(ylower - 0.05 * dy, yupper + 0.05 * dy)
+
+    # n_y_bound = len(y) - np.argmax(y[::-1] > 0)
+    yfinmax = y[n_y_bound]
+    ax.vlines(cutoff, ylower - dy, yfinmax, color=crm.plotting.COLOR5)
+
+    return fig, ax, y
+
+
 def __plot_morse_potential(
     settings: Settings,
     optimization_result: OptimizationResult,
@@ -310,40 +361,15 @@ def __plot_morse_potential(
     )
     cutoff = settings.constants.cutoff
 
-    def morse_potential(x, r, potential_stiffness, cutoff):
-        t = 1 - np.exp(-potential_stiffness * (x - r))
-        c = x <= cutoff
-        n_last = np.argmax(1 - c)
-        y = strength * t**2
-        return y * c + (1 - c) * y[n_last], n_last
-
     x = np.linspace(0, 1.2 * settings.constants.cutoff, 500)
-    y, n_y_bound = morse_potential(x, 2 * r, potential_stiffness, cutoff)
 
     crm.plotting.set_mpl_rc_params()
     fig, ax = plt.subplots(figsize=(8, 8))
     crm.plotting.configure_ax(ax)
 
-    ax.set_xlabel("Distance [µm]")
-    ax.set_ylabel("Interaction Strength [µm^2/min^2]")
-
-    ax.plot(x, y, linestyle="-", color=crm.plotting.COLOR2)
-    ax.plot(
+    plot_morse_potential(
         x,
-        y,
-        label=f"λ={potential_stiffness:4.2f}",
-        linestyle="-",
-        color=crm.plotting.COLOR3,
     )
-
-    ylower = np.min(y)
-    yupper = np.max(y)
-    dy = yupper - ylower
-    ax.set_ylim(ylower - 0.05 * dy, yupper + 0.05 * dy)
-
-    # n_y_bound = len(y) - np.argmax(y[::-1] > 0)
-    yfinmax = y[n_y_bound]
-    ax.vlines(cutoff, ylower - dy, yfinmax, color=crm.plotting.COLOR5)
 
     fig.savefig(out / "potential-shape.png")
     fig.savefig(out / "potential-shape.pdf")
