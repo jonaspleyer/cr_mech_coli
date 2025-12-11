@@ -499,17 +499,21 @@ our established theoretical methods and computational functionalities.
 
 \begin{figure}[H]
     \centering
-    \begin{tikzonimage}[width=0.3\textwidth]
+    \begin{tikzonimage}[width=0.5\textwidth]
         {docs/source/_static/mechanics.pdf}
         \node at (0, 1)[anchor=north west]{\textbf{A}};
     \end{tikzonimage}%
-    \begin{tikzonimage}[width=0.3\textwidth]
+    \begin{tikzonimage}[width=0.5\textwidth]
         {docs/source/_static/interaction.pdf}
         \node at (0, 1)[anchor=north west]{\textbf{B}};
-    \end{tikzonimage}%
-    \begin{tikzonimage}[width=0.3\textwidth]
+    \end{tikzonimage}\\
+    \begin{tikzonimage}[width=0.5\textwidth]
         {docs/source/_static/mie-potential-shapes.pdf}
         \node at (0, 1)[anchor=north west]{\textbf{C}};
+    \end{tikzonimage}%
+    \begin{tikzonimage}[width=0.5\textwidth]
+        {docs/source/_static/morse-potential-shapes.pdf}
+        \node at (0, 1)[anchor=north west]{\textbf{D}};
     \end{tikzonimage}%
     \caption{
         (A) Example of an elonged bacterial rod represented by a collection of vertices which are
@@ -517,8 +521,13 @@ our established theoretical methods and computational functionalities.
         The angles $\alpha_i$ will be used to model the rigidity of the rod.
         A bacterial agent which is not interacting with any external objects will tend to the
         equilibrium state of a straight rod with no curvature.
-        (B) Potential curves of the Mie potential for various combinations of exponents $n,m$ with
-        upper bound $\beta=2.5U_0$ and cutoff $\zeta=3(R_1+R_2)$.
+        (B) Schematic of calculating the physical interaction between two bacteria.
+        Vertices on the upper agent are interacting with nearest points on the polygon by the lower
+        agent.
+        (C) Potential curves of the Mie potential for various combinations of exponents $n,m$ with
+        upper bound $\beta=2.5U_0$ and cutoff $\zeta=3.5(R_1+R_2)$.
+        (D) Potential curves of the Morse potential with various stiffnesses $\omega$ and cutoff
+        $\zeta=3.5(R_1+R_2)$.
     }
     \label{fig:model-bacterium}
 \end{figure}
