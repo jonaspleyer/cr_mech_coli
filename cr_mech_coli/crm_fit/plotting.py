@@ -70,6 +70,86 @@ def optimize_around_single_param(opt_args):
     return res.fun
 
 
+def plot_profile_from_data(
+    x,
+    y,
+    p_fixed,
+    final_cost,
+    ax,
+    name,
+    short,
+    units,
+    displacement_error,
+    ls_color=crm.plotting.COLOR3,
+    fill=True,
+):
+    # Extend x and y by values from final_params and final cost
+    x = np.append(x, p_fixed)
+    y = np.append(y, final_cost)
+    sorter = np.argsort(x)
+    x = x[sorter]
+    y = y[sorter]
+
+    ax.set_title(name)
+    ax.set_ylabel("PL(θ) - L(θ)")
+    ax.set_xlabel(f"{short} [{units}]")
+    ax.scatter(
+        p_fixed,
+        0,
+        marker="x",
+        color=COLOR5,
+        alpha=0.7,
+        s=12**2,
+    )
+
+    y = (y - final_cost) / displacement_error**2
+
+    # Filter for nan and infinity values
+    filt = np.logical_and(~np.isnan(y), np.isfinite(y))
+    x = x[filt]
+    y = y[filt]
+
+    # Fill confidence levels
+    thresh_prev = 0
+    for i, q in enumerate([0.68, 0.90, 0.95]):
+        thresh = sp.stats.chi2.ppf(q, 1)
+        color = crm.plotting.COLOR3 if i % 2 == 0 else crm.plotting.COLOR5
+        filt = y <= thresh
+        lower = np.max(np.array([y, np.repeat(thresh_prev, len(y))]), axis=0)
+        if fill:
+            ax.fill_between(
+                x,
+                lower,
+                np.repeat(thresh, len(lower)),
+                where=filt,
+                interpolate=True,
+                color=color,
+                alpha=0.3,
+            )
+        thresh_prev = thresh
+
+    crm.plotting.configure_ax(ax)
+    ax.plot(
+        x,
+        # (y - final_cost) / displacement_error**2,
+        y,
+        color=ls_color,  # crm.plotting.COLOR3,
+        linestyle="--",
+    )
+
+    upper = np.min([4 * thresh_prev, 1.05 * np.max([np.max(y), thresh_prev])])
+    lower = -0.05 * upper
+    ax.set_ylim(lower, upper)
+
+    nxmin = np.min(np.where(y <= upper))
+    nxmax = np.max(np.where(y <= upper))
+    xmin = x[nxmin]
+    xmax = x[nxmax]
+    dx = xmax - xmin
+
+    ax.set_xlim(xmin - 0.05 * dx, xmax + 0.05 * dx)
+
+
 def plot_profile(
     n: int,
     args: tuple[np.ndarray, list[int], Settings],
@@ -98,11 +178,12 @@ def plot_profile(
     odir = out / "profiles"
     odir.mkdir(parents=True, exist_ok=True)
 
-    x = np.linspace(bound_lower, bound_upper, pyargs.profiles_samples)
     savename = name.strip().lower().replace(" ", "-")
     try:
+        x = np.load(odir / f"profile-{savename}-params")
         y = np.loadtxt(odir / f"profile-{savename}")
     except:
+        x = np.linspace(bound_lower, bound_upper, pyargs.profiles_samples)
         pool_args = [
             (
                 optimization_result.params,
@@ -123,74 +204,22 @@ def plot_profile(
             max_workers=n_workers,
         )
         np.savetxt(odir / f"profile-{savename}", y)
+        np.save(odir / f"profile-{savename}-params", x)
 
     final_params = optimization_result.params
     final_cost = optimization_result.cost
 
-    # Extend x and y by values from final_params and final cost
-    x = np.append(x, final_params[n])
-    y = np.append(y, final_cost)
-    sorter = np.argsort(x)
-    x = x[sorter]
-    y = y[sorter]
-
-    ax.set_title(name)
-    ax.set_ylabel("PL(θ) - L(θ)")
-    ax.set_xlabel(f"{short} [{units}]")
-    ax.scatter(
-        final_params[n],
-        0,
-        marker="x",
-        color=COLOR5,
-        alpha=0.7,
-        s=12**2,
-    )
-
-    y = (y - final_cost) / displacement_error**2
-
-    # Filter for nan and infinity values
-    filt = np.logical_and(~np.isnan(y), np.isfinite(y))
-    x = x[filt]
-    y = y[filt]
-
-    # Fill confidence levels
-    thresh_prev = 0
-    for i, q in enumerate([0.68, 0.90, 0.95]):
-        thresh = sp.stats.chi2.ppf(q, 1)
-        color = crm.plotting.COLOR3 if i % 2 == 0 else crm.plotting.COLOR5
-        filt = y <= thresh
-        lower = np.max(np.array([y, np.repeat(thresh_prev, len(y))]), axis=0)
-        ax.fill_between(
-            x,
-            lower,
-            np.repeat(thresh, len(lower)),
-            where=filt,
-            interpolate=True,
-            color=color,
-            alpha=0.3,
-        )
-        thresh_prev = thresh
-
-    crm.plotting.configure_ax(ax)
-    ax.plot(
+    plot_profile_from_data(
         x,
-        # (y - final_cost) / displacement_error**2,
         y,
-        color=crm.plotting.COLOR3,
-        linestyle="--",
+        final_params[n],
+        final_cost,
+        ax,
+        name,
+        short,
+        units,
+        displacement_error,
     )
-
-    upper = np.min([4 * thresh_prev, 1.05 * np.max([np.max(y), thresh_prev])])
-    lower = -0.05 * upper
-    ax.set_ylim(lower, upper)
-
-    nxmin = np.min(np.where(y <= upper))
-    nxmax = np.max(np.where(y <= upper))
-    xmin = x[nxmin]
-    xmax = x[nxmax]
-    dx = xmax - xmin
-
-    ax.set_xlim(xmin - 0.05 * dx, xmax + 0.05 * dx)
 
     plt.savefig(f"{odir / name.lower().replace(' ', '-')}.png")
     plt.savefig(f"{odir / name.lower().replace(' ', '-')}.pdf")
