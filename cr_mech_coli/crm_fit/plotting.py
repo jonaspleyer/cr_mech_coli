@@ -155,6 +155,28 @@ def plot_profile_from_data(
     ax.set_xlim(xmin - 0.05 * dx, xmax + 0.05 * dx)
 
 
+def calculate_profile(n, x, name, n_workers, optimization_result, infos, args, pyargs):
+    pool_args = [
+        (
+            optimization_result.params,
+            infos.bounds_lower,
+            infos.bounds_upper,
+            n,
+            p,
+            args,
+            pyargs,
+        )
+        for p in x
+    ]
+    y = process_map(
+        optimize_around_single_param,
+        pool_args,
+        desc=f"Profile: {name}",
+        max_workers=n_workers,
+    )
+    return y
+
+
 def plot_profile(
     n: int,
     args: tuple[np.ndarray, list[int], Settings],
@@ -189,24 +211,8 @@ def plot_profile(
         y = np.loadtxt(odir / f"profile-{savename}")
     except:
         x = np.linspace(bound_lower, bound_upper, pyargs.profiles_samples)
-        pool_args = [
-            (
-                optimization_result.params,
-                infos.bounds_lower,
-                infos.bounds_upper,
-                n,
-                p,
-                args,
-                pyargs,
-            )
-            for p in x
-        ]
-
-        y = process_map(
-            optimize_around_single_param,
-            pool_args,
-            desc=f"Profile: {name}",
-            max_workers=n_workers,
+        y = calculate_profile(
+            n, x, name, n_workers, optimization_result, infos, args, pyargs
         )
         np.savetxt(odir / f"profile-{savename}", y)
         np.save(odir / f"profile-{savename}-params", x)
