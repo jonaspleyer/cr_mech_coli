@@ -105,7 +105,12 @@ def plot_profile_from_data(
     y = (y - final_cost) / displacement_error**2
 
     # Filter for nan and infinity values
-    filt = np.logical_and(~np.isnan(y), np.isfinite(y))
+    filt1 = np.logical_and(~np.isnan(y), np.isfinite(y))
+    # Also filter large values which are optimization artifacts i.e. outliers
+    filt2 = y <= 16
+    filt = filt1 * filt2
+    filt[0] = True
+    filt[-1] = True
     x = x[filt]
     y = y[filt]
 
