@@ -82,6 +82,7 @@ def plot_profile_from_data(
     displacement_error,
     ls_color=crm.plotting.COLOR3,
     fill=True,
+    label=None,
 ):
     # Extend x and y by values from final_params and final cost
     x = np.append(x, p_fixed)
@@ -140,6 +141,7 @@ def plot_profile_from_data(
         y,
         color=ls_color,  # crm.plotting.COLOR3,
         linestyle="--",
+        label=label,
     )
 
     upper = np.min([4 * thresh_prev, 1.05 * np.max([np.max(y), thresh_prev])])
@@ -207,7 +209,7 @@ def plot_profile(
 
     savename = name.strip().lower().replace(" ", "-")
     try:
-        x = np.load(odir / f"profile-{savename}-params")
+        x = np.load(odir / f"profile-{savename}-params.npy")
         y = np.loadtxt(odir / f"profile-{savename}")
     except:
         x = np.linspace(bound_lower, bound_upper, pyargs.profiles_samples)
