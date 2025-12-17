@@ -70,6 +70,28 @@ def optimize_around_single_param(opt_args):
     return res.fun
 
 
+def fill_confidence_levels(x, y, ax, fill=True, thresholds=[0.68, 0.90, 0.95]):
+    thresh_prev = 0
+    for i, q in enumerate(thresholds):
+        thresh = sp.stats.chi2.ppf(q, 1)
+        color = crm.plotting.COLOR3 if i % 2 == 0 else crm.plotting.COLOR5
+        filt = y <= thresh
+        lower = np.max(np.array([y, np.repeat(thresh_prev, len(y))]), axis=0)
+        if fill:
+            ax.fill_between(
+                x,
+                lower,
+                np.repeat(thresh, len(lower)),
+                where=filt,
+                interpolate=True,
+                color=color,
+                alpha=0.3,
+            )
+        thresh_prev = thresh
+
+    return thresh_prev
+
+
 def plot_profile_from_data(
     x,
     y,
@@ -83,6 +105,8 @@ def plot_profile_from_data(
     ls_color=crm.plotting.COLOR3,
     fill=True,
     label=None,
+    linestyle="--",
+    filter_thresh=16,
 ):
     # Extend x and y by values from final_params and final cost
     x = np.append(x, p_fixed)
@@ -108,31 +132,14 @@ def plot_profile_from_data(
     # Filter for nan and infinity values
     filt1 = np.logical_and(~np.isnan(y), np.isfinite(y))
     # Also filter large values which are optimization artifacts i.e. outliers
-    filt2 = y <= 16
+    filt2 = y <= filter_thresh
     filt = filt1 * filt2
     filt[0] = True
-    filt[-1] = True
+    # filt[-1] = True
     x = x[filt]
     y = y[filt]
 
-    # Fill confidence levels
-    thresh_prev = 0
-    for i, q in enumerate([0.68, 0.90, 0.95]):
-        thresh = sp.stats.chi2.ppf(q, 1)
-        color = crm.plotting.COLOR3 if i % 2 == 0 else crm.plotting.COLOR5
-        filt = y <= thresh
-        lower = np.max(np.array([y, np.repeat(thresh_prev, len(y))]), axis=0)
-        if fill:
-            ax.fill_between(
-                x,
-                lower,
-                np.repeat(thresh, len(lower)),
-                where=filt,
-                interpolate=True,
-                color=color,
-                alpha=0.3,
-            )
-        thresh_prev = thresh
+    thresh_prev = fill_confidence_levels(x, y, ax, fill)
 
     crm.plotting.configure_ax(ax)
     ax.plot(
@@ -140,7 +147,7 @@ def plot_profile_from_data(
         # (y - final_cost) / displacement_error**2,
         y,
         color=ls_color,  # crm.plotting.COLOR3,
-        linestyle="--",
+        linestyle=linestyle,
         label=label,
     )
 
@@ -155,6 +162,8 @@ def plot_profile_from_data(
     dx = xmax - xmin
 
     ax.set_xlim(xmin - 0.05 * dx, xmax + 0.05 * dx)
+
+    return x, y
 
 
 def calculate_profile(n, x, name, n_workers, optimization_result, infos, args, pyargs):
