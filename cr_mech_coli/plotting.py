@@ -6,6 +6,7 @@ COLOR2 = "#0ea7b5"
 COLOR3 = "#0c457d"
 COLOR4 = "#ffbe4f"
 COLOR5 = "#e8702a"
+COLOR6 = "#a02b08"
 
 cmap = colors.LinearSegmentedColormap.from_list(
     "mymap",
