@@ -221,23 +221,23 @@ def adjust_masks(
 def predict(
     initial_positions,
     settings,
-    radius=8.059267,
-    strength=10.584545,
-    bound=10,
-    cutoff=100,
-    en=0.50215733,
-    em=0.21933548,
+    radius=0.5,
+    strength=0.5,
+    bound=100,
+    cutoff=20,
+    en=1.0,
+    em=0.5,
     diffusion_constant=0.0,
-    spring_tension=3.0,
-    rigidity=10.0,
-    damping=2.5799131,
+    spring_tension=15.0,
+    rigidity=16.6,
+    damping=1.0,
     growth_rates=[
-        0.001152799,
-        0.001410604,
-        0.0018761827,
-        0.0016834959,
-        0.0036106023,
-        0.0015209642,
+        0.016,
+        0.016,
+        0.016,
+        0.016,
+        0.016,
+        0.016,
     ],
     spring_length_thresholds: float | list[float] = [
         30.0,
@@ -248,10 +248,10 @@ def predict(
         200.0,
     ],
     growth_rates_new=[
-        (0.001152799, 0.001152799),
-        (0.001410604, 0.001410604),
-        (0.0018761827, 0.0018761827),
-        (0.0016834959, 0.0016834959),
+        (0.016, 0.016),
+        (0.016, 0.016),
+        (0.016, 0.016),
+        (0.016, 0.016),
         (0, 0),
         (0, 0),
     ],
@@ -494,18 +494,18 @@ def preprocessing(n_masks=None):
 def plot_mask_adjustment(
     output_dir, masks_data, positions_all, settings, iterations_data
 ):
-    radius = 8.059267
-    strength = 10.584545
+    radius = 0.5
+    strength = 0.5
     en = 0.50215733
     em = 0.21933548
-    damping = 2.5799131
+    damping = 1.0
     growth_rates = [
-        0.001152799,
-        0.001410604,
-        0.0018761827,
-        0.0016834959,
-        0.0036106023,
-        0.0015209642,
+        0.016,
+        0.016,
+        0.016,
+        0.016,
+        0.016,
+        0.016,
     ]
     spring_length_thresholds = [15] * 4
     new_growth_rates = [0.001] * 8
@@ -1071,13 +1071,13 @@ def crm_divide_main():
     ]
     bounds = (
         # Radius, Strength, en, em, Damping
-        [(0.05, 15.0), (0.1, 15.0), (0.1, 4.0), (0.1, 4.0), (2.0, 15.0)]
+        [(0.05, 1.0), (0.0, 60.0), (0.0, 12.5), (0.1, 4.0), (0.0, 30.0)]
         # Growth rates
-        + [(0.0000, 0.005)] * 6
+        + [(0.0000, 0.010)] * 6
         # Spring length thresholds
-        + [(5, 12)] * 4
+        + [(4, 15)] * 4
         # new growth rates
-        + [(0.0000, 0.005)] * 8
+        + [(0.0000, 0.010)] * 8
     )
     parent_penalty = 0.5
     args = (
