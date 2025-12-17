@@ -47,7 +47,7 @@ def optimize_around_single_param(opt_args):
             x0=params_opt,
             args=(param_single, n, *args),
             bounds=bounds,
-            disp=True,
+            disp=False,
             maxiter=pyargs.profiles_pre_maxiter,
             polish=False,
             workers=1,
@@ -63,7 +63,7 @@ def optimize_around_single_param(opt_args):
         bounds=bounds,
         method=pyargs.profiles_method,
         options={
-            "disp": True,
+            "disp": False,
             "maxiter": pyargs.profiles_maxiter,
         },
     )
