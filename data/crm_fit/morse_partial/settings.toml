@@ -15,7 +15,7 @@ rigidity = 16.6
 spring_tension = 15.0
 # damping = { min=0.0, max=60.0, initial=1.0 }
 damping = 1.0
-strength = { min=0.0, max=0.6, initial=0.3 }
+strength = { min=0.0, max=0.05, initial=0.3 }
 # strength = 0.4
 growth_rate = { min=0.0, max=0.08, initial=0.016, individual=true }
 
