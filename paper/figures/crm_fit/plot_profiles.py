@@ -155,7 +155,7 @@ def plot_all_profiles_combined(*args, odir, bounds={}):
         ncol = max(2, round(len(inf) / 2))
         ax.legend(
             loc="upper center",
-            bbox_to_anchor=(0.5, 1.15) if len(inf) == 4 else (0.5, 1.125),
+            bbox_to_anchor=(0.5, 1.15) if len(inf) >= 3 else (0.5, 1.125),
             ncol=ncol,
             frameon=False,
         )
