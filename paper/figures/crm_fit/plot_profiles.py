@@ -215,7 +215,8 @@ if __name__ == "__main__":
 
     bounds = {
         "Strength": (0, 0.12),
-        "Damping": (0, 10.0),
+        "Damping": (0, 25.0),
+        "Radius": (0.1, 0.75),
     }
 
     plot_all_profiles_combined(
