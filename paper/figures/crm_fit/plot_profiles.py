@@ -223,7 +223,7 @@ if __name__ == "__main__":
         ),
         (path_mie_all, "Mie", {"linestyle": "--", "color": COLOR5}),
         (path_mie_partial, "Mie n=1", {"linestyle": "-.", "color": COLOR6}),
-        odir=Path("figures/fit/profiles"),
+        odir=Path("figures/crm_fit/profiles"),
         bounds=bounds,
     )
 
