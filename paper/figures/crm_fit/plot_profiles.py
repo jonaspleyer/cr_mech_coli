@@ -180,7 +180,9 @@ def plot_optimization_progressions_combined(*args):
     for p, label, linestyle, color in args:
         # Load results
         result = crm_fit.OptimizationResult.load_from_file(p / "final_params.toml")
-        ax.plot(result.evals, label=label, color=color, linestyle=linestyle)
+        y = result.evals
+        x = np.arange(1, len(y) + 1)
+        ax.plot(x, y, label=label, color=color, linestyle=linestyle)
 
     ax.set_xscale("log")
     # ax.set_yscale("log")
