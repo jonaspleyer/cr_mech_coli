@@ -19,6 +19,7 @@ def plot_potential_single(
     label,
     color=crm.plotting.COLOR3,
     linestyle="--",
+    try_use_filter=True,
 ):
     savename = name.strip().lower().replace(" ", "-")
     y = np.loadtxt(path / f"profiles/profile-{savename}")
@@ -39,6 +40,14 @@ def plot_potential_single(
     except:
         x = np.linspace(bound_lower, bound_upper, len(y))
         np.save(param_path, x)
+
+    if try_use_filter:
+        try:
+            filt = np.load(path / f"profiles/profile-{savename}-filter.npy")
+        except:
+            filt = np.array([True] * len(x))
+        x = x[filt]
+        y = y[filt]
 
     x, y = crm_fit.plot_profile_from_data(
         x,
