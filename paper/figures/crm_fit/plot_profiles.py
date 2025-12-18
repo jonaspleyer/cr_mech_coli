@@ -6,6 +6,8 @@ import scipy as sp
 import cr_mech_coli as crm
 from cr_mech_coli import crm_fit
 
+from cr_mech_coli import COLOR2, COLOR3, COLOR5, COLOR6
+
 
 def plot_potential_single(
     n,
@@ -180,10 +182,14 @@ if __name__ == "__main__":
     }
 
     plot_all_profiles_combined(
-        (path_morse_all, "Morse", {"linestyle": "--", "color": crm.COLOR2}),
-        (path_morse_partial, "Morse λ=λ$_0$", {"linestyle": "-", "color": crm.COLOR3}),
-        (path_mie_all, "Mie", {"linestyle": "--", "color": crm.COLOR5}),
-        (path_mie_partial, "Mie λ=λ$_0$", {"linestyle": "-", "color": crm.COLOR6}),
-        odir=Path("figures/crm_fit/profiles"),
+        (path_morse_all, "Morse", {"linestyle": "--", "color": COLOR2}),
+        (
+            path_morse_partial,
+            "Morse λ=1min$^{-1}$",
+            {"linestyle": "-.", "color": COLOR3},
+        ),
+        (path_mie_all, "Mie", {"linestyle": "--", "color": COLOR5}),
+        (path_mie_partial, "Mie n=1", {"linestyle": "-.", "color": COLOR6}),
+        odir=Path("figures/fit/profiles"),
         bounds=bounds,
     )
