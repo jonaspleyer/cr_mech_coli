@@ -83,17 +83,10 @@ def combine_values(xs, ys) -> tuple[list, list]:
         # calculate derivative at point xnew
         if xnew < x[0] or xnew > x[-1]:
             return np.inf
-        # if i == 0:
-        #     dx = (y[1] - y[0]) / (x[1] - x[0])
-        # elif i == len(x) - 1:
-        #     dx = (y[-1] - y[-2]) / (x[-1] - x[-2])
         else:
             i = np.sum(x <= xnew) - 1
             dt = np.clip(np.abs(xnew - x[i]) / (x[i + 1] - x[i]), 0, 1)
             return (1 - dt) * y[i] + dt * y[i + 1]
-            # dx = (y[i + 1] - y[i]) / (x[i + 1] - x[i])
-            # dx2 = (y[i] - y[i - 1]) / (x[i] - x[i - 1])
-            # return xnew + dt * dx
 
     # Create new y values
     yall = []
