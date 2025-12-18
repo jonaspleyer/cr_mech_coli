@@ -179,6 +179,34 @@ def plot_all_profiles_combined(*args, odir, bounds={}):
         fig.savefig(odir / f"profile-{savename}.pdf")
 
 
+def plot_optimization_progressions_combined(*args):
+    crm.plotting.set_mpl_rc_params()
+    fig, ax = plt.subplots(figsize=(8, 8))
+    crm.plotting.configure_ax(ax)
+
+    for p, label, linestyle, color in args:
+        # Load results
+        result = crm_fit.OptimizationResult.load_from_file(p / "final_params.toml")
+        ax.plot(result.evals, label=label, color=color, linestyle=linestyle)
+
+    ax.set_xscale("log")
+    # ax.set_yscale("log")
+    ax.set_ylim(3.5, 6)
+
+    ax.set_xlabel("Iterations")
+    ax.set_ylabel("Cost Function")
+
+    ncol = max(2, round(len(args) / 2))
+    ax.legend(
+        loc="upper center",
+        bbox_to_anchor=(0.5, 1.15) if len(args) >= 3 else (0.5, 1.125),
+        ncol=ncol,
+        frameon=False,
+    )
+    fig.savefig("figures/crm_fit/optimization-progression.png")
+    fig.savefig("figures/crm_fit/optimization-progression.pdf")
+
+
 if __name__ == "__main__":
     path_mie_all = Path("figures/crm_fit/mie_all")
     path_mie_partial = Path("figures/crm_fit/mie_partial")
@@ -201,4 +229,11 @@ if __name__ == "__main__":
         (path_mie_partial, "Mie n=1", {"linestyle": "-.", "color": COLOR6}),
         odir=Path("figures/fit/profiles"),
         bounds=bounds,
+    )
+
+    plot_optimization_progressions_combined(
+        (path_morse_all, "Morse", "--", COLOR2),
+        (path_morse_partial, "Morse λ=1min$^{-1}$", "-.", COLOR3),
+        (path_mie_all, "Mie", "--", COLOR5),
+        (path_mie_partial, "Mie n=1", "-.", COLOR6),
     )
