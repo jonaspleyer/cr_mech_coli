@@ -172,7 +172,7 @@ def plot_all_profiles_combined(*args, odir, bounds={}):
         fig.savefig(odir / f"profile-{savename}.pdf")
 
 
-def plot_optimization_progressions_combined(*args):
+def plot_optimization_progressions_combined(*args, ylim=(3.5, 6)):
     crm.plotting.set_mpl_rc_params()
     fig, ax = plt.subplots(figsize=(8, 8))
     crm.plotting.configure_ax(ax)
@@ -186,7 +186,7 @@ def plot_optimization_progressions_combined(*args):
 
     ax.set_xscale("log")
     # ax.set_yscale("log")
-    ax.set_ylim(3.5, 6)
+    ax.set_ylim(*ylim)
 
     ax.set_xlabel("Iterations")
     ax.set_ylabel("Cost Function")
