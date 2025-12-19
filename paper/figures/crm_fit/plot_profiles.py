@@ -272,8 +272,8 @@ if __name__ == "__main__":
     path_morse_partial = Path("figures/crm_fit/morse_partial")
 
     bounds = {
-        "Strength": (0, 0.12),
-        "Damping": (0, 25.0),
+        "Strength": (0, 0.04, 0.30),
+        "Damping": (0, 45.0),
         "Radius": (0.1, 0.75),
     }
 
@@ -285,7 +285,7 @@ if __name__ == "__main__":
             {"linestyle": "-.", "color": COLOR3},
         ),
         (path_mie_all, "Mie", {"linestyle": "--", "color": COLOR5}),
-        (path_mie_partial, "Mie n=1", {"linestyle": "-.", "color": COLOR6}),
+        (path_mie_partial, "Mie λ=1min$^{-1}$", {"linestyle": "-.", "color": COLOR6}),
         odir=Path("figures/crm_fit/profiles"),
         bounds=bounds,
     )
@@ -294,5 +294,5 @@ if __name__ == "__main__":
         (path_morse_all, "Morse", "--", COLOR2),
         (path_morse_partial, "Morse λ=1min$^{-1}$", "-.", COLOR3),
         (path_mie_all, "Mie", "--", COLOR5),
-        (path_mie_partial, "Mie n=1", "-.", COLOR6),
+        (path_mie_partial, "Mie λ=1min$^{-1}$", "-.", COLOR6),
     )
