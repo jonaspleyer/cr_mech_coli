@@ -206,9 +206,9 @@ dependencies = [
 
 [[package]]
 name = "cellular_raza"
-version = "0.4.1"
+version = "0.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c48a985e3cdd86af79b88973bd5dd53ea8e5edb61594cb93a89d92029d852cc6"
+checksum = "47cde2cabc9d5d885d7abc17a4bba424b25f7e5cccf65c7a2c5d14bcaef6badd"
 dependencies = [
  "cellular_raza-building-blocks",
  "cellular_raza-concepts",
@@ -217,9 +217,9 @@ dependencies = [
 
 [[package]]
 name = "cellular_raza-building-blocks"
-version = "0.4.1"
+version = "0.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9ec65fcdbb32d10d7a036c732f7179f880902c2d272ef211f12dd571cb2389ff"
+checksum = "9aa5f619794ead2e7dce620830a30e23cf46a429e87a5258020bdd5d3a77945a"
 dependencies = [
  "approxim",
  "cellular_raza-concepts",
@@ -237,9 +237,9 @@ dependencies = [
 
 [[package]]
 name = "cellular_raza-concepts"
-version = "0.4.1"
+version = "0.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b12f0b45b22d46ae776148777e2a8fd9541e779bc2420129098bd5f9146af8a6"
+checksum = "e19f9055c7c3b06858a89be403324729814a16608f06c2573fd7c8384c461efd"
 dependencies = [
  "cellular_raza-concepts-derive",
  "num",
@@ -250,9 +250,9 @@ dependencies = [
 
 [[package]]
 name = "cellular_raza-concepts-derive"
-version = "0.4.1"
+version = "0.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3b5a2e3cf3d609c8ee98bc5095c4ff997a73a7433598e93b7b74553ec30fb599"
+checksum = "c16d2fe114179988afb85b9befbf6ccf895edd07bbc8a026a90aa967dba34cbb"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -261,9 +261,9 @@ dependencies = [
 
 [[package]]
 name = "cellular_raza-core"
-version = "0.4.1"
+version = "0.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f2821e51ab335061372bf5e17b2ca4acd592f40c85faaa2994a35420035888d1"
+checksum = "516861e8ea37118a8212f10a10b80d2fbfc4f254adc238a004d861d01e83814f"
 dependencies = [
  "bincode",
  "cellular_raza-concepts",
@@ -289,9 +289,9 @@ dependencies = [
 
 [[package]]
 name = "cellular_raza-core-proc-macro"
-version = "0.4.1"
+version = "0.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ca1e3dc082e2c908cac4f789a52e6ec5bc2e04939c4e107fdebafffd8c467427"
+checksum = "79ba049c6d36b2dc0867e4fdc05c3e37fac76e7d6384cf8e179ce3db04a47fb9"
 dependencies = [
  "itertools 0.14.0",
  "proc-macro2",
