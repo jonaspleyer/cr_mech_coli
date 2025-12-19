@@ -368,20 +368,32 @@ where
             }
         }
     }
+}
 
-    fn is_neighbor(&self, own_pos: &T, ext_pos: &T, ext_radius: &f32) -> Result<bool, CalcError> {
+impl NeighborSensing<nalgebra::MatrixXx3<f32>, usize, f32> for RodAgent {
+    fn accumulate_information(
+        &self,
+        own_pos: &nalgebra::MatrixXx3<f32>,
+        ext_pos: &nalgebra::MatrixXx3<f32>,
+        ext_radius: &f32,
+        accumulator: &mut usize,
+    ) -> Result<(), CalcError> {
         for p in own_pos.row_iter() {
             for q in ext_pos.row_iter() {
-                if (p - q).norm() < (self.radius() + ext_radius) / SQRT_2 {
-                    return Ok(true);
+                if (p - q).norm() < (self.interaction.0.radius() + ext_radius) / SQRT_2 {
+                    *accumulator += 1;
                 }
             }
         }
-        Ok(false)
+        Ok(())
     }
 
-    fn react_to_neighbors(&mut self, neighbors: usize) -> Result<(), CalcError> {
-        self.1 = neighbors;
+    fn clear_accumulator(accumulator: &mut usize) {
+        *accumulator = 0;
+    }
+
+    fn react_to_neighbors(&mut self, neighbors: &usize) -> Result<(), CalcError> {
+        self.interaction.0 .1 = *neighbors;
         Ok(())
     }
 }
