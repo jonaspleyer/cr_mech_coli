@@ -9,7 +9,7 @@ from cr_mech_coli import crm_fit
 from cr_mech_coli import COLOR2, COLOR3, COLOR5, COLOR6
 
 
-def plot_potential_single(
+def plot_profile_single(
     n,
     name,
     short,
@@ -66,7 +66,7 @@ def plot_potential_single(
         filter_thresh=16 if name == "Strength" else 16,
     )
 
-    return ax, x, y  # , (y - final_cost) / displacement_error**2
+    return ax, x, y
 
 
 def combine_values(xs, ys) -> tuple[list, list]:
@@ -106,6 +106,31 @@ def combine_values(xs, ys) -> tuple[list, list]:
     return xcombined, yall
 
 
+def __add_profiles_to_axis(inf, ax):
+    xall = []
+    yall = []
+
+    name = ""
+    for n, p, label, name, short, units, kwargs in inf:
+        try:
+            ax, xi, yi = plot_profile_single(
+                n,
+                name,
+                short,
+                units,
+                p,
+                ax,
+                label,
+                **kwargs,
+            )
+            xall.append(xi)
+            yall.append(yi)
+        except:
+            print(f"Could not plot {name}")
+
+    return xall, yall, name
+
+
 def plot_all_profiles_combined(*args, odir, bounds={}):
     settings = []
     infos = []
@@ -127,23 +152,8 @@ def plot_all_profiles_combined(*args, odir, bounds={}):
         fig, ax = plt.subplots(figsize=(8, 8))
         crm.plotting.configure_ax(ax)
 
-        xall = []
-        yall = []
+        xall, yall, name = __add_profiles_to_axis(inf, ax)
 
-        name = ""
-        for n, p, label, name, short, units, kwargs in inf:
-            ax, xi, yi = plot_potential_single(
-                n,
-                name,
-                short,
-                units,
-                p,
-                ax,
-                label,
-                **kwargs,
-            )
-            xall.append(xi)
-            yall.append(yi)
 
         ncol = max(2, round(len(inf) / 2))
         ax.legend(
