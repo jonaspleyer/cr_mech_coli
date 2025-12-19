@@ -154,32 +154,85 @@ def plot_all_profiles_combined(*args, odir, bounds={}):
 
         xall, yall, name = __add_profiles_to_axis(inf, ax)
 
+        if len(xall) == 0:
+            return None
 
         ncol = max(2, round(len(inf) / 2))
-        ax.legend(
+        fig.legend(
             loc="upper center",
-            bbox_to_anchor=(0.5, 1.15) if len(inf) >= 3 else (0.5, 1.125),
+            bbox_to_anchor=(0.525, 1) if len(xall) >= 3 else (0.525, 0.975),
             ncol=ncol,
             frameon=False,
         )
 
+        axs = [ax]
         if name in bounds:
-            xmin, xmax = bounds[name]
-            dx = xmax - xmin
+            b = bounds[name]
+            if len(b) == 2:
+                xmin, xmax = b
+                dx = xmax - xmin
+                ax.set_xlim(xmin - 0.05 * dx, xmax + 0.05 * dx)
+            elif len(b) == 3:
+                xlabel = ax.get_xlabel()
+                plt.close(fig)
+                fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(8, 8), sharey=True)
+                crm.plotting.configure_ax(ax1)
+                crm.plotting.configure_ax(ax2)
+
+                fig.subplots_adjust(wspace=0)
+                lims1 = (b[0], b[1])
+                lims2 = (b[1], b[2])
+
+                ax1.spines.right.set_visible(False)
+                # ax2.spines.left.set_visible(False)
+                ax2.tick_params(left=False)
+
+                __add_profiles_to_axis(inf, ax1)
+                __add_profiles_to_axis(inf, ax2)
+
+                ax2.set_xlabel(None)
+                ax2.set_ylabel(None)
+
+                ax1.set_xlim(*lims1)
+                ax2.set_xlim(*lims2)
+
+                ax1.xaxis.set_ticks([lims1[0], 0.5 * (lims1[0] + lims1[1]), lims1[1]])
+                ax2.xaxis.set_ticks([0.5 * (lims2[0] + lims2[1]), lims2[1]])
+
+                handles, labels = ax1.get_legend_handles_labels()
+                fig.legend(
+                    handles,
+                    labels,
+                    loc="upper center",
+                    bbox_to_anchor=(0.525, 1.0) if len(xall) >= 3 else (0.525, 0.975),
+                    ncol=ncol,
+                    frameon=False,
+                )
+
+                axs = [ax1, ax2]
+                ax1.set_xlabel(xlabel, x=1.0)
+                ax2.set_xlabel(None)
         else:
             xmin = np.min([np.min(xi) for xi in xall])
             xmax = np.max([np.max(xi) for xi in xall])
             dx = xmax - xmin
-        ax.set_xlim(xmin - 0.05 * dx, xmax + 0.05 * dx)
+            ax.set_xlim(xmin - 0.05 * dx, xmax + 0.05 * dx)
 
+        fig.suptitle(name, y=1.0, ha="center", va="top")  # , pad=55.0)
+        # fig.supxlabel(
+        #     axs[0].get_xlabel(), y=0, ha="center", va="bottom", fontsize="medium"
+        # )
         x, y = combine_values(xall, yall)
-        crm_fit.fill_confidence_levels(x, y, ax)
+        for ax in axs:
+            crm_fit.fill_confidence_levels(x, y, ax)
+            # ax.set_xlabel(None)
+            ax.set_title(None)
 
-        ax.set_title(name, pad=55.0)
         odir.mkdir(parents=True, exist_ok=True)
         savename = name.strip().replace(" ", "-").lower()
         fig.savefig(odir / f"profile-{savename}.png")
         fig.savefig(odir / f"profile-{savename}.pdf")
+        plt.close(fig)
 
 
 def plot_optimization_progressions_combined(*args, ylim=(3.5, 6)):
