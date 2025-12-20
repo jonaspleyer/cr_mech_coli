@@ -382,6 +382,7 @@ impl NeighborSensing<nalgebra::MatrixXx3<f32>, usize, f32> for RodAgent {
             for q in ext_pos.row_iter() {
                 if (p - q).norm() < (self.interaction.0.radius() + ext_radius) / SQRT_2 {
                     *accumulator += 1;
+                    return Ok(());
                 }
             }
         }
