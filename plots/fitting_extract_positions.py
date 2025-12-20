@@ -216,15 +216,18 @@ if __name__ == "__main__":
     if not pyargs.skip_graph or not pyargs.skip_distribution:
         crm.plotting.set_mpl_rc_params()
         try:
-            directed_diffs = np.load(OPATH / "directed_diffs.npy", allow_pickle=True)
-            distances = np.load(OPATH / "distances.npy", allow_pickle=True)
-            distances_vertices = np.load(
-                OPATH / "distances_vertices.npy", allow_pickle=True
+            r = config.agent_settings.interaction.radius
+            directed_diffs = (
+                np.load(OPATH / "directed_diffs.npy", allow_pickle=True) / r
             )
-            lengths_extracted = np.load(
-                OPATH / "lengths_extracted.npy", allow_pickle=True
+            distances = np.load(OPATH / "distances.npy", allow_pickle=True) / r
+            distances_vertices = (
+                np.load(OPATH / "distances_vertices.npy", allow_pickle=True) / r
             )
-            lengths_exact = np.load(OPATH / "lengths_exact.npy", allow_pickle=True)
+            lengths_extracted = (
+                np.load(OPATH / "lengths_extracted.npy", allow_pickle=True) / r
+            )
+            lengths_exact = np.load(OPATH / "lengths_exact.npy", allow_pickle=True) / r
         except:
             if pyargs.workers < 0:
                 import multiprocessing as mp
@@ -282,8 +285,8 @@ if __name__ == "__main__":
             marker=".",
         )
         ax.set_title("Vertex Displacement (3σ)")
-        ax.set_xlabel("Parallel to Segment [µm]")
-        ax.set_ylabel("Orthogonal to Segment [µm]")
+        ax.set_xlabel("Parallel to Segment [R]")
+        ax.set_ylabel("Orthogonal to Segment [R]")
 
         dx = float(np.percentile(np.abs(all_points), 99.73))
         # dx = np.max(np.abs(all_points))
@@ -321,7 +324,7 @@ if __name__ == "__main__":
             ax.set_xlim(-1.1 * dx, 1.1 * dx)
 
             ax.set_ylabel("Count")
-            ax.set_xlabel("Displacement [µm]")
+            ax.set_xlabel("Displacement [R]")
 
             fig.savefig(OPATH / f"displacement-distr-{name}.png")
             fig.savefig(OPATH / f"displacement-distr-{name}.pdf")
@@ -382,7 +385,7 @@ if __name__ == "__main__":
         dcovs = np.max([np.abs(covs[:, 0, 0]) ** 0.5, np.abs(covs[:, 1, 1]) ** 0.5])
         dlim = np.max([1.2 * dmean, dmean + dcovs])
         ax.set_ylim(-dlim, dlim)
-        ax.set_ylabel("Length [µm]")
+        ax.set_ylabel("Length [R]")
         ax.set_xlabel("Time [min]")
         ax.legend(
             loc="upper center",
@@ -449,7 +452,7 @@ if __name__ == "__main__":
             ncol=3,
             frameon=False,
         )
-        ax.set_ylabel("Rod Length [µm]")
+        ax.set_ylabel("Rod Length [R]")
         ax.set_xlabel("Time [min]")
         # ax.set_title("Evaluation of Position Extraction Algorithm")
         fig.savefig(OPATH / "displacement-calculations.png")
