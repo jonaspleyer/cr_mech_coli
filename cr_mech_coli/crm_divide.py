@@ -494,20 +494,20 @@ def preprocessing(n_masks=None):
 def plot_mask_adjustment(
     output_dir, masks_data, positions_all, settings, iterations_data
 ):
-    radius = 0.5
-    strength = 0.5
-    en = 0.50215733
-    em = 0.21933548
-    damping = 1.0
+    radius = 0.4782565
+    strength = 0.02
+    en = 2.1887856
+    em = 2.2355218
+    damping = 2.0
     growth_rates = [
-        0.016,
-        0.016,
-        0.016,
-        0.016,
-        0.016,
-        0.016,
+        0.005995107,
+        0.0068584173,
+        0.0070885874,
+        0.009034319,
+        0.007861354,
+        0.008311217,
     ]
-    spring_length_thresholds = [15] * 4
+    spring_length_thresholds = [0.8, 0.8, 0.7, 0.7]
     new_growth_rates = [0.001] * 8
     x0 = [
         radius,
