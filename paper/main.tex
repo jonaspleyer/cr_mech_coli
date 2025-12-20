@@ -1563,15 +1563,16 @@ These plots also show that the individual growth rates of the bacteria can be es
 \begin{figure}[H]
     \centering
     \begin{tikzonimage}[width=0.49\textwidth]
-        {figures/crm_fit/mie_all/snapshots/predicted-003889.png}%
+        {figures/crm_fit/morse_partial/snapshots/predicted-006667.png}%
         \node at (0.025, 0.975)[anchor=north west, white]{\textbf{A}};
     \end{tikzonimage}%
     \hspace{0.01\textwidth}%
     \begin{tikzonimage}[width=0.49\textwidth]
-        {figures/crm_fit/mie_all/celldiffs/diff-003889.png}%
+        {figures/crm_fit/morse_partial/celldiffs/diff-006667.png}%
         \node at (0.025, 0.975)[anchor=north west, white]{\textbf{B}};
     \end{tikzonimage}%
     \caption{
+        Predicted results by the reduced model with Morse-type interaction.
         (A) Final microscopic image of the time series with the predicted positions of the cells
         overlayed on top.
         (B) Differences between extracted and predicted positions.
@@ -1583,45 +1584,66 @@ These plots also show that the individual growth rates of the bacteria can be es
 \begin{figure}[H]
     \centering
     \begin{tikzonimage}[width=0.25\textwidth]
-        {figures/crm_fit/mie_all/profiles/damping.pdf}%
+        {figures/crm_fit/profiles/profile-damping.pdf}%
         \node at (0, 1.1)[anchor=north west, black]{\textbf{A}};
     \end{tikzonimage}%
     \begin{tikzonimage}[width=0.25\textwidth]
-        {figures/crm_fit/mie_all/profiles/exponent-m.pdf}%
+        {figures/crm_fit/profiles/profile-potential-stiffness.pdf}%
         \node at (0, 1.1)[anchor=north west, black]{\textbf{B}};
     \end{tikzonimage}%
     \begin{tikzonimage}[width=0.25\textwidth]
-        {figures/crm_fit/mie_all/profiles/exponent-n.pdf}%
+        {figures/crm_fit/profiles/profile-exponent-n.pdf}%
         \node at (0, 1.1)[anchor=north west, black]{\textbf{C}};
     \end{tikzonimage}%
     \begin{tikzonimage}[width=0.25\textwidth]
-        {figures/crm_fit/mie_all/profiles/strength.pdf}%
+        {figures/crm_fit/profiles/profile-exponent-m.pdf}%
         \node at (0, 1.1)[anchor=north west, black]{\textbf{D}};
     \end{tikzonimage}\\
     \begin{tikzonimage}[width=0.25\textwidth]
-        {figures/crm_fit/mie_all/profiles/radius.pdf}%
+        {figures/crm_fit/profiles/profile-strength.pdf}%
         \node at (0, 1.1)[anchor=north west, black]{\textbf{E}};
     \end{tikzonimage}%
     \begin{tikzonimage}[width=0.25\textwidth]
-        {figures/crm_fit/mie_all/profiles/growth-rate-0.pdf}%
+        {figures/crm_fit/profiles/profile-radius.pdf}%
         \node at (0, 1.1)[anchor=north west, black]{\textbf{F}};
     \end{tikzonimage}%
     \begin{tikzonimage}[width=0.25\textwidth]
-        {figures/crm_fit/mie_all/profiles/growth-rate-1.pdf}%
+        {figures/crm_fit/profiles/profile-growth-rate-0.pdf}%
         \node at (0, 1.1)[anchor=north west, black]{\textbf{G}};
     \end{tikzonimage}%
     \begin{tikzonimage}[width=0.25\textwidth]
-        {figures/crm_fit/mie_all/profiles/growth-rate-2.pdf}%
+        {figures/crm_fit/profiles/profile-growth-rate-1.pdf}%
         \node at (0, 1.1)[anchor=north west, black]{\textbf{H}};
+    \end{tikzonimage}\\
+    \begin{tikzonimage}[width=0.25\textwidth]
+        {figures/crm_fit/profiles/profile-growth-rate-2.pdf}%
+        \node at (0, 1.1)[anchor=north west, black]{\textbf{I}};
+    \end{tikzonimage}%
+    \begin{tikzonimage}[width=0.25\textwidth]
+        {figures/crm_fit/profiles/profile-growth-rate-3.pdf}%
+        \node at (0, 1.1)[anchor=north west, black]{\textbf{J}};
+    \end{tikzonimage}%
+    \begin{tikzonimage}[width=0.25\textwidth]
+        {figures/crm_fit/profiles/profile-growth-rate-4.pdf}%
+        \node at (0, 1.1)[anchor=north west, black]{\textbf{K}};
+    \end{tikzonimage}%
+    \begin{tikzonimage}[width=0.25\textwidth]
+        {figures/crm_fit/profiles/profile-growth-rate-5.pdf}%
+        \node at (0, 1.1)[anchor=north west, black]{\textbf{L}};
     \end{tikzonimage}%
     \caption{
-        (A-H) Likelihood profiles of optimized parameters.
+        (A-L) Likelihood profiles for 4 scenarios: Full model with Morse/Mie interaction and with a
+        reduced model with Morse/Mie interaction, setting the damping constant
+        $\lambda=\SI{1}{\per\minute}$.
         Bands of blue and yellow represent confidence intervals of $68\%,90\%$ and $95\%$.
-        \textbf{TODO adapt this description to new results}
-        Every plot indicates that a minimum was achieved, thus every parameter could be identified.
-        We show only one of the 6 individually-chosen growth rate as an example.
-        The remaining plots show similar behavior although with varying values and can be found in
-        the supplementary material (Section~\ref{sec:supplement-parameter-profiles}).
+        (A) Damping constant before model reduction.
+        (B) Potential Stiffness $\omega$ of the Morse potential.
+        (C-D) Exponents $n,m$ of the Mie potential.
+        (E) Strength $V_0$ of the interaction potential.
+        The x-axis is split in the middle to display a narrow and wider range for lower and higher
+        parameter values.
+        (F) Radius $R$ (thickness of the rod) of the potential.
+        (G-L) Individual growth rates $\mu$ of the 6 bacterial agents.
     }
     \label{fig:parameter-estimates-single-step}
 \end{figure}
@@ -2198,21 +2220,27 @@ normal distribution with user-defined parameters.
 \paragraph*{Parameter Estimation Results (TODO)}
 \label{sec:supplement-parameter-profiles}
 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{figures/crm_fit/optimization-progression.pdf}
+    \caption{TODO}
+\end{figure}
+
 %TODO {explain profiles}
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.33\textwidth]
-        {figures/crm_fit/mie_all/profiles/growth-rate-0.pdf}%
-    \includegraphics[width=0.33\textwidth]
-        {figures/crm_fit/mie_all/profiles/growth-rate-1.pdf}%
-    \includegraphics[width=0.33\textwidth]
-        {figures/crm_fit/mie_all/profiles/growth-rate-2.pdf}\\%
-    \includegraphics[width=0.33\textwidth]
-        {figures/crm_fit/mie_all/profiles/growth-rate-3.pdf}%
-    \includegraphics[width=0.33\textwidth]
-        {figures/crm_fit/mie_all/profiles/growth-rate-4.pdf}%
-    \includegraphics[width=0.33\textwidth]
-        {figures/crm_fit/mie_all/profiles/growth-rate-5.pdf}
+    % \includegraphics[width=0.33\textwidth]
+    %     {figures/crm_fit/morse_profiles/profile-growth-rate-0.pdf}%
+    % \includegraphics[width=0.33\textwidth]
+    %     {figures/crm_fit/morse_profiles/profile-growth-rate-1.pdf}%
+    % \includegraphics[width=0.33\textwidth]
+    %     {figures/crm_fit/morse_profiles/profile-growth-rate-2.pdf}\\%
+    % \includegraphics[width=0.33\textwidth]
+    %     {figures/crm_fit/morse_profiles/profile-growth-rate-3.pdf}%
+    % \includegraphics[width=0.33\textwidth]
+    %     {figures/crm_fit/morse_profiles/profile-growth-rate-4.pdf}%
+    % \includegraphics[width=0.33\textwidth]
+    %     {figures/crm_fit/morse_profiles/profile-growth-rate-5.pdf}
     \caption{Parameter estimation of growth rates for individual cells}%TODO extend caption}
     \label{fig:parameter-estimates-supplement-growth-rates}
 \end{figure}
