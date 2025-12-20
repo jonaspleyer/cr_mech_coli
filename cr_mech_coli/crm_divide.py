@@ -825,6 +825,7 @@ def run_optimizer(
     args,
     pyargs,
 ):
+    global evals
     evals = []
 
     def callback(intermediate_result):
