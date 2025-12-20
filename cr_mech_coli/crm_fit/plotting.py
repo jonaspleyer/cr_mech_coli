@@ -67,7 +67,7 @@ def optimize_around_single_param(opt_args):
             "maxiter": pyargs.profiles_maxiter,
         },
     )
-    return res.fun
+    return res.fun, res.success
 
 
 def fill_confidence_levels(x, y, ax, fill=True, thresholds=[0.68, 0.90, 0.95]):
@@ -185,7 +185,9 @@ def calculate_profile(n, x, name, n_workers, optimization_result, infos, args, p
         desc=f"Profile: {name}",
         max_workers=n_workers,
     )
-    return y
+    y_values = [yi[0] for yi in y]
+    filt = [yi[1] for yi in y]
+    return np.array(y_values), np.array(filt)
 
 
 def plot_profile(
@@ -222,11 +224,12 @@ def plot_profile(
         y = np.loadtxt(odir / f"profile-{savename}")
     except:
         x = np.linspace(bound_lower, bound_upper, pyargs.profiles_samples)
-        y = calculate_profile(
+        y, filt = calculate_profile(
             n, x, name, n_workers, optimization_result, infos, args, pyargs
         )
         np.savetxt(odir / f"profile-{savename}", y)
         np.save(odir / f"profile-{savename}-params", x)
+        np.save(odir / f"profile-{savename}-filter", filt)
 
     final_params = optimization_result.params
     final_cost = optimization_result.cost
