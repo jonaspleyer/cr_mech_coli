@@ -384,7 +384,7 @@ def objective_function(
             container.get_cells_at_iteration(iter),
             cell_to_color,
             settings.constants.domain_size,
-            render_settings=crm.RenderSettings(pixel_per_micron=1),
+            render_settings=crm.RenderSettings(pixel_per_micron=15),
         )
         for iter in tqdm(
             iterations_simulation if return_all else iters_filtered,
