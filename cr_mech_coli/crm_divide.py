@@ -93,7 +93,7 @@ def adjust_masks(
     # Tranform the data masks with the above mapping
     # WARNING MAGIC NUMBERS
     masks_data_new = [np.array(m) for m in masks_data]
-    for m in masks_data_new:
+    for m in masks_data_new[8:]:
         colors = list(sorted(np.unique(m)))[1:]
         for c in colors:
             m[m == c] = align_mask_data_color[c]
