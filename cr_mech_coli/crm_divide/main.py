@@ -413,13 +413,18 @@ def objective_function(
 
     update_time("Masks\n(Adjust)")
 
+    pixel_per_micron = np.array(new_masks[0].shape[:2])[::-1] / np.array(
+        settings.constants.domain_size
+    )
     iters_filtered = np.array([iterations_simulation[i] for i in iterations_data])
     masks_predicted = [
         crm.render_mask(
             container.get_cells_at_iteration(iter),
             {v: k for k, v in color_to_cell.items()},
             settings.constants.domain_size,
-            render_settings=crm.RenderSettings(pixel_per_micron=15),
+            render_settings=crm.RenderSettings(
+                pixel_per_micron=(pixel_per_micron[0], pixel_per_micron[1])
+            ),
         )
         for iter in tqdm(
             iterations_simulation if return_all else iters_filtered,
