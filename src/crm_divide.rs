@@ -199,3 +199,29 @@ pub fn crm_divide_rs(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(get_color_mappings, m)?)?;
     Ok(())
 }
+
+#[test]
+fn test_unique_idents_for_colors() {
+    for iteration in 0..30 {
+        for data_color in 0..10 {
+            let uid = data_color_to_unique_ident(data_color, iteration);
+            if data_color == 0 {
+                assert!(uid.is_none());
+            } else if uid.is_none() {
+                assert_eq!(data_color, 0);
+            } else {
+                assert!(uid.is_some())
+            }
+        }
+    }
+}
+
+#[test]
+fn test_parent_idents() {
+    for unique_ident in 1..15 {
+        let parent = unique_ident_to_parent_ident(unique_ident);
+        if unique_ident > 6 {
+            assert!(parent.is_some());
+        }
+    }
+}
