@@ -417,7 +417,7 @@ def objective_function(
     masks_predicted = [
         crm.render_mask(
             container.get_cells_at_iteration(iter),
-            cell_to_color,
+            {v: k for k, v in color_to_cell.items()},
             settings.constants.domain_size,
             render_settings=crm.RenderSettings(pixel_per_micron=15),
         )
