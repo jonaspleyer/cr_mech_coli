@@ -273,7 +273,7 @@ def crm_fit_main():
 
     imgs = [cv.imread(fi) for fi in files_images]
 
-    masks = [np.loadtxt(fm, delimiter=",") for fm in files_masks]
+    masks = [np.loadtxt(fm, delimiter=",", converters=float) for fm in files_masks]
 
     print(f"{time.time() - interval:10.4f}s Loaded data")
     interval = time.time()

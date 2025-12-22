@@ -497,7 +497,10 @@ def preprocessing(n_masks=None):
     else:
         files_images = list(sorted(glob(str(data_dir / "images/*"))))[:n_masks]
         files_masks = list(sorted(glob(str(data_dir / "masks/*.csv"))))[:n_masks]
-    masks = [np.loadtxt(fm, delimiter=",", dtype=np.uint8) for fm in files_masks]
+    masks = [
+        np.loadtxt(fm, delimiter=",", dtype=np.uint8, converters=float)
+        for fm in files_masks
+    ]
     iterations_data = np.array([int(s[-10:-4]) for s in files_images])
     iterations_data = iterations_data - np.min(iterations_data)
 
