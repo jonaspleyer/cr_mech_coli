@@ -30,6 +30,8 @@ fn data_color_to_unique_ident(color: u8, data_iteration: usize) -> Option<u8> {
 
 fn unique_ident_to_parent_ident(unique_ident: u8) -> Option<u8> {
     match unique_ident {
+        5 => None,
+        6 => None,
         7 => Some(2),
         8 => Some(1),
         9 => Some(2),
@@ -37,8 +39,6 @@ fn unique_ident_to_parent_ident(unique_ident: u8) -> Option<u8> {
         11 => Some(3),
         12 => Some(4),
         13 => Some(3),
-        5 => None,
-        6 => None,
         14 => Some(4),
         _ => None,
     }
