@@ -13,6 +13,8 @@ mod imaging_vtk;
 
 /// Fit data to publication by (Amir et. al. 2014)
 pub mod crm_amir;
+/// Script for performing parameter estimations with the image-space matric
+pub mod crm_divide;
 /// Estimate parameters with classical methods from data
 pub mod crm_estimate_params;
 /// Fit a mechanical model to microscopic images
@@ -46,6 +48,13 @@ pub const HOUR: f32 = 60. * MINUTE;
 #[pymodule]
 #[pyo3(name = "cr_mech_coli")]
 fn cr_mech_coli(py: Python, m: &Bound<'_, PyModule>) -> PyResult<()> {
+    let submodule = PyModule::new(py, "cr_mech_coli.crm_fit.crm_fit_rs")?;
+    crm_divide::crm_divide_rs(&submodule)?;
+    m.add_submodule(&submodule)?;
+    py.import("sys")?
+        .getattr("modules")?
+        .set_item("cr_mech_coli.crm_divide.crm_divide_rs", submodule)?;
+
     let submodule = PyModule::new(py, "cr_mech_coli.crm_fit.crm_fit_rs")?;
     crm_fit::crm_fit_rs(&submodule)?;
     m.add_submodule(&submodule)?;
