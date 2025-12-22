@@ -90,38 +90,65 @@ fn get_color_mappings(
                         .to_owned();
 
                     let parent_ident = match_parents(parent);
-                    let daughters_sim = daughter_map.get(&parent_ident).unwrap();
+                    // If we do not find a parent, this may mean that the corresponding cell has
+                    // not divided in the simulation yet.
+                    if let Some(daughters_sim) = daughter_map.get(&parent_ident) {
+                        let first_iter_sim = daughters_sim
+                            .iter()
+                            .filter_map(|d| {
+                                container
+                                    .get_cell_history(*d)
+                                    .0
+                                    .into_keys()
+                                    .filter(|k| sim_iterations_subset.contains(k))
+                                    .min()
+                            })
+                            .max()
+                            .unwrap();
 
-                    let first_iter_sim = daughters_sim
-                        .iter()
-                        .filter_map(|d| {
-                            container
-                                .get_cell_history(*d)
-                                .0
-                                .into_keys()
-                                .filter(|k| sim_iterations_subset.contains(k))
-                                .min()
-                        })
-                        .max()
-                        .unwrap();
+                        let n_daughter = daughters_sim
+                            .iter()
+                            .map(|d| {
+                                let pd = &container.get_cells_at_iteration(first_iter_sim)[d]
+                                    .0
+                                    .mechanics
+                                    .pos;
+                                let mut dist1 = 0.0;
+                                let mut dist2 = 0.0;
+                                let ntotal = p.nrows();
+                                for i in 0..ntotal {
+                                    dist1 += ((pd[(i, 0)] - p[(i, 0)]).powi(2)
+                                        + (pd[(i, 1)] - p[(i, 1)]).powi(2))
+                                    .sqrt();
+                                    dist2 += ((pd[(i, 0)] - p[(ntotal - i - 1, 0)]).powi(2)
+                                        + (pd[(i, 1)] - p[(ntotal - i - 1, 1)]).powi(2))
+                                    .sqrt();
+                                }
+                                dist1.min(dist2)
+                            })
+                            .enumerate()
+                            .min_by(|x, y| x.1.partial_cmp(&y.1).unwrap())
+                            .unwrap()
+                            .0;
 
-                    let n_daughter = daughters_sim
-                        .iter()
-                        .map(|d| {
-                            let pd = &container.get_cells_at_iteration(first_iter_sim)[d]
-                                .0
-                                .mechanics
-                                .pos;
-                            let mut dist1 = 0.0;
-                            let mut dist2 = 0.0;
-                            let ntotal = p.nrows();
-                            for i in 0..ntotal {
-                                dist1 += ((pd[(i, 0)] - p[(i, 0)]).powi(2)
-                                    + (pd[(i, 1)] - p[(i, 1)]).powi(2))
-                                .sqrt();
-                                dist2 += ((pd[(i, 0)] - p[(ntotal - i - 1, 0)]).powi(2)
-                                    + (pd[(i, 1)] - p[(ntotal - i - 1, 1)]).powi(2))
-                                .sqrt();
+                        Ok((*data_color, daughters_sim[n_daughter]))
+                    } else {
+                        // Generate new key
+                        let daughter_ident = CellIdentifier::new_inserted(
+                            cellular_raza::prelude::VoxelPlainIndex(0),
+                            parent_map.len() as u64,
+                        );
+                        parent_map.insert(daughter_ident, Some(parent_ident));
+
+                        let mut counter = color_to_cell.len() as u32;
+
+                        while (counter as usize) < color_to_cell.len() + 100 {
+                            let new_color = crate::counter_to_color(counter);
+                            if let Entry::Vacant(v) = color_to_cell.entry(new_color) {
+                                v.insert(daughter_ident);
+                                break;
+                            } else {
+                                counter += 1;
                             }
                         }
                         if (counter as usize) == color_to_cell.len() + 100 {
