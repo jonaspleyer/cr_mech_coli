@@ -4,22 +4,20 @@ use cellular_raza::prelude::CellIdentifier;
 use itertools::Itertools;
 use pyo3::prelude::*;
 
-fn data_color_to_unique_ident(color: u8, data_iteration: usize) -> PyResult<u8> {
+fn data_color_to_unique_ident(color: u8, data_iteration: usize) -> Option<u8> {
     // Black is background so no identifier should be provided
     if color == 0 {
-        return Err(pyo3::exceptions::PyValueError::new_err(
-            "Black color is reserved for background, not cells.",
-        ));
+        return None;
     }
     // Before iteration 8 there is no cell division
     if data_iteration <= 10 {
-        Ok(color)
+        Some(color)
     // After iteration 8 cell division has ocurred for all cells
     } else {
         match color {
-            8 => Ok(5),
-            10 => Ok(6),
-            c => Ok(c + 6),
+            8 => Some(5),
+            10 => Some(6),
+            c => Some(c + 6),
         }
     }
 }
