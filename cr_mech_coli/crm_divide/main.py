@@ -345,7 +345,7 @@ def predict(
     return container
 
 
-ERROR_COST = 1e6
+ERROR_COST = 1e7
 
 
 def objective_function(
