@@ -27,3 +27,10 @@ jobs:
           .venv/bin/pytest tests/*
       - name: Run Cargo Test
         run: cargo test
+
+      - name: Run Scripts
+        run: |
+          source .venv/bin/activate
+          crm_divide --only-mask-adjustment
+          crm_fit data/crm_fit/mie_all --help
+          crm_amir --help
