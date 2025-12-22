@@ -62,7 +62,6 @@ fn get_color_mappings(
     container: &crate::CellContainer,
     masks_data: Vec<numpy::PyReadonlyArray2<u8>>,
     iterations_data: Vec<usize>,
-    domain_size: (f32, f32),
     positions_all: Vec<numpy::PyReadonlyArray3<f32>>,
 ) -> HashMap<u64, HashMap<u8, CellIdentifier>> {
     let daughter_map = container.get_daughter_map();
