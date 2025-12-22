@@ -479,6 +479,12 @@ def objective_function(
     return cost
 
 
+def objective_function_return_all(
+    *args, **kwargs
+) -> tuple[list, list, dict, dict, crm.CellContainer]:
+    return objective_function(*args, **kwargs, return_all=True)
+
+
 def preprocessing(n_masks=None):
     if n_masks is None:
         files_images = sorted(glob(str(data_dir / "images/*")))
@@ -564,12 +570,11 @@ def plot_mask_adjustment(
 
     (
         masks_adjusted,
-        parent_map,
-        cell_to_color,
-        color_to_cell,
-        container,
         masks_predicted,
-    ) = objective_function(x0, *args, return_all=True, show_progressbar=True)
+        color_to_cell,
+        parent_map,
+        container,
+    ) = objective_function_return_all(x0, *args, show_progressbar=True)
 
     (output_dir / "mask_adjustments").mkdir(parents=True, exist_ok=True)
     for mask_predicted, mask_adjusted, mask_data, mask_iter in tqdm(
@@ -1141,13 +1146,12 @@ def crm_divide_main():
     ):
         (
             masks_adjusted,
-            parent_map,
-            _,
-            color_to_cell,
-            container,
             masks_predicted,
-        ) = objective_function(
-            final_parameters, *args, return_all=True, show_progressbar=True
+            color_to_cell,
+            parent_map,
+            container,
+        ) = objective_function_return_all(
+            final_parameters, *args, show_progressbar=True
         )
 
         if not pyargs.skip_snapshots:
