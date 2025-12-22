@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::collections::{btree_map::Entry, BTreeMap, HashMap};
 
 use cellular_raza::prelude::CellIdentifier;
 use itertools::Itertools;
@@ -52,13 +52,20 @@ fn get_color_mappings(
     masks_data: Vec<numpy::PyReadonlyArray2<u8>>,
     iterations_data: Vec<usize>,
     positions_all: Vec<numpy::PyReadonlyArray3<f32>>,
-) -> HashMap<u64, HashMap<u8, CellIdentifier>> {
+) -> PyResult<(
+    HashMap<u64, HashMap<u8, CellIdentifier>>,
+    BTreeMap<(u8, u8, u8), CellIdentifier>,
+    BTreeMap<CellIdentifier, Option<CellIdentifier>>,
+)> {
     let daughter_map = container.get_daughter_map();
     let sim_iterations = container.get_all_iterations();
     let sim_iterations_subset = iterations_data
         .iter()
         .map(|i| sim_iterations[*i])
         .collect::<Vec<_>>();
+
+    let mut parent_map = container.parent_map.clone();
+    let mut color_to_cell = container.color_to_cell.clone();
 
     let mut all_mappings = HashMap::with_capacity(iterations_data.len());
     for (i, n) in iterations_data.iter().enumerate() {
@@ -116,19 +123,20 @@ fn get_color_mappings(
                                     + (pd[(i, 1)] - p[(ntotal - i - 1, 1)]).powi(2))
                                 .sqrt();
                             }
-                            dist1.min(dist2)
-                        })
-                        .enumerate()
-                        .min_by(|x, y| x.1.partial_cmp(&y.1).unwrap())
-                        .unwrap()
-                        .0;
+                        }
+                        if (counter as usize) == color_to_cell.len() + 100 {
+                            return Err(pyo3::exceptions::PyValueError::new_err(
+                                "Loop for constructing new color exceeded 100 steps.",
+                            ));
+                        }
 
-                    (*data_color, daughters_sim[n_daughter])
+                        Ok((*data_color, daughter_ident))
+                    }
                 } else {
-                    (*data_color, match_parents(*uid))
+                    Ok((*data_color, match_parents(*uid)))
                 }
             })
-            .collect();
+            .collect::<Result<_, _>>()?;
 
         all_mappings.insert(sim_iter, mapping);
 
@@ -141,7 +149,7 @@ fn get_color_mappings(
         // );
     }
 
-    all_mappings
+    Ok((all_mappings, color_to_cell, parent_map))
 }
 
 /// A Python module implemented in Rust.
