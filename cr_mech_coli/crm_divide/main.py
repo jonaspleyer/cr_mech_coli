@@ -540,9 +540,9 @@ def plot_mask_adjustment(
     output_dir, masks_data, positions_all, settings, iterations_data
 ):
     radius = 0.4782565
-    strength = 0.02
-    en = 2.1887856
-    em = 2.2355218
+    strength = 0.01
+    en = 6.0
+    em = 0.5
     damping = 2.0
     growth_rates = [
         0.005995107,
@@ -552,7 +552,7 @@ def plot_mask_adjustment(
         0.007861354,
         0.008311217,
     ]
-    spring_length_thresholds = [0.8, 0.8, 0.7, 0.7]
+    spring_length_thresholds = [0.8, 0.8, 0.9, 0.9]
     new_growth_rates = [0.001] * 8
     x0 = [
         radius,
@@ -1120,7 +1120,7 @@ def crm_divide_main():
         # Growth rates
         + [(0.0000, 0.1)] * 6
         # Spring length thresholds
-        + [(0.4, 1.2)] * 4
+        + [(0.4, 1.6)] * 4
         # new growth rates
         + [(0.0000, 0.1)] * 8
     )
