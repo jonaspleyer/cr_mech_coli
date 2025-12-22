@@ -356,14 +356,14 @@ def objective_function(
     iterations_data,
     parent_penalty=0.5,
     return_all=False,
-    return_times=False,
+    return_timings=False,
     show_progressbar=False,
     print_costs=True,
 ):
     times = [(time.perf_counter_ns(), "Start")]
 
     def update_time(message):
-        if return_times:
+        if return_timings:
             now = time.perf_counter_ns()
             times.append((now, message))
 
@@ -466,7 +466,7 @@ def objective_function(
             container,
         )
 
-    if return_times:
+    if return_timings:
         return times
 
     n_cells = len(container.get_cells_at_iteration(iterations_simulation[-1]))
@@ -813,7 +813,7 @@ def plot_timings(
                 masks_data,
                 iterations_data,
                 parent_penalty=0.5,
-                return_times=True,
+                return_timings=True,
             )
         )
 
