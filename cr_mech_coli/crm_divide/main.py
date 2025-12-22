@@ -42,11 +42,43 @@ import multiprocessing as mp
 import cv2 as cv
 
 import cr_mech_coli as crm
-from cr_mech_coli import crm_fit
+from cr_mech_coli import crm_fit, crm_divide
 
 data_dir = Path("data/crm_divide/0001/")
 
 crm.plotting.set_mpl_rc_params()
+
+
+def adjust_masks_new(
+    container: crm.CellContainer,
+    masks_data: list,
+    iterations_data: list,
+    positions_all: list,
+) -> tuple[list[np.ndarray], dict, dict]:
+    mappings, color_to_cell, parent_map = crm_divide.get_color_mappings(
+        container,
+        masks_data,
+        iterations_data,
+        positions_all,
+    )
+    cell_to_color = {v: k for k, v in color_to_cell.items()}
+
+    new_masks = []
+
+    sim_iterations = container.get_all_iterations()
+    for i, n in list(enumerate(iterations_data)):
+        sim_iter = sim_iterations[n]
+        mask_data = masks_data[i]
+
+        mask_data_new = np.zeros((*mask_data.shape, 3), dtype=np.uint8)
+        mapping = mappings[sim_iter]
+        for color, cellident in mapping.items():
+            new_color = cell_to_color[cellident]
+            mask_data_new[mask_data == color] = new_color
+
+        new_masks.append(mask_data_new)
+
+    return new_masks, color_to_cell, parent_map
 
 
 def adjust_masks(
@@ -368,8 +400,11 @@ def objective_function(
     update_time("Predict")
 
     try:
-        new_masks, parent_map, cell_to_color, color_to_cell = adjust_masks(
-            masks_data, positions_all, iterations_data, container
+        new_masks, color_to_cell, parent_map = adjust_masks_new(
+            container,
+            masks_data,
+            iterations_data,
+            positions_all,
         )
     except Exception as e:
         if print_costs:
@@ -425,11 +460,10 @@ def objective_function(
     if return_all:
         return (
             new_masks,
-            parent_map,
-            cell_to_color,
-            color_to_cell,
-            container,
             masks_predicted,
+            color_to_cell,
+            parent_map,
+            container,
         )
 
     if return_times:
