@@ -1124,7 +1124,7 @@ def crm_divide_main():
         # new growth rates
         + [(0.0000, 0.1)] * 8
     )
-    parent_penalty = 1 / 3
+    parent_penalty = 0.5
     args = (
         positions_all,
         settings,
