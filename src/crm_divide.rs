@@ -40,11 +40,13 @@ fn unique_ident_to_parent_ident(unique_ident: u8) -> Option<u8> {
     }
 }
 
-fn match_parents(unique_ident: u8) -> CellIdentifier {
+fn match_parents(unique_ident: u8) -> PyResult<CellIdentifier> {
     if 0 < unique_ident && unique_ident < 7 {
-        CellIdentifier::Initial(unique_ident as usize - 1)
+        Ok(CellIdentifier::Initial(unique_ident as usize - 1))
     } else {
-        panic!("Could not find parent ident")
+        Err(pyo3::exceptions::PyKeyError::new_err(format!(
+            "Could not find parent ident for unique color {unique_ident}"
+        )))
     }
 }
 
@@ -91,7 +93,7 @@ fn get_color_mappings(
                         .slice(ndarray::s![*data_color as usize - 1, .., ..])
                         .to_owned();
 
-                    let parent_ident = match_parents(parent);
+                    let parent_ident = match_parents(parent)?;
                     // If we do not find a parent, this may mean that the corresponding cell has
                     // not divided in the simulation yet.
                     if let Some(daughters_sim) = daughter_map.get(&parent_ident) {
@@ -173,7 +175,7 @@ fn get_color_mappings(
                         Ok((*data_color, daughter_ident))
                     }
                 } else {
-                    Ok((*data_color, match_parents(*uid)))
+                    Ok((*data_color, match_parents(*uid)?))
                 }
             })
             .collect::<Result<_, _>>()?;
