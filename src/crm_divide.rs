@@ -77,9 +77,8 @@ fn get_color_mappings(
         let unique_colors: Vec<_> = mask_data
             .iter()
             .unique()
-            .filter(|&x| *x != 0)
-            .map(|c| data_color_to_unique_ident(*c, *n).map(|x| (*c, x)))
-            .collect::<Result<_, _>>()?;
+            .filter_map(|c| data_color_to_unique_ident(*c, *n).map(|x| (*c, x)))
+            .collect::<_>();
 
         // Cells which are daughters need to be mapped to the correct CellIdentifier
         // Cells which are not, can simply be mapped to the correct parent
