@@ -209,6 +209,7 @@ pub fn crm_divide_rs(m: &Bound<'_, PyModule>) -> PyResult<()> {
 #[test]
 fn test_unique_idents_for_colors() {
     for iteration in 0..30 {
+        let mut previous_ids = Vec::<u8>::new();
         for data_color in 0..10 {
             let uid = data_color_to_unique_ident(data_color, iteration);
             if data_color == 0 {
@@ -216,7 +217,11 @@ fn test_unique_idents_for_colors() {
             } else if uid.is_none() {
                 assert_eq!(data_color, 0);
             } else {
-                assert!(uid.is_some())
+                assert!(uid.is_some());
+                let u = uid.unwrap();
+                assert!(u <= 14);
+                previous_ids.iter().all(|x| *x < u);
+                previous_ids.push(u);
             }
         }
     }
