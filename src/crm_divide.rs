@@ -4,20 +4,22 @@ use cellular_raza::prelude::CellIdentifier;
 use itertools::Itertools;
 use pyo3::prelude::*;
 
-fn data_color_to_unique_ident(color: u8, data_iteration: usize) -> Option<u8> {
+fn data_color_to_unique_ident(color: u8, data_iteration: usize) -> PyResult<u8> {
     // Black is background so no identifier should be provided
     if color == 0 {
-        return None;
+        return Err(pyo3::exceptions::PyValueError::new_err(
+            "Black color is reserved for background, not cells.",
+        ));
     }
     // Before iteration 8 there is no cell division
     if data_iteration <= 10 {
-        Some(color)
+        Ok(color)
     // After iteration 8 cell division has ocurred for all cells
     } else {
         match color {
-            8 => Some(5),
-            10 => Some(6),
-            c => Some(c + 6),
+            8 => Ok(5),
+            10 => Ok(6),
+            c => Ok(c + 6),
         }
     }
 }
@@ -75,8 +77,8 @@ fn get_color_mappings(
         let unique_colors: Vec<_> = mask_data
             .iter()
             .unique()
-            .filter_map(|c| data_color_to_unique_ident(*c, *n).map(|x| (*c, x)))
-            .collect();
+            .map(|c| data_color_to_unique_ident(*c, *n).map(|x| (*c, x)))
+            .collect::<Result<_, _>>()?;
 
         // Cells which are daughters need to be mapped to the correct CellIdentifier
         // Cells which are not, can simply be mapped to the correct parent
@@ -93,7 +95,7 @@ fn get_color_mappings(
                     // If we do not find a parent, this may mean that the corresponding cell has
                     // not divided in the simulation yet.
                     if let Some(daughters_sim) = daughter_map.get(&parent_ident) {
-                        let first_iter_sim = daughters_sim
+                        if let Some(first_iter_sim) = daughters_sim
                             .iter()
                             .filter_map(|d| {
                                 container
@@ -104,34 +106,45 @@ fn get_color_mappings(
                                     .min()
                             })
                             .max()
-                            .unwrap();
+                        {
+                            let n_daughter = daughters_sim
+                                .iter()
+                                .map(|d| {
+                                    let pd = &container.get_cells_at_iteration(first_iter_sim)[d]
+                                        .0
+                                        .mechanics
+                                        .pos;
+                                    let mut dist1 = 0.0;
+                                    let mut dist2 = 0.0;
+                                    let ntotal = p.nrows();
+                                    for i in 0..ntotal {
+                                        dist1 += ((pd[(i, 0)] - p[(i, 0)]).powi(2)
+                                            + (pd[(i, 1)] - p[(i, 1)]).powi(2))
+                                        .sqrt();
+                                        dist2 += ((pd[(i, 0)] - p[(ntotal - i - 1, 0)]).powi(2)
+                                            + (pd[(i, 1)] - p[(ntotal - i - 1, 1)]).powi(2))
+                                        .sqrt();
+                                    }
+                                    dist1.min(dist2)
+                                })
+                                .enumerate()
+                                .min_by(|x, y| {
+                                    x.1.partial_cmp(&y.1).unwrap_or(std::cmp::Ordering::Equal)
+                                })
+                                .map(|x| x.0);
 
-                        let n_daughter = daughters_sim
-                            .iter()
-                            .map(|d| {
-                                let pd = &container.get_cells_at_iteration(first_iter_sim)[d]
-                                    .0
-                                    .mechanics
-                                    .pos;
-                                let mut dist1 = 0.0;
-                                let mut dist2 = 0.0;
-                                let ntotal = p.nrows();
-                                for i in 0..ntotal {
-                                    dist1 += ((pd[(i, 0)] - p[(i, 0)]).powi(2)
-                                        + (pd[(i, 1)] - p[(i, 1)]).powi(2))
-                                    .sqrt();
-                                    dist2 += ((pd[(i, 0)] - p[(ntotal - i - 1, 0)]).powi(2)
-                                        + (pd[(i, 1)] - p[(ntotal - i - 1, 1)]).powi(2))
-                                    .sqrt();
-                                }
-                                dist1.min(dist2)
-                            })
-                            .enumerate()
-                            .min_by(|x, y| x.1.partial_cmp(&y.1).unwrap())
-                            .unwrap()
-                            .0;
-
-                        Ok((*data_color, daughters_sim[n_daughter]))
+                            if let Some(n) = n_daughter {
+                                Ok((*data_color, daughters_sim[n]))
+                            } else {
+                                Err(pyo3::exceptions::PyValueError::new_err(
+                                    format!("Daughter idents {daughters_sim:?} not present in simulation data."),
+                                ))
+                            }
+                        } else {
+                            Err(pyo3::exceptions::PyValueError::new_err(
+                                format!("Parent ident {parent_ident:?} does not have daughters"),
+                            ))
+                        }
                     } else {
                         // Generate new key
                         let daughter_ident = CellIdentifier::new_inserted(
