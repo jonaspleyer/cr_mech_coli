@@ -2,7 +2,6 @@ use std::collections::HashMap;
 
 use cellular_raza::prelude::CellIdentifier;
 use itertools::Itertools;
-use numpy::PyUntypedArrayMethods;
 use pyo3::prelude::*;
 
 fn data_color_to_unique_ident(color: u8, data_iteration: usize) -> Option<u8> {
@@ -36,16 +35,6 @@ fn unique_ident_to_parent_ident(unique_ident: u8) -> Option<u8> {
         6 => None,
         15 => Some(4),
         _ => None,
-    }
-}
-
-fn parent_ident_to_daughters(parent_ident: u8) -> (u8, u8) {
-    match parent_ident {
-        1 => (8, 10),
-        2 => (7, 9),
-        3 => (11, 13),
-        4 => (12, 15),
-        _ => panic!("provided ident which is not a parent"),
     }
 }
 
