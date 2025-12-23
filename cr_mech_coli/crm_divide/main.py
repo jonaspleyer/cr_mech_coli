@@ -359,6 +359,7 @@ def objective_function(
     return_timings=False,
     show_progressbar=False,
     print_costs=True,
+    return_split_cost=False,
 ):
     times = [(time.perf_counter_ns(), "Start")]
 
@@ -475,13 +476,21 @@ def objective_function(
         return times
 
     n_cells = len(container.get_cells_at_iteration(iterations_simulation[-1]))
-    cost = np.sum(penalties) * (1 + (n_cells - 10) ** 2) ** 0.5
+    # cost = np.sum(penalties) * (1 + (n_cells - 10) ** 2) ** 0.5
+    cost = np.sum(penalties)
 
     if print_costs:
-        print(
-            f"f(x)={cost:>10.1f}  Final Cells: {n_cells:2} Penalties: {np.sum(penalties):<10.1f}"
-        )
-    return cost
+        print(f"f(x)={cost:>10.1f}  Final Cells: {n_cells:2} Penalties: ", end="")
+        for p in penalties:
+            print(f" {p / np.sum(penalties) * 100:<4.2f}%", end="")
+        print()
+
+    if return_split_cost:
+        costs_without_parents = np.sum([np.sum(d == 1) for d in diff_masks])
+        costs_only_parents = np.sum(penalties) - costs_without_parents
+        return costs_without_parents, costs_only_parents
+    else:
+        return cost
 
 
 def objective_function_return_all(
@@ -738,8 +747,10 @@ def __calculate_single_cost(n, p, parameters, bounds, args, pyargs):
             "maxfev": pyargs.profiles_maxiter,
         },
     )
-
-    return res.fun
+    all_params = np.array([*res.x[:n], p, *res.x[n:]])
+    return objective_function(
+        all_params, *args, print_costs=False, return_split_cost=True
+    )
 
 
 def plot_profiles(
@@ -774,11 +785,30 @@ def plot_profiles(
         desc="Calculating Costs",
     )
 
-    costs = pool.starmap(__calculate_single_cost, arglist)
-    costs = np.array(costs).reshape((n_samples, len(parameters)))
+    costs = list(pool.starmap(__calculate_single_cost, arglist))
+    # Filter out error costs
+    filter = np.array([c != ERROR_COST for c in costs]).reshape(
+        (len(samples), len(parameters))
+    )
+    # costs = [c for c in costs if c != ERROR_COST]
+    # costs_no_penalty = [c[0] for c in costs]
+    # costs_only_penalty = [c[1] for c in costs]
+    # costs_no_penalty = np.array(costs_no_penalty).reshape((-1, len(parameters)))
+    # costs_only_penalty = np.array(costs_only_penalty).reshape((-1, len(parameters)))
 
-    for n, p, costs_ind, samples_ind in zip(
-        range(len(parameters)), parameters, costs.T, samples.T
+    # cost_no_penalty = np.array([c[0] for c in costs if c != ERROR_COST]).reshape(
+    #     (-1, len(parameters))
+    # )
+    # cost_only_penalty = np.array([c[1] for c in costs if c != ERROR_COST]).reshape(
+    #     (-1, len(parameters))
+    # )
+
+    for n, p, samples_ind in zip(
+        range(len(parameters)),
+        parameters,
+        # costs_no_penalty.T,
+        # costs_only_penalty.T,
+        samples.T,
     ):
         np.savetxt(output_dir / f"profile-{n:06}.csv", samples_ind)
 
@@ -786,20 +816,38 @@ def plot_profiles(
         crm.configure_ax(ax)
 
         # Add previously calculated results
-        x = np.array([p, *samples_ind])
-        y = np.array([final_cost, *costs_ind])
+        # x = np.array([p, *samples_ind])
+        # y = np.array([final_cost, *costs_ind])
 
         # Filter out values that indicate an error
-        x = x[y < ERROR_COST]
-        y = y[y < ERROR_COST]
+        # x = x[y < ERROR_COST]
+        # y = y[y < ERROR_COST]
 
+        x = []
+        y1 = []
+        y2 = []
+        for j in np.arange(n_samples):
+            y = costs[n * n_samples + j]
+            print(y)
+            if y != ERROR_COST:
+                y1.append(y[0])
+                y2.append(y[1])
+                x.append(samples[j, n])
+
+        print(np.array(x).shape)
+        print(np.array(y1).shape)
+        print(np.array(y2).shape)
         # Sort entries by value of the parameter
-        inds = np.argsort(x)
-        x = x[inds]
-        y = y[inds]
+        # inds = np.argsort(x)
+        # x = x[inds]
+        # y = y[inds]
 
-        ax.plot(x, y, c=crm.plotting.COLOR3, marker="x")
-        ax.scatter([parameters[n]], [final_cost], c=crm.plotting.COLOR5)
+        # x = samples[filter[:,n]]
+        ax.plot(x, y1, c=crm.plotting.COLOR3)
+        ax.plot(x, y2, c=crm.plotting.COLOR2)
+
+        # ax.plot(x, y, c=crm.plotting.COLOR3, marker="x")
+        # ax.scatter([parameters[n]], [final_cost], c=crm.plotting.COLOR5)
         ax.set_title(labels[n])
         odir = output_dir / "profiles"
         odir.mkdir(parents=True, exist_ok=True)
