@@ -125,6 +125,22 @@ fn determine_from_container(
     Ok(daughters_sim[n])
 }
 
+/// Cells which are daughters need to be mapped to the correct CellIdentifier
+/// Cells which are not, can simply be mapped to the correct parent
+///
+/// 1. Transform data_color to unique identifier
+/// 2. If unique ident has no parent, cell must be initial
+///    => map unique ident directly to parent
+/// 3. Else If parent has daughters in simulation
+///    => determine which daughter is most likely to be the cell itself (compare positions)
+///    => create mapping from unique ident to the chosen daughter
+/// 4. Else If parent exists but has no daughters in simulation
+///    => We check if we have already inserted artificial new idents and use them
+///    => Otherwise we begin to artificially insert new idents
+///      i)   Determine unique IDs of daughters
+///      ii)  Create two new artificial CellIdentifiers (inserted) and insert them
+///      iii) Link the lower/higher unique id with the lower/higher artificial
+///           CellIdentifier
 #[pyfunction]
 fn get_color_mappings(
     container: &crate::CellContainer,
@@ -157,8 +173,6 @@ fn get_color_mappings(
             .filter_map(|c| data_color_to_unique_ident(*c, *n).map(|x| (*c, x)))
             .collect::<_>();
 
-        // Cells which are daughters need to be mapped to the correct CellIdentifier
-        // Cells which are not, can simply be mapped to the correct parent
         let mapping: HashMap<u8, CellIdentifier> = unique_colors
             .iter()
             .map(|(data_color, uid)| {
