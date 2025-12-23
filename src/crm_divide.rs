@@ -279,14 +279,6 @@ fn get_color_mappings(
             .collect::<Result<_, _>>()?;
 
         all_mappings.insert(sim_iter, mapping);
-
-        // Now all images have colors which always match to the same cell
-        // println!(
-        //     "cells sim: {} cells data: {} {unique_colors:?} {:?}",
-        //     container.get_cells_at_iteration(sim_iter).len(),
-        //     unique_colors.len(),
-        //     cellidents,
-        // );
     }
 
     Ok((all_mappings, color_to_cell, parent_map))
