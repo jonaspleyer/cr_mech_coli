@@ -626,13 +626,13 @@ def plot_mask_adjustment(
                 pos[1], pos[0], n + 1, color="white", fontfamily="sans-serif", size=10
             )
 
-        for k, v in container.cell_to_color.items():
-            x, y = np.where(np.all(mask_predicted == v, axis=2))
+        for k, v in color_to_cell.items():
+            x, y = np.where(np.all(mask_predicted == k, axis=2))
             pos = np.mean([x, y], axis=1)
             axs[0, 1].text(
                 pos[1],
                 pos[0],
-                ident_to_text(k),
+                ident_to_text(v),
                 color="white",
                 fontfamily="sans-serif",
                 size=10,
@@ -641,13 +641,13 @@ def plot_mask_adjustment(
         axs[0, 1].imshow(mask_predicted)
         axs[1, 0].imshow(mask_adjusted)
 
-        for k, v in cell_to_color.items():
-            x, y = np.where(np.all(mask_adjusted == v, axis=2))
+        for k, v in color_to_cell.items():
+            x, y = np.where(np.all(mask_adjusted == k, axis=2))
             pos = np.mean([x, y], axis=1)
             axs[1, 0].text(
                 pos[1],
                 pos[0],
-                ident_to_text(k),
+                ident_to_text(v),
                 color="white",
                 fontfamily="sans-serif",
                 size=10,
