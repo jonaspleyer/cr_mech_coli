@@ -68,6 +68,63 @@ fn match_parents(unique_ident: u8) -> PyResult<CellIdentifier> {
     }
 }
 
+fn determine_from_container(
+    container: &crate::CellContainer,
+    daughters_sim: &[CellIdentifier],
+    p: &ndarray::Array2<f32>,
+    sim_iterations_subset: &[u64],
+) -> PyResult<CellIdentifier> {
+    // ==== Determine which daughter fits best ================================
+    let first_iter_sim = daughters_sim
+        .iter()
+        .filter_map(|d| {
+            container
+                .get_cell_history(*d)
+                .0
+                .into_keys()
+                .filter(|k| sim_iterations_subset.contains(k))
+                .min()
+        })
+        .max()
+        // Almost impossible to return nothing. But we simply make sure. We do
+        // not want to throw any edge cases during optimization and crash
+        // everything.
+        .ok_or(pyo3::exceptions::PyValueError::new_err(
+            "Daughters not present in simulation despite listing",
+        ))?;
+
+    // ==== Determine which daughter fits best ================================
+    let n_daughter = daughters_sim
+        .iter()
+        .map(|d| {
+            let pd = &container.get_cells_at_iteration(first_iter_sim)[d]
+                .0
+                .mechanics
+                .pos;
+            let mut dist1 = 0.0;
+            let mut dist2 = 0.0;
+            let ntotal = p.nrows();
+            for i in 0..ntotal {
+                dist1 +=
+                    ((pd[(i, 0)] - p[(i, 0)]).powi(2) + (pd[(i, 1)] - p[(i, 1)]).powi(2)).sqrt();
+                dist2 += ((pd[(i, 0)] - p[(ntotal - i - 1, 0)]).powi(2)
+                    + (pd[(i, 1)] - p[(ntotal - i - 1, 1)]).powi(2))
+                .sqrt();
+            }
+            dist1.min(dist2)
+        })
+        .enumerate()
+        .min_by(|x, y| x.1.partial_cmp(&y.1).unwrap_or(std::cmp::Ordering::Equal))
+        .map(|x| x.0);
+
+    // ==== If the previous comparison does not return, we return an error ====
+    // ==== This is very unlikely however ... =================================
+    let n = n_daughter.ok_or(pyo3::exceptions::PyValueError::new_err(format!(
+        "Daughter idents {daughters_sim:?} not present in simulation data."
+    )))?;
+    Ok(daughters_sim[n])
+}
+
 #[pyfunction]
 fn get_color_mappings(
     container: &crate::CellContainer,
