@@ -17,13 +17,15 @@ fn data_color_to_unique_ident(color: u8, data_iteration: usize) -> Option<u8> {
         match color {
             8 => Some(5),
             10 => Some(6),
-            c => {
-                if c < 6 {
-                    Some(c + 6)
-                } else {
-                    Some(c + 4)
-                }
-            }
+            1 => Some(7),
+            2 => Some(8),
+            3 => Some(9),
+            4 => Some(10),
+            5 => Some(11),
+            6 => Some(12),
+            7 => Some(13),
+            9 => Some(14),
+            _ => None,
         }
     }
 }
