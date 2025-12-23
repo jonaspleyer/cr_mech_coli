@@ -186,80 +186,89 @@ fn get_color_mappings(
                     // If we do not find a parent, this may mean that the corresponding cell has
                     // not divided in the simulation yet.
                     if let Some(daughters_sim) = daughter_map.get(&parent_ident) {
-                        if let Some(first_iter_sim) = daughters_sim
-                            .iter()
-                            .filter_map(|d| {
-                                container
-                                    .get_cell_history(*d)
-                                    .0
-                                    .into_keys()
-                                    .filter(|k| sim_iterations_subset.contains(k))
-                                    .min()
-                            })
-                            .max()
-                        {
-                            let n_daughter = daughters_sim
-                                .iter()
-                                .map(|d| {
-                                    let pd = &container.get_cells_at_iteration(first_iter_sim)[d]
-                                        .0
-                                        .mechanics
-                                        .pos;
-                                    let mut dist1 = 0.0;
-                                    let mut dist2 = 0.0;
-                                    let ntotal = p.nrows();
-                                    for i in 0..ntotal {
-                                        dist1 += ((pd[(i, 0)] - p[(i, 0)]).powi(2)
-                                            + (pd[(i, 1)] - p[(i, 1)]).powi(2))
-                                        .sqrt();
-                                        dist2 += ((pd[(i, 0)] - p[(ntotal - i - 1, 0)]).powi(2)
-                                            + (pd[(i, 1)] - p[(ntotal - i - 1, 1)]).powi(2))
-                                        .sqrt();
-                                    }
-                                    dist1.min(dist2)
-                                })
-                                .enumerate()
-                                .min_by(|x, y| {
-                                    x.1.partial_cmp(&y.1).unwrap_or(std::cmp::Ordering::Equal)
-                                })
-                                .map(|x| x.0);
+                        let d = determine_from_container(
+                            container,
+                            daughters_sim,
+                            &p,
+                            &sim_iterations_subset,
+                        )?;
+                        Ok((*data_color, d))
+                    } else {
+                        // No daughter is present in the simulation. We nevertheless check if the
+                        // parent has some daughters in our new parent map.
+                        // If this is the case, we can reuse these colors. Furthermore, we need to
+                        // check that we have not already used the same daughter color mapping in
+                        // this iteration before.
 
-                            if let Some(n) = n_daughter {
-                                Ok((*data_color, daughters_sim[n]))
+                        // Check if new CellIdents are already there
+                        let existing: Vec<_> = parent_map
+                            .iter()
+                            .filter(|(_, v)| v == &&Some(parent_ident))
+                            .collect();
+
+                        let (d1, d2) = if !existing.is_empty() {
+                            let id1: CellIdentifier = *existing[0].0;
+                            let id2: CellIdentifier = *existing[1].0;
+                            if id1 < id2 {
+                                PyResult::Ok((id1, id2))
                             } else {
-                                Err(pyo3::exceptions::PyValueError::new_err(
-                                    format!("Daughter idents {daughters_sim:?} not present in simulation data."),
-                                ))
+                                PyResult::Ok((id2, id1))
                             }
                         } else {
-                            Err(pyo3::exceptions::PyValueError::new_err(
-                                format!("Parent ident {parent_ident:?} does not have daughters"),
-                            ))
-                        }
-                    } else {
-                        // Generate new key
-                        let daughter_ident = CellIdentifier::new_inserted(
-                            cellular_raza::prelude::VoxelPlainIndex(0),
-                            parent_map.len() as u64,
-                        );
-                        parent_map.insert(daughter_ident, Some(parent_ident));
+                            let mut create_and_insert_ident = || {
+                                let daughter_ident = CellIdentifier::new_inserted(
+                                    cellular_raza::prelude::VoxelPlainIndex(0),
+                                    20 + parent_map.len() as u64,
+                                );
+                                parent_map.insert(daughter_ident, Some(parent_ident));
 
-                        let mut counter = color_to_cell.len() as u32;
+                                // Generate new color.
+                                // This loop is to ensure that no new color is chosen by accident.
+                                let mut counter = color_to_cell.len() as u32;
+                                while (counter as usize) < color_to_cell.len() + 100 {
+                                    let new_color = crate::counter_to_color(counter);
+                                    if let Entry::Vacant(v) = color_to_cell.entry(new_color) {
+                                        v.insert(daughter_ident);
+                                        break;
+                                    } else {
+                                        counter += 1;
+                                    }
+                                }
 
-                        while (counter as usize) < color_to_cell.len() + 100 {
-                            let new_color = crate::counter_to_color(counter);
-                            if let Entry::Vacant(v) = color_to_cell.entry(new_color) {
-                                v.insert(daughter_ident);
-                                break;
-                            } else {
-                                counter += 1;
-                            }
-                        }
-                        if (counter as usize) == color_to_cell.len() + 100 {
+                                if (counter as usize) == color_to_cell.len() + 99 {
+                                    return Err(pyo3::exceptions::PyValueError::new_err(
+                                        "Loop for constructing new color exceeded 100 steps.",
+                                    ));
+                                }
+
+                                Ok(daughter_ident)
+                            };
+                            let id1: CellIdentifier = create_and_insert_ident()?;
+                            let id2: CellIdentifier = create_and_insert_ident()?;
+                            Ok((id1, id2))
+                        }?;
+
+                        // We now have two possible candiates to pick from.
+                        // Both are not in the simulation so far.
+                        // Therefore we obtain the other uid of the sister cell and determine which
+                        // one is higher.
+                        // Since CellIdentifier also implements PartialEq we can use this to
+                        // compare them.
+
+                        let uid_daughters = unique_ident_get_daughters(parent).ok_or(
+                            pyo3::exceptions::PyKeyError::new_err(format!(
+                                "Can not find daughters to parent {parent}"
+                            )),
+                        )?;
+                        let daughter_ident = if *uid == uid_daughters.0 {
+                            d1
+                        } else if *uid == uid_daughters.1 {
+                            d2
+                        } else {
                             return Err(pyo3::exceptions::PyValueError::new_err(
                                 "Loop for constructing new color exceeded 100 steps.",
                             ));
-                        }
+                        };
 
                         Ok((*data_color, daughter_ident))
                     }
