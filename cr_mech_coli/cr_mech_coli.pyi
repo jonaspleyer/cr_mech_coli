@@ -333,12 +333,12 @@ def color_to_counter(color: tuple[np.uint8, np.uint8, np.uint8]) -> int:
     ...
 
 def parents_diff_mask(
-    mask1: np.ndarray,
-    mask2: np.ndarray,
+    mask1: np.ndarray[tuple[int, int, int], np.dtype[np.uint8]],
+    mask2: np.ndarray[tuple[int, int, int], np.dtype[np.uint8]],
     color_to_cell: dict,
     parent_map: dict,
     parent_penalty: np.float32 | float,
-) -> np.ndarray:
+) -> np.ndarray[tuple[int, int], np.dtype[np.float32]]:
     """Calculates the difference between two masks and applies a lower value where one cell is the
     daughter of the other.
 
