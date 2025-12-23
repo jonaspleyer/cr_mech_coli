@@ -1827,18 +1827,58 @@ indicating the their parents were still adapting to the new environment.
 
 \begin{table}[H]
     \centering
-    \textbf{Growth Parameters obtained by various Methods}
+    % \textbf{Growth Parameters obtained by various Methods}
     \begin{tabular}{l c c c c c c}
         % \multicolumn{7}{l}{}\\
-        % \multicolumn{6}{Growth Rates}\\
-        & Cell $0$ & Cell $1$ & Cell $2$ & Cell $3$ & Cell $4$ & Cell $5$\\
+        & \multicolumn{6}{c}{Growth Rates $[\mu]=\SI{}{\per\minute}$}\\
+        \textbf{Data Extraction} & Cell $0$ & Cell $1$ & Cell $2$ & Cell $3$ & Cell $4$ & Cell $5$\\
         \toprule
-        Exponential Fit & 0.00703 & 0.00540 & 0.01159 & 0.00756 & 0.01024 & 0.00836\\
-        % \multicolumn{7}{l}{\textbf{Direct Position-Space Metric}}\\
+        % \multicolumn{7}{l}{\textbf{Data Extraction}}\\
+        % \midrule
+        Exponential Fit
+            & 0.0070
+            & 0.0054
+            & 0.0116
+            & 0.0076
+            & 0.0102
+            & 0.0084\\
+
+        \multicolumn{7}{l}{\textbf{Direct Position-Space Metric}}\\
         \midrule
-        Direct \ac{abm} Mie    & 0.00671 & 0.00746 & 0.01138 & 0.00848 & 0.02005 & 0.00952\\
-        Direct \ac{abm} Morse  & \textbf{TODO}\\
-        % \multicolumn{7}{l}{\textbf{Lineage-Aware Image-Space Metric (TODO)}}\\
+        Mie
+            & 0.0079
+            & 0.0090
+            & 0.0131
+            & 0.0103
+            & 0.0215
+            & 0.0097\\
+
+        Mie $\lambda=\SI{1}{\per\minute}$
+            & 0.0060
+            & 0.0069
+            & 0.0109
+            & 0.0080
+            & 0.0186
+            & 0.0083\\
+
+        % 0.00671 & 0.00746 & 0.01138 & 0.00848 & 0.02005 & 0.00952\\
+        Morse
+            & 0.0070
+            & 0.0078
+            & 0.0118
+            & 0.0089
+            & 0.0203
+            & 0.0094\\
+
+        Morse $\lambda=\SI{1}{\per\minute}$
+            & 0.0060
+            & 0.0070
+            & 0.0113
+            & 0.0078
+            & 0.0191
+            & 0.0093\\
+
+        \multicolumn{7}{l}{\textbf{Lineage-Aware Image-Space Metric (TODO)}}\\
         \midrule
         Imaging \ac{abm} Mie & 0.00104 & 0.00146 & 0.00206 & 0.00286 & 0.00190 & 0.00171\\
         % & \textbf{Daughters}\\
