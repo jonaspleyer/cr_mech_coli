@@ -218,12 +218,16 @@ fn get_color_mappings(
                             let mut create_and_insert_ident = || {
                                 let daughter_ident = CellIdentifier::new_inserted(
                                     cellular_raza::prelude::VoxelPlainIndex(0),
-                                    20 + parent_map.len() as u64,
+                                    // This small offset ensures that we construct a new index
+                                    parent_map.len() as u64 + 1,
                                 );
                                 parent_map.insert(daughter_ident, Some(parent_ident));
 
                                 // Generate new color.
                                 // This loop is to ensure that no new color is chosen by accident.
+                                // We limit the loop to 100 iterations. This should be well more
+                                // than enough to find a new color.
+                                // If it does not finish, we return an error.
                                 let mut counter = color_to_cell.len() as u32;
                                 while (counter as usize) < color_to_cell.len() + 100 {
                                     let new_color = crate::counter_to_color(counter);
