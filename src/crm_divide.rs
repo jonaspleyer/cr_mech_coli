@@ -46,6 +46,18 @@ fn unique_ident_to_parent_ident(unique_ident: u8) -> Option<u8> {
     }
 }
 
+fn unique_ident_get_daughters(unique_ident: u8) -> Option<(u8, u8)> {
+    match unique_ident {
+        1 => Some((8, 10)),
+        2 => Some((7, 9)),
+        3 => Some((11, 13)),
+        4 => Some((12, 14)),
+        5 => None,
+        6 => None,
+        _ => None,
+    }
+}
+
 fn match_parents(unique_ident: u8) -> PyResult<CellIdentifier> {
     if 0 < unique_ident && unique_ident < 7 {
         Ok(CellIdentifier::Initial(unique_ident as usize - 1))
