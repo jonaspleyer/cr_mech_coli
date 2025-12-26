@@ -486,9 +486,8 @@ def objective_function(
         print()
 
     if return_split_cost:
-        costs_without_parents = np.sum([np.sum(d == 1) for d in diff_masks])
-        costs_only_parents = np.sum(penalties) - costs_without_parents
-        return costs_without_parents, costs_only_parents
+        costs_penalty_is_one = np.sum([np.sum(d != 0) for d in diff_masks])
+        return costs_penalty_is_one, cost
     else:
         return cost
 
@@ -764,32 +763,50 @@ def plot_profiles(
 ):
     from itertools import repeat
 
-    pool = mp.Pool(pyargs.workers)
-
     n_samples = pyargs.profiles_samples
-    b_low = np.array(bounds)[:, 0]
-    b_high = np.array(bounds)[:, 1]
-    n_param = np.repeat([np.arange(len(parameters))], n_samples, axis=0)
-    samples = np.linspace(b_low, b_high, n_samples)
+    # First try loading results
+    try:
+        costs_filtered = np.load(output_dir / "profile-costs.npy")
+        filter = np.load(output_dir / "profile-costs-filter.npy")
+        samples = np.load(output_dir / "profile-samples.npy")
+        costs = []
+        counter = 0
+        for f in filter:
+            if f:
+                costs.append(costs_filtered[counter])
+                counter += 1
+            else:
+                costs.append(None)
+    except:
+        pool = mp.Pool(pyargs.workers)
 
-    arglist = tqdm(
-        zip(
-            n_param.flatten(),
-            samples.flatten(),
-            repeat(parameters),
-            repeat(bounds),
-            repeat(args),
-            repeat(pyargs),
-        ),
-        total=int(np.prod(n_param.shape)),
-        desc="Calculating Costs",
-    )
+        b_low = np.array(bounds)[:, 0]
+        b_high = np.array(bounds)[:, 1]
+        n_param = np.repeat([np.arange(len(parameters))], n_samples, axis=0)
+        samples = np.linspace(b_low, b_high, n_samples)
 
-    costs = list(pool.starmap(__calculate_single_cost, arglist))
-    # Filter out error costs
-    filter = np.array([c != ERROR_COST for c in costs]).reshape(
-        (len(samples), len(parameters))
-    )
+        arglist = tqdm(
+            zip(
+                n_param.flatten(),
+                samples.flatten(),
+                repeat(parameters),
+                repeat(bounds),
+                repeat(args),
+                repeat(pyargs),
+            ),
+            total=int(np.prod(n_param.shape)),
+            desc="Calculating Costs",
+        )
+
+        costs = list(pool.starmap(__calculate_single_cost, arglist))
+        # Filter out error costs
+        filter = np.array([c != ERROR_COST for c in costs])
+        costs_filtered = np.array([c for c in costs if c != ERROR_COST])
+
+        np.save(output_dir / "profile-costs.npy", costs_filtered)
+        np.save(output_dir / "profile-costs-filter.npy", filter)
+        np.save(output_dir / "profile-samples.npy", samples)
+
     # costs = [c for c in costs if c != ERROR_COST]
     # costs_no_penalty = [c[0] for c in costs]
     # costs_only_penalty = [c[1] for c in costs]
