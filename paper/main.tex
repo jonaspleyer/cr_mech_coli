@@ -157,21 +157,21 @@ mechanical formulations and by the lack of practical methods for estimating mode
 experimental data.
 In this work, we introduce a computational model that represents elongated bacteria as deformable
 rods capable of growth, elastic bending, and mechanical interactions.
-We develop a set of imaging-based and geometry-based comparison methods that extract cell shape and
-position information from segmented microscopy data and quantitatively compare it with model
-simulations at the single-cell level.
-These methods enable the estimation of model parameters across multiple experimental scenarios of
-increasing complexity, including cases that exhibit substantial cell-to-cell variability.
-Our results demonstrate that parameter estimation for complex agent-based models of flexible
-bacteria is feasible and can yield biologically interpretable constraints on cellular mechanics.
-The modeling and analysis framework is modular, generalizable, and readily adaptable to a broad
-range of rod-shaped species.
-By integrating our mechanical model into an extensible computational platform, we provide tools that
-support more rigorous model construction, systematic calibration, and mechanistic interpretation.
-This work establishes a foundation for quantitatively studying the mechanical behavior of
-filamentous bacteria and paves the way for future applications ranging from biofilm formation to
-multicellular
-patterning.
+We develop a novel set of imaging- and geometry-based methods that extract cell shape and positional
+information from segmented microscopy data and quantitatively compare it with model simulations at
+the single-cell level.
+These methods allow for a detailed analysis of the underlying dynamics of the model.
+They allow us to apply maximum-likelihood and profile-likelihood estimation techniques to determine
+the parameters of the underlying model.
+We apply them across multiple experimental scenarios of increasing complexity, including cases that
+exhibit substantial cell-cell variability and show how these methods can be used to perform model
+validation and reduction.
+Our results demonstrate that direct parameter estimation with cellular heterogeneity for complex
+agent-based models of bacteria is feasible and can yield biologically interpretable constraints on
+cellular parameters.
+The developed are readiliy available as a modular Python package backed by a high-performing backend
+written in Rust and integrate into our previously devleped agent-based simulation framework
+\texttt{cellular\_raza}.
 
 \section*{Author summary}
 
