@@ -42,6 +42,6 @@ bound = 100.0
 seed = 0
 # max_iter = 50
 # pop_size = 400
-max_iter = 200
+max_iter = 400
 pop_size = 40
 polish = true
