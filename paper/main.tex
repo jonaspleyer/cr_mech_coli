@@ -1559,10 +1559,30 @@ Finally, we performed a local minimization using the L-BFGS-B algorithm~\cite{Li
 
 Figure~\ref{fig:parameter-estimates-single-step} shows profile-likelihoods for each optimized
 parameter.
-\textbf{TODO adapt these last sentences to new results}
-We can see that all parameters can be estimated by our optimization approach and that no
-non-identifiability~\cite{Raue2009} is present.
-These plots also show that the individual growth rates of the bacteria can be estimated effectively.
+We compare four distinct models, covering Morse and Mie-type interactions with fixed damping
+constant $\lambda=\SI{1}{\per\minute}$.
+Subplot (A) displays the profile-likelihood for the damping constant $\lambda$ and exhibits a wide
+range of permissible parameter values which motivates the approach to treat this parameter as a
+constant thus reducing our overall model.
+The parameters which characterize the Morse-type interaction are the potential stiffness (B),
+strength (E) and radius (F).
+While the potential stiffness (B) and radius (F) can be estimated well with the given data, the
+potential strength (E) contains a practical unidentifiability~\cite{Raue2009} which is lifted when
+fixing the damping constant $\lambda=\SI{1}{\per\minute}$.
+In contrast to the Morse potential, the Mie potential uses two parameters $n,m$ (C,D) to determine
+the shape of the interaction potential which allows it to describe a larger class of curves.
+However, as subplots (A,C,D,E) show, neither the full Mie-type interaction nor a reduced model with
+$\lambda=\SI{1}{\per\minute}$ allow for the estimation of the exponents $n,m$.
+Although a minimum could be determined and the steepness of the enclosing profile towards the larger
+values of exponents $n,m$ increases for the reduced model, the confidence intervals clearly show a
+practical non-identifiability.
+Since the reduction of the model improves the situation we are hopeful that an increased data set
+could be suitable to estimate these parameters.
+Notably, the two interaction types predict differing radii which are still within the $68\%$
+confidence interval of each other.
+The growth rates (G-L) can all be estimated for any interaction type but the non-reduced Mie-type
+interaction shows wider confidence intervals, thus greater uncertainty in the predicted parameter
+value.
 
 \begin{figure}[H]
     \centering
