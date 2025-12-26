@@ -49,9 +49,9 @@ def confidence_region(popt, pcov, ax, n_std=1.0, **kwargs):
 
 def extract_pos(args):
     i, filename, n_vertices = args
-    m = np.loadtxt(filename, delimiter=",").T
+    m = np.loadtxt(filename, delimiter=",", converters=float).T
     try:
-        return (i, crm.extract_positions(m, n_vertices)[0])
+        return (i, crm.extract_positions(m, n_vertices))
     except:
         print(f"Could not extract position at iteration {i:06}")
         return None
