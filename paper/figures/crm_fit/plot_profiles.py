@@ -141,7 +141,7 @@ def plot_all_profiles_combined(*args, odir, bounds={}):
 
     infos_combined = {}
     for (p, label, _), (info, kwargs) in zip(args, infos):
-        for n, (name, short, units) in enumerate(info.parameter_infos):
+        for n, (name, units, short) in enumerate(info.parameter_infos):
             if name in infos_combined:
                 infos_combined[name].append((n, p, label, name, short, units, kwargs))
             else:
