@@ -953,6 +953,7 @@ def run_optimizer(
     # Try loading data
     if iteration is not None:
         result = np.loadtxt(output_dir / "optimize_result.csv")
+        evals = np.loadtxt(output_dir / "optimization_evals.csv")
         final_parameters = result[:-1]
         final_cost = result[-1]
     else:
@@ -990,6 +991,7 @@ def run_optimizer(
         final_parameters = res.x
         final_cost = res.fun
         np.savetxt(output_dir / "optimize_result.csv", [*final_parameters, final_cost])
+        np.savetxt(output_dir / "optimization_evals.csv", evals)
 
     return final_parameters, final_cost, evals
 
