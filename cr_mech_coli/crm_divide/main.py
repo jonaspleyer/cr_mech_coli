@@ -776,7 +776,7 @@ def plot_profiles(
                 costs.append(costs_filtered[counter])
                 counter += 1
             else:
-                costs.append(None)
+                costs.append((np.nan, np.nan))
     except:
         pool = mp.Pool(pyargs.workers)
 
@@ -820,6 +820,10 @@ def plot_profiles(
     #     (-1, len(parameters))
     # )
 
+    costs = np.array(costs).reshape((n_samples, len(parameters), 2))
+    assert n_samples == samples.shape[0]
+    assert len(parameters) == samples.shape[1]
+
     for n, p, samples_ind in zip(
         range(len(parameters)),
         parameters,
@@ -840,37 +844,32 @@ def plot_profiles(
         # x = x[y < ERROR_COST]
         # y = y[y < ERROR_COST]
 
-        x = []
-        y1 = []
-        y2 = []
-        for j in np.arange(n_samples):
-            y = costs[n * n_samples + j]
-            try:
-                y1.append(y[0])
-                y2.append(y[1])
-                x.append(samples[j, n])
-            except:
-                pass
+        x = samples[:, n]
+        y1 = costs[:, n, 0]
+        y2 = costs[:, n, 1]
+        filt1 = ~np.isnan(y1)
+        filt2 = ~np.isnan(y2)
+        y1 = y1[filt1] - final_cost
+        y2 = y2[filt2] - final_cost
+        x1 = x[filt1]
+        x2 = x[filt2]
 
+        # Add entry for final cost
         # Sort entries by value of the parameter
-        # inds = np.argsort(x)
-        # x = x[inds]
-        # y = y[inds]
-
         y1 = np.array(y1)
         y2 = np.array(y2)
 
-        y2 = np.array([*y2, final_cost])
-        x2 = np.array([*x, p])
+        y2 = np.array([*y2, 0])
+        x2 = np.array([*x2, p])
         sorter = np.argsort(x2)
         y2 = y2[sorter]
         x2 = x2[sorter]
 
-        ax.plot(x, y1, c=crm.plotting.COLOR3)
+        ax.plot(x1, y1, c=crm.plotting.COLOR3)
         ax.plot(x2, y2, c=crm.plotting.COLOR3, linestyle="--")
 
         # ax.scatter([parameters[n]], [0], c=crm.plotting.COLOR5, marker="x")
-        ax.scatter([parameters[n]], [final_cost], c=crm.plotting.COLOR5, marker="x")
+        ax.scatter([parameters[n]], [0], c=crm.plotting.COLOR5, marker="x")
         ax.set_title(labels[n])
         odir = output_dir / "profiles"
         odir.mkdir(parents=True, exist_ok=True)
