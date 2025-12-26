@@ -87,6 +87,7 @@ def extract_positions(
         1. Array :code:`(n_agents, n_vertices, 2)` containing the positions of the cells
         2. Array :code:`(n_agents)` containing the lengths of the rods
         3. Array :code:`(n_agents)` containing rough approximate radii of the cells
+        4. List :code:`(n_agents)` containing the associated colors
     """
     from .cr_mech_coli import _sort_points
 
