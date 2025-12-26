@@ -143,6 +143,7 @@ def plot_optimization_progression(evals, out):
         frameon=False,
     )
     ax.set_xlabel("Iterations")
+    ax.set_xscale("log")
     fig.savefig(out / "optimization-progression.png")
     fig.savefig(out / "optimization-progression.pdf")
     plt.close(fig)
