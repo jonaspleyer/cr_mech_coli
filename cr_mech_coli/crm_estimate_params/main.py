@@ -362,13 +362,21 @@ def estimate_growth_curves_individual(
 
 
 def crm_estimate_params_main():
-    filenames = list(sorted(glob("data/crm_fit/0004/masks/*.csv")))
+    filenames = list(sorted(glob("data/crm_fit/mie_all/masks/*.csv")))
     estimate_growth_curves_individual(
         filenames,
-        "out/crm_estimate_params/IWF-Goettingen/",
+        "out/crm_estimate_params/IWF-Goettingen/positions/",
         delay=0,
-        pixel_per_micron=15,
+        pixel_per_micron=15.0,
         minutes_per_frame=20 / 8,
+    )
+
+    estimate_growth_curves_individual(
+        filenames,
+        "out/crm_estimate_params/IWF-Goettingen/pixel-count/",
+        delay=0,
+        minutes_per_frame=20 / 8,
+        use_positions=False,
     )
 
     filenames = [
