@@ -63,6 +63,7 @@ def estimate_growth_curves_individual(
     delay=None,
     pixel_per_micron=None,
     minutes_per_frame=None,
+    use_positions=True,
 ):
     out_path = Path(out_path)
     out_path.mkdir(parents=True, exist_ok=True)
@@ -72,10 +73,22 @@ def estimate_growth_curves_individual(
 
     args = list(zip(range(len(filenames)), filenames, repeat(n_vertices)))
 
-    masks = [np.loadtxt(f, delimiter=",", converters=float) for f in filenames]
-    results = [crm.extract_positions(m, n_vertices) for m in masks]
-    inds = [r[3] for r in results]
-    rod_lengths = np.array([r[1][np.argsort(i)] for r, i in zip(results, inds)])
+    if use_positions:
+        masks = [np.loadtxt(f, delimiter=",", converters=float) for f in filenames]
+        results = [crm.extract_positions(m, n_vertices) for m in masks]
+        inds = [r[3] for r in results]
+        rod_lengths = np.array([r[1][np.argsort(i)] for r, i in zip(results, inds)])
+    else:
+        masks = [
+            np.loadtxt(f, delimiter=",", converters=float).astype(float)
+            for f in filenames
+        ]
+        counts = [np.unique_counts(m) for m in masks]
+        rod_lengths = []
+        for c in counts:
+            ind = np.argsort(c.values)
+            rod_lengths.append(c.counts[ind])
+        rod_lengths = np.array(rod_lengths)[:, 1:]
 
     t = [int(f.split("/")[-1].split(".csv")[0].split("-")[0]) for f in filenames]
     t = np.array(t, dtype=float) - np.min(t).astype(float)
@@ -95,8 +108,10 @@ def estimate_growth_curves_individual(
 
     # Set Labels
     ax.set_xlabel("Time [frames]")
-    if pixel_per_micron is not None:
+    if use_positions and pixel_per_micron is not None:
         ax.set_ylabel("Rod Length [µm]")
+    elif not use_positions:
+        ax.set_ylabel("Pixels per Rod [counts]")
     else:
         ax.set_ylabel("Rod Length [pix]")
 
@@ -180,6 +195,8 @@ def estimate_growth_curves_individual(
         ax.set_xlabel("Time [frames]")
     if pixel_per_micron is not None:
         ax.set_ylabel("Rod Length [µm]")
+    elif not use_positions:
+        ax.set_ylabel("Pixels per Rod [counts]")
     else:
         ax.set_ylabel("Rod Length [pix]")
 
