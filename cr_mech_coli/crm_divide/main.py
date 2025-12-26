@@ -845,26 +845,32 @@ def plot_profiles(
         y2 = []
         for j in np.arange(n_samples):
             y = costs[n * n_samples + j]
-            print(y)
-            if y != ERROR_COST:
+            try:
                 y1.append(y[0])
                 y2.append(y[1])
                 x.append(samples[j, n])
+            except:
+                pass
 
-        print(np.array(x).shape)
-        print(np.array(y1).shape)
-        print(np.array(y2).shape)
         # Sort entries by value of the parameter
         # inds = np.argsort(x)
         # x = x[inds]
         # y = y[inds]
 
-        # x = samples[filter[:,n]]
-        ax.plot(x, y1, c=crm.plotting.COLOR3)
-        ax.plot(x, y2, c=crm.plotting.COLOR2)
+        y1 = np.array(y1)
+        y2 = np.array(y2)
 
-        # ax.plot(x, y, c=crm.plotting.COLOR3, marker="x")
-        # ax.scatter([parameters[n]], [final_cost], c=crm.plotting.COLOR5)
+        y2 = np.array([*y2, final_cost])
+        x2 = np.array([*x, p])
+        sorter = np.argsort(x2)
+        y2 = y2[sorter]
+        x2 = x2[sorter]
+
+        ax.plot(x, y1, c=crm.plotting.COLOR3)
+        ax.plot(x2, y2, c=crm.plotting.COLOR3, linestyle="--")
+
+        # ax.scatter([parameters[n]], [0], c=crm.plotting.COLOR5, marker="x")
+        ax.scatter([parameters[n]], [final_cost], c=crm.plotting.COLOR5, marker="x")
         ax.set_title(labels[n])
         odir = output_dir / "profiles"
         odir.mkdir(parents=True, exist_ok=True)
