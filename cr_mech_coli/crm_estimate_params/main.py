@@ -69,17 +69,13 @@ def estimate_growth_curves_individual(
 
     n_vertices = 12
 
-    pool = mp.Pool()
 
     args = list(zip(range(len(filenames)), filenames, repeat(n_vertices)))
 
-    results = pool.map(extract_pos, args)
-    results = list(filter(lambda x: x is not None, results))
-    positions = np.array([r[1] for r in results])
-
-    rod_lengths = np.sum(
-        np.linalg.norm(positions[:, :, 1:] - positions[:, :, :-1], axis=3), axis=2
-    )
+    masks = [np.loadtxt(f, delimiter=",", converters=float) for f in filenames]
+    results = [crm.extract_positions(m, n_vertices) for m in masks]
+    inds = [r[3] for r in results]
+    rod_lengths = np.array([r[1][np.argsort(i)] for r, i in zip(results, inds)])
 
     t = [int(f.split("/")[-1].split(".csv")[0].split("-")[0]) for f in filenames]
     t = np.array(t, dtype=float) - np.min(t).astype(float)
