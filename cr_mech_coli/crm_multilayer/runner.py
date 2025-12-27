@@ -4,53 +4,63 @@ import numpy as np
 from glob import glob
 
 from cr_mech_coli.crm_multilayer import MultilayerConfig
+from cr_mech_coli import GrowthRateSetter
 
 
 def produce_ml_config() -> MultilayerConfig:
-    # Create many Multilayer-Configs
+    """
+    Produces a :class:`MultilayerConfig` with default parameters.
+    """
     ml_config = crm.crm_multilayer.MultilayerConfig()
+
+    # TIME SETTINGS
     ml_config.config.dt = 0.05
-    # ml_config.config.t_max = 20
-    # ml_config.config.n_saves = int(
-    #     np.ceil(ml_config.config.t_max / (ml_config.config.dt * 100))
-    # )
-    ml_config.config.domain_height = 20.0
-    # ml_config.config.domain_size = (1600, 1600)
-    # ml_config.dx = (700, 700)
-    ml_config.config.n_voxels = (10, 10)
-    ml_config.config.gel_pressure = 0.05
-    ml_config.config.n_threads = 1
-
-    ml_config.config.surface_friction = 0.3
-    ml_config.config.surface_friction_distance = (
-        ml_config.agent_settings.interaction.radius / 10
-    )
-
-    ml_config.agent_settings.neighbor_reduction = (200, 0.5)
-
     ml_config.config.t_max = 1800
     ml_config.config.dt = 0.025
     ml_config.config.n_saves = 19
-    ml_config.config.domain_size = (400, 400)
-    ml_config.config.rng_seed = 0
-    ml_config.dx = (100, 100)
-    ml_config.agent_settings.growth_rate = 0.005
-    ml_config.agent_settings.growth_rate_setter = GrowthRateSetter.NormalDistr(
-        0.005, 0.001
-    )
-    ml_config.agent_settings.mechanics.damping = 0.02
-    ml_config.agent_settings.mechanics.diffusion_constant = 0.03
-    ml_config.agent_settings.mechanics.rigidity = 1.0
-    ml_config.agent_settings.mechanics.spring_tension = 0.3
-    ml_config.agent_settings.interaction.strength = 0.02
-    ml_config.agent_settings.spring_length_threshold = 20.0
-    ml_config.config.progressbar = ""
 
+    # SOLVER SETTINGS
+    ml_config.config.n_threads = 1
+    ml_config.config.rng_seed = 0
+    ml_config.config.progressbar = None
     ml_config.config.storage_options = [
         crm.simulation.StorageOption.Memory,
         crm.simulation.StorageOption.SerdeJson,
     ]
     ml_config.config.storage_location = "out/crm_multilayer"
+
+    # DOMAIN SETTINGS
+    ml_config.config.domain_height = 20.0
+    ml_config.config.domain_size = (400, 400)
+    ml_config.dx = (100, 100)
+    # ml_config.config.domain_size = (1600, 1600)
+    # ml_config.dx = (700, 700)
+    ml_config.config.n_voxels = (10, 10)
+
+    # EXTERNAL FORCES
+    ml_config.config.gel_pressure = 0.05
+    ml_config.config.surface_friction = 0.3
+    ml_config.config.surface_friction_distance = (
+        ml_config.agent_settings.interaction.radius / 10
+    )
+
+    # AGENT SETTINGS
+    ## GROWTH
+    ml_config.agent_settings.neighbor_reduction = (200, 0.5)
+    ml_config.agent_settings.growth_rate = 0.005
+    ml_config.agent_settings.growth_rate_setter = GrowthRateSetter.NormalDistr(
+        0.005, 0.001
+    )
+
+    # MECHANICS
+    ml_config.agent_settings.mechanics.damping = 0.02
+    ml_config.agent_settings.mechanics.diffusion_constant = 0.03
+    ml_config.agent_settings.mechanics.rigidity = 1.0
+    ml_config.agent_settings.mechanics.spring_tension = 0.3
+
+    # INTERACTION
+    ml_config.agent_settings.interaction.strength = 0.02
+    ml_config.agent_settings.spring_length_threshold = 20.0
 
     return ml_config
 
