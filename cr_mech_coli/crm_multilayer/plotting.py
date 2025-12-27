@@ -45,15 +45,6 @@ def render_image_helper(args):
 
 
 def plot_colony_height_over_time():
-    # parser = argparse.ArgumentParser(
-    #     prog="crm_multilayer",
-    #     description="Run Simulations to analyze Multilayer-behaviour of Rod-Shaped Bacteria.",
-    # )
-    # parser.add_argument("--plot-snapshots", action="store_true")
-    # parser.add_argument("--seeds", nargs="+", default=[0, 1, 2, 3], type=int)
-    # pyargs = parser.parse_args()
-    # pyargs.seeds = [int(n) for n in pyargs.seeds]
-
     ml_config = produce_ml_config()
 
     def create_new_ml_configs(ml_config, seeds):

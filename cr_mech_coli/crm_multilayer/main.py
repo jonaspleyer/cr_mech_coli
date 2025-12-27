@@ -236,8 +236,27 @@ def plot_colony_height(ml_config: MultilayerConfig, container):
 
 
 def crm_multilayer_main():
+    parser = argparse.ArgumentParser(
+        prog="crm_multilayer",
+        description="Run Simulations to analyze Multilayer-behaviour of Rod-Shaped Bacteria.",
+    )
+    subparsers = parser.add_subparsers()
+    parse_run = subparsers.add_parser(
+        "run", help="Run simulation for specified parameters"
+    )
+    parse_plot = subparsers.add_parser("plot", help="Perform plotting actions")
+
+    parse_plot.add_argument("colony-height", action="store_true", default=False)
+    # parse_plot.add_argument("", action="store_true", default=False)
+
+    # parser.add_argument("--plot-snapshots", action="store_true")
+    # parser.add_argument("--seeds", nargs="+", default=[0, 1, 2, 3], type=int)
+    pyargs = parser.parse_args()
+    # pyargs.seeds = [int(n) for n in pyargs.seeds]
+
     # ml_config = MultilayerConfig.load_from_toml_file(Path(file_path))
     ml_config = produce_ml_config()
+    ml_config.config.progressbar = "Run Simulation"
 
     container = load_or_compute(ml_config)
 
