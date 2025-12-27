@@ -1115,7 +1115,7 @@ def crm_divide_main():
     parser.add_argument("--maxiter", type=int, default=100)
     parser.add_argument("--popsize", type=int, default=15)
     parser.add_argument("--recombination", type=float, default=0.6)
-    parser.add_argument("--tol", type=float, default=0.0001)
+    parser.add_argument("--tol", type=float, default=0.01)
     parser.add_argument("--mutation-upper", type=float, default=1.2)
     parser.add_argument("--mutation-lower", type=float, default=0.0)
     parser.add_argument("--skip-polish", action="store_true")
