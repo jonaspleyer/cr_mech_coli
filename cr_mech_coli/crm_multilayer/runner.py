@@ -1,3 +1,4 @@
+from typing import Any
 import cr_mech_coli as crm
 from pathlib import Path
 import numpy as np
@@ -193,3 +194,65 @@ def load_or_compute_ydata(
         iterations, positions, ymax, y95th, ymean = produce_ydata(container)
 
     return iterations, positions, ymax, y95th, ymean
+
+
+def __create_full_sample(value) -> tuple[float, float, int, str]:
+    if len(value) == 3:
+        low, high, n = value
+        sample_type = "Uniform"
+    elif len(value) == 4:
+        low, high, n, sample_type = value
+    else:
+        raise TypeError(
+            "Expected tuple with (low, high, n) or (low, high, n, sample_type)"
+        )
+    return low, high, n, sample_type
+
+
+def __create_sample(
+    low: float, high: float, n: int, sample_type: str | None
+) -> np.ndarray:
+    if sample_type is None or sample_type.lower() == "uniform":
+        return np.linspace(low, high, n, dtype=np.float32)
+    elif sample_type.lower() == "log":
+        x0 = np.log(low)
+        x1 = np.log(high)
+        return np.exp(np.linspace(x0, x1, n, dtype=np.float32))
+    else:
+        raise KeyError("could not identify sample type")
+
+
+def __set_ml_config(ml_config, setter, p):
+    sets = setter.split(".")
+    base = ml_config
+    for var in sets[:-1]:
+        base = base.__getattribute__(var)
+    base.__setattr__(sets[-1], p)
+
+
+def sample_parameters(
+    *args: tuple[Any, float, float, float] | tuple[Any, float, float, int, str],
+):
+    param_setters = []
+    samples_all = []
+
+    for value in args:
+        sample_info = __create_full_sample([value[i] for i in range(1, len(value))])
+        sample = __create_sample(*sample_info)
+        param_setters.append(value[0])
+        samples_all.append(sample)
+
+    # Build combined sample
+    samples = np.empty(
+        [len(x) for x in samples_all] + [len(samples_all)], dtype=np.float32
+    )
+    for i, a in enumerate(np.ix_(*samples_all)):
+        samples[..., i] = a
+
+    for param_combination in samples.reshape(-1, len(samples_all)):
+        pass
+        # Assign parameters to new multilayerconfig here
+        ml_config = produce_ml_config()
+        for setter, p in zip(param_setters, param_combination):
+            __set_ml_config(ml_config, setter, p)
+        yield ml_config
