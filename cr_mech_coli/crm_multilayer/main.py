@@ -10,23 +10,11 @@ import matplotlib as mpl
 import multiprocessing as mp
 import argparse
 from tqdm import tqdm
-from pathlib import Path
 
-from cr_mech_coli.cr_mech_coli import GrowthRateSetter
 from cr_mech_coli.crm_multilayer import MultilayerConfig
-from cr_mech_coli.crm_perf_plots import COLOR1, COLOR2, COLOR3, COLOR4, COLOR5
+from cr_mech_coli import COLOR1, COLOR2, COLOR3, COLOR4, COLOR5
 
-from .runner import load_or_compute, produce_ml_config
-
-
-def produce_ydata(container: crm.CellContainer):
-    cells = container.get_cells()
-    iterations = container.get_all_iterations()
-    positions = [np.array([c[0].pos for c in cells[i].values()]) for i in iterations]
-    ymax = np.array([np.max(p[:, :, 2]) for p in positions])
-    y95th = np.array([np.percentile(p[:, :, 2], 95) for p in positions])
-    ymean = np.array([np.mean(p[:, :, 2]) for p in positions])
-    return iterations, positions, ymax, y95th, ymean
+from .runner import load_or_compute, produce_ml_config, produce_ydata
 
 
 def produce_ydata_helper(ml_config_string):

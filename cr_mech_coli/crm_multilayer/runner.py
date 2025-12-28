@@ -91,9 +91,9 @@ def run_sim(ml_config: MultilayerConfig) -> crm.CellContainer:
     return container
 
 
-def load_or_compute(
+def find_ml_config_path(
     ml_config: MultilayerConfig, out_path=Path("out/crm_multilayer/")
-) -> crm.CellContainer:
+):
     settings_files = glob(str(out_path / "*/ml_config.toml"))
     settings_files2 = glob(str(out_path / "*/*/ml_config.toml"))
     settings_files.extend(settings_files2)
@@ -102,11 +102,76 @@ def load_or_compute(
         file_path = Path(file_path)
         ml_config_loaded = MultilayerConfig.load_from_toml_file(Path(file_path))
         if ml_config.approx_eq(ml_config_loaded):
-            container = crm.CellContainer.load_from_storage(
-                ml_config.config, file_path.parent
-            )
-            return container
+            return file_path
+    return None
+
+
+def load_or_compute(
+    ml_config: MultilayerConfig, out_path=Path("out/crm_multilayer/")
+) -> crm.CellContainer:
+    settings_files = glob(str(out_path / "*/ml_config.toml"))
+    settings_files2 = glob(str(out_path / "*/*/ml_config.toml"))
+    settings_files.extend(settings_files2)
+
+    file_path = find_ml_config_path(ml_config, out_path)
+    if file_path is not None:
+        container = crm.CellContainer.load_from_storage(
+            ml_config.config, file_path.parent
+        )
+        return container
     else:
         res = run_sim(ml_config)
         print()
         return res
+
+
+def __calculate_properties(positions: list[np.ndarray]):
+    ymax = np.array([np.max(p[:, :, 2]) for p in positions])
+    y95th = np.array([np.percentile(p[:, :, 2], 95) for p in positions])
+    ymean = np.array([np.mean(p[:, :, 2]) for p in positions])
+    return ymax, y95th, ymean
+
+
+def produce_ydata(container: crm.CellContainer):
+    cells = container.get_cells()
+    iterations = np.array(container.get_all_iterations())
+    positions = [np.array([c[0].pos for c in cells[i].values()]) for i in iterations]
+    ymax, y95th, ymean = __calculate_properties(positions)
+    return iterations, positions, ymax, y95th, ymean
+
+
+def load_or_compute_ydata(
+    ml_config: MultilayerConfig, out_path=Path("out/crm_multilayer")
+):
+    positions = []
+    file_path = find_ml_config_path(ml_config, out_path)
+    if file_path is not None:
+        # First try to load data directly
+        try:
+            positions = []
+            opath = file_path / "calculated"
+            iterations = np.load(str(opath / "iterations.npy"))
+            for file in sorted(glob(str(opath / "positions-*.npy"))):
+                p = np.load(file)
+                positions.append(p)
+            ymax, y95th, ymean = __calculate_properties(positions)
+        except:
+            # Then try to load container
+            container = crm.CellContainer.load_from_storage(
+                ml_config.config, file_path.parent
+            )
+            iterations, positions, ymax, y95th, ymean = produce_ydata(container)
+
+    # Otherwise calculate new result
+    else:
+        container = load_or_compute(ml_config, out_path)
+        iterations, positions, ymax, y95th, ymean = produce_ydata(container)
+
+        if container.path is not None:
+            opath = container.path / "calculated"
+            opath.mkdir(parents=True, exist_ok=True)
+            np.save(opath / "iterations.npy", iterations)
+            for i, p in positions:
+                np.save(opath / f"positions-{i:05}.npy", p)
+
+    return iterations, positions, ymax, y95th, ymean
