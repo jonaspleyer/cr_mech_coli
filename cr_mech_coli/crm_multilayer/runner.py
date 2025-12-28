@@ -243,6 +243,7 @@ def sample_parameters(
         samples_all.append(sample)
 
     # Build combined sample
+    # TODO For the future: do this without allocating the entire array
     samples = np.empty(
         [len(x) for x in samples_all] + [len(samples_all)], dtype=np.float32
     )
