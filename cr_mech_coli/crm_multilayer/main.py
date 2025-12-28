@@ -14,12 +14,12 @@ from tqdm import tqdm
 from cr_mech_coli.crm_multilayer import MultilayerConfig
 from cr_mech_coli import COLOR1, COLOR2, COLOR3, COLOR4, COLOR5
 
-from .runner import load_or_compute, produce_ml_config, produce_ydata
+from .runner import load_or_compute_container, produce_ml_config, produce_ydata
 
 
 def produce_ydata_helper(ml_config_string):
     ml_config = MultilayerConfig.load_from_toml_str(ml_config_string)
-    container = load_or_compute(ml_config)
+    container = load_or_compute_container(ml_config)
     return produce_ydata(container)
 
 
@@ -246,7 +246,7 @@ def crm_multilayer_main():
     ml_config = produce_ml_config()
     ml_config.config.progressbar = "Run Simulation"
 
-    container = load_or_compute(ml_config)
+    container = load_or_compute_container(ml_config)
 
     # for i in tqdm(container.get_all_iterations()[-2:]):
     #     render_image(

@@ -65,7 +65,14 @@ def produce_ml_config() -> MultilayerConfig:
     return ml_config
 
 
-def run_sim(ml_config: MultilayerConfig) -> crm.CellContainer:
+def _find_next_available_path(out_path=Path("out/crm_multilayer")):
+    existing = glob(str(out_path / "*"))
+    numbers = [int(e) for e in existing]
+    next = max(numbers)
+    return out_path / f"{next:010}"
+
+
+def run_sim(ml_config: MultilayerConfig, store_positions=True) -> crm.CellContainer:
     positions = np.array(
         crm.generate_positions(
             n_agents=1,
@@ -88,6 +95,22 @@ def run_sim(ml_config: MultilayerConfig) -> crm.CellContainer:
     else:
         print("Could not find save path for MultilayerConfig:")
         print(ml_config.to_toml_string())
+
+    if store_positions:
+        if container.path is not None:
+            opath = container.path
+        else:
+            opath = _find_next_available_path()
+            opath.mkdir(parents=True, exist_ok=False)
+
+        # Calculate data and store it to files
+        iterations, positions, _, _, _ = produce_ydata(container)
+        opath = opath / "calculated"
+        opath.mkdir(parents=True, exist_ok=True)
+        np.save(opath / "iterations.npy", iterations)
+        for i, p in positions:
+            np.save(opath / f"positions-{i:05}.npy", p)
+
     return container
 
 
@@ -106,8 +129,10 @@ def find_ml_config_path(
     return None
 
 
-def load_or_compute(
-    ml_config: MultilayerConfig, out_path=Path("out/crm_multilayer/")
+def load_or_compute_container(
+    ml_config: MultilayerConfig,
+    out_path=Path("out/crm_multilayer/"),
+    store_positions=True,
 ) -> crm.CellContainer:
     settings_files = glob(str(out_path / "*/ml_config.toml"))
     settings_files2 = glob(str(out_path / "*/*/ml_config.toml"))
@@ -120,7 +145,7 @@ def load_or_compute(
         )
         return container
     else:
-        res = run_sim(ml_config)
+        res = run_sim(ml_config, store_positions=store_positions)
         print()
         return res
 
@@ -164,14 +189,7 @@ def load_or_compute_ydata(
 
     # Otherwise calculate new result
     else:
-        container = load_or_compute(ml_config, out_path)
+        container = load_or_compute_container(ml_config, out_path, store_positions=True)
         iterations, positions, ymax, y95th, ymean = produce_ydata(container)
-
-        if container.path is not None:
-            opath = container.path / "calculated"
-            opath.mkdir(parents=True, exist_ok=True)
-            np.save(opath / "iterations.npy", iterations)
-            for i, p in positions:
-                np.save(opath / f"positions-{i:05}.npy", p)
 
     return iterations, positions, ymax, y95th, ymean
