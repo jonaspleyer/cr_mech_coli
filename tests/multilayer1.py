@@ -70,3 +70,20 @@ def test_sample_parameters():
         )
         h = ml_config.config.gel_pressure
         assert np.abs(h * 6 - np.round(h * 6, 1)) < 1e-6
+
+
+def test_produce_ydata_samples():
+    results1 = crmm.load_or_compute_ydata_samples([], n_threads_total=1)
+    assert results1 == []
+
+    ml_config = crmm.produce_ml_config(
+        ("config.t_max", 150.0),
+        ("config.storage_options", [crm.StorageOption.Memory]),
+    )
+    ml_config.config.progressbar = None
+    ml_configs = list(
+        crmm.sample_parameters(*__generate_arguments(), ml_config_default=ml_config)
+    )
+
+    results2 = crmm.load_or_compute_ydata_samples(ml_configs[::10], n_threads_total=1)
+    assert len(results2) == len(ml_configs[::10])
