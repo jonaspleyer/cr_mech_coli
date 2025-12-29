@@ -96,9 +96,6 @@ def run_sim(ml_config: MultilayerConfig, store_positions=True) -> crm.CellContai
     container = crm.run_simulation_with_agents(ml_config.config, agents)
     if container.path is not None:
         ml_config.to_toml_file(Path(container.path) / "ml_config.toml")
-    else:
-        print("Could not find save path for MultilayerConfig:")
-        print(ml_config.to_toml_string())
 
     if store_positions and container.path is not None:
         opath = container.path
