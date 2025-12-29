@@ -233,6 +233,7 @@ def __set_ml_config(ml_config, setter, p):
 
 def sample_parameters(
     *args: tuple[Any, float, float, float] | tuple[Any, float, float, int, str],
+    ml_config_default: MultilayerConfig | None = None,
 ):
     param_setters = []
     samples_all = []
@@ -254,7 +255,10 @@ def sample_parameters(
     for param_combination in samples.reshape(-1, len(samples_all)):
         pass
         # Assign parameters to new multilayerconfig here
-        ml_config = produce_ml_config()
+        if ml_config_default is not None:
+            ml_config = ml_config_default.clone_with_args()
+        else:
+            ml_config = produce_ml_config()
         for setter, p in zip(param_setters, param_combination):
             __set_ml_config(ml_config, setter, p)
         yield ml_config
