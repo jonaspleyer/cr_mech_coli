@@ -73,13 +73,6 @@ def produce_ml_config(*args: tuple[str, Any]) -> MultilayerConfig:
     return ml_config
 
 
-def _find_next_available_path(out_path=Path("out/crm_multilayer")):
-    existing = glob(str(out_path / "*"))
-    numbers = [int(e) for e in existing]
-    next = max(numbers)
-    return out_path / f"{next:010}"
-
-
 def run_sim(ml_config: MultilayerConfig, store_positions=True) -> crm.CellContainer:
     positions = np.array(
         crm.generate_positions(
@@ -104,12 +97,9 @@ def run_sim(ml_config: MultilayerConfig, store_positions=True) -> crm.CellContai
         print("Could not find save path for MultilayerConfig:")
         print(ml_config.to_toml_string())
 
-    if store_positions:
-        if container.path is not None:
-            opath = container.path
-        else:
-            opath = _find_next_available_path()
-            opath.mkdir(parents=True, exist_ok=False)
+    if store_positions and container.path is not None:
+        opath = container.path
+        opath.mkdir(parents=True, exist_ok=False)
 
         # Calculate data and store it to files
         iterations, positions, _, _, _ = produce_ydata(container)
