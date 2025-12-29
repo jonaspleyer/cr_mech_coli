@@ -336,7 +336,7 @@ def parents_diff_mask(
     mask1: np.ndarray[tuple[int, int, int], np.dtype[np.uint8]],
     mask2: np.ndarray[tuple[int, int, int], np.dtype[np.uint8]],
     color_to_cell: dict,
-    parent_map: dict,
+    parent_map: dict[CellIdentifier, CellIdentifier | None],
     parent_penalty: np.float32 | float,
 ) -> np.ndarray[tuple[int, int], np.dtype[np.float32]]:
     """Calculates the difference between two masks and applies a lower value where one cell is the
