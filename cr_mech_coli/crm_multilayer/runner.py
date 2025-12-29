@@ -106,7 +106,7 @@ def run_sim(ml_config: MultilayerConfig, store_positions=True) -> crm.CellContai
         opath = opath / "calculated"
         opath.mkdir(parents=True, exist_ok=True)
         np.save(opath / "iterations.npy", iterations)
-        for i, p in positions:
+        for i, p in enumerate(positions):
             np.save(opath / f"positions-{i:05}.npy", p)
 
     return container
