@@ -70,9 +70,6 @@ def estimate_growth_curves_individual(
 
     n_vertices = 12
 
-
-    args = list(zip(range(len(filenames)), filenames, repeat(n_vertices)))
-
     if use_positions:
         masks = [np.loadtxt(f, delimiter=",", converters=float) for f in filenames]
         results = [crm.extract_positions(m, n_vertices) for m in masks]
