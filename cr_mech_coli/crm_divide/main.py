@@ -1182,7 +1182,7 @@ def crm_divide_main():
         # Growth rates
         + [(0.0000, 0.1)] * 6
         # Spring length thresholds
-        + [(0.4, 1.6)] * 4
+        + [(0.2, 2.0)] * 4
         # new growth rates
         + [(0.0000, 0.1)] * 8
     )
