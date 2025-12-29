@@ -238,6 +238,9 @@ def sample_parameters(
     param_setters = []
     samples_all = []
 
+    if len(args) == 0:
+        return None
+
     for value in args:
         sample_info = __create_full_sample([value[i] for i in range(1, len(value))])
         sample = __create_sample(*sample_info)
