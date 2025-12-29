@@ -807,19 +807,6 @@ def plot_profiles(
         np.save(output_dir / "profile-costs-filter.npy", filter)
         np.save(output_dir / "profile-samples.npy", samples)
 
-    # costs = [c for c in costs if c != ERROR_COST]
-    # costs_no_penalty = [c[0] for c in costs]
-    # costs_only_penalty = [c[1] for c in costs]
-    # costs_no_penalty = np.array(costs_no_penalty).reshape((-1, len(parameters)))
-    # costs_only_penalty = np.array(costs_only_penalty).reshape((-1, len(parameters)))
-
-    # cost_no_penalty = np.array([c[0] for c in costs if c != ERROR_COST]).reshape(
-    #     (-1, len(parameters))
-    # )
-    # cost_only_penalty = np.array([c[1] for c in costs if c != ERROR_COST]).reshape(
-    #     (-1, len(parameters))
-    # )
-
     costs = np.array(costs).reshape((n_samples, len(parameters), 2))
     assert n_samples == samples.shape[0]
     assert len(parameters) == samples.shape[1]
