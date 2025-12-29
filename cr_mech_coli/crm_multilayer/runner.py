@@ -164,7 +164,9 @@ def produce_ydata(container: crm.CellContainer):
 
 
 def load_or_compute_ydata(
-    ml_config: MultilayerConfig, out_path=Path("out/crm_multilayer")
+    ml_config: MultilayerConfig,
+    out_path=Path("out/crm_multilayer"),
+    store_positions=True,
 ):
     positions = []
     file_path = find_ml_config_path(ml_config, out_path)
@@ -187,7 +189,9 @@ def load_or_compute_ydata(
 
     # Otherwise calculate new result
     else:
-        container = load_or_compute_container(ml_config, out_path, store_positions=True)
+        container = load_or_compute_container(
+            ml_config, out_path, store_positions=store_positions
+        )
         iterations, positions, ymax, y95th, ymean = produce_ydata(container)
 
     return iterations, positions, ymax, y95th, ymean
