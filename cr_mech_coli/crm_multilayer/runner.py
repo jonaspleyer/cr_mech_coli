@@ -272,20 +272,35 @@ def sample_parameters(
 
 
 def __run_helper(args):
-    load_or_compute_ydata(*args)
+    (ml_config_str, out_path, store_positions) = args
+    ml_config = MultilayerConfig.load_from_toml_str(ml_config_str)
+    load_or_compute_ydata(ml_config, out_path, store_positions)
 
 
 def load_or_compute_ydata_samples(
-    ml_configs, n_threads_total: int | None = None, out_path=Path("out/crm_multilayer")
+    ml_configs,
+    n_threads_total: int | None = None,
+    out_path=Path("out/crm_multilayer"),
+    store_positions=True,
+    show_progressbar=True,
 ):
     if n_threads_total is None:
         n_threads_total = mp.cpu_count()
 
-    # pool = mp.Pool(n_threads_total)
-
+    # Calculate multiple results with a pool
+    pool = mp.Pool(n_threads_total)
     n_samples = len(ml_configs)
-    arglist = tqdm(zip(ml_configs, itertools.repeat(out_path)), total=n_samples)
+    arglist = zip(
+        (m.to_toml_string() for m in ml_configs),
+        itertools.repeat(out_path),
+        itertools.repeat(store_positions),
+    )
+    results = list(
+        tqdm(
+            pool.imap(__run_helper, arglist),
+            total=n_samples,
+            disable=not show_progressbar,
+        )
+    )
 
-    results = [__run_helper(a) for a in arglist]
-    # results = list(pool.starmap(__run_helper, arglist))
     return results
