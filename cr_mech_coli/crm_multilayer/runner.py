@@ -8,7 +8,7 @@ from cr_mech_coli.crm_multilayer import MultilayerConfig
 from cr_mech_coli import GrowthRateSetter
 
 
-def produce_ml_config() -> MultilayerConfig:
+def produce_ml_config(*args: tuple[str, Any]) -> MultilayerConfig:
     """
     Produces a :class:`MultilayerConfig` with default parameters.
     """
@@ -58,6 +58,13 @@ def produce_ml_config() -> MultilayerConfig:
     ml_config.agent_settings.mechanics.diffusion_constant = 0.03
     ml_config.agent_settings.mechanics.rigidity = 1.0
     ml_config.agent_settings.mechanics.spring_tension = 0.3
+
+    for attr, value in args:
+        attrs = attr.split(".")
+        base = ml_config
+        for a in attrs[:-1]:
+            base = base.__getattribute__(a)
+        base.__setattr__(attrs[-1], value)
 
     # INTERACTION
     ml_config.agent_settings.interaction.strength = 0.02
