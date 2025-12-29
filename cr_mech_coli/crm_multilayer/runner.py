@@ -3,6 +3,9 @@ import cr_mech_coli as crm
 from pathlib import Path
 import numpy as np
 from glob import glob
+import multiprocessing as mp
+import itertools
+from tqdm import tqdm
 
 from cr_mech_coli.crm_multilayer import MultilayerConfig
 from cr_mech_coli import GrowthRateSetter
@@ -265,3 +268,23 @@ def sample_parameters(
         for setter, p in zip(param_setters, param_combination):
             __set_ml_config(ml_config, setter, p)
         yield ml_config
+
+
+def __run_helper(args):
+    load_or_compute_ydata(*args)
+
+
+def load_or_compute_ydata_samples(
+    ml_configs, n_threads_total: int | None = None, out_path=Path("out/crm_multilayer")
+):
+    if n_threads_total is None:
+        n_threads_total = mp.cpu_count()
+
+    # pool = mp.Pool(n_threads_total)
+
+    n_samples = len(ml_configs)
+    arglist = tqdm(zip(ml_configs, itertools.repeat(out_path)), total=n_samples)
+
+    results = [__run_helper(a) for a in arglist]
+    # results = list(pool.starmap(__run_helper, arglist))
+    return results
