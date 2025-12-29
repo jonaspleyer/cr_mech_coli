@@ -84,8 +84,9 @@ def estimate_growth_curves_individual(
         rod_lengths = []
         for c in counts:
             ind = np.argsort(c.values)
-            rod_lengths.append(c.counts[ind])
-        rod_lengths = np.array(rod_lengths)[:, 1:]
+            filt = c.values[ind] != 0
+            rod_lengths.append(c.counts[ind][filt])
+        rod_lengths = np.array(rod_lengths)
 
     t = [int(f.split("/")[-1].split(".csv")[0].split("-")[0]) for f in filenames]
     t = np.array(t, dtype=float) - np.min(t).astype(float)
