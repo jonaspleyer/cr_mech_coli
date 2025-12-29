@@ -37,13 +37,17 @@ def set_strength(ml_config, x):
     ml_config.agent_settings.interaction.strength = x
 
 
-def test_sample_parameters():
-    ml_configs = crmm.sample_parameters(
+def __generate_arguments():
+    return [
         ("agent_settings.interaction.strength", 0.0, 10.0, 3),
         ("agent_settings.mechanics.damping", 1.0, 5.0, 5),
         ("agent_settings.mechanics.rigidity", 1.0, 10.0, 4, "log"),
         ("config.gel_pressure", 0.0, 0.1, 7),
-    )
+    ]
+
+
+def test_sample_parameters():
+    ml_configs = crmm.sample_parameters(*__generate_arguments())
     ml_configs = list(ml_configs)
 
     # Check length of generated configs
