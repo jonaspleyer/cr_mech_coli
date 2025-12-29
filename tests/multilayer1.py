@@ -72,10 +72,12 @@ def test_sample_parameters():
         assert np.abs(h * 6 - np.round(h * 6, 1)) < 1e-6
 
 
-def test_produce_ydata_samples():
+def test_produce_ydata_samples1():
     results1 = crmm.load_or_compute_ydata_samples([], n_threads_total=1)
     assert results1 == []
 
+
+def test_produce_ydata_samples2():
     ml_config = crmm.produce_ml_config(
         ("config.t_max", 150.0),
         ("config.storage_options", [crm.StorageOption.Memory]),
