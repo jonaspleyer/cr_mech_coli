@@ -102,7 +102,7 @@ def run_sim(ml_config: MultilayerConfig, store_positions=True) -> crm.CellContai
 
     if store_positions and container.path is not None:
         opath = container.path
-        opath.mkdir(parents=True, exist_ok=False)
+        opath.mkdir(parents=True, exist_ok=True)
 
         # Calculate data and store it to files
         iterations, positions, _, _, _ = produce_ydata(container)
