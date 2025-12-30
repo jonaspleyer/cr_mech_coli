@@ -19,7 +19,7 @@ def produce_ml_config(*args: tuple[str, Any]) -> MultilayerConfig:
 
     # TIME SETTINGS
     ml_config.config.dt = 0.05
-    ml_config.config.t_max = 1800
+    ml_config.config.t_max = 3000
     ml_config.config.dt = 0.025
     ml_config.config.n_saves = 19
 
@@ -35,15 +35,15 @@ def produce_ml_config(*args: tuple[str, Any]) -> MultilayerConfig:
 
     # DOMAIN SETTINGS
     ml_config.config.domain_height = 20.0
-    ml_config.config.domain_size = (400, 400)
+    # ml_config.config.domain_size = (400, 400)
     ml_config.dx = (100, 100)
-    # ml_config.config.domain_size = (1600, 1600)
-    # ml_config.dx = (700, 700)
-    ml_config.config.n_voxels = (10, 10)
+    ml_config.config.domain_size = (1600, 1600)
+    ml_config.dx = (200, 200)
+    ml_config.config.n_voxels = (40, 40)
 
     # EXTERNAL FORCES
-    ml_config.config.gel_pressure = 0.05
-    ml_config.config.surface_friction = 0.3
+    ml_config.config.gel_pressure = 0.10
+    ml_config.config.surface_friction = 0.03
     ml_config.config.surface_friction_distance = (
         ml_config.agent_settings.interaction.radius / 10
     )
@@ -59,8 +59,11 @@ def produce_ml_config(*args: tuple[str, Any]) -> MultilayerConfig:
     # MECHANICS
     ml_config.agent_settings.mechanics.damping = 0.02
     ml_config.agent_settings.mechanics.diffusion_constant = 0.03
-    ml_config.agent_settings.mechanics.rigidity = 1.0
-    ml_config.agent_settings.mechanics.spring_tension = 0.3
+    ml_config.agent_settings.mechanics.rigidity = 20.0
+    ml_config.agent_settings.mechanics.spring_tension = 10.0
+
+    # INTERACTION
+    ml_config.agent_settings.interaction.potential_stiffness = 1.0
 
     for attr, value in args:
         attrs = attr.split(".")
@@ -70,7 +73,7 @@ def produce_ml_config(*args: tuple[str, Any]) -> MultilayerConfig:
         base.__setattr__(attrs[-1], value)
 
     # INTERACTION
-    ml_config.agent_settings.interaction.strength = 0.02
+    ml_config.agent_settings.interaction.strength = 0.03
     ml_config.agent_settings.spring_length_threshold = 20.0
 
     return ml_config
