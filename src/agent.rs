@@ -298,13 +298,45 @@ impl PhysicalInteraction {
         )))
     }
 
-    /// Extracts a copy of the inner value
-    pub fn inner<'a>(&self, py: Python<'a>) -> PyResult<Bound<'a, PyAny>> {
-        let res = match &self.0 {
-            PhysInt::MiePotentialF32(mie) => Bound::new(py, mie.clone())?.into_any(),
-            PhysInt::MorsePotentialF32(morse) => Bound::new(py, morse.clone())?.into_any(),
-        };
-        Ok(res)
+    /// Obtains attribute of the inner type
+    pub fn __getattr__<'py>(
+        &self,
+        py: Python<'py>,
+        attr_name: &str,
+    ) -> PyResult<Bound<'py, PyAny>> {
+        match &self.0 {
+            PhysInt::MorsePotentialF32(morse) => {
+                morse.clone().into_bound_py_any(py)?.getattr(attr_name)
+            }
+            PhysInt::MiePotentialF32(mie) => mie.clone().into_bound_py_any(py)?.getattr(attr_name),
+        }
+    }
+
+    /// Sets attribute of the inner type
+    pub fn __setattr__(&mut self, attr_name: &str, value: Bound<PyAny>) -> PyResult<()> {
+        let e = Err(pyo3::exceptions::PyAttributeError::new_err(format!(
+            "Cannot find attribute with name {attr_name}"
+        )));
+        match &mut self.0 {
+            PhysInt::MiePotentialF32(mie) => match attr_name {
+                "radius" => mie.radius = value.extract()?,
+
+                "strength" => mie.strength = value.extract()?,
+                "bound" => mie.bound = value.extract()?,
+                "cutoff" => mie.cutoff = value.extract()?,
+                "en" => mie.en = value.extract()?,
+                "em" => mie.em = value.extract()?,
+                _ => return e,
+            },
+            PhysInt::MorsePotentialF32(morse) => match attr_name {
+                "radius" => morse.radius = value.extract()?,
+                "potential_stiffness" => morse.potential_stiffness = value.extract()?,
+                "cutoff" => morse.cutoff = value.extract()?,
+                "strength" => morse.strength = value.extract()?,
+                _ => return e,
+            },
+        }
+        Ok(())
     }
 
     /// Obtains the radius of the interaction
