@@ -17,16 +17,15 @@ def test_create_potentials():
         em=1.0,
     )
     pot1 = crm.PhysicalInteraction(p1)
-    qot1 = pot1.inner()
-    assert qot1.radius == 1.0
-    assert qot1.cutoff == 3.0
-    assert qot1.potential_stiffness == 0.5
+    assert pot1.radius == 1.0
+    assert pot1.cutoff == 3.0
+    assert pot1.potential_stiffness == 0.5
+
     pot2 = crm.PhysicalInteraction(p2)
-    qot2 = pot2.inner()
-    assert qot2.radius == 1.0
-    assert qot2.cutoff == 3.0
-    assert qot2.en == 2.0
-    assert qot2.em == 1.0
+    assert pot2.radius == 1.0
+    assert pot2.cutoff == 3.0
+    assert pot2.en == 2.0
+    assert pot2.em == 1.0
 
 
 if __name__ == "__main__":
