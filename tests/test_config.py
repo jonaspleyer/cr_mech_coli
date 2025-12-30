@@ -32,3 +32,16 @@ def test_agent_settings():
     agent_settings = crm.AgentSettings(growth_rate_setter={"g1": 0.03, "g2": -0.1})
     assert abs(agent_settings.growth_rate_setter.g1 - 0.03) < 1e-5
     assert abs(agent_settings.growth_rate_setter.g2 + 0.1) < 1e-5
+
+
+def test_interaction_assign():
+    agent_settings = crm.AgentSettings()
+    print(agent_settings.interaction)
+    agent_settings.interaction.strength = 0.1091
+    assert abs(agent_settings.interaction.strength - 0.1091) < 1e-4
+    agent_settings.interaction.potential_stiffness = 11.1
+    assert abs(agent_settings.interaction.potential_stiffness - 11.1) < 1e-3
+    agent_settings.interaction.cutoff = 33.2391
+    assert abs(agent_settings.interaction.cutoff - 33.2391) < 1e-5
+    agent_settings.interaction.radius = 1.93e-8
+    assert abs(agent_settings.interaction.radius - 1.93e-8) < 1e-10
