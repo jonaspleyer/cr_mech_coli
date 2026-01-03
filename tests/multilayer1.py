@@ -33,10 +33,6 @@ def test_produce_ydata():
     assert ymean.shape == (len(iterations),)
 
 
-def set_strength(ml_config, x):
-    ml_config.agent_settings.interaction.strength = x
-
-
 def __generate_arguments():
     return [
         ("agent_settings.interaction.strength", 0.0, 10.0, 3),
@@ -79,7 +75,7 @@ def test_produce_ydata_samples1():
 
 def test_produce_ydata_samples2():
     ml_config = crmm.produce_ml_config(
-        ("config.t_max", 150.0),
+        ("config.t_max", 10.0),
         ("config.storage_options", [crm.StorageOption.Memory]),
     )
     ml_config.config.progressbar = None
