@@ -2,13 +2,13 @@ import cr_mech_coli as crm
 import numpy as np
 
 
-def produce_masks():
+def produce_masks(growth_rate=0.05):
     config = crm.Configuration()
     config.t0 = 0.0
     config.dt = 0.1
     config.t_max = 100.0
     config.n_saves = 4
-    agent_settings = crm.AgentSettings(growth_rate=0.05)
+    agent_settings = crm.AgentSettings(growth_rate=growth_rate)
     agents = crm.generate_agents(4, agent_settings, config, rng_seed=11)
 
     cell_container = crm.run_simulation_with_agents(config, agents)
@@ -83,3 +83,30 @@ def test_area_diff_with_mask():
     p2 = crm.penalty_area_diff(mask1, mask2)
 
     assert np.abs(p1 - p2) < 1e-4
+
+
+def test_overlap():
+    m1, _, container1 = produce_masks(growth_rate=0.05)
+    m2, _, container2 = produce_masks(growth_rate=0.03)
+    iterations = container1.get_all_iterations()
+
+    def get_overlap(container):
+        i1 = iterations[1]
+        cells = container.get_cells_at_iteration(i1)
+        positions = [a[0].pos for a in cells.values()]
+        positions = np.array(positions, dtype=np.float32)
+        radii = np.array([a[0].radius for a in cells.values()], dtype=np.float32)
+        return crm.overlap(positions, radii)
+
+    o1 = get_overlap(container1)
+    o2 = get_overlap(container2)
+
+    assert o2 < 1e-3
+
+    diff_mask = crm.parents_diff_mask(
+        m1, m2, container2.color_to_cell, container2.parent_map, 0.5
+    )
+    parent_penalty = np.sum(diff_mask)
+
+    assert parent_penalty > o1
+    assert parent_penalty > o2
