@@ -143,15 +143,67 @@ fn bounding_boxes_intersect_with_padding(bbox1: &Bbox, bbox2: &Bbox) -> bool {
     let cond4 = bbox1.ymin < bbox2.ymax;
     cond1 && cond2 && cond3 && cond4
 }
+
+/// Calculates the approximate overlap of agents at a current simulation state
+#[pyfunction]
+#[pyo3(signature = (
+    positions,
+    radii,
+    delta_angle = core::f32::consts::FRAC_PI_4,
+    epsilon = 0.01,
+))]
+pub fn overlap(
+    positions: numpy::PyReadonlyArray3<f32>,
+    radii: numpy::PyReadonlyArray1<f32>,
+    delta_angle: f32,
+    epsilon: f32,
+) -> PyResult<f32> {
+    // Calculate overlaps between agents as 2D volume
+    let positions = positions.as_array();
+    let radii = radii.as_array();
+
+    let mut polygons = Vec::with_capacity(radii.len());
+    for n in 0..radii.len() {
+        let p = positions.slice(ndarray::s![n, .., ..]);
+        let r = radii[n];
+
+        let polygon = calcualte_polygon_hull(&p, r, delta_angle, epsilon)?;
+        polygons.push(polygon);
+    }
+
+    let mut total_area = 0.0;
+    for (n, p1) in polygons.iter().enumerate() {
+        let x1 = positions.slice(ndarray::s![n, .., ..]);
+        let r1 = radii[n];
+        let bbox1 = calculate_bounding_box_with_padding(&x1, r1);
+
+        for (m, p2) in polygons.iter().enumerate().skip(n + 1) {
+            let x2 = positions.slice(ndarray::s![m, .., ..]);
+            let r2 = radii[m];
+            let bbox2 = calculate_bounding_box_with_padding(&x2, r2);
+
+            if bounding_boxes_intersect_with_padding(&bbox1, &bbox2) {
+                // Calculate overlap between polygons
+                use geo::{Area, BooleanOps};
+                let intersection = p1.intersection(p2);
+                total_area += intersection.unsigned_area();
+            }
+        }
+    }
+
+    Ok(total_area)
+}
+
 // Angle in radians [0,2pi]
 fn generate_coordinates_sphere(
     p: &ndarray::ArrayView1<f32>,
     r: f32,
     angle_start: f32,
     angle_end: f32,
-    n_resolution: usize,
+    delta_angle: f32,
 ) -> Vec<geo::Coord<f32>> {
-    let dangle = (angle_end - angle_start) / (n_resolution as f32 + 1.0);
+    let n_resolution = get_n_resolution(angle_start, angle_end, delta_angle);
+    let dangle = (angle_end - angle_start).abs() / (n_resolution as f32 + 1.0);
     (1..n_resolution + 1)
         .map(|n| {
             let angle = angle_start + dangle * n as f32;
@@ -183,7 +235,7 @@ fn generate_coordinates_rectangle(
     [c0, c1, c2, c3]
 }
 
-fn angle_to_x_axis(dir: &ndarray::ArrayView1<f32>) -> f32 {
+fn angle_to_x_axis(dir: &impl core::ops::Index<usize, Output = f32>) -> f32 {
     nalgebra::RealField::atan2(dir[1], dir[0]).rem_euclid(2.0 * core::f32::consts::PI)
 }
 
@@ -199,12 +251,25 @@ fn angles_between(dir1: &[f32; 2], dir2: &[f32; 2]) -> (f32, f32) {
     (angle_lh, angle_rh)
 }
 
+fn get_n_resolution(angle_start: f32, angle_end: f32, delta_angle: f32) -> usize {
+    use approx::AbsDiffEq;
+    let dangle = (angle_start - angle_end).abs();
+    // let angle_frac = core::f32::consts::PI * 2.0 / n_resolution as f32;
+    let n_resolution = (dangle / delta_angle).max(1.0);
+    if (n_resolution % 1.0).abs_diff_eq(&0.0, 0.001) {
+        (n_resolution - 2.0) as usize
+    } else {
+        (n_resolution - 1.0) as usize
+    }
+    .max(1)
+}
+
 fn determine_spheroid_coordinates_between_rectangles(
     p1: &ndarray::ArrayView1<f32>,
     p2: &ndarray::ArrayView1<f32>,
     p3: &ndarray::ArrayView1<f32>,
     r: f32,
-    n_resolution: usize,
+    delta_angle: f32,
 ) -> (bool, Vec<geo::Coord<f32>>) {
     // Insert coordinates for connecting spheroid
     // Case 1: ---\
@@ -224,44 +289,65 @@ fn determine_spheroid_coordinates_between_rectangles(
 
     // Case 1
     let (is_left, angle_start, angle_end) = if angle_lh > angle_rh {
-        let x1 = -p2.to_owned() + ndarray::array![d0.x, d0.y];
-        let x2 = -p2.to_owned() + ndarray::array![c1.x, c1.y];
+        let x1 = ndarray::array![d0.x - p2[0], d0.y - p2[1]];
+        let x2 = ndarray::array![c1.x - p2[0], c1.y - p2[1]];
         let angle_start = angle_to_x_axis(&x1.view());
         let angle_end = angle_to_x_axis(&x2.view());
         (true, angle_start, angle_end)
     }
     // Case 2
     else {
-        let x1 = -p2.to_owned() + ndarray::array![d3.x, d3.y];
-        let x2 = -p2.to_owned() + ndarray::array![c2.x, c2.y];
+        let x1 = ndarray::array![d3.x - p2[0], d3.y - p2[1]];
+        let x2 = ndarray::array![c2.x - p2[0], c2.y - p2[1]];
         let angle_start = angle_to_x_axis(&x2.view());
         let angle_end = angle_to_x_axis(&x1.view());
         (false, angle_start, angle_end)
     };
 
-    println!("angle_start: {angle_start} {angle_end}");
-
-    let dangle = (angle_start - angle_end).abs();
-    let angle_frac = core::f32::consts::PI * 2.0 / n_resolution as f32;
-    let n_resolution = (dangle / angle_frac).max(1.0);
-    let n_resolution = if (n_resolution % 1.0).abs_diff_eq(&0.0, 0.001) {
-        (n_resolution - 2.0) as usize
-    } else {
-        (n_resolution - 1.0) as usize
-    }
-    .max(1);
-
     (
         is_left,
-        generate_coordinates_sphere(p2, r, angle_start, angle_end, n_resolution),
+        generate_coordinates_sphere(p2, r, angle_start, angle_end, delta_angle),
     )
+}
+
+/// S   c0___
+/// P  /
+/// H /
+/// E |
+/// R \
+/// E  \c3___
+fn get_coordinates_at_tip(
+    p1: &ndarray::ArrayView1<f32>,
+    p2: &ndarray::ArrayView1<f32>,
+    r: f32,
+    delta_angle: f32,
+) -> (Vec<geo::Coord<f32>>, geo::Coord<f32>) {
+    let norm = ((p2[0] - p1[0]).powi(2) + (p2[1] - p1[1]).powi(2)).sqrt();
+    let dir = (p2.to_owned() - p1) / norm;
+    let angle_start = angle_to_x_axis(&[-dir[1], dir[0]]);
+    let angle_end = angle_to_x_axis(&[dir[1], -dir[0]]);
+
+    let mut coordinates1 = Vec::new();
+
+    let [c0, _, _, c3] = generate_coordinates_rectangle(p1, &p2.view(), r);
+    coordinates1.extend(generate_coordinates_sphere(
+        p1,
+        r,
+        angle_start,
+        angle_end,
+        delta_angle,
+    ));
+    coordinates1.push(c3);
+
+    (coordinates1, c0)
 }
 
 fn calcualte_polygon_hull(
     p: &ndarray::ArrayView2<f32>,
     r: f32,
-    n_resolution: usize,
-) -> geo::Polygon<f32> {
+    delta_angle: f32,
+    epsilon: f32,
+) -> Result<geo::Polygon<f32>, cellular_raza::prelude::SimulationError> {
     let mut coordinates_fw = Vec::new();
     let mut coordinates_bw = Vec::new();
 
@@ -269,24 +355,25 @@ fn calcualte_polygon_hull(
 
     // Add sphere-like coordinates for starting tip
     let p1 = p.slice(ndarray::s![0, ..]);
-    let dir = {
-        let p2 = p.slice(ndarray::s![1i32, ..]).to_owned();
-        let norm = ((p2[0] - p1[0]).powi(2) + (p2[1] - p1[1]).powi(2)).sqrt();
-        (p2 - p1) / norm
-    };
-    let x1 = geo::coord! { x: p1[0] - r * dir[1], y: p1[1] + r * dir[0] };
-    let x2 = geo::coord! { x: p1[0] + r * dir[1], y: p1[1] - r * dir[0] };
+    let p2 = p.slice(ndarray::s![1i32, ..]);
+    // let x1 = geo::coord! { x: p1[0] - r * dir[1], y: p1[1] + r * dir[0] };
+    // let x2 = geo::coord! { x: p1[0] + r * dir[1], y: p1[1] - r * dir[0] };
 
-    let angle_start = nalgebra::RealField::atan2(x1.y, x1.x) % (2.0 * core::f32::consts::PI);
-    let angle_end = nalgebra::RealField::atan2(x2.y, x2.x) % (2.0 * core::f32::consts::PI);
+    // let angle_end = nalgebra::RealField::atan2(x2.y, x2.x) % (2.0 * core::f32::consts::PI);
 
-    coordinates_fw.extend(generate_coordinates_sphere(
-        &p1,
-        r,
-        angle_start,
-        angle_end,
-        n_resolution,
-    ));
+    // Assembly the polygon in this order:
+    //   x--------------coordinates_fw ---------->
+    //  /                                         \
+    // /                                           \
+    // |                                           |
+    // |                                           |
+    // \                                           /
+    //  \                                         /
+    //    ------------- coordinates_bw --------> x
+
+    let (coords1, coord_fin) = get_coordinates_at_tip(&p1.view(), &p2.view(), r, delta_angle);
+    coordinates_bw.extend(coords1);
+    coordinates_fw.push(coord_fin);
 
     for n in 2..p.shape()[0] {
         let p1 = p.slice(ndarray::s![n - 2, ..]);
@@ -295,24 +382,87 @@ fn calcualte_polygon_hull(
 
         // Insert coordiantes for rectangles
         let [c0, c1, c2, c3] = generate_coordinates_rectangle(&p1, &p2, r);
-        coordinates_fw.extend([c0, c1]);
-        coordinates_bw.extend([c3, c2]);
+        let [d0, d1, d2, d3] = generate_coordinates_rectangle(&p2, &p3, r);
 
         let (is_left, coordinates) =
-            determine_spheroid_coordinates_between_rectangles(&p1, &p2, &p3, r, n_resolution);
+            determine_spheroid_coordinates_between_rectangles(&p1, &p2, &p3, r, delta_angle);
 
+        use approx::AbsDiffEq;
         if is_left {
+            //   c1
+            // _____        COORDINATES_FW
+            //       .
+            // d3     \ d0
+            // __\_c2  \
+            //    \     \
+            //     \
+            // COORDINATES_BW
+            coordinates_fw.push(c1);
+            // We need to reverse the iterator since it produces
+            // coordinates in left-handed circular direction.
             coordinates_fw.extend(coordinates.into_iter().rev());
+            coordinates_fw.push(d0);
+            // Calculate intersection point of [c3 - c2] and [d3 - d2]
+            // and add this point
+            let line1 = geo::Line { start: c3, end: c2 };
+            let line2 = geo::Line { start: d3, end: d2 };
+            match geo::line_intersection::line_intersection(line1, line2) {
+                Some(geo::LineIntersection::SinglePoint {
+                    intersection,
+                    is_proper: _,
+                }) => coordinates_bw.push(intersection),
+                _ => {
+                    if [c2.x, c2.y].abs_diff_eq(&[d3.x, d3.y], epsilon) {
+                        coordinates_bw.push(c2);
+                    } else {
+                        return Err(cellular_raza::prelude::CalcError(format!(
+                            "lines should be intersecting: {c3:?}--{c2:?}; {d3:?}--{d2:?}"
+                        ))
+                        .into());
+                    }
+                }
+            }
         } else {
-            coordinates_bw.extend(coordinates.into_iter().rev());
+            // Same as in the other condition but reversed sides
+            coordinates_bw.push(c2);
+            coordinates_bw.extend(coordinates.into_iter());
+            coordinates_bw.push(d3);
+            let line1 = geo::Line { start: c0, end: c1 };
+            let line2 = geo::Line { start: d0, end: d1 };
+            match geo::line_intersection::line_intersection(line1, line2) {
+                Some(geo::LineIntersection::SinglePoint {
+                    intersection,
+                    is_proper: _,
+                }) => coordinates_fw.push(intersection),
+                _ => {
+                    if [c1.x, c1.y].abs_diff_eq(&[d0.x, d0.y], epsilon) {
+                        coordinates_bw.push(c1);
+                    } else {
+                        return Err(cellular_raza::prelude::CalcError(format!(
+                            "lines should be intersecting: {c3:?}--{c2:?}; {d3:?}--{d2:?}"
+                        ))
+                        .into());
+                    }
+                }
+            }
         }
     }
+
+    let pfin2 = p.slice(ndarray::s![-2, ..]);
+    let pfin = p.slice(ndarray::s![-1, ..]);
+    let (coords1, coord_fin) = get_coordinates_at_tip(&pfin, &pfin2, r, delta_angle);
+    coordinates_bw.push(coord_fin);
+    coordinates_fw.extend(coords1.into_iter().rev());
 
     let mut coordinates = coordinates_fw;
     coordinates.extend(coordinates_bw.into_iter().rev());
 
-    geo::Polygon::<f32>::new(geo::LineString::new(coordinates), vec![])
+    Ok(geo::Polygon::<f32>::new(
+        geo::LineString::new(coordinates),
+        vec![],
+    ))
 }
+
 /// Helper function to sort points from a skeletonization in order.
 #[pyfunction]
 pub fn _sort_points<'py>(
