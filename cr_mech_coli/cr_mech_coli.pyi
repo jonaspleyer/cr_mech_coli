@@ -351,6 +351,20 @@ def parents_diff_mask(
     """
     ...
 
+def overlap(
+    positions: np.ndarray[tuple[int, int, int], np.dtype[np.float32]],
+    radii: np.ndarray[tuple[int], np.dtype[np.float32]],
+    n_resolution: int = 8,
+) -> np.float32:
+    """
+    Calculates the approximate overlap between various cell agents with possibly differing radii
+
+    Args:
+        positions(np.ndarray): Positions (vertices) of the cells
+        radii(np.ndarray): Radii of the individual cells
+    """
+    ...
+
 def render_mask_rs(
     cells: dict[CellIdentifier, tuple[RodAgent, CellIdentifier | None]],
     colors: dict[CellIdentifier, tuple[np.uint8, np.uint8, np.uint8]],

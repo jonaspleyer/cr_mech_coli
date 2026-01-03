@@ -90,6 +90,7 @@ fn cr_mech_coli(py: Python, m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<VoxelPlainIndex>()?;
 
     m.add_function(wrap_pyfunction!(parents_diff_mask, m)?)?;
+    m.add_function(wrap_pyfunction!(overlap, m)?)?;
     m.add_function(wrap_pyfunction!(_sort_points, m)?)?;
     m.add_function(wrap_pyfunction!(counter_to_color, m)?)?;
     m.add_function(wrap_pyfunction!(color_to_counter, m)?)?;
