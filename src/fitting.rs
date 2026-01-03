@@ -445,3 +445,89 @@ pub fn _sort_points<'py>(
         ))
     }
 }
+
+#[test]
+fn test_generate_coordinates_1() {
+    let p = ndarray::array![0.0, 0.0];
+    let coords = generate_coordinates_sphere(&p.view(), 1.0, 0.0, core::f32::consts::PI, 1);
+    let coord = coords[0];
+    approx::assert_abs_diff_eq!(coord.x, 0.0);
+    approx::assert_abs_diff_eq!(coord.y, 1.0);
+    assert_eq!(coords.len(), 1);
+}
+
+#[test]
+fn test_generate_coordinates_2() {
+    let p = ndarray::array![0.0, 0.0];
+    let coords = generate_coordinates_sphere(
+        &p.view(),
+        1.0,
+        core::f32::consts::PI / 2.0,
+        3.0 / 2.0 * core::f32::consts::PI,
+        3,
+    );
+    let coord1 = coords[0];
+    let coord2 = coords[1];
+    let coord3 = coords[2];
+
+    approx::assert_abs_diff_eq!(coord1.x, -1.0 / 2f32.sqrt(), epsilon = 0.001);
+    approx::assert_abs_diff_eq!(coord1.y, 1.0 / 2f32.sqrt(), epsilon = 0.001);
+    approx::assert_abs_diff_eq!(coord2.x, -1.0, epsilon = 0.001);
+    approx::assert_abs_diff_eq!(coord2.y, 0.0, epsilon = 0.001);
+    approx::assert_abs_diff_eq!(coord3.x, -1.0 / 2f32.sqrt(), epsilon = 0.001);
+    approx::assert_abs_diff_eq!(coord3.y, -1.0 / 2f32.sqrt(), epsilon = 0.001);
+    assert_eq!(coords.len(), 3);
+}
+
+#[test]
+fn test_determine_spheroid_coordinates_between_rectangles_1() {
+    //        p3
+    //       /
+    // p1---p2
+    let p1 = ndarray::array![-1.0, 0.0];
+    let p2 = ndarray::array![0.0, 0.0];
+    let p3 = ndarray::array![
+        1.0 / core::f32::consts::SQRT_2,
+        1.0 / core::f32::consts::SQRT_2
+    ];
+
+    let (is_left, coords) = determine_spheroid_coordinates_between_rectangles(
+        &p1.view(),
+        &p2.view(),
+        &p3.view(),
+        0.5,
+        8,
+    );
+
+    assert!(!is_left);
+    assert_eq!(coords.len(), 1);
+    approx::assert_abs_diff_eq!(coords[0].x, 0.5 * (core::f32::consts::PI / 8.0).sin());
+    approx::assert_abs_diff_eq!(coords[0].y, -0.5 * (core::f32::consts::PI / 8.0).cos());
+}
+
+#[test]
+fn test_determine_spheroid_coordinates_between_rectangles_2() {
+    // p1
+    // |
+    // |
+    // p2---p3
+    let p1 = ndarray::array![0.0, 1.0];
+    let p2 = ndarray::array![0.0, 0.0];
+    let p3 = ndarray::array![1.0, 0.0];
+
+    let (is_left, coords) = determine_spheroid_coordinates_between_rectangles(
+        &p1.view(),
+        &p2.view(),
+        &p3.view(),
+        0.9,
+        16,
+    );
+
+    assert!(!is_left);
+    assert_eq!(coords.len(), 2);
+    let dangle = core::f32::consts::FRAC_PI_2 / 3.0;
+    approx::assert_abs_diff_eq!(coords[0].x, -0.9 * dangle.cos());
+    approx::assert_abs_diff_eq!(coords[0].y, -0.9 * dangle.sin());
+    approx::assert_abs_diff_eq!(coords[1].x, -0.9 * (2.0 * dangle).cos());
+    approx::assert_abs_diff_eq!(coords[1].y, -0.9 * (2.0 * dangle).sin());
+}
