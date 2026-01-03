@@ -40,6 +40,7 @@ egobox-doe = "0.32.0"
 kdam = "0.6.3"
 log = "0.4.28"
 env_logger = "0.11.8"
+geo = "0.32.0"
 
 [features]
 vtk = ["dep:cmake", "dep:vtk-rs-link"]
