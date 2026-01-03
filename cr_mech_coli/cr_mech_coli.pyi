@@ -133,8 +133,8 @@ class RodAgent:
     `RodMechanics <https://cellular-raza.com/docs/cellular_raza_building_blocks/structs.RodMechanics.html>`_
     """
 
-    pos: np.ndarray
-    vel: np.ndarray
+    pos: np.ndarray[tuple[int, int], np.dtype[np.float32]]
+    vel: np.ndarray[tuple[int, int], np.dtype[np.float32]]
     radius: np.float32
     growth_rate: np.float32
     spring_length_threshold: np.float32
