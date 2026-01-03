@@ -143,6 +143,176 @@ fn bounding_boxes_intersect_with_padding(bbox1: &Bbox, bbox2: &Bbox) -> bool {
     let cond4 = bbox1.ymin < bbox2.ymax;
     cond1 && cond2 && cond3 && cond4
 }
+// Angle in radians [0,2pi]
+fn generate_coordinates_sphere(
+    p: &ndarray::ArrayView1<f32>,
+    r: f32,
+    angle_start: f32,
+    angle_end: f32,
+    n_resolution: usize,
+) -> Vec<geo::Coord<f32>> {
+    let dangle = (angle_end - angle_start) / (n_resolution as f32 + 1.0);
+    (1..n_resolution + 1)
+        .map(|n| {
+            let angle = angle_start + dangle * n as f32;
+            geo::coord! { x: p[0] + angle.cos() * r, y: p[1] + angle.sin() * r }
+        })
+        .collect()
+}
+
+/// Returns `[c0, c1, c2, c3]` defined by
+///
+/// c0 ------------ c1
+/// |               |
+/// p1   --dir->    p2
+/// |               |
+/// c3 ------------ c2
+fn generate_coordinates_rectangle(
+    p1: &ndarray::ArrayView1<f32>,
+    p2: &ndarray::ArrayView1<f32>,
+    r: f32,
+) -> [geo::Coord<f32>; 4] {
+    let norm = ((p2[0] - p1[0]).powi(2) + (p2[1] - p1[1]).powi(2)).sqrt();
+    let dir = [(p2[0] - p1[0]) / norm, (p2[1] - p1[1]) / norm];
+
+    let c0 = geo::coord! { x: p1[0] - r*dir[1], y: p1[1] + r*dir[0] };
+    let c1 = geo::coord! { x: p2[0] - r*dir[1], y: p2[1] + r*dir[0] };
+    let c2 = geo::coord! { x: p2[0] + r*dir[1], y: p2[1] - r*dir[0] };
+    let c3 = geo::coord! { x: p1[0] + r*dir[1], y: p1[1] - r*dir[0] };
+
+    [c0, c1, c2, c3]
+}
+
+fn angle_to_x_axis(dir: &ndarray::ArrayView1<f32>) -> f32 {
+    nalgebra::RealField::atan2(dir[1], dir[0]).rem_euclid(2.0 * core::f32::consts::PI)
+}
+
+fn angles_between(dir1: &[f32; 2], dir2: &[f32; 2]) -> (f32, f32) {
+    let dir1 = dir1.as_ref();
+    let dir2 = dir2.as_ref();
+    let perp = dir1[0] * dir2[1] - dir1[1] * dir2[0];
+    let dot = dir1[0] * dir2[0] + dir1[1] * dir2[1];
+
+    let angle_lh = nalgebra::RealField::atan2(perp, dot).rem_euclid(2.0 * core::f32::consts::PI);
+    let angle_rh = nalgebra::RealField::atan2(-perp, dot).rem_euclid(2.0 * core::f32::consts::PI);
+
+    (angle_lh, angle_rh)
+}
+
+fn determine_spheroid_coordinates_between_rectangles(
+    p1: &ndarray::ArrayView1<f32>,
+    p2: &ndarray::ArrayView1<f32>,
+    p3: &ndarray::ArrayView1<f32>,
+    r: f32,
+    n_resolution: usize,
+) -> (bool, Vec<geo::Coord<f32>>) {
+    // Insert coordinates for connecting spheroid
+    // Case 1: ---\
+    //             \
+    //
+    //             /
+    // Case 2: ---/
+
+    // Determine the angles between the direction vertices
+    let dir1 = [p2[0] - p1[0], p2[1] - p1[1]];
+    let dir2 = [p3[0] - p2[0], p3[1] - p2[1]];
+
+    let (angle_lh, angle_rh) = angles_between(&dir1, &dir2);
+
+    let [_, c1, c2, _] = generate_coordinates_rectangle(p1, p2, r);
+    let [d0, _, _, d3] = generate_coordinates_rectangle(p2, p3, r);
+
+    // Case 1
+    let (is_left, angle_start, angle_end) = if angle_lh > angle_rh {
+        let x1 = -p2.to_owned() + ndarray::array![d0.x, d0.y];
+        let x2 = -p2.to_owned() + ndarray::array![c1.x, c1.y];
+        let angle_start = angle_to_x_axis(&x1.view());
+        let angle_end = angle_to_x_axis(&x2.view());
+        (true, angle_start, angle_end)
+    }
+    // Case 2
+    else {
+        let x1 = -p2.to_owned() + ndarray::array![d3.x, d3.y];
+        let x2 = -p2.to_owned() + ndarray::array![c2.x, c2.y];
+        let angle_start = angle_to_x_axis(&x2.view());
+        let angle_end = angle_to_x_axis(&x1.view());
+        (false, angle_start, angle_end)
+    };
+
+    println!("angle_start: {angle_start} {angle_end}");
+
+    let dangle = (angle_start - angle_end).abs();
+    let angle_frac = core::f32::consts::PI * 2.0 / n_resolution as f32;
+    let n_resolution = (dangle / angle_frac).max(1.0);
+    let n_resolution = if (n_resolution % 1.0).abs_diff_eq(&0.0, 0.001) {
+        (n_resolution - 2.0) as usize
+    } else {
+        (n_resolution - 1.0) as usize
+    }
+    .max(1);
+
+    (
+        is_left,
+        generate_coordinates_sphere(p2, r, angle_start, angle_end, n_resolution),
+    )
+}
+
+fn calcualte_polygon_hull(
+    p: &ndarray::ArrayView2<f32>,
+    r: f32,
+    n_resolution: usize,
+) -> geo::Polygon<f32> {
+    let mut coordinates_fw = Vec::new();
+    let mut coordinates_bw = Vec::new();
+
+    // Forward pass
+
+    // Add sphere-like coordinates for starting tip
+    let p1 = p.slice(ndarray::s![0, ..]);
+    let dir = {
+        let p2 = p.slice(ndarray::s![1i32, ..]).to_owned();
+        let norm = ((p2[0] - p1[0]).powi(2) + (p2[1] - p1[1]).powi(2)).sqrt();
+        (p2 - p1) / norm
+    };
+    let x1 = geo::coord! { x: p1[0] - r * dir[1], y: p1[1] + r * dir[0] };
+    let x2 = geo::coord! { x: p1[0] + r * dir[1], y: p1[1] - r * dir[0] };
+
+    let angle_start = nalgebra::RealField::atan2(x1.y, x1.x) % (2.0 * core::f32::consts::PI);
+    let angle_end = nalgebra::RealField::atan2(x2.y, x2.x) % (2.0 * core::f32::consts::PI);
+
+    coordinates_fw.extend(generate_coordinates_sphere(
+        &p1,
+        r,
+        angle_start,
+        angle_end,
+        n_resolution,
+    ));
+
+    for n in 2..p.shape()[0] {
+        let p1 = p.slice(ndarray::s![n - 2, ..]);
+        let p2 = p.slice(ndarray::s![n - 1, ..]);
+        let p3 = p.slice(ndarray::s![n, ..]);
+
+        // Insert coordiantes for rectangles
+        let [c0, c1, c2, c3] = generate_coordinates_rectangle(&p1, &p2, r);
+        coordinates_fw.extend([c0, c1]);
+        coordinates_bw.extend([c3, c2]);
+
+        let (is_left, coordinates) =
+            determine_spheroid_coordinates_between_rectangles(&p1, &p2, &p3, r, n_resolution);
+
+        if is_left {
+            coordinates_fw.extend(coordinates.into_iter().rev());
+        } else {
+            coordinates_bw.extend(coordinates.into_iter().rev());
+        }
+    }
+
+    let mut coordinates = coordinates_fw;
+    coordinates.extend(coordinates_bw.into_iter().rev());
+
+    geo::Polygon::<f32>::new(geo::LineString::new(coordinates), vec![])
+}
 /// Helper function to sort points from a skeletonization in order.
 #[pyfunction]
 pub fn _sort_points<'py>(
