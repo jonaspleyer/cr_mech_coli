@@ -102,6 +102,47 @@ pub fn parents_diff_mask<'py>(
     Ok(diff_mask.to_pyarray(py))
 }
 
+struct Bbox {
+    xmin: f32,
+    ymin: f32,
+    xmax: f32,
+    ymax: f32,
+}
+
+fn calculate_bounding_box_with_padding(vertices: &ndarray::ArrayView2<f32>, r: f32) -> Bbox {
+    let mut xmin = -f32::INFINITY;
+    let mut ymin = -f32::INFINITY;
+    let mut xmax = f32::INFINITY;
+    let mut ymax = f32::INFINITY;
+
+    for p in vertices.rows().into_iter() {
+        xmin = xmin.min(p[0]);
+        ymin = xmin.min(p[1]);
+
+        xmax = xmax.max(p[0]);
+        ymax = ymax.max(p[1]);
+    }
+
+    xmax += r;
+    xmin -= r;
+    ymax += r;
+    ymin -= r;
+
+    Bbox {
+        xmin,
+        xmax,
+        ymin,
+        ymax,
+    }
+}
+
+fn bounding_boxes_intersect_with_padding(bbox1: &Bbox, bbox2: &Bbox) -> bool {
+    let cond1 = bbox1.xmin < bbox2.xmax;
+    let cond2 = bbox1.xmax > bbox2.xmin;
+    let cond3 = bbox1.ymax > bbox2.ymin;
+    let cond4 = bbox1.ymin < bbox2.ymax;
+    cond1 && cond2 && cond3 && cond4
+}
 /// Helper function to sort points from a skeletonization in order.
 #[pyfunction]
 pub fn _sort_points<'py>(
