@@ -828,3 +828,57 @@ fn test_polygon_hull() {
     // Minus one since the geo crate inserts the final coordinate one more time
     assert_eq!(polygon.exterior().0.len() - 1, 12);
 }
+
+#[test]
+fn test_polygon_hull_2() {
+    // x0
+    //   \
+    //    \
+    //     x1
+    //      \
+    //       ..
+    //        \
+    //         xn
+    let p = ndarray::array![
+        [82.003136, 83.25413],
+        [80.756615, 84.66043],
+        [79.50162, 86.086105],
+        [78.22431, 87.53587],
+        [76.95105, 88.98563],
+        [75.63393, 90.48065],
+        [74.1932, 92.11886],
+        [72.57576, 93.95425],
+    ];
+
+    let r = 0.5;
+    let dangle = core::f32::consts::PI / 15.0;
+    let polygon = calculate_polygon_hull(&p.view(), r, dangle, 0.01).unwrap();
+
+    for (c1, c2) in polygon.exterior().coords().tuple_windows::<(_, _)>() {
+        let dist = ((c1.x - c2.x).powi(2) + (c1.y - c2.y).powi(2)).sqrt();
+        assert!(dist < 3.0);
+    }
+}
+
+#[test]
+fn test_render_without_alias() {
+    use plotters::prelude::*;
+    let mut buffer = vec![0u8; 100 * 100 * 4];
+    {
+        let mut root = BitMapBackend::with_buffer(&mut buffer, (100, 100)).anti_aliasing(false);
+
+        root.draw_rect((20, 20), (60, 60), &RED, true).unwrap();
+        root.draw_circle((80, 40), 10, &RED, true).unwrap();
+        root.draw_line((0, 0), (100, 100), &RED).unwrap();
+        root.present().unwrap();
+    }
+
+    for n in 0..100 * 100 {
+        let color = [buffer[3 * n], buffer[3 * n + 1], buffer[3 * n + 2]];
+        if color != [0; 3] {
+            assert_eq!(color[0], RED.0);
+            assert_eq!(color[1], RED.1);
+            assert_eq!(color[2], RED.2);
+        }
+    }
+}
