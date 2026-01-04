@@ -283,7 +283,7 @@ pub fn overlap(
         let p = positions.slice(ndarray::s![n, .., ..]);
         let r = radii[n];
 
-        let polygon = calcualte_polygon_hull(&p, r, delta_angle, epsilon)?;
+        let polygon = calculate_polygon_hull(&p, r, delta_angle, epsilon)?;
         polygons.push(polygon);
     }
 
@@ -464,7 +464,7 @@ fn get_coordinates_at_tip(
     (coordinates1, c0)
 }
 
-fn calcualte_polygon_hull(
+fn calculate_polygon_hull(
     p: &ndarray::ArrayView2<f32>,
     r: f32,
     delta_angle: f32,
