@@ -113,33 +113,26 @@ vtkNew<vtkMultiBlockDataSet> create_mesh(Agent agent) {
 
 void render_img(Agent* agents, int n_agents, Camera camera, void* buffer)
 {
-    vtkNew<vtkGraphicsFactory> graphics_factory;
-    graphics_factory->SetOffScreenOnlyMode(1);
-    graphics_factory->SetUseMesaClasses(1);
-
     vtkNew<vtkRenderer> aren;
     aren->RemoveAllLights();
     aren->ResetCamera(0, camera.size_x, 0, camera.size_y, 0, camera.distance_z);
     aren->UseFXAAOff();
     aren->UseSSAOOff();
+    aren->SetAmbient(0, 0, 0);
+    aren->SetNearClippingPlaneTolerance(0.001);
+    aren->SetAllocatedRenderTime(5000);
+    aren->SetAutomaticLightCreation(false);
+    aren->SetBackground(0, 0, 0);
 
     auto cam = aren->GetActiveCamera();
     cam->SetParallelProjection(true);
     cam->SetPosition(camera.size_x/2.0, camera.size_y/2.0, camera.distance_z);
     cam->SetFocalPoint(camera.size_x/2.0, camera.size_y/2.0, 0);
     cam->OrthogonalizeViewUp();
-    // cam->SetClippingRange(0, camera.distance_z);
-    // cam->SetScreenBottomLeft(0,0,0);
-    // cam->SetScreenTopRight(camera.size_x, camera.size_y, camera.distance_z);
 
-    // double parallel_scale = max(hoiz_dist / aspect[0], vert_dist);
-    // cam->SetParallelScale(parallel_scale);
-    double scale = cam->GetParallelScale();
     cam->SetParallelScale(std::min(camera.size_x, camera.size_y) / 2);
+    cam->SetClippingRange(0, 2 * camera.distance_z);
     aren->ResetCameraClippingRange(0, camera.size_x, 0, camera.size_y, 0, camera.distance_z);
-
-    // vtkNew<vtkRenderWindow> renWin;
-    // renWin->AddRenderer(aren);
 
     for (int i=0; i<n_agents; i++) {
         auto mesh = create_mesh(agents[i]);
@@ -155,13 +148,16 @@ void render_img(Agent* agents, int n_agents, Camera camera, void* buffer)
 
         vtkNew<vtkActor> actor;
         actor->SetMapper(mapper);
-        actor->GetProperty()->SetLineWidth(2);
+        actor->GetProperty()->SetLineWidth(0);
         actor->GetProperty()->SetColor(agents[i].color);
         actor->GetProperty()->SetSpecular(0);
+        actor->GetProperty()->SetSpecularPower(0);
         actor->GetProperty()->SetAmbient(1.0);
         actor->GetProperty()->SetLighting(false);
-        actor->GetProperty()->SetInterpolation(0);
-        // actor->GetProperty()->SetBaseIOR(0.0);
+        actor->GetProperty()->SetInterpolationToFlat();
+        actor->GetProperty()->SetPointSize(5);
+        actor->GetProperty()->SetRepresentationToSurface();
+        actor->GetProperty()->SetBaseIOR(0.0);
         actor->GetProperty()->SetMetallic(0.0);
         actor->GetProperty()->SetRoughness(0.0);
         actor->GetProperty()->SetAnisotropy(0.0);
@@ -174,7 +170,6 @@ void render_img(Agent* agents, int n_agents, Camera camera, void* buffer)
         aren->AddActor(actor);
     }
 
-    // aren->SetBackground();
     int size_x = camera.size_x * camera.resolution;
     int size_y = camera.size_y * camera.resolution;
 
