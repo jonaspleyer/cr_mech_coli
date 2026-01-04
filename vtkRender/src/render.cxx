@@ -156,7 +156,20 @@ void render_img(Agent* agents, int n_agents, Camera camera, void* buffer)
         vtkNew<vtkActor> actor;
         actor->SetMapper(mapper);
         actor->GetProperty()->SetLineWidth(2);
-        actor->GetProperty()->SetColor(agents[i].color);// colors->GetColor3d("White").GetData());
+        actor->GetProperty()->SetColor(agents[i].color);
+        actor->GetProperty()->SetSpecular(0);
+        actor->GetProperty()->SetAmbient(1.0);
+        actor->GetProperty()->SetLighting(false);
+        actor->GetProperty()->SetInterpolation(0);
+        // actor->GetProperty()->SetBaseIOR(0.0);
+        actor->GetProperty()->SetMetallic(0.0);
+        actor->GetProperty()->SetRoughness(0.0);
+        actor->GetProperty()->SetAnisotropy(0.0);
+        actor->GetProperty()->SetCoatIOR(0.0);
+        actor->GetProperty()->SetCoatStrength(0.0);
+        actor->GetProperty()->SetDiffuse(0.0);
+        actor->GetProperty()->SetEdgeVisibility(false);
+        actor->GetProperty()->SetVertexVisibility(false);
         actor->UseBoundsOff();
         aren->AddActor(actor);
     }
@@ -179,38 +192,9 @@ void render_img(Agent* agents, int n_agents, Camera camera, void* buffer)
 
     vtkNew<vtkImageExport> exporter;
     exporter->SetInputConnection(windowToImageFilter->GetOutputPort());
-    // exporter->SetInputData(windowToImageFilter->GetOutput());
+    exporter->SetInputData(windowToImageFilter->GetOutput());
     exporter->Update();
     exporter->Export(buffer);
-
-    int* dims = exporter->GetDataDimensions();
-
-    std::vector<ssize_t> shape = { dims[2], dims[1], dims[0] };
-
-    // std::cout << dims[0] << ", " << dims[1] << ", " << dims[2] << "\n";
-    // unsigned char* data = reinterpret_cast<unsigned char*>(malloc(dims[0]*dims[1]*dims[2]*sizeof(int)));
-    // std::cout << exporter->GetDataMemorySize() << "\n";
-
-    /* std::cout << exporter->GetDataScalarTypeAsString() << "\n";
-
-    for (int i=0; i<dims[0]; i++) {
-        for (int j=0; j<dims[1]; j++) {
-            for (int k=0; k<dims[2]; k++) {
-                int index = i*dims[1]*dims[2] + j*dims[2] + k;
-                unsigned char d[3] = {data[index]};
-
-                if (d[0] != 0 || d[1] != 0 || d[2] != 0) {
-                std::cout << i << ", " << j << ", " << k << ", " << index
-                    << ", " << int(d[0]) << ", " << int(d[1]) << ", " << int(d[2]) << "\n";
-                }
-            }
-        }
-    }*/
-
-    // vtkNew<vtkPNGWriter> writer;
-    // writer->SetFileName("screenshot.png");
-    // writer->SetInputConnection(windowToImageFilter->GetOutputPort());
-    // writer->Write();
 }
 
 void example_usage() {
