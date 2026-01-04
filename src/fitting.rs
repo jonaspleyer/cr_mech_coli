@@ -558,7 +558,7 @@ fn calculate_polygon_hull(
                 }) => coordinates_fw.push(intersection),
                 _ => {
                     if [c1.x, c1.y].abs_diff_eq(&[d0.x, d0.y], epsilon) {
-                        coordinates_bw.push(c1);
+                        coordinates_fw.push(c1);
                     } else {
                         return Err(cellular_raza::prelude::CalcError(format!(
                             "lines should be intersecting: {c3:?}--{c2:?}; {d3:?}--{d2:?}"
