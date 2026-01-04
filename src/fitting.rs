@@ -823,7 +823,8 @@ fn test_polygon_hull() {
     //          \.__./
     let p = ndarray::array![[-1.0, 0.0], [0.0, 0.0], [1.0, -1.0],];
     let r = 0.5;
-    let polygon = calcualte_polygon_hull(&p.view(), r, core::f32::consts::FRAC_PI_4, 0.01).unwrap();
+    let dangle = core::f32::consts::FRAC_PI_4;
+    let polygon = calculate_polygon_hull(&p.view(), r, dangle, 0.01).unwrap();
     // Minus one since the geo crate inserts the final coordinate one more time
     assert_eq!(polygon.exterior().0.len() - 1, 12);
 }
