@@ -187,9 +187,9 @@ void render_img(Agent* agents, int n_agents, Camera camera, void* buffer)
 
     std::vector<ssize_t> shape = { dims[2], dims[1], dims[0] };
 
-    std::cout << dims[0] << ", " << dims[1] << ", " << dims[2] << "\n";
+    // std::cout << dims[0] << ", " << dims[1] << ", " << dims[2] << "\n";
     // unsigned char* data = reinterpret_cast<unsigned char*>(malloc(dims[0]*dims[1]*dims[2]*sizeof(int)));
-    std::cout << exporter->GetDataMemorySize() << "\n";
+    // std::cout << exporter->GetDataMemorySize() << "\n";
 
     /* std::cout << exporter->GetDataScalarTypeAsString() << "\n";
 
