@@ -2,12 +2,19 @@ import cr_mech_coli as crm
 import numpy as np
 
 
-def produce_masks(growth_rate=0.05):
+def __create_config():
     config = crm.Configuration()
     config.t0 = 0.0
     config.dt = 0.1
     config.t_max = 100.0
     config.n_saves = 4
+    config.domain_size = (config.domain_size[0], 1.25 * config.domain_size[1])
+    return config
+
+
+def produce_masks(growth_rate=0.05):
+    config = __create_config()
+
     agent_settings = crm.AgentSettings(growth_rate=growth_rate)
     agents = crm.generate_agents(4, agent_settings, config, rng_seed=11)
 
