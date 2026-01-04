@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from tqdm import tqdm
 
 import cr_mech_coli as crm
-from .cr_mech_coli import render_mask_rs
+from .cr_mech_coli import render_mask_vtk
 
 
 def get_timings(seed: int = 0, ppm=10, n_saves=6):
@@ -45,7 +45,7 @@ def get_timings(seed: int = 0, ppm=10, n_saves=6):
         )
         t1 = time.time() - start
         start = time.time()
-        _ = render_mask_rs(
+        _ = render_mask_vtk(
             cells,
             cell_container.cell_to_color,
             (config.domain_size[0], config.domain_size[1]),

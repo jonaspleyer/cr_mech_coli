@@ -77,7 +77,7 @@ pub fn render_agents(
 
 /// asdf
 #[pyfunction]
-pub fn render_mask_rs<'py>(
+pub fn render_mask_vtk<'py>(
     py: Python<'py>,
     cells: HashMap<CellIdentifier, (crate::RodAgent, Option<CellIdentifier>)>,
     cell_to_color: HashMap<CellIdentifier, (u8, u8, u8)>,

@@ -111,6 +111,6 @@ fn cr_mech_coli(py: Python, m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add("MICRO_METRE", MICRO_METRE)?;
 
     #[cfg(feature = "vtk")]
-    m.add_function(wrap_pyfunction!(render_mask_rs, m)?)?;
+    m.add_function(wrap_pyfunction!(imaging_vtk::render_mask_vtk, m)?)?;
     Ok(())
 }

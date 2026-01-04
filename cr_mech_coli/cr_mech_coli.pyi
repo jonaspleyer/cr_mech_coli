@@ -365,12 +365,21 @@ def overlap(
     """
     ...
 
-def render_mask_rs(
+def render_mask_vtk(
     cells: dict[CellIdentifier, tuple[RodAgent, CellIdentifier | None]],
     colors: dict[CellIdentifier, tuple[np.uint8, np.uint8, np.uint8]],
     domain_size: tuple[np.float32, np.float32],
     resolution: np.float32,
-): ...
+):
+    """
+    Aims to replicate the Behaviour of `render_mask` function but implemented in native vtk.
+
+    .. danger:: This method is currently not properly implemented as it does not return a valid
+                array.
+    """
+
+...
+
 def render_mask_2d(
     cells: dict[CellIdentifier, tuple[RodAgent, CellIdentifier | None]],
     cell_to_color: dict[CellIdentifier, tuple[np.uint8, np.uint8, np.uint8]],
