@@ -31,7 +31,7 @@ import skimage as sk
 
 from .datatypes import CellContainer, CellIdentifier
 from .imaging import color_to_counter
-from .cr_mech_coli import parents_diff_mask, overlap
+from .cr_mech_coli import parents_diff_mask, overlap, render_mask_2d
 
 
 def points_along_polygon(
