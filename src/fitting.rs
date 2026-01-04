@@ -109,18 +109,21 @@ struct Bbox {
     ymax: f32,
 }
 
-fn calculate_bounding_box_with_padding(vertices: &ndarray::ArrayView2<f32>, r: f32) -> Bbox {
+fn calculate_bounding_box_with_padding(
+    vertices: impl IntoIterator<Item = (f32, f32)>,
+    r: f32,
+) -> Bbox {
     let mut xmin = -f32::INFINITY;
     let mut ymin = -f32::INFINITY;
     let mut xmax = f32::INFINITY;
     let mut ymax = f32::INFINITY;
 
-    for p in vertices.rows().into_iter() {
-        xmin = xmin.min(p[0]);
-        ymin = xmin.min(p[1]);
+    for p in vertices.into_iter() {
+        xmin = xmin.min(p.0);
+        ymin = xmin.min(p.1);
 
-        xmax = xmax.max(p[0]);
-        ymax = ymax.max(p[1]);
+        xmax = xmax.max(p.0);
+        ymax = ymax.max(p.1);
     }
 
     xmax += r;
@@ -175,12 +178,18 @@ pub fn overlap(
     for (n, p1) in polygons.iter().enumerate() {
         let x1 = positions.slice(ndarray::s![n, .., ..]);
         let r1 = radii[n];
-        let bbox1 = calculate_bounding_box_with_padding(&x1, r1);
+        let bbox1 = calculate_bounding_box_with_padding(
+            x1.rows().into_iter().map(|row| (row[0], row[1])),
+            r1,
+        );
 
         for (m, p2) in polygons.iter().enumerate().skip(n + 1) {
             let x2 = positions.slice(ndarray::s![m, .., ..]);
             let r2 = radii[m];
-            let bbox2 = calculate_bounding_box_with_padding(&x2, r2);
+            let bbox2 = calculate_bounding_box_with_padding(
+                x2.rows().into_iter().map(|r| (r[0], r[1])),
+                r2,
+            );
 
             if bounding_boxes_intersect_with_padding(&bbox1, &bbox2) {
                 // Calculate overlap between polygons
