@@ -1,4 +1,12 @@
+use std::collections::BTreeMap;
+
+use cellular_raza::prelude::CellIdentifier;
+use geo::Area;
+use itertools::Itertools;
+use plotters::coord::types::RangedCoordf32;
 use pyo3::prelude::*;
+
+use crate::RodAgent;
 
 /// Checks if both arrays have identical shape and are non-empty
 macro_rules! check_shape_identical_nonempty(
@@ -100,6 +108,111 @@ pub fn parents_diff_mask<'py>(
         .to_shape([s[0], s[1]])
         .map_err(|e| pyo3::exceptions::PyValueError::new_err(format!("{e}")))?;
     Ok(diff_mask.to_pyarray(py))
+}
+
+/// TODO
+#[pyfunction]
+#[pyo3(signature = (
+    cells,
+    cell_to_color,
+    domain_size,
+    resolution,
+    delta_angle = core::f32::consts::FRAC_PI_4,
+    epsilon = 0.01,
+))]
+pub fn render_mask_2d<'py>(
+    py: Python<'py>,
+    cells: BTreeMap<CellIdentifier, (RodAgent, Option<CellIdentifier>)>,
+    cell_to_color: BTreeMap<CellIdentifier, (u8, u8, u8)>,
+    domain_size: (f32, f32),
+    resolution: (usize, usize),
+    delta_angle: f32,
+    epsilon: f32,
+) -> PyResult<Bound<'py, numpy::PyArray3<u8>>> {
+    // let resolution = (resolution.1, resolution.0);
+    // let domain_size = (domain_size.1, domain_size.0);
+
+    use plotters::prelude::*;
+    let mut buffer = vec![0u8; resolution.0 * resolution.1 * 3];
+    {
+        let root =
+            BitMapBackend::with_buffer(&mut buffer, (resolution.0 as u32, resolution.1 as u32))
+                .anti_aliasing(false)
+                .into_drawing_area()
+                .margin(0, 0, 0, 0)
+                .apply_coord_spec(Cartesian2d::<RangedCoordf32, RangedCoordf32>::new(
+                    0f32..domain_size.0,
+                    0f32..domain_size.1,
+                    (0..(resolution.0 as i32), 0..(resolution.1 as i32)),
+                ));
+
+        let mut polygons = Vec::with_capacity(cells.len());
+        for (_, (cell, _)) in cells.iter() {
+            let pos = &cell.mechanics.pos;
+            let radius = cell.interaction.0.radius();
+            let pos = ndarray::Array2::<f32>::from_shape_fn(pos.shape(), |x| pos[x]);
+            let polygon = calculate_polygon_hull(&pos.view(), radius, delta_angle, epsilon)?;
+            polygons.push(polygon);
+        }
+
+        let empty_style = RGBAColor(0, 0, 0, 1.0).filled().stroke_width(0);
+
+        let mut total_area = 0.0;
+        for (ident, (agent, _)) in cells.iter() {
+            let pos = &agent.mechanics.pos;
+            let radius = agent.interaction.0.radius();
+            let color: (u8, u8, u8) = cell_to_color[ident];
+            let style = ShapeStyle::from(&RGBAColor(color.0, color.1, color.2, 1.0))
+                .filled()
+                .stroke_width(0);
+
+            let pos = ndarray::Array2::<f32>::from_shape_fn(pos.shape(), |x| pos[x]);
+            let polygon = calculate_polygon_hull(&pos.view(), radius, delta_angle, epsilon)?;
+            let points: Vec<_> = polygon.exterior().coords().map(|p| (p.x, p.y)).collect();
+            let polygon = Polygon::new(points, style);
+            root.draw(&polygon).unwrap();
+        }
+
+        // Calculate overlaps
+        for (n, (p1, (_, (cell1, _)))) in polygons.iter().zip(cells.iter()).enumerate() {
+            let x1 = &cell1.mechanics.pos;
+            let r1 = cell1.interaction.0.radius();
+            let bbox1 =
+                calculate_bounding_box_with_padding(x1.row_iter().map(|x| (x[0], x[1])), r1);
+
+            for (p2, (_, (cell2, _))) in polygons.iter().zip(cells.iter()).skip(n + 1) {
+                let x2 = &cell2.mechanics.pos;
+                let r2 = cell2.interaction.0.radius();
+                let bbox2 =
+                    calculate_bounding_box_with_padding(x2.row_iter().map(|x| (x[0], x[1])), r2);
+
+                if bounding_boxes_intersect_with_padding(&bbox1, &bbox2) {
+                    // Calculate overlap between polygons
+                    use geo::BooleanOps;
+                    let intersection = p1.intersection(p2);
+
+                    // Draw empty background for overlapping cells
+                    for isct in intersection.0.iter() {
+                        total_area += isct.unsigned_area();
+                        let polygon_intersection = plotters::prelude::Polygon::new(
+                            isct.exterior()
+                                .coords()
+                                .map(|p| (p.x, p.y))
+                                .collect::<Vec<_>>(),
+                            empty_style,
+                        );
+                        root.draw(&polygon_intersection).unwrap();
+                    }
+                }
+            }
+        }
+        root.present().unwrap();
+    }
+
+    let mut arr =
+        ndarray::Array3::<u8>::from_shape_vec((resolution.1, resolution.0, 3), buffer).unwrap();
+    arr.invert_axis(ndarray::Axis(0));
+    Ok(numpy::PyArray3::from_array(py, &arr))
 }
 
 struct Bbox {
