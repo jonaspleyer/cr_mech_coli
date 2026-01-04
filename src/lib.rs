@@ -31,8 +31,6 @@ use cellular_raza::prelude::{MiePotentialF32, MorsePotentialF32, StorageOption};
 pub use config::*;
 pub use fitting::*;
 pub use imaging::*;
-#[cfg(feature = "vtk")]
-pub use imaging_vtk::*;
 pub use simulation::*;
 
 use pyo3::prelude::*;
