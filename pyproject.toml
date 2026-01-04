@@ -29,6 +29,7 @@ crm_amir = "cr_mech_coli:crm_amir.crm_amir_main"
 crm_estimate_params = "cr_mech_coli:crm_estimate_params.crm_estimate_params_main"
 crm_gen_data = "cr_mech_coli:crm_gen_data.crm_gen_data_main"
 crm_save_masks = "cr_mech_coli:crm_save_masks.crm_save_masks_main"
+crm_bench_imaging = "cr_mech_coli:crm_bench_imaging.crm_bench_imaging"
 
 [tool.maturin]
 features = ["pyo3/extension-module"]
