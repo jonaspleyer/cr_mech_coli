@@ -13,6 +13,9 @@ crate-type = ["cdylib", "rlib"]
 # Due to python docstrings
 doctest = false
 
+[patch.crates-io]
+plotters = { git = "https://github.com/jonaspleyer/plotters", branch = "aliasing" }
+
 [build-dependencies]
 cmake = { version = "0.1.56", optional= true }
 vtk-rs-link = { version = "0.3.1", optional = true }
@@ -41,6 +44,7 @@ kdam = "0.6.3"
 log = "0.4.28"
 env_logger = "0.11.8"
 geo = "0.32.0"
+plotters = "0.3.7"
 
 [features]
 vtk = ["dep:cmake", "dep:vtk-rs-link"]
