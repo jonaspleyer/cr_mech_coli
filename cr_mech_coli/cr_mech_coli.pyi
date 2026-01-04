@@ -371,3 +371,11 @@ def render_mask_rs(
     domain_size: tuple[np.float32, np.float32],
     resolution: np.float32,
 ): ...
+def render_mask_2d(
+    cells: dict[CellIdentifier, tuple[RodAgent, CellIdentifier | None]],
+    cell_to_color: dict[CellIdentifier, tuple[np.uint8, np.uint8, np.uint8]],
+    domain_size: tuple[np.float32, np.float32],
+    resolution: tuple[int, int],
+    delta_angle=np.float32(np.pi / 4),
+    epsilon=np.float32(0.01),
+): ...
