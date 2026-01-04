@@ -15,9 +15,9 @@ pub struct Vertex {
 
 /// asdf
 #[repr(C)]
-pub struct Agent {
+pub struct Agent<'a> {
     /// vertices of the agent
-    positions: *const Vertex,
+    positions: &'a Vertex,
     /// Thickness of the rod
     radius: f64,
     /// number of vertices
@@ -26,11 +26,11 @@ pub struct Agent {
     color: [f64; 3],
 }
 
-impl Agent {
+impl<'a> Agent<'a> {
     /// Creates a new [Agent] used for plotting
-    pub fn new(positions: &[Vertex], radius: f64, color: [f64; 3]) -> Agent {
+    pub fn new(positions: &'a [Vertex], radius: f64, color: [f64; 3]) -> Agent<'a> {
         let n_vertices = positions.len() as i32;
-        let positions = positions.as_ptr();
+        let positions = unsafe { &*positions.as_ptr() };
         Agent {
             positions,
             radius,
@@ -93,13 +93,10 @@ pub fn render_mask_vtk<'py>(
         resolution: resolution as f64,
     };
 
-    let agents = cells
+    let positions_all = cells
         .iter()
-        .map(|(ident, (c, _))| {
-            let color = cell_to_color[ident];
-            let color = [color.0 as f64, color.1 as f64, color.2 as f64];
-            let positions = c
-                .mechanics
+        .map(|(_, (c, _))| {
+            c.mechanics
                 .pos
                 .row_iter()
                 .map(|row| Vertex {
@@ -107,9 +104,22 @@ pub fn render_mask_vtk<'py>(
                     y: row[1] as f64,
                     z: row[2] as f64,
                 })
-                .collect::<Vec<_>>();
+                .collect::<Vec<_>>()
+        })
+        .collect::<Vec<_>>();
+    let agents = cells
+        .iter()
+        .enumerate()
+        .map(|(n, (ident, (c, _)))| {
+            let color = cell_to_color[ident];
+            let color = [
+                color.0 as f64 / 255.0,
+                color.1 as f64 / 255.0,
+                color.2 as f64 / 255.0,
+            ];
+            let positions = &positions_all[n];
             let radius = c.interaction.0.radius() as f64;
-            Agent::new(&positions, radius, color)
+            Agent::new(positions, radius, color)
         })
         .collect::<Vec<_>>();
 
