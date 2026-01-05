@@ -1,8 +1,6 @@
 use std::collections::BTreeMap;
 
 use cellular_raza::prelude::CellIdentifier;
-use geo::Area;
-use itertools::Itertools;
 use plotters::coord::types::RangedCoordf32;
 use pyo3::prelude::*;
 
@@ -171,7 +169,6 @@ pub fn render_mask_2d<'py>(
 
         let empty_style = RGBAColor(0, 0, 0, 1.0).filled().stroke_width(0);
 
-        let mut total_area = 0.0;
         for (ident, (agent, _)) in cells.iter() {
             let pos = &agent.mechanics.pos;
             let radius = agent.interaction.0.radius();
@@ -207,7 +204,6 @@ pub fn render_mask_2d<'py>(
 
                     // Draw empty background for overlapping cells
                     for isct in intersection.0.iter() {
-                        total_area += isct.unsigned_area();
                         let polygon_intersection = plotters::prelude::Polygon::new(
                             isct.exterior()
                                 .coords()
