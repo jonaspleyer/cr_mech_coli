@@ -42,7 +42,6 @@ jobs:
         with:
           python-version: 3.x
       - name: Install libfontconfig1-dev
-        if: ${{ contains(inputs.os, 'ubuntu') }}
         run: sudo apt-get update && sudo apt-get install libfontconfig1-dev
       - name: Build wheels
         uses: PyO3/maturin-action@v1
@@ -76,7 +75,6 @@ jobs:
         with:
           python-version: 3.x
       - name: Install libfontconfig1-dev
-        if: ${{ contains(inputs.os, 'ubuntu') }}
         run: sudo apt-get update && sudo apt-get install libfontconfig1-dev
       - name: Build wheels
         uses: PyO3/maturin-action@v1
@@ -149,7 +147,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Install libfontconfig1-dev
-        if: ${{ contains(inputs.os, 'ubuntu') }}
         run: sudo apt-get update && sudo apt-get install libfontconfig1-dev
       - name: Build sdist
         uses: PyO3/maturin-action@v1
