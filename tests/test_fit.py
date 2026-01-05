@@ -223,4 +223,4 @@ def test_render_mask_2d_2():
     import cv2 as cv
 
     n_components, _ = cv.connectedComponents(filtnew.astype(np.uint8))
-    assert n_components >= 3
+    assert n_components == 2

@@ -2,6 +2,7 @@ import numpy as np
 import time
 import matplotlib.pyplot as plt
 from tqdm import tqdm
+from pathlib import Path
 
 import cr_mech_coli as crm
 from .cr_mech_coli import render_mask_vtk
@@ -78,15 +79,17 @@ def crm_bench_imaging():
     n_samples = 7
     n_saves = 10
     times_shape = (n_samples, n_saves, 4)
+    opath = Path("out/crm_bench_imaging/")
+    opath.mkdir(exist_ok=True, parents=True)
     try:
-        times = np.load("timings.npy")
+        times = np.load(opath / "timings.npy")
         assert times.shape == times_shape
     except:
         times = np.zeros(times_shape)
         for i1, s in enumerate(range(n_samples)):
             times[i1, :] = get_timings(s, n_saves=n_saves)
         times = np.array(times)
-        np.save("timings", times)
+        np.save(opath / "timings", times)
     n_cells = times[:, :, 0]
 
     crm.set_mpl_rc_params()
@@ -95,7 +98,9 @@ def crm_bench_imaging():
 
     # Plot against time of simulation
     colors = [crm.COLOR3, crm.COLOR1, crm.COLOR5]
-    for i, color, label in zip(range(1, 4), colors, ["pyvista", "vtk", "plotters"]):
+    for i, color, label in zip(
+        range(1, 4), colors, ["pyvista (Python)", "vtk (C++)", "plotters (Rust)"]
+    ):
         mean = np.mean(times[:, :, i], axis=0)
         std = np.std(times[:, :, i], axis=0)
         ax.plot(range(len(mean)), mean, label=label, color=color)
@@ -124,4 +129,5 @@ def crm_bench_imaging():
         ncol=2,
         frameon=False,
     )
-    plt.show()
+    fig.savefig(opath / "timings-comparison.png")
+    fig.savefig(opath / "timings-comparison.pdf")
