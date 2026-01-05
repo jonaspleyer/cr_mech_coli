@@ -21,7 +21,7 @@ cmake = { version = "0.1.56", optional= true }
 vtk-rs-link = { version = "0.3.1", optional = true }
 
 [dependencies]
-cellular_raza = { version="0.5.0", features = ["pyo3", "approx"] }
+cellular_raza = { version="0.5.0", features = ["pyo3", "approx", "plotters"] }
 approx = { package = "approxim", version = "0.6.9", features = ["tuple_impl"] }
 itertools = "0.14.0"
 nalgebra = { version = "0.34", features = ["serde", "serde-serialize"] }

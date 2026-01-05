@@ -239,6 +239,7 @@ dependencies = [
  "nalgebra",
  "ndarray",
  "num",
+ "plotters",
  "pyo3",
  "rand 0.9.2",
  "rand_chacha 0.9.0",
@@ -255,6 +256,7 @@ checksum = "e19f9055c7c3b06858a89be403324729814a16608f06c2573fd7c8384c461efd"
 dependencies = [
  "cellular_raza-concepts-derive",
  "num",
+ "plotters",
  "pyo3",
  "rand_chacha 0.9.0",
  "serde",
@@ -287,6 +289,7 @@ dependencies = [
  "itertools 0.14.0",
  "kdam",
  "num",
+ "plotters",
  "pyo3",
  "quick-xml",
  "rand 0.9.2",
@@ -1744,7 +1747,7 @@ checksum = "7edddbd0b52d732b21ad9a5fab5c704c14cd949e5e9a1ec5929a24fded1b904c"
 [[package]]
 name = "plotters"
 version = "0.3.7"
-source = "git+https://github.com/jonaspleyer/plotters?branch=aliasing#5123e957e2f219fe179cca952dd510d2df26d4e9"
+source = "git+https://github.com/jonaspleyer/plotters?branch=aliasing#c4b5ce1eb9ebd8159bd11bb4bfdd9555a57d4eb1"
 dependencies = [
  "chrono",
  "font-kit",
@@ -1763,12 +1766,12 @@ dependencies = [
 [[package]]
 name = "plotters-backend"
 version = "0.3.7"
-source = "git+https://github.com/jonaspleyer/plotters?branch=aliasing#5123e957e2f219fe179cca952dd510d2df26d4e9"
+source = "git+https://github.com/jonaspleyer/plotters?branch=aliasing#c4b5ce1eb9ebd8159bd11bb4bfdd9555a57d4eb1"
 
 [[package]]
 name = "plotters-bitmap"
 version = "0.3.7"
-source = "git+https://github.com/jonaspleyer/plotters?branch=aliasing#5123e957e2f219fe179cca952dd510d2df26d4e9"
+source = "git+https://github.com/jonaspleyer/plotters?branch=aliasing#c4b5ce1eb9ebd8159bd11bb4bfdd9555a57d4eb1"
 dependencies = [
  "gif",
  "image",
@@ -1778,7 +1781,7 @@ dependencies = [
 [[package]]
 name = "plotters-svg"
 version = "0.3.7"
-source = "git+https://github.com/jonaspleyer/plotters?branch=aliasing#5123e957e2f219fe179cca952dd510d2df26d4e9"
+source = "git+https://github.com/jonaspleyer/plotters?branch=aliasing#c4b5ce1eb9ebd8159bd11bb4bfdd9555a57d4eb1"
 dependencies = [
  "plotters-backend",
 ]
