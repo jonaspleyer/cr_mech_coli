@@ -352,6 +352,11 @@ fn generate_coordinates_sphere(
     angle_end: f32,
     delta_angle: f32,
 ) -> Vec<geo::Coord<f32>> {
+    let angle_end = if angle_start < angle_end {
+        angle_end
+    } else {
+        angle_end + 2.0 * core::f32::consts::PI
+    };
     let n_resolution = get_n_resolution(angle_start, angle_end, delta_angle);
     let dangle = (angle_end - angle_start).abs() / (n_resolution as f32 + 1.0);
     (1..n_resolution + 1)
