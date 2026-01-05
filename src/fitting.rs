@@ -128,12 +128,16 @@ pub fn render_mask_2d<'py>(
     resolution: (usize, usize),
     delta_angle: f32,
     epsilon: f32,
-) -> PyResult<Bound<'py, numpy::PyArray3<u8>>> {
+) -> PyResult<(
+    Bound<'py, numpy::PyArray3<u8>>,
+    Bound<'py, numpy::PyArray3<u8>>,
+)> {
     // let resolution = (resolution.1, resolution.0);
     // let domain_size = (domain_size.1, domain_size.0);
 
     use plotters::prelude::*;
     let mut buffer = vec![0u8; resolution.0 * resolution.1 * 3];
+    let mut buffer2 = vec![0u8; resolution.0 * resolution.1 * 3];
     macro_rules! map_err(
         ($interior:expr) => {($interior)
             .map_err(|e| pyo3::exceptions::PyValueError::new_err(format!("{e}")))
@@ -154,6 +158,7 @@ pub fn render_mask_2d<'py>(
             }
         );
         let mask = create_root!(buffer);
+        let overlap_mask = create_root!(buffer2);
 
         let mut polygons = Vec::with_capacity(cells.len());
         for (_, (cell, _)) in cells.iter() {
@@ -211,6 +216,14 @@ pub fn render_mask_2d<'py>(
                             empty_style,
                         );
                         map_err!(mask.draw(&polygon_intersection))?;
+                        let polygon_overlap = plotters::prelude::Polygon::new(
+                            isct.exterior()
+                                .coords()
+                                .map(|p| (p.x, p.y))
+                                .collect::<Vec<_>>(),
+                            WHITE,
+                        );
+                        map_err!(overlap_mask.draw(&polygon_overlap))?;
                     }
                 }
             }
@@ -223,7 +236,15 @@ pub fn render_mask_2d<'py>(
         buffer
     ))?;
     arr.invert_axis(ndarray::Axis(0));
-    Ok(numpy::PyArray3::from_array(py, &arr))
+    let mut arr2 = map_err!(ndarray::Array3::<u8>::from_shape_vec(
+        (resolution.1, resolution.0, 3),
+        buffer2
+    ))?;
+    arr2.invert_axis(ndarray::Axis(0));
+    Ok((
+        numpy::PyArray3::from_array(py, &arr),
+        numpy::PyArray3::from_array(py, &arr2),
+    ))
 }
 
 struct Bbox {
