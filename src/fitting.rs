@@ -389,21 +389,15 @@ fn angle_to_x_axis(dir: &impl core::ops::Index<usize, Output = f32>) -> f32 {
     nalgebra::RealField::atan2(dir[1], dir[0]).rem_euclid(2.0 * core::f32::consts::PI)
 }
 
-fn angles_between(dir1: &[f32; 2], dir2: &[f32; 2]) -> (f32, f32) {
-    let dir1 = dir1.as_ref();
-    let dir2 = dir2.as_ref();
+fn angle_between(dir1: &[f32; 2], dir2: &[f32; 2]) -> f32 {
     let perp = dir1[0] * dir2[1] - dir1[1] * dir2[0];
     let dot = dir1[0] * dir2[0] + dir1[1] * dir2[1];
-
-    let angle_lh = nalgebra::RealField::atan2(perp, dot).rem_euclid(2.0 * core::f32::consts::PI);
-    let angle_rh = nalgebra::RealField::atan2(-perp, dot).rem_euclid(2.0 * core::f32::consts::PI);
-
-    (angle_lh, angle_rh)
+    nalgebra::RealField::atan2(perp, dot)
 }
 
 fn get_n_resolution(angle_start: f32, angle_end: f32, delta_angle: f32) -> usize {
     use approx::AbsDiffEq;
-    let dangle = (angle_start - angle_end).abs();
+    let dangle = (angle_start - angle_end).rem_euclid(2.0 * core::f32::consts::PI);
     // let angle_frac = core::f32::consts::PI * 2.0 / n_resolution as f32;
     let n_resolution = (dangle / delta_angle).max(1.0);
     if (n_resolution % 1.0).abs_diff_eq(&0.0, 0.001) {
@@ -422,40 +416,47 @@ fn determine_spheroid_coordinates_between_rectangles(
     delta_angle: f32,
 ) -> (bool, Vec<geo::Coord<f32>>) {
     // Insert coordinates for connecting spheroid
-    // Case 1: ---\
-    //             \
+    // Case 1: >>  ────🯓
+    // bend right       ╲
     //
-    //             /
-    // Case 2: ---/
+    //
+    // Case 2:          ╱
+    // bend left >> ───🯑
 
     // Determine the angles between the direction vertices
     let dir1 = [p2[0] - p1[0], p2[1] - p1[1]];
     let dir2 = [p3[0] - p2[0], p3[1] - p2[1]];
-
-    let (angle_lh, angle_rh) = angles_between(&dir1, &dir2);
+    let angle = angle_between(&dir1, &dir2);
+    let bends_right = angle < 0.0;
 
     let [_, c1, c2, _] = generate_coordinates_rectangle(p1, p2, r);
     let [d0, _, _, d3] = generate_coordinates_rectangle(p2, p3, r);
 
     // Case 1
-    let (is_left, angle_start, angle_end) = if angle_lh > angle_rh {
+    //  ────c1  🯚d0
+    //       │ ╱ ╲
+    //       │╱   ╲
+    //    d3 ╱
+    //  ────╳┘c2
+    //    p2 ╲
+    let (angle_start, angle_end) = if bends_right {
         let x1 = ndarray::array![d0.x - p2[0], d0.y - p2[1]];
         let x2 = ndarray::array![c1.x - p2[0], c1.y - p2[1]];
         let angle_start = angle_to_x_axis(&x1.view());
         let angle_end = angle_to_x_axis(&x2.view());
-        (true, angle_start, angle_end)
+        (angle_start, angle_end)
     }
-    // Case 2
+    // Case 2 (invert image from above)
     else {
-        let x1 = ndarray::array![d3.x - p2[0], d3.y - p2[1]];
-        let x2 = ndarray::array![c2.x - p2[0], c2.y - p2[1]];
-        let angle_start = angle_to_x_axis(&x2.view());
-        let angle_end = angle_to_x_axis(&x1.view());
-        (false, angle_start, angle_end)
+        let x1 = ndarray::array![c2.x - p2[0], c2.y - p2[1]];
+        let x2 = ndarray::array![d3.x - p2[0], d3.y - p2[1]];
+        let angle_start = angle_to_x_axis(&x1.view());
+        let angle_end = angle_to_x_axis(&x2.view());
+        (angle_start, angle_end)
     };
 
     (
-        is_left,
+        bends_right,
         generate_coordinates_sphere(p2, r, angle_start, angle_end, delta_angle),
     )
 }
@@ -492,6 +493,15 @@ fn get_coordinates_at_tip(
     (coordinates1, c0)
 }
 
+/// Assembly the polygon in this order:
+///   x--------------coordinates_fw ---------->
+///  /                                         \
+/// /                                           \
+/// |                                           |
+/// |                                           |
+/// \                                           /
+///  \                                         /
+///    ------------- coordinates_bw --------> x
 fn calculate_polygon_hull(
     p: &ndarray::ArrayView2<f32>,
     r: f32,
@@ -501,29 +511,14 @@ fn calculate_polygon_hull(
     let mut coordinates_fw = Vec::new();
     let mut coordinates_bw = Vec::new();
 
-    // Forward pass
-
-    // Add sphere-like coordinates for starting tip
-    let p1 = p.slice(ndarray::s![0, ..]);
-    let p2 = p.slice(ndarray::s![1i32, ..]);
-    // let x1 = geo::coord! { x: p1[0] - r * dir[1], y: p1[1] + r * dir[0] };
-    // let x2 = geo::coord! { x: p1[0] + r * dir[1], y: p1[1] - r * dir[0] };
-
-    // let angle_end = nalgebra::RealField::atan2(x2.y, x2.x) % (2.0 * core::f32::consts::PI);
-
-    // Assembly the polygon in this order:
-    //   x--------------coordinates_fw ---------->
-    //  /                                         \
-    // /                                           \
-    // |                                           |
-    // |                                           |
-    // \                                           /
-    //  \                                         /
-    //    ------------- coordinates_bw --------> x
-
-    let (coords1, coord_fin) = get_coordinates_at_tip(&p1.view(), &p2.view(), r, delta_angle);
-    coordinates_bw.extend(coords1);
-    coordinates_fw.push(coord_fin);
+    {
+        // Add sphere-like coordinates for starting tip
+        let p1 = p.slice(ndarray::s![0, ..]);
+        let p2 = p.slice(ndarray::s![1, ..]);
+        let (coords1, coord_fin) = get_coordinates_at_tip(&p1.view(), &p2.view(), r, delta_angle);
+        coordinates_bw.extend(coords1);
+        coordinates_fw.push(coord_fin);
+    }
 
     for n in 2..p.shape()[0] {
         let p1 = p.slice(ndarray::s![n - 2, ..]);
@@ -598,11 +593,13 @@ fn calculate_polygon_hull(
         }
     }
 
-    let pfin2 = p.slice(ndarray::s![-2, ..]);
-    let pfin = p.slice(ndarray::s![-1, ..]);
-    let (coords1, coord_fin) = get_coordinates_at_tip(&pfin, &pfin2, r, delta_angle);
-    coordinates_bw.push(coord_fin);
-    coordinates_fw.extend(coords1.into_iter().rev());
+    {
+        let pfin2 = p.slice(ndarray::s![-2, ..]);
+        let pfin = p.slice(ndarray::s![-1, ..]);
+        let (coords1, coord_fin) = get_coordinates_at_tip(&pfin, &pfin2, r, delta_angle);
+        coordinates_bw.push(coord_fin);
+        coordinates_fw.extend(coords1.into_iter().rev());
+    }
 
     let mut coordinates = coordinates_fw;
     coordinates.extend(coordinates_bw.into_iter().rev());
