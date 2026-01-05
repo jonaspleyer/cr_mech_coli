@@ -131,7 +131,7 @@ def test_render_mask_2d():
     times = []
     for _ in range(5):
         t = time.process_time()
-        mask1, _overlap_mask = crm.render_mask_2d(
+        mask1, overlap_mask = crm.render_mask_2d(
             container.get_cells_at_iteration(i1),
             container.cell_to_color,
             (config.domain_size[0], config.domain_size[1]),
@@ -157,6 +157,11 @@ def test_render_mask_2d():
             container.parent_map,
             0.5,
         )
+
+        # Remove overlapping regions from second mask
+        mask2[np.any(overlap_mask != 0, axis=2)] = [0, 0, 0]
+        # Compare both masks pixel-wise
+        assert np.sum(np.any(mask2 != mask1, axis=2)) < 2000
 
         n1 = np.unique(mask1.reshape((-1, 3)), axis=0)
         n2 = np.unique(mask2.reshape((-1, 3)), axis=0)
