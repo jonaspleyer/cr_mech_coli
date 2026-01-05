@@ -402,7 +402,7 @@ fn angle_between(dir1: &[f32; 2], dir2: &[f32; 2]) -> f32 {
 
 fn get_n_resolution(angle_start: f32, angle_end: f32, delta_angle: f32) -> usize {
     use approx::AbsDiffEq;
-    let dangle = (angle_start - angle_end).rem_euclid(2.0 * core::f32::consts::PI);
+    let dangle = (angle_start - angle_end).abs();
     // let angle_frac = core::f32::consts::PI * 2.0 / n_resolution as f32;
     let n_resolution = (dangle / delta_angle).max(1.0);
     if (n_resolution % 1.0).abs_diff_eq(&0.0, 0.001) {
