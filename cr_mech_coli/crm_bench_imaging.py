@@ -32,32 +32,33 @@ def get_timings(seed: int = 0, ppm=10, n_saves=6):
 
     render_settings = crm.RenderSettings(pixel_per_micron=ppm)
 
+    resolution = (
+        int(config.domain_size[0] * ppm),
+        int(config.domain_size[1] * ppm),
+    )
+
     times = []
     iterations = cell_container.get_all_iterations()
     for i in tqdm(iterations, desc="Gather Timings"):
         cells = cell_container.get_cells_at_iteration(i)
         start = time.time()
-        _ = crm.render_mask(
+        m0 = crm.render_mask(
             cells,
             cell_container.cell_to_color,
             (config.domain_size[0], config.domain_size[1]),
-            # render_settings.pixel_per_micron,
+            render_settings,
         )
         t1 = time.time() - start
         start = time.time()
-        _ = render_mask_vtk(
+        m1 = render_mask_vtk(
             cells,
             cell_container.cell_to_color,
             (config.domain_size[0], config.domain_size[1]),
-            render_settings.pixel_per_micron,
+            ppm,
         )
         t2 = time.time() - start
-        resolution = (
-            int(config.domain_size[0] * render_settings.pixel_per_micron),
-            int(config.domain_size[1] * render_settings.pixel_per_micron),
-        )
         start = time.time()
-        _ = crm.render_mask_2d(
+        m2, _ = crm.render_mask_2d(
             cells,
             cell_container.cell_to_color,
             (config.domain_size[0], config.domain_size[1]),
@@ -66,6 +67,9 @@ def get_timings(seed: int = 0, ppm=10, n_saves=6):
         )
         t3 = time.time() - start
         times.append((len(cells), t1, t2, t3))
+
+        assert m0.shape == m1.shape
+        assert m1.shape == m2.shape
 
     return np.array(times)
 
