@@ -134,9 +134,15 @@ pub fn render_mask_2d<'py>(
 
     use plotters::prelude::*;
     let mut buffer = vec![0u8; resolution.0 * resolution.1 * 3];
+    macro_rules! map_err(
+        ($interior:expr) => {($interior)
+            .map_err(|e| pyo3::exceptions::PyValueError::new_err(format!("{e}")))
+        }
+    );
     {
-        let root =
-            BitMapBackend::with_buffer(&mut buffer, (resolution.0 as u32, resolution.1 as u32))
+        macro_rules! create_root(
+            ($buffer:ident) => {
+            BitMapBackend::with_buffer(&mut $buffer, (resolution.0 as u32, resolution.1 as u32))
                 .anti_aliasing(false)
                 .into_drawing_area()
                 .margin(0, 0, 0, 0)
@@ -144,7 +150,10 @@ pub fn render_mask_2d<'py>(
                     0f32..domain_size.0,
                     0f32..domain_size.1,
                     (0..(resolution.0 as i32), 0..(resolution.1 as i32)),
-                ));
+                ))
+            }
+        );
+        let mask = create_root!(buffer);
 
         let mut polygons = Vec::with_capacity(cells.len());
         for (_, (cell, _)) in cells.iter() {
@@ -170,7 +179,7 @@ pub fn render_mask_2d<'py>(
             let polygon = calculate_polygon_hull(&pos.view(), radius, delta_angle, epsilon)?;
             let points: Vec<_> = polygon.exterior().coords().map(|p| (p.x, p.y)).collect();
             let polygon = Polygon::new(points, style);
-            root.draw(&polygon).unwrap();
+            map_err!(mask.draw(&polygon))?;
         }
 
         // Calculate overlaps
@@ -201,16 +210,18 @@ pub fn render_mask_2d<'py>(
                                 .collect::<Vec<_>>(),
                             empty_style,
                         );
-                        root.draw(&polygon_intersection).unwrap();
+                        map_err!(mask.draw(&polygon_intersection))?;
                     }
                 }
             }
         }
-        root.present().unwrap();
+        map_err!(mask.present())?;
     }
 
-    let mut arr =
-        ndarray::Array3::<u8>::from_shape_vec((resolution.1, resolution.0, 3), buffer).unwrap();
+    let mut arr = map_err!(ndarray::Array3::<u8>::from_shape_vec(
+        (resolution.1, resolution.0, 3),
+        buffer
+    ))?;
     arr.invert_axis(ndarray::Axis(0));
     Ok(numpy::PyArray3::from_array(py, &arr))
 }
