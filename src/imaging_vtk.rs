@@ -72,7 +72,7 @@ pub fn render_agents(
         render_img(agents, n_agents, camera, buf_ptr);
     }
 
-    let mut arr = ndarray::Array3::from_shape_vec((size_x, size_y, 3), buffer)?;
+    let mut arr = ndarray::Array3::from_shape_vec((size_y, size_x, 3), buffer)?;
     arr.invert_axis(ndarray::Axis(0));
     Ok(arr)
 }
