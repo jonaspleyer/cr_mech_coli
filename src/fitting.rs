@@ -352,6 +352,10 @@ fn generate_coordinates_sphere(
     angle_end: f32,
     delta_angle: f32,
 ) -> Vec<geo::Coord<f32>> {
+    // Cover edge case directly
+    if angle_start == angle_end {
+        return vec![];
+    }
     let angle_end = if angle_start < angle_end {
         angle_end
     } else {
