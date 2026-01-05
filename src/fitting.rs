@@ -888,6 +888,7 @@ fn test_polygon_hull_2() {
     let dangle = core::f32::consts::PI / 15.0;
     let polygon = calculate_polygon_hull(&p.view(), r, dangle, 0.01).unwrap();
 
+    use itertools::Itertools;
     for (c1, c2) in polygon.exterior().coords().tuple_windows::<(_, _)>() {
         let dist = ((c1.x - c2.x).powi(2) + (c1.y - c2.y).powi(2)).sqrt();
         assert!(dist < 3.0);
