@@ -387,4 +387,12 @@ def render_mask_2d(
     resolution: tuple[int, int],
     delta_angle=np.float32(np.pi / 4),
     epsilon=np.float32(0.01),
-): ...
+):
+    """
+    Renders masks using the `plotters` rust crate. This rendering function will omit overlapping
+    sections.
+
+    .. caution:: This method will be absorbed in the future into a more integrated comparison
+                 method.
+    """
+    ...
