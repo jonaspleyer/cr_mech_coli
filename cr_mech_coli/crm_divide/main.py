@@ -399,7 +399,7 @@ def objective_function(
     # Remove overlaps from adjusted masks
     for i, m in enumerate(new_masks):
         overlap = masks_predicted[i][1]
-        m[overlap] = 0
+        m[np.any(overlap != 0, axis=2)] = 0
 
     update_time("Remove Overlaps")
 
