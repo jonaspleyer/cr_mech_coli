@@ -373,21 +373,26 @@ def objective_function(
         int(pixel_per_micron[0] * settings.constants.domain_size[0]),
         int(pixel_per_micron[1] * settings.constants.domain_size[1]),
     )
-    masks_predicted = [
-        crm.render_mask_2d(
-            container.get_cells_at_iteration(iter),
-            {v: k for k, v in color_to_cell.items()},
-            (settings.constants.domain_size[0], settings.constants.domain_size[1]),
-            resolution,
-            delta_angle=np.float32(np.pi / 8.0),
-        )
-        for iter in tqdm(
-            iterations_simulation if return_all else iters_filtered,
-            total=len(iterations_simulation if return_all else iters_filtered),
-            desc="Render predicted Masks",
-            disable=not show_progressbar,
-        )
-    ]
+    try:
+        masks_predicted = [
+            crm.render_mask_2d(
+                container.get_cells_at_iteration(iter),
+                {v: k for k, v in color_to_cell.items()},
+                (settings.constants.domain_size[0], settings.constants.domain_size[1]),
+                resolution,
+                delta_angle=np.float32(np.pi / 8.0),
+            )
+            for iter in tqdm(
+                iterations_simulation if return_all else iters_filtered,
+                total=len(iterations_simulation if return_all else iters_filtered),
+                desc="Render predicted Masks",
+                disable=not show_progressbar,
+            )
+        ]
+    except ValueError as e:
+        if print_costs:
+            print(f"f(x)={ERROR_COST:10.1f} ERROR: {e}")
+        return ERROR_COST
 
     update_time("Masks\n(Render)")
 
