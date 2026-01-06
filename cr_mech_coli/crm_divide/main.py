@@ -665,7 +665,7 @@ def plot_time_evolution(
         penalties = [
             crm.penalty_area_diff_account_parents(
                 new_mask,
-                masks_predicted[iter],
+                masks_predicted[iter][0],
                 color_to_cell,
                 parent_map,
                 parent_penalty,
@@ -972,9 +972,9 @@ def plot_snapshots(
     (output_dir / "masks_adjusted").mkdir(parents=True, exist_ok=True)
     (output_dir / "masks_diff").mkdir(parents=True, exist_ok=True)
     for n, m in enumerate(masks_predicted):
-        cv.imwrite(f"{output_dir}/masks_predicted/{n:06}.png", m)
+        cv.imwrite(f"{output_dir}/masks_predicted/{n:06}.png", m[0])
     for n, m2 in zip(iterations_data, masks_adjusted):
-        m1 = masks_predicted[n]
+        m1 = masks_predicted[n][0]
         cv.imwrite(f"{output_dir}/masks_adjusted/{n:06}.png", m2)
         diff = (
             crm.parents_diff_mask(m1, m2, color_to_cell, parent_map, 0.5) * 255
