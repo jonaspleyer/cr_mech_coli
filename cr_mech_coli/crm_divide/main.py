@@ -347,6 +347,8 @@ def objective_function(
     except ValueError or KeyError as e:
         if return_all:
             raise e
+        if print_costs:
+            print(f"f(x)={ERROR_COST:10.1f} ERROR: {e}")
         return ERROR_COST
     iterations_simulation = np.array(container.get_all_iterations()).astype(int)
 
