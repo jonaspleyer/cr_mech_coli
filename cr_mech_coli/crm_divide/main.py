@@ -810,40 +810,43 @@ def plot_profiles(
         fig, ax = plt.subplots(figsize=(8, 8))
         crm.configure_ax(ax)
 
-        # Add previously calculated results
-        # x = np.array([p, *samples_ind])
-        # y = np.array([final_cost, *costs_ind])
-
-        # Filter out values that indicate an error
-        # x = x[y < ERROR_COST]
-        # y = y[y < ERROR_COST]
-
         x = samples[:, n]
         y1 = costs[:, n, 0]
         y2 = costs[:, n, 1]
-        filt1 = ~np.isnan(y1)
-        filt2 = ~np.isnan(y2)
-        y1 = y1[filt1] - final_cost
-        y2 = y2[filt2] - final_cost
-        x1 = x[filt1]
-        x2 = x[filt2]
+        y3 = costs[:, n, 2]
+        # filt = ~(np.isnan(y1) * np.isnan(y2) * np.isnan(y3))
+        # filt = ~np.isnan(np.any(costs[:, n, :], axis=1))
+        filt = costs[:, n, 0] != np.nan
+
+        cost_with_overlap = y2[filt]
+        cost_with_overlap_and_parent_penalty_one = y1[filt] + y3[filt]
+        cost_without_overlap = y2[filt] - y3[filt]
+
+        x_full = np.array(x)[filt]
+        x = np.array(x)[filt]
+
+        print(labels[n], len(x), np.sum(~filt))
+        print(costs[:, n, 0])
 
         # Add entry for final cost
         # Sort entries by value of the parameter
-        y1 = np.array(y1)
-        y2 = np.array(y2)
+        cost_with_overlap = np.array([*cost_with_overlap, final_cost])
+        x_full = np.array([*x_full, p])
+        sorter = np.argsort(x_full)
+        cost_with_overlap = cost_with_overlap[sorter]
+        x_full = x_full[sorter]
 
-        y2 = np.array([*y2, 0])
-        x2 = np.array([*x2, p])
-        sorter = np.argsort(x2)
-        y2 = y2[sorter]
-        x2 = x2[sorter]
-
-        ax.plot(x1, y1, c=crm.plotting.COLOR3)
-        ax.plot(x2, y2, c=crm.plotting.COLOR3, linestyle="--")
+        ax.plot(x_full, cost_with_overlap, c=crm.plotting.COLOR3)
+        ax.plot(x, cost_without_overlap, c=crm.plotting.COLOR3, linestyle="--")
+        ax.plot(
+            x,
+            cost_with_overlap_and_parent_penalty_one,
+            c=crm.plotting.COLOR3,
+            linestyle=":",
+        )
 
         # ax.scatter([parameters[n]], [0], c=crm.plotting.COLOR5, marker="x")
-        ax.scatter([parameters[n]], [0], c=crm.plotting.COLOR5, marker="x")
+        ax.scatter([parameters[n]], [final_cost], c=crm.plotting.COLOR5, marker="x")
         ax.set_title(labels[n])
         odir = output_dir / "profiles"
         odir.mkdir(parents=True, exist_ok=True)
