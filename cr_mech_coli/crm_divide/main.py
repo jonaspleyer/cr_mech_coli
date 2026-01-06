@@ -34,6 +34,7 @@ import numpy as np
 from glob import glob
 from pathlib import Path
 from tqdm import tqdm
+from tqdm.contrib.concurrent import process_map
 import matplotlib.pyplot as plt
 import scipy as sp
 import time
@@ -703,7 +704,8 @@ def __optimize_around_single(params, param_single, n, args):
     return objective_function(all_params, *args, print_costs=False)
 
 
-def __calculate_single_cost(n, p, parameters, bounds, args, pyargs):
+def __calculate_single_cost(optargs):
+    n, p, parameters, bounds, args, pyargs = optargs
     index = np.arange(len(parameters)) != n
     x0 = np.array(parameters)[index]
     bounds_reduced = np.array(bounds)[index]
@@ -729,6 +731,18 @@ def __calculate_single_cost(n, p, parameters, bounds, args, pyargs):
     )
 
 
+def reconstruct_costs(costs_filtered, filter):
+    costs = []
+    counter = 0
+    for f in filter:
+        if f:
+            costs.append(costs_filtered[counter])
+            counter += 1
+        else:
+            costs.append((np.nan, np.nan, np.nan))
+    return np.array(costs)
+
+
 def plot_profiles(
     parameters: np.ndarray,
     bounds,
@@ -746,23 +760,14 @@ def plot_profiles(
         costs_filtered = np.load(output_dir / "profile-costs.npy")
         filter = np.load(output_dir / "profile-costs-filter.npy")
         samples = np.load(output_dir / "profile-samples.npy")
-        costs = []
-        counter = 0
-        for f in filter:
-            if f:
-                costs.append(costs_filtered[counter])
-                counter += 1
-            else:
-                costs.append((np.nan, np.nan))
+        costs = reconstruct_costs(costs_filtered, filter)
     except:
-        pool = mp.Pool(pyargs.workers)
-
         b_low = np.array(bounds)[:, 0]
         b_high = np.array(bounds)[:, 1]
         n_param = np.repeat([np.arange(len(parameters))], n_samples, axis=0)
         samples = np.linspace(b_low, b_high, n_samples)
 
-        arglist = tqdm(
+        arglist = list(
             zip(
                 n_param.flatten(),
                 samples.flatten(),
@@ -770,29 +775,32 @@ def plot_profiles(
                 repeat(bounds),
                 repeat(args),
                 repeat(pyargs),
-            ),
-            total=int(np.prod(n_param.shape)),
-            desc="Calculating Costs",
+            )
         )
 
-        costs = list(pool.starmap(__calculate_single_cost, arglist))
+        costs = process_map(
+            __calculate_single_cost,
+            arglist,
+            total=int(np.prod(n_param.shape)),
+            desc="Calculating Costs",
+            max_workers=pyargs.workers,
+        )
         # Filter out error costs
         filter = np.array([c != ERROR_COST for c in costs])
         costs_filtered = np.array([c for c in costs if c != ERROR_COST])
+        costs = reconstruct_costs(costs_filtered, filter)
 
         np.save(output_dir / "profile-costs.npy", costs_filtered)
         np.save(output_dir / "profile-costs-filter.npy", filter)
         np.save(output_dir / "profile-samples.npy", samples)
 
-    costs = np.array(costs).reshape((n_samples, len(parameters), 2))
+    costs = np.array(costs).reshape((n_samples, len(parameters), 3))
     assert n_samples == samples.shape[0]
     assert len(parameters) == samples.shape[1]
 
     for n, p, samples_ind in zip(
         range(len(parameters)),
         parameters,
-        # costs_no_penalty.T,
-        # costs_only_penalty.T,
         samples.T,
     ):
         np.savetxt(output_dir / f"profile-{n:06}.csv", samples_ind)
