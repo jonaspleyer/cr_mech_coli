@@ -318,11 +318,11 @@ ERROR_COST = 1e7
 
 
 def objective_function(
-    params,
-    positions_all,
-    settings,
-    masks_data,
-    iterations_data,
+    params: list[float] | np.ndarray[tuple[int], np.dtype[np.float32]],
+    positions_all: list[np.ndarray[tuple[int, int, int], np.dtype[np.float32]]],
+    settings: crm_fit.Settings,
+    masks_data: list[np.ndarray[tuple[int, int, int], np.dtype[np.uint8]]],
+    iterations_data: list[int],
     parent_penalty=0.5,
     return_all=False,
     return_timings=False,
