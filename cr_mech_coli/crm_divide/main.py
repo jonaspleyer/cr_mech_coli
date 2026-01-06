@@ -1154,7 +1154,9 @@ def crm_divide_main():
     if pyargs.iteration is None:
         output_dir.mkdir(parents=True)
 
-    masks_data, positions_all, settings, iterations_data = preprocessing(pyargs.data_dir)
+    masks_data, positions_all, settings, iterations_data = preprocessing(
+        pyargs.data_dir
+    )
 
     if not pyargs.skip_mask_adjustment or pyargs.only_mask_adjustment:
         plot_mask_adjustment(
