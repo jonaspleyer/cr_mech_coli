@@ -69,6 +69,7 @@ def get_timings(seed: int = 0, ppm=10, n_saves=6):
         t3 = time.time() - start
         times.append((len(cells), t1, t2, t3))
 
+        assert np.sum(np.any(m0 != m1, axis=2)) < 50
         assert m0.shape == m1.shape
         assert m1.shape == m2.shape
 
