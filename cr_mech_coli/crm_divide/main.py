@@ -256,7 +256,7 @@ def predict(
 ) -> crm.CellContainer:
     (radius, strength, en, em, damping) = params[:5]
     growth_rates = params[5:11]
-    spring_length_thresholds = params[11:15] + [np.inf, np.inf]
+    spring_length_thresholds = [*params[11:15], np.inf, np.inf]
     growth_rates_new = [
         *np.array(params[15:23]).reshape((-1, 2)),
         # These should not come into effect at all
