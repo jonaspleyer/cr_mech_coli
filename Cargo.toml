@@ -26,8 +26,8 @@ approx = { package = "approxim", version = "0.6.9", features = ["tuple_impl"] }
 itertools = "0.14.0"
 nalgebra = { version = "0.34", features = ["serde", "serde-serialize"] }
 num = { version = "0.4.3", features = ["rand", "serde"] }
-numpy = { version = "0.26.0", features = ["half", "nalgebra"] }
-pyo3 = { version = "0.26", features = ["serde", "py-clone", "multiple-pymethods"] }
+numpy = { version = "0.27.1", features = ["half", "nalgebra"] }
+pyo3 = { version = "0.27.1", features = ["serde", "py-clone", "multiple-pymethods"] }
 rand = { version = "0.9", features = ["serde"] }
 rand_chacha = { version = "0.9", features = ["serde"] }
 rayon = "1.11.0"
@@ -38,8 +38,8 @@ toml = "0.9"
 clap = { version = "4.5.54", features = ["derive"] }
 rand_distr = "0.5.1"
 short_default = "0.1.1"
-ndarray = "0.15"
-egobox-doe = "0.32.0"
+ndarray = "0.16.1"
+egobox-doe = "0.34.2"
 kdam = "0.6.3"
 log = "0.4.28"
 env_logger = "0.11.8"
