@@ -308,7 +308,7 @@ def crm_fit_main():
 
     positions_all = np.array(positions_all, dtype=np.float32)
     iterations_all = np.array(iterations_all, dtype=np.uint64) - iterations_all[0]
-    settings.constants.n_saves = max(iterations_all)
+    settings.constants.n_saves = max(iterations_all) - 1
 
     growth_rates, _ = estimate_growth_rates(iterations_all, lengths_all, settings, out)
     # Write estimated growth rates to csv file
