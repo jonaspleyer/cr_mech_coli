@@ -36,6 +36,7 @@ class Parameters:
     strength: Parameter | SampledFloat | list | np.float32
     growth_rate: Parameter | SampledFloat | list | np.float32
     potential_type: PotentialType
+    spring_tension: Parameter | SampledFloat | list | np.float32
 
 class Constants:
     t_max: np.float32
