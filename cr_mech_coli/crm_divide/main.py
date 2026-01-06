@@ -44,8 +44,6 @@ import cv2 as cv
 import cr_mech_coli as crm
 from cr_mech_coli import crm_fit, crm_divide
 
-data_dir = Path("data/crm_divide/0001/")
-
 crm.plotting.set_mpl_rc_params()
 
 
@@ -498,7 +496,7 @@ def objective_function_return_all(
     return objective_function(*args, **kwargs, return_all=True)
 
 
-def preprocessing(n_masks=None):
+def preprocessing(data_dir, n_masks=None):
     if n_masks is None:
         files_images = sorted(glob(str(data_dir / "images/*")))
         files_masks = sorted(glob(str(data_dir / "masks/*.csv")))
@@ -1109,6 +1107,7 @@ def crm_divide_main():
     parser.add_argument("--polish-maxiter", type=int, default=20)
     parser.add_argument("--profiles-maxiter", type=int, default=20)
     parser.add_argument("--profiles-samples", type=int, default=60)
+    parser.add_argument("--data-dir", type=Path, default=Path("data/crm_divide/0001/"))
     pyargs = parser.parse_args()
 
     n_workers = pyargs.workers
@@ -1128,7 +1127,7 @@ def crm_divide_main():
     if pyargs.iteration is None:
         output_dir.mkdir(parents=True)
 
-    masks_data, positions_all, settings, iterations_data = preprocessing()
+    masks_data, positions_all, settings, iterations_data = preprocessing(pyargs.data_dir)
 
     if not pyargs.skip_mask_adjustment or pyargs.only_mask_adjustment:
         plot_mask_adjustment(
