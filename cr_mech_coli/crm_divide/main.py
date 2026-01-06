@@ -506,7 +506,7 @@ def preprocessing(data_dir, n_masks=None):
             print(e)
             print("Omitting this particular result.")
 
-    settings.constants.n_saves = max(iterations_data)
+    settings.constants.n_saves = max(iterations_data) - 1
 
     domain_height = settings.domain_height
     for n, p in enumerate(positions_all):
