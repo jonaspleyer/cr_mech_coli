@@ -369,14 +369,17 @@ def objective_function(
         settings.constants.domain_size
     )
     iters_filtered = np.array([iterations_simulation[i] for i in iterations_data])
+    resolution = (
+        int(pixel_per_micron[0] * settings.constants.domain_size[0]),
+        int(pixel_per_micron[1] * settings.constants.domain_size[1]),
+    )
     masks_predicted = [
-        crm.render_mask(
+        crm.render_mask_2d(
             container.get_cells_at_iteration(iter),
             {v: k for k, v in color_to_cell.items()},
-            settings.constants.domain_size,
-            render_settings=crm.RenderSettings(
-                pixel_per_micron=(pixel_per_micron[0], pixel_per_micron[1])
-            ),
+            (settings.constants.domain_size[0], settings.constants.domain_size[1]),
+            resolution,
+            delta_angle=np.float32(np.pi / 8.0),
         )
         for iter in tqdm(
             iterations_simulation if return_all else iters_filtered,
@@ -387,6 +390,13 @@ def objective_function(
     ]
 
     update_time("Masks\n(Render)")
+
+    # Remove overlaps from adjusted masks
+    for i, m in enumerate(new_masks):
+        overlap = masks_predicted[i][1]
+        m[overlap] = 0
+
+    update_time("Remove Overlaps")
 
     # If we return all we need to filter the generated masks
     if return_all:
@@ -400,7 +410,7 @@ def objective_function(
     diff_masks = np.array(
         [
             crm.parents_diff_mask(
-                m1,
+                m1[0],
                 m2,
                 color_to_cell,
                 parent_map,
@@ -410,7 +420,18 @@ def objective_function(
         ]
     )
 
-    penalties = np.sum(diff_masks, axis=(1, 2))
+    update_time("Calculate Diff Masks")
+
+    overlaps = []
+    for _, overlap_mask in (
+        [masks_predicted[it] for it in iterations_data]
+        if return_all
+        else masks_predicted
+    ):
+        overlaps.append(np.sum(np.any(overlap_mask != 0, axis=2)))
+    overlaps = np.array(overlaps)
+
+    penalties = np.sum(diff_masks, axis=(1, 2)) + overlaps
 
     update_time("Compare")
 
@@ -438,7 +459,7 @@ def objective_function(
 
     if return_split_cost:
         costs_penalty_is_one = np.sum([np.sum(d != 0) for d in diff_masks])
-        return costs_penalty_is_one, cost
+        return costs_penalty_is_one, cost, np.sum(overlaps)
     else:
         return cost
 
