@@ -360,7 +360,7 @@ def objective_function(
         )
     except Exception as e:
         if print_costs:
-            print(f"Error -> f(x)={ERROR_COST} error: {e}")
+            print(f"f(x)={ERROR_COST:10.1f} ERROR: {e}")
         return ERROR_COST
 
     update_time("Masks\n(Adjust)")
