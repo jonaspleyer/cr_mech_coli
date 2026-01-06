@@ -572,7 +572,7 @@ def plot_mask_adjustment(
     (output_dir / "mask_adjustments").mkdir(parents=True, exist_ok=True)
     for mask_predicted, mask_adjusted, mask_data, mask_iter in tqdm(
         zip(
-            [masks_predicted[i] for i in iterations_data],
+            [masks_predicted[i][0] for i in iterations_data],
             masks_adjusted,
             masks_data,
             iterations_data,
