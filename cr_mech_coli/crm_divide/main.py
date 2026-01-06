@@ -249,60 +249,34 @@ def adjust_masks(
 
 
 def predict(
+    params,
     initial_positions,
-    settings,
-    radius=0.5,
-    strength=0.5,
-    bound=100,
-    cutoff=20,
-    en=1.0,
-    em=0.5,
-    diffusion_constant=0.0,
-    spring_tension=15.0,
-    rigidity=16.6,
-    damping=1.0,
-    growth_rates=[
-        0.016,
-        0.016,
-        0.016,
-        0.016,
-        0.016,
-        0.016,
-    ],
-    spring_length_thresholds: float | list[float] = [
-        30.0,
-        30.0,
-        8.0,
-        11.0,
-        200.0,
-        200.0,
-    ],
-    growth_rates_new=[
-        (0.016, 0.016),
-        (0.016, 0.016),
-        (0.016, 0.016),
-        (0.016, 0.016),
-        (0, 0),
-        (0, 0),
-    ],
+    settings: crm_fit.Settings,
     show_progress=False,
-):
+) -> crm.CellContainer:
+    (radius, strength, en, em, damping) = params[:5]
+    growth_rates = params[5:11]
+    spring_length_thresholds = params[11:15] + [np.inf, np.inf]
+    growth_rates_new = [
+        *np.array(params[15:23]).reshape((-1, 2)),
+        # These should not come into effect at all
+        (0.0, 0.0),
+        (0.0, 0.0),
+    ]
+
+    config = settings.to_config()
+    if show_progress:
+        config.progressbar = "Run Simulation"
+
     # Define agents
     interaction = crm.MiePotentialF32(
         radius,
         strength,
-        bound,
-        cutoff,
+        settings.parameters.potential_type.clone_inner().bound,
+        settings.constants.cutoff,
         en,
         em,
     )
-
-    if type(spring_length_thresholds) is float:
-        spring_length_thresholds = [spring_length_thresholds] * len(initial_positions)
-    elif type(spring_length_thresholds) is list:
-        pass
-    else:
-        raise TypeError("Expected float or list")
 
     def spring_length(pos):
         dx = np.linalg.norm(pos[1:] - pos[:-1], axis=1)
@@ -313,9 +287,9 @@ def predict(
             pos,
             vel=0 * pos,
             interaction=interaction,
-            diffusion_constant=diffusion_constant,
-            spring_tension=spring_tension,
-            rigidity=rigidity,
+            diffusion_constant=0.0,
+            spring_tension=settings.parameters.spring_tension.get_inner(),
+            rigidity=settings.parameters.rigidity.get_inner(),
             spring_length=spring_length(pos),
             damping=damping,
             growth_rate=growth_rate,
@@ -332,10 +306,6 @@ def predict(
         )
     ]
 
-    # define config
-    config = settings.to_config()
-    if show_progress:
-        config.progressbar = "Run Simulation"
     container = crm.run_simulation_with_agents(config, agents)
     if show_progress:
         print()
@@ -366,28 +336,11 @@ def objective_function(
             now = time.perf_counter_ns()
             times.append((now, message))
 
-    (radius, strength, en, em, damping) = params[:5]
-    growth_rates = params[5:11]
-    spring_length_thresholds = params[11:15]
-    growth_rates_new = [
-        *np.array(params[15:23]).reshape((-1, 2)),
-        # These should not come into effect at all
-        (0.0, 0.0),
-        (0.0, 0.0),
-    ]
-
     try:
         container = predict(
+            params,
             positions_all[0],
             settings,
-            radius=radius,
-            strength=strength,
-            en=en,
-            em=em,
-            damping=damping,
-            growth_rates=growth_rates,
-            spring_length_thresholds=[*spring_length_thresholds, 200.0, 200.0],
-            growth_rates_new=growth_rates_new,
             show_progress=show_progressbar,
         )
     except ValueError or KeyError as e:
@@ -1003,6 +956,59 @@ def plot_snapshots(
         cv.imwrite(f"{output_dir}/masks_diff/{n:06}.png", diff)
 
 
+def default_parameters():
+    radius = 0.4782565
+    strength = 0.584545
+    en = 2.1887856
+    em = 2.2355218
+    damping = 1.0
+    growth_rates = [
+        0.005995107,
+        0.0068584173,
+        0.0070885874,
+        0.009034319,
+        0.007861354,
+        0.008311217,
+    ]
+    spring_length_thresholds = [
+        0.8,
+        0.8,
+        0.8,
+        0.8,
+    ]
+    new_growth_rates = [
+        0.016,
+        0.016,
+        0.016,
+        0.016,
+        0.016,
+        0.016,
+        0.016,
+        0.016,
+    ]
+    x0 = [
+        radius,
+        strength,
+        en,
+        em,
+        damping,
+        *growth_rates,
+        *spring_length_thresholds,
+        *new_growth_rates,
+    ]
+    bounds = (
+        # Radius, Strength, en, em, Damping
+        [(0.003, 1.0), (0.0, 0.6), (0.0, 10.0), (0.0, 10.0), (0.0, 60.0)]
+        # Growth rates
+        + [(0.0000, 0.1)] * 6
+        # Spring length thresholds
+        + [(0.2, 2.0)] * 4
+        # new growth rates
+        + [(0.0000, 0.1)] * 8
+    )
+    return x0, bounds
+
+
 def plot_growth_rate_distribution(final_parameters, output_dir):
     fig, ax = plt.subplots(figsize=(8, 8))
 
@@ -1136,55 +1142,7 @@ def crm_divide_main():
         if pyargs.only_mask_adjustment:
             exit()
 
-    radius = 0.4782565
-    strength = 0.584545
-    en = 2.1887856
-    em = 2.2355218
-    damping = 1.0
-    growth_rates = [
-        0.005995107,
-        0.0068584173,
-        0.0070885874,
-        0.009034319,
-        0.007861354,
-        0.008311217,
-    ]
-    spring_length_thresholds = [
-        0.8,
-        0.8,
-        0.8,
-        0.8,
-    ]
-    new_growth_rates = [
-        0.016,
-        0.016,
-        0.016,
-        0.016,
-        0.016,
-        0.016,
-        0.016,
-        0.016,
-    ]
-    x0 = [
-        radius,
-        strength,
-        en,
-        em,
-        damping,
-        *growth_rates,
-        *spring_length_thresholds,
-        *new_growth_rates,
-    ]
-    bounds = (
-        # Radius, Strength, en, em, Damping
-        [(0.003, 1.0), (0.0, 0.6), (0.0, 10.0), (0.0, 10.0), (0.0, 60.0)]
-        # Growth rates
-        + [(0.0000, 0.1)] * 6
-        # Spring length thresholds
-        + [(0.2, 2.0)] * 4
-        # new growth rates
-        + [(0.0000, 0.1)] * 8
-    )
+    x0, bounds = default_parameters()
     parent_penalty = 0.5
     args = (
         positions_all,
