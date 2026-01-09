@@ -1175,9 +1175,8 @@ def crm_divide_main():
     parser.add_argument("--data-dir", type=Path, default=Path("data/crm_divide/0001/"))
     pyargs = parser.parse_args()
 
-    n_workers = pyargs.workers
-    if n_workers <= 0:
-        n_workers = mp.cpu_count()
+    if pyargs.workers <= 0:
+        pyargs.workers = mp.cpu_count()
 
     iteration = pyargs.iteration
     if pyargs.iteration is None:
