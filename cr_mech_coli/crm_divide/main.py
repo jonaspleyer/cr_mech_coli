@@ -715,18 +715,35 @@ def __calculate_single_cost(optargs):
     assert len(x0) + 1 == len(parameters)
     assert len(bounds_reduced) + 1 == len(bounds)
 
-    res = sp.optimize.minimize(
-        __optimize_around_single,
-        x0=x0,
-        method="Nelder-Mead",
-        bounds=bounds_reduced,
-        args=(p, n, args),
-        options={
-            "disp": False,
-            "maxiter": pyargs.profiles_maxiter,
-            "maxfev": pyargs.profiles_maxiter,
-        },
-    )
+    if pyargs.profiles_optim_method == "differential_evolution":
+        res = sp.optimize.differential_evolution(
+            __optimize_around_single,
+            x0=x0,
+            bounds=bounds_reduced,
+            args=(p, n, args),
+            popsize=pyargs.popsize,
+            mutation=(pyargs.mutation_lower, pyargs.mutation_upper),
+            recombination=pyargs.recombination,
+            tol=pyargs.tol,
+            init="latinhypercube",
+            strategy="best1bin",
+            maxiter=pyargs.profiles_maxiter,
+            workers=1,
+            disp=True,
+        )
+    else:
+        res = sp.optimize.minimize(
+            __optimize_around_single,
+            x0=x0,
+            method="Nelder-Mead",
+            bounds=bounds_reduced,
+            args=(p, n, args),
+            options={
+                "disp": False,
+                "maxiter": pyargs.profiles_maxiter,
+                "maxfev": pyargs.profiles_maxiter,
+            },
+        )
     all_params = np.array([*res.x[:n], p, *res.x[n:]])
     return objective_function(
         all_params, *args, print_costs=False, return_split_cost=True
@@ -1152,6 +1169,9 @@ def crm_divide_main():
     parser.add_argument("--polish-maxiter", type=int, default=20)
     parser.add_argument("--profiles-maxiter", type=int, default=20)
     parser.add_argument("--profiles-samples", type=int, default=60)
+    parser.add_argument(
+        "--profiles-optim-method", type=str, default="differential_evolution"
+    )
     parser.add_argument("--data-dir", type=Path, default=Path("data/crm_divide/0001/"))
     pyargs = parser.parse_args()
 
