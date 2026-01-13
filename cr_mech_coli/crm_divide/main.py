@@ -41,6 +41,7 @@ import time
 import argparse
 import multiprocessing as mp
 import cv2 as cv
+from scipy.stats import qmc
 
 import cr_mech_coli as crm
 from cr_mech_coli import crm_fit, crm_divide
@@ -729,12 +730,23 @@ def __calculate_single_cost(optargs):
             strategy="best1bin",
             maxiter=pyargs.profiles_maxiter,
             workers=1,
-            disp=True,
+            disp=False,
         )
     else:
+        sampler = qmc.LatinHypercube(d=len(x0))
+        sample = sampler.random(pyargs.profiles_lhs_sample_size)
+        sample = qmc.scale(sample, bounds_reduced[:, 0], bounds_reduced[:, 1])
+        sample = np.array([*sample, x0])
+
+        costs = []
+        for s in sample:
+            costs.append(__optimize_around_single(s, p, n, args))
+
+        ind = np.argmin(costs)
+
         res = sp.optimize.minimize(
             __optimize_around_single,
-            x0=x0,
+            x0=sample[ind],
             method="Nelder-Mead",
             bounds=bounds_reduced,
             args=(p, n, args),
@@ -1172,6 +1184,7 @@ def crm_divide_main():
     parser.add_argument(
         "--profiles-optim-method", type=str, default="differential_evolution"
     )
+    parser.add_argument("--profiles-lhs-sample-size", type=int, default=50)
     parser.add_argument("--data-dir", type=Path, default=Path("data/crm_divide/0001/"))
     pyargs = parser.parse_args()
 
