@@ -748,13 +748,25 @@ def __calculate_single_cost(optargs):
 
         costs = []
         for s in sample:
-            costs.append(__optimize_around_single(s, p, n, args))
+            res = sp.optimize.minimize(
+                __optimize_around_single,
+                x0=s,
+                method="Nelder-Mead",
+                bounds=bounds_reduced,
+                args=(p, n, args),
+                options={
+                    "disp": False,
+                    "maxiter": pyargs.profiles_lhs_maxiter,
+                },
+            )
+            costs.append((res.fun, res.x))
 
         ind = np.argmin(costs)
+        x0 = costs[ind][1]
 
         res = sp.optimize.minimize(
             __optimize_around_single,
-            x0=sample[ind],
+            x0=x0,
             method="Nelder-Mead",
             bounds=bounds_reduced,
             args=(p, n, args),
@@ -1195,6 +1207,7 @@ def crm_divide_main():
         "--profiles-optim-method", type=str, default="differential_evolution"
     )
     parser.add_argument("--profiles-lhs-sample-size", type=int, default=50)
+    parser.add_argument("--profiles-lhs-maxiter", type=int, default=10)
     parser.add_argument("--data-dir", type=Path, default=Path("data/crm_divide/0001/"))
     pyargs = parser.parse_args()
 
