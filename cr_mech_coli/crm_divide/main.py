@@ -256,11 +256,11 @@ def predict(
     settings: crm_fit.Settings,
     show_progress=False,
 ) -> crm.CellContainer:
-    (radius, strength, en, em, damping) = params[:5]
-    growth_rates = params[5:11]
-    spring_length_thresholds = [*params[11:15], np.inf, np.inf]
+    (radius, strength, potential_stiffness) = params[:3]
+    growth_rates = params[3:9]
+    spring_length_thresholds = [*params[9:13], np.inf, np.inf]
     growth_rates_new = [
-        *np.array(params[15:23]).reshape((-1, 2)),
+        *np.array(params[13:21]).reshape((-1, 2)),
         # These should not come into effect at all
         (0.0, 0.0),
         (0.0, 0.0),
@@ -271,13 +271,19 @@ def predict(
         config.progressbar = "Run Simulation"
 
     # Define agents
-    interaction = crm.MiePotentialF32(
+    # interaction = crm.MiePotentialF32(
+    #     radius,
+    #     strength,
+    #     settings.parameters.potential_type.clone_inner().bound,
+    #     settings.constants.cutoff,
+    #     en,
+    #     em,
+    # )
+    interaction = crm.MorsePotentialF32(
         radius,
-        strength,
-        settings.parameters.potential_type.clone_inner().bound,
+        potential_stiffness,
         settings.constants.cutoff,
-        en,
-        em,
+        strength,
     )
 
     def spring_length(pos):
@@ -293,7 +299,7 @@ def predict(
             spring_tension=settings.parameters.spring_tension.get_inner(),
             rigidity=settings.parameters.rigidity.get_inner(),
             spring_length=spring_length(pos),
-            damping=damping,
+            damping=settings.parameters.damping.get_inner(),
             growth_rate=growth_rate,
             growth_rate_setter={"g1": g1, "g2": g2},
             spring_length_threshold=spring_length_threshold,
@@ -533,9 +539,10 @@ def plot_mask_adjustment(
 ):
     radius = 0.4782565
     strength = 0.01
-    en = 6.0
-    em = 0.5
-    damping = 2.0
+    # en = 6.0
+    # em = 0.5
+    potential_stiffness = 1.0
+    # damping = 2.0
     growth_rates = [
         0.005995107,
         0.0068584173,
@@ -549,9 +556,10 @@ def plot_mask_adjustment(
     x0 = [
         radius,
         strength,
-        en,
-        em,
-        damping,
+        potential_stiffness,
+        # en,
+        # em,
+        # damping,
         *growth_rates,
         *spring_length_thresholds,
         *new_growth_rates,
@@ -1027,9 +1035,10 @@ def plot_snapshots(
 def default_parameters():
     radius = 0.4782565
     strength = 0.584545
-    en = 2.1887856
-    em = 2.2355218
-    damping = 1.0
+    potential_stiffness = 1.0
+    # en = 2.1887856
+    # em = 2.2355218
+    # damping = 1.0
     growth_rates = [
         0.005995107,
         0.0068584173,
@@ -1057,16 +1066,20 @@ def default_parameters():
     x0 = [
         radius,
         strength,
-        en,
-        em,
-        damping,
+        potential_stiffness,
+        # en,
+        # em,
+        # damping,
         *growth_rates,
         *spring_length_thresholds,
         *new_growth_rates,
     ]
     bounds = (
-        # Radius, Strength, en, em, Damping
-        [(0.003, 1.0), (0.0, 0.6), (0.0, 10.0), (0.0, 10.0), (0.0, 60.0)]
+        [
+            (0.003, 1.0),  # Radius
+            (0.0, 0.6),  # Strength
+            (0.0, 15.0),  # Potential Stiffness
+        ]
         # Growth rates
         + [(0.0000, 0.1)] * 6
         # Spring length thresholds
@@ -1277,9 +1290,10 @@ def crm_divide_main():
         labels = [
             "Radius",
             "Strength",
-            "Exponent n",
-            "Exponent m",
-            "Damping",
+            "Potential Stiffness",
+            # "Exponent n",
+            # "Exponent m",
+            # "Damping",
             "Growth Rate 0",
             "Growth Rate 1",
             "Growth Rate 2",
