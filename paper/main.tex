@@ -1143,8 +1143,13 @@ We can use the previously introduced \nameref{subsection:visualization} methods 
 from the numerical results of the \ac{abm} simulation.
 Since we utilize an in-image encoding scheme, each pixel has a unique color value which is directly
 related to one particular cell or background (black).
+However, in the strictly 2D case, where cells should not be able to hide behind each other, it is
+also important to determine possible overlaps of segmentation regions for individual cells.
+These overlaps stem from parameter combinations which exhibit a low repulsive interaction force.
+Since such overlaps are unrealistic, we need to assign an additional penalty $p_o\geq0$ in this case.
+They can by definition not be found in the provided data segmentation masks.
 We can now compare the two masks pixel by pixel.
-Whenever two colors are not matching, a penalty of $p\in[0,1]$ is assigned for each point in the
+Whenever two colors are not matching, a penalty of $p=1$ is assigned for each point in the
 pixel-grid.
 With this approach it is important to take into account the parental relationship between the cells,
 by checking if either one of the colors corresponding to the compared cells is a daughter of the
@@ -1168,6 +1173,7 @@ The total cost between two images $I^1$ and $I^2$ is the sum of all individual p
 \begin{align*}
     L_I(I^1,I^2) &= \sum\limits_{i,j} p(I^1_{ij}, I^2_{ij})\\
     p(i^1,i^2) &= \begin{cases*}
+        p_o & \text{if $i^1$ or $i^2$ is in overlap}\\
         p_p & \text{if $i^1$ is daughter/mother of $i^2$}\\
         1 & \text{if } $i^1\neq i^2$\\
         0 & \text{else}
