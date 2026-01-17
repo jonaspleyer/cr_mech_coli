@@ -147,7 +147,7 @@ def load_or_compute_container(
         return container
     else:
         res = run_sim(ml_config, store_positions=store_positions)
-        if res.path is not None:
+        if res.path is not None and ml_config.config.progressbar is not None:
             print()
         return res
 
