@@ -42,7 +42,13 @@ class MorsePotentialF32:
     strength: np.float32
 
     @staticmethod
-    def __new__(cls, **kwargs) -> MorsePotentialF32: ...
+    def __new__(
+        cls,
+        radius: np.float32,
+        potential_stiffness: np.float32,
+        cutoff: np.float32,
+        strength: np.float32,
+    ) -> MorsePotentialF32: ...
 
 class SpringLengthThresholdSetter:
     l1: np.float32
@@ -139,7 +145,6 @@ class RodAgent:
     radius: np.float32
     growth_rate: np.float32
     spring_length_threshold: np.float32
-    damping: np.float32
     @staticmethod
     def __new__(
         cls,
