@@ -277,7 +277,7 @@ def sample_parameters(
 def __run_helper(args):
     (ml_config_str, out_path, store_positions) = args
     ml_config = MultilayerConfig.load_from_toml_str(ml_config_str)
-    load_or_compute_ydata(ml_config, out_path, store_positions)
+    return load_or_compute_ydata(ml_config, out_path, store_positions)
 
 
 def load_or_compute_ydata_samples(
