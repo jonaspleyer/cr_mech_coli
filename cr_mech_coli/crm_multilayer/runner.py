@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Iterator
 import cr_mech_coli as crm
 from pathlib import Path
 import numpy as np
@@ -15,7 +15,7 @@ def produce_ml_config(*args: tuple[str, Any]) -> MultilayerConfig:
     """
     Produces a :class:`MultilayerConfig` with default parameters.
     """
-    ml_config = crm.crm_multilayer.MultilayerConfig()
+    ml_config = MultilayerConfig()
 
     # TIME SETTINGS
     ml_config.config.dt = 0.05
@@ -243,7 +243,7 @@ def sample_parameters(
     samples_all = []
 
     if len(args) == 0:
-        return None
+        return []
 
     for value in args:
         sample_info = __create_full_sample([value[i] for i in range(1, len(value))])
@@ -259,8 +259,8 @@ def sample_parameters(
     for i, a in enumerate(np.ix_(*samples_all)):
         samples[..., i] = a
 
-    for param_combination in samples.reshape(-1, len(samples_all)):
-        pass
+    ml_configs = []
+    for n_sample, param_combination in enumerate(samples.reshape(-1, len(samples_all))):
         # Assign parameters to new multilayerconfig here
         if ml_config_default is not None:
             ml_config = ml_config_default.clone_with_args()
@@ -268,7 +268,10 @@ def sample_parameters(
             ml_config = produce_ml_config()
         for setter, p in zip(param_setters, param_combination):
             __set_ml_config(ml_config, setter, p)
-        yield ml_config
+        ml_config.config.storage_suffix = f"{n_sample:04}"
+        ml_configs.append(ml_config)
+
+    return ml_configs, samples
 
 
 def __run_helper(args):
@@ -278,7 +281,7 @@ def __run_helper(args):
 
 
 def load_or_compute_ydata_samples(
-    ml_configs,
+    ml_configs: Iterator[MultilayerConfig] | list[MultilayerConfig],
     n_threads_total: int | None = None,
     out_path=Path("out/crm_multilayer"),
     store_positions=True,
@@ -288,8 +291,8 @@ def load_or_compute_ydata_samples(
         n_threads_total = mp.cpu_count()
 
     # Calculate multiple results with a pool
+    n_total = len(ml_configs) if type(ml_configs) is list else None
     pool = mp.Pool(n_threads_total)
-    n_samples = len(ml_configs)
     arglist = zip(
         (m.to_toml_string() for m in ml_configs),
         itertools.repeat(out_path),
@@ -297,9 +300,11 @@ def load_or_compute_ydata_samples(
     )
     results = list(
         tqdm(
-            pool.imap(__run_helper, arglist),
-            total=n_samples,
+            pool.imap(__run_helper, arglist)
+            if n_threads_total > 1
+            else (__run_helper(a) for a in arglist),
             disable=not show_progressbar,
+            total=n_total,
         )
     )
 
