@@ -28,7 +28,7 @@ growth_rate = { min=0.0, max=0.08, initial=0.016, individual=true }
 
 [parameters.potential_type.Morse]
 potential_stiffness = { min=0.0, max=5.0, initial=0.5 }
-strength = { min=0.0, max=30.0, initial=1.0 }
+# strength = { min=0.0, max=30.0, initial=1.0 }
 
 # [optimization.lhs_nelder_mead]
 # max_iter = 100
