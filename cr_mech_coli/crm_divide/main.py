@@ -578,13 +578,13 @@ def plot_mask_adjustment(
         masks_predicted,
         color_to_cell,
         parent_map,
-        container,
+        _,
     ) = objective_function_return_all(x0, *args, show_progressbar=True)
 
     (output_dir / "mask_adjustments").mkdir(parents=True, exist_ok=True)
-    for mask_predicted, mask_adjusted, mask_data, mask_iter in tqdm(
+    for (mask_predicted, overlap), mask_adjusted, mask_data, mask_iter in tqdm(
         zip(
-            [masks_predicted[i][0] for i in iterations_data],
+            masks_predicted,
             masks_adjusted,
             masks_data,
             iterations_data,
@@ -861,9 +861,6 @@ def plot_profiles(
 
         x_full = np.array(x)[filt]
         x = np.array(x)[filt]
-
-        print(labels[n], len(x), np.sum(~filt))
-        print(costs[:, n, 0])
 
         # Add entry for final cost
         # Sort entries by value of the parameter
