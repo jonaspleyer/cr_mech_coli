@@ -741,29 +741,6 @@ def __calculate_single_cost(optargs):
             disp=False,
         )
     else:
-        sampler = qmc.LatinHypercube(d=len(x0))
-        sample = sampler.random(pyargs.profiles_lhs_sample_size)
-        sample = qmc.scale(sample, bounds_reduced[:, 0], bounds_reduced[:, 1])
-        sample = np.array([*sample, x0])
-
-        costs = []
-        for s in sample:
-            res = sp.optimize.minimize(
-                __optimize_around_single,
-                x0=s,
-                method="Nelder-Mead",
-                bounds=bounds_reduced,
-                args=(p, n, args),
-                options={
-                    "disp": False,
-                    "maxiter": pyargs.profiles_lhs_maxiter,
-                },
-            )
-            costs.append((res.fun, res.x))
-
-        ind = np.argmin(costs)
-        x0 = costs[ind][1]
-
         res = sp.optimize.minimize(
             __optimize_around_single,
             x0=x0,
@@ -777,21 +754,61 @@ def __calculate_single_cost(optargs):
             },
         )
     all_params = np.array([*res.x[:n], p, *res.x[n:]])
-    return objective_function(
+    costs = objective_function(
         all_params, *args, print_costs=False, return_split_cost=True
     )
+    return res.x, costs
 
 
-def reconstruct_costs(costs_filtered, filter):
-    costs = []
-    counter = 0
-    for f in filter:
-        if f:
-            costs.append(costs_filtered[counter])
-            counter += 1
+def __produce_tasks(parameters, bounds, n_samples):
+    b_low = np.array(bounds)[:, 0]
+    b_high = np.array(bounds)[:, 1]
+    samples = np.linspace(b_low, b_high, n_samples)
+
+    tasks = []
+    # Create tasks running up and down the ladder of parameters from the known optimum
+    for n in range(len(parameters)):
+        popt = parameters[n]
+        subsamples = samples[:, n]
+        lower = subsamples[subsamples < popt]
+        upper = subsamples[subsamples > popt]
+
+        tasks.append((n, parameters, lower[::-1], True))
+        tasks.append((n, parameters, upper, False))
+
+    return tasks
+
+
+def __minimize_single_task(optargs):
+    task, args, bounds, pyargs, start = optargs
+    n, params, samples, _ = task
+    results = []
+    for x in samples:
+        if len(results) > 1:
+            gradient = results[-1][0] - results[-2][0]
+            x0_guess = np.array(params)[np.arange(len(params)) != n]
+            x0_guess += gradient
+            x0_guess = np.array([*x0_guess[:n], x, *x0_guess[n:]])
         else:
-            costs.append((np.nan, np.nan, np.nan))
-    return np.array(costs)
+            x0_guess = np.array(params)
+            x0_guess[n] = x
+        optargs = (n, x, x0_guess, bounds, args, pyargs)
+        results.append(__calculate_single_cost(optargs))
+
+        # Counter is a global varible which is initialized when creating the pool
+        with counter.get_lock():
+            counter.value += 1
+            n_counts = counter.value
+            n_total = len(params) * pyargs.profiles_samples
+            elapsed = time.time() - start
+            remaining = (n_total / n_counts - 1) * elapsed
+            perc = n_counts / n_total * 100
+            print(
+                f"Profiles {n_counts:5}/{n_total:5} | {perc:5.1f}% elapsed: {elapsed:5.0f}s < {remaining:5.0f}s",
+                end="\r",
+            )
+
+    return results
 
 
 def plot_profiles(
@@ -803,15 +820,11 @@ def plot_profiles(
     output_dir,
     pyargs,
 ):
-    from itertools import repeat
-
     n_samples = pyargs.profiles_samples
     # First try loading results
     try:
-        costs_filtered = np.load(output_dir / "profile-costs.npy")
-        filter = np.load(output_dir / "profile-costs-filter.npy")
         samples = np.load(output_dir / "profile-samples.npy")
-        costs = reconstruct_costs(costs_filtered, filter)
+        costs = np.load(output_dir / "profile-costs.npy")
     except:
         b_low = np.array(bounds)[:, 0]
         b_high = np.array(bounds)[:, 1]
@@ -829,20 +842,34 @@ def plot_profiles(
             )
         )
 
-        costs = process_map(
-            __calculate_single_cost,
-            arglist,
-            total=int(np.prod(n_param.shape)),
-            desc="Calculating Costs",
-            max_workers=pyargs.workers,
-        )
-        # Filter out error costs
-        filter = np.array([c != ERROR_COST for c in costs])
-        costs_filtered = np.array([c for c in costs if c != ERROR_COST])
-        costs = reconstruct_costs(costs_filtered, filter)
+        # Ignore warnings
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
 
-        np.save(output_dir / "profile-costs.npy", costs_filtered)
-        np.save(output_dir / "profile-costs-filter.npy", filter)
+            def init_pool(shared_value):
+                global counter
+                counter = shared_value
+
+            start = time.time()
+            counter = mp.Value("i", 0)
+            tasks = __produce_tasks(parameters, bounds, n_samples)
+            pool = mp.Pool(pyargs.workers, initializer=init_pool, initargs=(counter,))
+
+            arglist = ((t, args, bounds, pyargs, start) for t in tasks)
+            results = list(pool.imap(__minimize_single_task, arglist, chunksize=1))
+
+        costs = np.zeros((len(parameters), n_samples, 3))
+        for task, res in zip(tasks, results):
+            n, _, _, is_lower = task
+            costs_sub = np.array(
+                [r[1] if type(r[1]) is tuple else (np.nan, np.nan, np.nan) for r in res]
+            )
+            if is_lower:
+                costs[n, : len(costs_sub)] = costs_sub
+            else:
+                costs[n, -len(costs_sub) :] = costs_sub
+
+        np.save(output_dir / "profile-costs.npy", costs)
         np.save(output_dir / "profile-samples.npy", samples)
 
     costs = np.array(costs).reshape((n_samples, len(parameters), 3))
@@ -953,8 +980,10 @@ def plot_timings(
     fig.savefig(output_dir / "timings.png")
 
 
-def calculate_single(args):
-    return (args[0], objective_function(*args))
+def callback(intermediate_result):
+    fun = intermediate_result.fun
+    global evals
+    evals.append(float(fun))
 
 
 def run_optimizer(
@@ -968,11 +997,6 @@ def run_optimizer(
     global evals
     evals = []
 
-    def callback(intermediate_result):
-        fun = intermediate_result.fun
-        global evals
-        evals.append(float(fun))
-
     # Try loading data
     if iteration is not None:
         result = np.loadtxt(output_dir / "optimize_result.csv")
@@ -980,39 +1004,7 @@ def run_optimizer(
         final_parameters = result[:-1]
         final_cost = result[-1]
     else:
-        res = sp.optimize.differential_evolution(
-            objective_function,
-            x0=params,
-            bounds=bounds,
-            args=args,
-            disp=True,
-            maxiter=pyargs.maxiter,
-            popsize=pyargs.popsize,
-            mutation=(pyargs.mutation_lower, pyargs.mutation_upper),
-            recombination=pyargs.recombination,
-            tol=pyargs.tol,
-            workers=pyargs.workers,
-            updating="deferred",
-            polish=False,
-            init="latinhypercube",
-            strategy="best1bin",
-            callback=callback,
-        )
-        if not pyargs.skip_polish:
-            res = sp.optimize.minimize(
-                objective_function,
-                x0=res.x,
-                method="Nelder-Mead",
-                bounds=bounds,
-                args=args,
-                options={
-                    "disp": True,
-                    "maxiter": pyargs.polish_maxiter,
-                    "maxfev": pyargs.polish_maxiter,
-                },
-            )
-        final_parameters = res.x
-        final_cost = res.fun
+
         np.savetxt(output_dir / "optimize_result.csv", [*final_parameters, final_cost])
         np.savetxt(output_dir / "optimization_evals.csv", evals)
 
