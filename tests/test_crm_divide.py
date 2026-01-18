@@ -82,3 +82,26 @@ def test_objective_function_return_timings():
     assert type(timings[0][0]) is int
     assert type(timings[0][1]) is str
     assert len(timings) == 7
+
+
+def test_produce_tasks():
+    x0 = np.array([1.1, 2.05, 3.001])
+    bounds = np.array(
+        [
+            (0, 2),
+            (0, 5),
+            (1, 4),
+        ]
+    )
+
+    n_samples = 7
+    tasks = crd.main.__produce_tasks(x0, bounds, n_samples)
+
+    counts = np.zeros(3)
+    lengths = np.zeros(3)
+    for n, _, t, is_lower in tasks:
+        counts[n] += 1
+        lengths[n] += len(t)
+
+    assert np.all(counts == 2)
+    assert np.all(lengths == n_samples)
