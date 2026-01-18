@@ -1134,6 +1134,86 @@ def plot_growth_rate_distribution(final_parameters, output_dir):
     plt.close(fig)
 
 
+def __lhs_optim_func(args, polish=False):
+    ((sample, bounds, oargs), pyargs, callback) = args
+    res = sp.optimize.minimize(
+        objective_function,
+        x0=sample,
+        method=pyargs.local_method if not polish else pyargs.polish_method,
+        bounds=bounds,
+        args=oargs,
+        options={
+            "disp": False,
+            "maxiter": pyargs.local_maxiter if not polish else pyargs.polish_maxiter,
+            "maxfev": pyargs.local_maxiter if not polish else pyargs.polish_maxiter,
+        },
+        callback=callback,
+    )
+    return res.x, res.fun
+
+
+def minimize_lhs(params, bounds, args, callback, pyargs):
+    bounds = np.array(bounds)
+    print(bounds.shape)
+    print(len(params))
+
+    sampler = qmc.LatinHypercube(d=len(params))
+    sample = sampler.random(pyargs.profiles_lhs_sample_size)
+    sample = qmc.scale(sample, bounds[:, 0], bounds[:, 1])
+    sample = np.array([*sample, params])
+
+    arglist = [((s, bounds, args), pyargs, callback) for s in sample]
+
+    pool = mp.Pool(pyargs.workers)
+    results = list(pool.imap(__lhs_optim_func, arglist))
+    ind = np.argmin([r[1] for r in results])
+
+    final_parameters = sample[ind]
+    final_cost = results[ind]
+
+    if not pyargs.polish_skip:
+        final_parameters, final_cost = __lhs_optim_func(
+            ((final_parameters, bounds, args), pyargs, callback)
+        )
+
+    return final_parameters, final_cost
+
+
+def minimize_de(params, bounds, args, callback, pyargs):
+    res = sp.optimize.differential_evolution(
+        objective_function,
+        x0=params,
+        bounds=bounds,
+        args=args,
+        disp=True,
+        maxiter=pyargs.maxiter,
+        popsize=pyargs.popsize,
+        mutation=(pyargs.mutation_lower, pyargs.mutation_upper),
+        recombination=pyargs.recombination,
+        tol=pyargs.tol,
+        workers=pyargs.workers,
+        updating="deferred",
+        polish=False,
+        init="latinhypercube",
+        strategy="best1bin",
+        callback=callback,
+    )
+    if not pyargs.skip_polish:
+        res = sp.optimize.minimize(
+            objective_function,
+            x0=res.x,
+            method="Nelder-Mead",
+            bounds=bounds,
+            args=args,
+            options={
+                "disp": False,
+                "maxiter": pyargs.polish_maxiter,
+                "maxfev": pyargs.polish_maxiter,
+            },
+        )
+    return res.x, res.fun
+
+
 def crm_divide_main():
     parser = argparse.ArgumentParser(
         description="Fits the Bacterial Rods model to a system of cells."
