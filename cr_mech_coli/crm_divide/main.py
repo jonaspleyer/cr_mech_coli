@@ -293,6 +293,9 @@ def plot_profiles(
     try:
         samples = np.load(output_dir / "profile-samples.npy")
         costs = np.load(output_dir / "profile-costs.npy")
+
+        assert samples.shape == (n_samples, len(parameters))
+        assert costs.shape[:2] == samples.shape
     except:
         samples, costs = calculate_profiles(
             parameters,
