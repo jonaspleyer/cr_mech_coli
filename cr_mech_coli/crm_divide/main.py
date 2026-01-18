@@ -355,7 +355,7 @@ def objective_function(
         if return_all:
             raise e
         if print_costs:
-            print(f"f(x)={ERROR_COST:10.1f} ERROR: {e}")
+            print(f"f(x)={ERROR_COST:10.1f}")
         return ERROR_COST
     iterations_simulation = np.array(container.get_all_iterations()).astype(int)
 
@@ -368,9 +368,9 @@ def objective_function(
             iterations_data,
             positions_all,
         )
-    except Exception as e:
+    except Exception:
         if print_costs:
-            print(f"f(x)={ERROR_COST:10.1f} ERROR: {e}")
+            print(f"f(x)={ERROR_COST:10.1f}")
         return ERROR_COST
 
     update_time("Masks\n(Adjust)")
@@ -399,9 +399,9 @@ def objective_function(
                 disable=not show_progressbar,
             )
         ]
-    except ValueError as e:
+    except ValueError:
         if print_costs:
-            print(f"f(x)={ERROR_COST:10.1f} ERROR: {e}")
+            print(f"f(x)={ERROR_COST:10.1f}")
         return ERROR_COST
 
     update_time("Masks\n(Render)")
