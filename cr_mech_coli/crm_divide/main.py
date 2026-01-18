@@ -1193,14 +1193,34 @@ def crm_divide_main():
         default=-1,
         help="Number of threads to utilize",
     )
-    parser.add_argument("--maxiter", type=int, default=100)
-    parser.add_argument("--popsize", type=int, default=15)
-    parser.add_argument("--recombination", type=float, default=0.6)
-    parser.add_argument("--tol", type=float, default=0.01)
-    parser.add_argument("--mutation-upper", type=float, default=1.2)
-    parser.add_argument("--mutation-lower", type=float, default=0.0)
-    parser.add_argument("--skip-polish", action="store_true")
-    parser.add_argument("--polish-maxiter", type=int, default=20)
+
+    parsers_optim = parser.add_subparsers(required=True)
+    parser_de = parsers_optim.add_parser(
+        "DE",
+        help="Use the differential_evolution algorithm for optimization",
+    )
+    parser_de.add_argument("--maxiter", type=int, default=100)
+    parser_de.add_argument("--popsize", type=int, default=15)
+    parser_de.add_argument("--recombination", type=float, default=0.6)
+    parser_de.add_argument("--tol", type=float, default=0.01)
+    parser_de.add_argument("--mutation-upper", type=float, default=1.2)
+    parser_de.add_argument("--mutation-lower", type=float, default=0.0)
+    parser_de.add_argument("--skip-polish", action="store_true")
+    parser_de.add_argument("--polish-maxiter", type=int, default=20)
+    parser_de.set_defaults(func=minimize_de)
+
+    parser_lhs = parsers_optim.add_parser(
+        "LHS",
+        help="Use the Latin-Hypercube Sampling with some local minimization for optimization",
+    )
+    parser_lhs.add_argument("--samples", type=int, default=1000)
+    parser_lhs.add_argument("--local-maxiter", type=int, default=50)
+    parser_lhs.add_argument("--local-method", type=str, default="Nelder-Mead")
+    parser_lhs.add_argument("--polish-skip", action="store_true")
+    parser_lhs.add_argument("--polish-maxiter", type=int, default=100)
+    parser_lhs.add_argument("--polish-method", type=str, default="Nelder-Mead")
+    parser_lhs.set_defaults(func=minimize_lhs)
+
     parser.add_argument("--profiles-maxiter", type=int, default=20)
     parser.add_argument("--profiles-samples", type=int, default=60)
     parser.add_argument(
