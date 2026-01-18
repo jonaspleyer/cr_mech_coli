@@ -325,39 +325,74 @@ def plot_profiles(
         y1 = costs[:, n, 0]
         y2 = costs[:, n, 1]
         y3 = costs[:, n, 2]
-        # filt = ~(np.isnan(y1) * np.isnan(y2) * np.isnan(y3))
-        # filt = ~np.isnan(np.any(costs[:, n, :], axis=1))
         filt = costs[:, n, 0] != np.nan
         filt2 = costs[:, n, 0] <= 40_000
         filt *= filt2
 
-        cost_with_overlap = y2[filt]
-        cost_with_overlap_and_parent_penalty_one = y1[filt] + y3[filt]
-        cost_without_overlap = y2[filt] - y3[filt]
+        # Cost with overlap
+        cwo = y2[filt]
+        # Cost without overlap
+        cwoup = y2[filt] - y3[filt]
+        # Cost with overlap and parent penalty = 1
+        cwopp1 = y1[filt] + y3[filt]
 
-        x_full = np.array(x)[filt]
         x = np.array(x)[filt]
 
         # Add entry for final cost
         # Sort entries by value of the parameter
-        cost_with_overlap = np.array([*cost_with_overlap, final_cost])
-        x_full = np.array([*x_full, p])
-        sorter = np.argsort(x_full)
-        cost_with_overlap = cost_with_overlap[sorter]
-        x_full = x_full[sorter]
 
-        ax.plot(x_full, cost_with_overlap, c=crm.plotting.COLOR3)
-        ax.plot(x, cost_without_overlap, c=crm.plotting.COLOR3, linestyle="--")
+        cwo_fin = final_costs[1]
+        cwoup_fin = final_costs[1] - final_costs[2]
+        cwopp1_fin = final_costs[0] + final_costs[2]
+
+        cwo = np.array([*cwo, cwo_fin])
+        cwoup = np.array([*cwoup, cwoup_fin])
+        cwopp1 = np.array([*cwopp1, cwopp1_fin])
+
+        # Correctly sort new values
+        x = np.array([*x, p])
+        sorter = np.argsort(x)
+        x = x[sorter]
+
+        cwo = cwo[sorter]
+        cwoup = cwoup[sorter]
+        cwopp1 = cwopp1[sorter]
+
         ax.plot(
             x,
-            cost_with_overlap_and_parent_penalty_one,
+            cwo,
+            c=crm.plotting.COLOR3,
+            label="Metric",
+        )
+        ax.plot(
+            x,
+            cwoup,
+            c=crm.plotting.COLOR3,
+            linestyle="--",
+            label="No Overlap",
+        )
+        ax.plot(
+            x,
+            cwopp1,
             c=crm.plotting.COLOR3,
             linestyle=":",
+            label="No Parent Penalty",
+        )
+        ax.legend(
+            loc="upper center",
+            bbox_to_anchor=(0.5, 1.15),
+            ncol=2,
+            frameon=False,
         )
 
-        # ax.scatter([parameters[n]], [0], c=crm.plotting.COLOR5, marker="x")
-        ax.scatter([parameters[n]], [final_cost], c=crm.plotting.COLOR5, marker="x")
-        ax.set_title(labels[n])
+        ax.scatter([parameters[n]], [cwo_fin], c=crm.plotting.COLOR5, marker="x")
+        ax.scatter([parameters[n]], [cwoup_fin], c=crm.plotting.COLOR5, marker="x")
+        ax.scatter([parameters[n]], [cwopp1_fin], c=crm.plotting.COLOR5, marker="x")
+
+        ax.set_xlabel(labels[n])
+        ax.set_ylabel("Cost Contribution")
+        ax.ticklabel_format(axis="y", style="sci")
+
         odir = output_dir / "profiles"
         odir.mkdir(parents=True, exist_ok=True)
         fig.savefig(odir / f"profile-{n:06}.png")
