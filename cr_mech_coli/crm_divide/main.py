@@ -283,7 +283,7 @@ def plot_profiles(
     parameters: np.ndarray,
     bounds,
     labels: list,
-    final_cost: float,
+    final_costs: tuple[float, float, float],
     args,
     output_dir,
     pyargs,
@@ -775,11 +775,21 @@ def crm_divide_main():
             "Growth Rate 3-0",
             "Growth Rate 3-1",
         ]
+        final_costs = objective_function(
+            final_parameters,
+            positions_all,
+            settings,
+            masks_data,
+            iterations_data,
+            return_split_cost=True,
+            print_costs=False,
+            show_progressbar=True,
+        )
         plot_profiles(
             final_parameters,
             bounds,
             labels,
-            final_cost,
+            final_costs,
             args,
             output_dir,
             pyargs,
