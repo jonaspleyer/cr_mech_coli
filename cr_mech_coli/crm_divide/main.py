@@ -749,7 +749,7 @@ def __calculate_single_cost(optargs):
             bounds=bounds_reduced,
             args=(p, n, args),
             options={
-                "disp": False,
+                "disp": True,
                 "maxiter": pyargs.profiles_maxiter,
                 "maxfev": pyargs.profiles_maxiter,
             },
