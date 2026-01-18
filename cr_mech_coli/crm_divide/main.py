@@ -866,7 +866,7 @@ def plot_profiles(
                 [r[1] if type(r[1]) is tuple else (np.nan, np.nan, np.nan) for r in res]
             )
             if is_lower:
-                costs[n, : len(costs_sub)] = costs_sub
+                costs[n, : len(costs_sub)] = costs_sub[::-1]
             else:
                 costs[n, -len(costs_sub) :] = costs_sub
 
