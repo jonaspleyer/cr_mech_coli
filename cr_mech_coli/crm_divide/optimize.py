@@ -29,8 +29,6 @@ def __lhs_optim_func(args, polish=False):
 
 def minimize_lhs(params, bounds, args, callback, pyargs):
     bounds = np.array(bounds)
-    print(bounds.shape)
-    print(len(params))
 
     sampler = qmc.LatinHypercube(d=len(params))
     sample = sampler.random(pyargs.profiles_lhs_sample_size)
@@ -170,7 +168,6 @@ def calculate_profiles(parameters, bounds, n_samples, args, pyargs):
 
     costs = np.zeros((samples.size, 3))
     for i, (_, split_costs) in zip(range(samples.size), results):
-        print(split_costs)
         if type(split_costs) is not tuple:
             costs[i] = np.nan
         else:
