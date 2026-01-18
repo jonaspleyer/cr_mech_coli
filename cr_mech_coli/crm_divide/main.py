@@ -1006,6 +1006,9 @@ def run_optimizer(
         final_cost = result[-1]
     else:
 
+        res = pyargs.func(params, bounds, args, callback, pyargs)
+        final_parameters, final_cost = res
+
         np.savetxt(output_dir / "optimize_result.csv", [*final_parameters, final_cost])
         np.savetxt(output_dir / "optimization_evals.csv", evals)
 
