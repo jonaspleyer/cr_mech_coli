@@ -1870,87 +1870,115 @@ been possible by other approaches such as purely statistical models.
     \label{fig:likelihood-profiles-comparison-with-division}
 \end{figure}
 
-\textbf{TODO write text to compare the numerical values. This needs updated input from results.}
+\subsubsection{Comparison of Estimated Parameters}
+We finally aim to compare the obtained parameter values of the various approaches that we have used.
+It is important to keep in mind that the ground truth differs from the first part to the second one
+which involves division events and therefore a longer time interval.
+Furthermore, both methods involve additional steps when determining the overall growth of the
+bacteria.
+The direct approach utilizes the positions of the cells which involves their extraction via our
+developed algorithm.
+Meanwhile, the Lineage-Aware Image-Space metric utilizes only the masks of the data and thus
+involves one step less in the preprocessing steps.
+These distinct choices may influence the obtained values at hand.
+
 Table~\ref{tab:comparison-growth-rates} shows the obtained values for the growth rates via the
 different techniques.
-Although numerical values differ between the individual settings, each estimation technique was able
-to capture the same trends.
-Cell $0,1,3$ tend to be the fastest growing cells while $2,4,5$ are slower.
-Furthermore, we can see that daughter cells tend to grow quicker compared to mother cells,
-indicating the their parents were still adapting to the new environment.
+In the first section of the table, we see a comparison of calculated growth rates by utilizing
+extracted position or by counting the number of pixels associated with each cell over the course of
+the given time interval.
+In both cases, the same exponential model as presented in equation~\ref{eq:exponential-growth-model}
+is fitted to the data.
+We can already see that this coice greatly influences the obtained results, leading to significant
+differences between the numerical values.
+
+Going further, the estimated growth rates pick up on similar trends.
+One clear trend within the direct position-space comparison block is the ordering of growth rates.
+The cells with largest to lowest growth rate are 4,2,3,5,1,0 where the order is only violated in
+the first case, switching between 3 and 5 which is not surprising due to their similarity in
+numerical values.
+However this trend is not picked up when estimating parameters with the Lineage-Aware Image-Space
+metric.
 
 \begin{table}[H]
     \centering
     % \textbf{Growth Parameters obtained by various Methods}
     \begin{tabular}{l c c c c c c}
         % \multicolumn{7}{l}{}\\
-        & \multicolumn{6}{c}{Growth Rates $[\mu]=\SI{}{\per\minute}$}\\
-        \textbf{Data Extraction} & Cell $0$ & Cell $1$ & Cell $2$ & Cell $3$ & Cell $4$ & Cell $5$\\
+        & \multicolumn{6}{c}{Estimated Growth Rates $[\mu]=\SI{}{\per\minute}$}\\
         \toprule
-        % \multicolumn{7}{l}{\textbf{Data Extraction}}\\
-        % \midrule
-        Exponential Fit
-            & 0.0070
-            & 0.0054
-            & 0.0116
-            & 0.0076
-            & 0.0102
-            & 0.0084\\
+        \textbf{Data Extraction} & Cell $0$ & Cell $1$ & Cell $2$ & Cell $3$ & Cell $4$ & Cell $5$\\
+        \midrule
+        Position Fit & 0.0069 & 0.0054 & 0.0115 & 0.0076 & 0.0103 & 0.0084\\
+        Pixel Fit    & 0.0062 & 0.0068 & 0.0034 & 0.0071 & 0.0018 & 0.0059\\
 
         \multicolumn{7}{l}{\textbf{Direct Position-Space Metric}}\\
         \midrule
-        Mie
-            & 0.0079
-            & 0.0090
-            & 0.0131
-            & 0.0103
-            & 0.0215
-            & 0.0097\\
+        Mie                                 & 0.0079 & 0.0090 & 0.0131 & 0.0103 & 0.0215 & 0.0097\\
+        Mie $\lambda=\SI{1}{\per\minute}$   & 0.0060 & 0.0069 & 0.0109 & 0.0080 & 0.0186 & 0.0083\\
+        Morse                               & 0.0070 & 0.0078 & 0.0118 & 0.0089 & 0.0203 & 0.0094\\
+        Morse $\lambda=\SI{1}{\per\minute}$ & 0.0060 & 0.0070 & 0.0113 & 0.0078 & 0.0191 & 0.0093\\
 
-        Mie $\lambda=\SI{1}{\per\minute}$
-            & 0.0060
-            & 0.0069
-            & 0.0109
-            & 0.0080
-            & 0.0186
-            & 0.0083\\
-
-        % 0.00671 & 0.00746 & 0.01138 & 0.00848 & 0.02005 & 0.00952\\
-        Morse
-            & 0.0070
-            & 0.0078
-            & 0.0118
-            & 0.0089
-            & 0.0203
-            & 0.0094\\
-
-        Morse $\lambda=\SI{1}{\per\minute}$
-            & 0.0060
-            & 0.0070
-            & 0.0113
-            & 0.0078
-            & 0.0191
-            & 0.0093\\
-
-        \multicolumn{7}{l}{\textbf{Lineage-Aware Image-Space Metric (TODO)}}\\
+        \multicolumn{7}{l}{\textbf{Lineage-Aware Image-Space Metric}}\\
         \midrule
-        Imaging \ac{abm} Mie & 0.00104 & 0.00146 & 0.00206 & 0.00286 & 0.00190 & 0.00171\\
-        % & \textbf{Daughters}\\
-        % \midrule
-        % & Cell $0$ & Cell $1$ & Cell $2$ & Cell $3$ & Cell $4$ & Cell $5$\\
-        Daughter 0 & 0.00240 & 0.00494 & 0.00096 & 0.00363 & - & -\\
-        Daughter 1 & 0.00490 & 0.00226 & 0.00448 & 0.00048 & - & -\\
-        % 0.0014057073 & 0.0010807540 & 0.0023177727 & 0.0015120675 & 0.0020488179 & 0.0016726263\\
-        % direct & 0.0009785162 & 0.0012641432 & 0.0021701728 & 0.0015695889 & 0.0036255661 & 0.0018419186\\
+        Morse                               & 0.0073 & 0.0060 & 0.0092 & 0.0126 & 0.0091 & 0.0094\\
+        Daughter                            & 0.0032 & 0.0179 & 0.0052 & 0.0185 & - & -\\
+        Daughter                            & 0.0126 & 0.0048 & 0.0011 & 0.0005 & - & -\\
+        \midrule
+        & \multicolumn{6}{c}{Division Lengths $[l(n_\text{vertices}-1)]=\unit{\micro\metre}$}\\
+                                            & 4.2159 & 4.5914 & 4.1607 & 3.9740\\
         \bottomrule
     \end{tabular}
     \caption{
-        \textbf{TODO maybe report uncertainties?;
-        Update and explain these values. And also add units!;
-        FIX NUMERICAL VALUES;
-        check ordering of values}
+        Growth Rates and division lengths calculated by the previously discussed approaches
+        including growth rates of the daughter cells.
+        The division lengths have been multiplied by the number of polygonal sections
+        $n_\text{vertices}-1$ to obtain a measure for the overall length of the bacterial rod.
     }
     \label{tab:comparison-growth-rates}
+\end{table}
+
+While growth rates can be directly compared between the various approaches, the same can not be done
+as easily with the remaining kinetic parameters which are listed in
+Table~\ref{tab:comparison-kinetic-parameters}.
+This results from the fact that the type of interaction potential greatly determines the values of
+these parameters and parameters such as the exponents $n,m$ or the potential stiffness $\omega$ have
+influences on the overall magnitude of the potential thus also influencing the strength $V_0$.
+As we have discussed earlier, the damping constant is frequently set to a fixed value to allow for
+proper parameter estimation of the system.
+However, one clear effect can be seen when comparing the potential stiffness $\omega$ of the direct
+approaches with the Imaging results.
+Due to the fact that the Image-Space metric penalizes overlapping regions of cells, the potential
+stiffness is much larger thus diminishing said effects.
+This can also explain the lower value for the radius compared to the other results.
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{l c c c c}
+        & \multicolumn{4}{c}{Estimated Kinetic Parameters}\\
+        \toprule
+        \makecell[l]{\\\textbf{Direct}}
+            & \makecell{Damping\\$[\lambda]=\unit{\per\minute}$}
+            & \makecell{Exponents $n,m$/\\Stiffness $[\omega]=\unit{\per\micro\metre}$}
+            & \makecell{Strength\\$[V_0]=\unit{\micro\metre^2\per\minute^2}$}
+            & \makecell{Radius\\$[r]=\unit{\micro\metre}$}\\
+        \midrule
+        Mie                         & 3.670 & 2.358, 2.408 & 0.032 & 0.479\\
+        Mie $\lambda=\lambda_0$     & -     & 2.189, 2.236 & 0.010 & 0.478\\
+        Morse                       & 1.830 & 0.708 & 0.019 & 0.546\\
+        Morse $\lambda=\lambda_0$   & -     & 0.677 & 0.011 & 0.556\\
+        \textbf{Imaging}\\
+        \midrule
+        Morse $\lambda=\lambda_0$   & - & 5.476 & 0.015 & 0.410\\
+        % & \multicolumn{4}{c}{Position-Space } & \multicolumn{2}{c}{Image-Space}\\
+        % & Mie & Mie $\lambda=\lambda_0$ & Morse & Morse $\lambda=\lambda_0$\\% & Morse $\lambda=\lambda_0$\\
+        \bottomrule
+    \end{tabular}
+    \caption{
+        Comparison of kinetic parameters between various approaches.
+        Damping constants are reduced to a fixed value where not provided.
+    }
+    \label{tab:comparison-kinetic-parameters}
 \end{table}
 
 %###################################################################################################
