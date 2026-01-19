@@ -671,7 +671,7 @@ The potential is of the form
 \end{equation}
 and has 3 parameters.
 The overall potential strength $V_0$, the radii of the particles $R_1,R_2$ and the potential
-stiffness $\lambda$ which controls the rate of change as one travels along the radial axis.
+stiffness $\omega$ which controls the rate of change as one travels along the radial axis.
 We also assign a spatial cutoff $\xi$ to the range of the interaction potential.
 Figure~\ref{fig:model-bacterium} (D) shows various configurations of a morse potential.
 
@@ -729,6 +729,7 @@ Table~\ref{table:list-of-parameters} shows a list of all parameters used within 
         Strength & $V_0$ & $\unit{\micro\metre^2\per\minute^2}$\\
         Exponent 1 & $n$ & $1$\\
         Exponent 2 & $m$ & $1$\\
+        Potential Stiffness & $\omega$ & $\unit{\micro\metre}$\\
         Bound & $\beta$ & $\unit{\micro\metre^2\per\minute^2}$\\
         Cutoff & $\zeta$ & $\unit{\micro\metre}$\\
         \multicolumn{4}{l}{\textbf{Growth \& Division}}\\
@@ -1132,7 +1133,7 @@ Our proposed imaging-based method circumvents this fundamental limitation.
 
 \paragraph{The Metric}
 We develop an approach which can be understood as a metric in image space where we quantify
-differences in the segmentation profile of two bacterial configurations.
+differences in the segmentation masks of two bacterial configurations.
 Within the realm of image segmentation many metrics such as the Jaccard Index~\cite{Murphy1996},
 Dice-Sørensen Coefficient~\cite{Dice1945}, Precision and Recall~\cite{Takaya2015} or F1
 Score~\cite{Taha2015} are actively used to deal with similar questions.
@@ -1526,9 +1527,10 @@ Figure~\ref{fig:application-2-data-overview} (D) shows the length of the rods as
 extraction algorithm.
 To quantify this heterogeneity, we fit the individual curves with an exponential function
 \begin{equation}
-    l(t) = l_0 \exp(\lambda t).
+    l(t) = l_0 \exp(\mu t).
+    \label{eq:exponential-growth-model}
 \end{equation}
-where $l_0$ is the starting length of the rod and $\lambda$ is the growth rate.
+where $l_0$ is the starting length of the rod and $\mu$ is the growth rate.
 Figure~\ref{fig:application-2-data-overview} (E) shows the distribution of the obtained growth rates.
 We can see, the distinct phenotypic properties of the cells result in large deviations of the
 individual growth rates.
@@ -1565,7 +1567,7 @@ range of permissible parameter values which motivates the approach to treat this
 constant thus reducing our overall model.
 The parameters which characterize the Morse-type interaction are the potential stiffness (B),
 strength (E) and radius (F).
-While the potential stiffness (B) and radius (F) can be estimated well with the given data, the
+While the potential stiffness (B) and radius (F) can be estimated well from the given data, the
 potential strength (E) contains a practical unidentifiability~\cite{Raue2009} which is lifted when
 fixing the damping constant $\lambda=\SI{1}{\per\minute}$.
 In contrast to the Morse potential, the Mie potential uses two parameters $n,m$ (C,D) to determine
