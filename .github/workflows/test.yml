@@ -31,6 +31,6 @@ jobs:
       - name: Run Scripts
         run: |
           source .venv/bin/activate
-          crm_divide --only-mask-adjustment
+          crm_divide --only-mask-adjustment DE
           crm_fit data/crm_fit/mie_all --help
           crm_amir --help
