@@ -1983,26 +1983,19 @@ This can also explain the lower value for the radius compared to the other resul
     \label{tab:comparison-kinetic-parameters}
 \end{table}
 
+% \textbf{TODO decide if we mention these}
+% \begin{itemize}
+%     \item plastic/elastic deformations
+%     \item non-uniform thickness of the rod
+%     \item polar interactions \cite{Duvernoy2018}
+%     \item other dynamics
+%     \item advantage of image-space metric: no need to specify number of vertices; more
+%         naturally aligned with biological reality (no vertices); keywords: Topology-Restricted vs.
+%         Topology-Agnostic
+% \end{itemize}
+
 %###################################################################################################
-\section{Discussion}
-
-\textbf{TODO decide if we mention these}
-\begin{itemize}
-    \item plastic/elastic deformations
-    \item non-uniform thickness of the rod
-    \item polar interactions \cite{Duvernoy2018}
-    \item other dynamics
-    \item advantage of image-space metric: no need to specify number of vertices; more
-        naturally aligned with biological reality (no vertices); keywords: Topology-Restricted vs.
-        Topology-Agnostic
-\end{itemize}
-
-Future extensions should introduce a time-dependent parent penalty $p=p(t)$ which grows with the age
-of the daughter cells.
-Furthermore, the developed algorithm relies on the comparison of two images and can as such make use
-of existing machine-learning workflows that construct cost functions for such
-scenarios~\cite{Dice1945}.\\
-\textbf{@Christian are these two sentences Discussion?}
+\section{Summary}
 
 With this work we have layed out how to estimate the parameters of \acp{abm} using
 microscopic image time series.
@@ -2012,53 +2005,53 @@ the rod and is implemented with \texttt{cellular\_raza} allowing it to be flexib
 readily applicable for computational studies.
 Furthermore, we devised novel methods to extract the spatial positions and other information of
 cell-agents from masks which have been segmented from microscopic images.
-The extracting method was validated using results from our computational model.
+The extraction algorithm was validated using results from our computational model.
 We further implemented a pipeline that can produce 3D visualizations of simulation snapshots and can
-generate cell masks from data as produced by our computational model.
+generate cell masks from simulation data by our computational model.
 These imaging techniques were also utilized to design a cost function that can compare snapshots
-of cellular states across cellular division events, allowing us to estimate parameters across a
-large time-span.
+of cellular states across cellular division events thus allowing us to estimate parameters in such
+scenarios.
 Finally, the combination of these preceding advancements were applied to 2 case studies, which showed
 that the profile-likelihood method can be used to effectively evaluate the ability of our system to
 properly identify the involved parameters.
 In the first example, we fit a simplified model of a singular bent rod to microscopic images.
 These results highlighted that a reduction of the systems parameters is necessary in order to
-identify them.
+properly identify them.
 In our next step, the same system was fitted to a series of microscopic images in two secarios,
 excluding and incorporating division events.
 Both results showed the ability of our model to effectively estimate individual parameters of the
 cells.
-The case including division events produced parameter profiles with minima that were not fully able
-to estimate the chosen parameters.
-These results ca be traced back to a gap within the provided segmentation masks.
+
+%###################################################################################################
+\section{Discussion}
 
 Our work shows that it is possible to estimate the parameters of \acp{abm} on a single-cell level.
-Together with the flexible nature of \texttt{cellular\_raza}, this opens up the possibility to
-design minimal \acp{abm} which can be fit to data.
-The developed methods are publicly available as a well-documented python package
-(\href{https://github.com/jonaspleyer/cr_mech_coli}{cr\_mech\_coli}).
+It also highlighted that unidentifiabilities can be caught and effectively reduced by classical
+model reduction techniques.
+Together with the flexible nature of \texttt{cellular\_raza} \cite{Pleyer2025}, this opens up the
+possibility to design minimal \acp{abm} which can be fit to experimental data.
 The individual treatment of the cells allows us in principle to estimate the distribution of the
 parameters directly without having to resort to any assumptions on the form of said distribution.
 This is true for any parameter, not just the growth rates, since our approach can be generalized to
-other individual cellular behaviors.
+other cellular properties.
 
-Future work should focus on multiple aspects that target challenges with respect to computational
-efficiency and accuracy and extending the described model.
+Future developments of these methods should focus on multiple aspects that target challenges with
+respect to computational efficiency, accuracy and extensions the described model.
 Additional biological effects include polar interactions~\cite{Duvernoy2018},
 differentiation~\cite{vanGestel2015}, extracellular reactions~\cite{Li2025}.
-When it comes to the designed algorithms, we have already discussed that the performance of
-generating masks from computational results is the limiting factor for the performance of the
-image-space metric.
-This problem could be targeted by rewriting existing code in C++ using native VTK~\cite{vtkBook}
-instead of relying on the wrapper library pyvista~\cite{Sullivan2019}.
-Another area of improvement is the position extraction algorithm which works well for cells living
+One significant area of improvement is the position extraction algorithm which works well for cells living
 in 2D or thin sheets but will not hold up when multiple bacteria are overlapping.
+In addition, the algorithm in its current state most often underestimates the length of the rods,
+leading to skewed results.
 This task is well suited to be tackled by a purpose-built machine-learning tool that can either
 reconstruct masks or accurately extrapolate positions from incomplete (possibly overlapping) masks.
-Finally, the results of our computational model can be used to generate synthetic near-realistic
-microscopic brightfield images together with their corresponding cell masks.
-This combination of data allows us to train segmentation and more importantly tracking algorithms
-which require large amounts of data.
+Within the presented framework, the parent penalty takes immediate effect surrounding the division
+event but also persists indefenitely.
+This simplification should be lifted and the parent penalty should be depening on the time
+difference between the division event and the current time point at which the comparison takes
+place.
+This would introduce a time-dependent variable $p=p(t)$ which grows with the age of the daughter cells.
+It will allow for a much more smooth transition from the pre-divided to the fully-divided system.
 
 In order to speed up the optimization process, it could also be valuable to initially consider all
 parameters as global ones and once a certain threshold of tolerance is matched, losening this
@@ -2068,24 +2061,19 @@ optimium more quickly in total.
 Another factor that could be considered to improve performance is that individual parameters of
 cells which are spatially separated will not have an immediate effect on each other, thus presenting
 a loosely coupled or fully decoupled relationship.
-Depening on the solver, this information could be exploited.
-Ultimately, we desire to apply these methods to large amounts of data, which is done most
-effectively by fitting our model to various image time-series simultanously which is yet to be
+Depening on the optimization routine, this information could be exploited.
+Ultimately, we desire to apply these methods to larger amounts of data, which is done most
+effectively by fitting our model to various time-series simultanously which is yet to be
 implemented.
 
-Our approach furthermore highlighted that we are able to detect non-identifiabilities.
-By choosing \texttt{cellular\_raza} as a modeling framework, we retain flexibility with respect to
-model design thus effectively allowing us to reduce our model as we continue working on it.
-\texttt{cellular\_raza} allows us to change the underlying representation if such unidentifiabilities
-are determined to be structural (model-based) rather than practical (due to lack of
-data).\textbf{TODO CITATION}
-This allows us to iterate and find the model formulation which suits the data best but still retain
-the mechanistic methodology of our approach.
-
-As we continue to develop these methods, we expect to be able to reuse many of the existing
-workflows\textbf{TODO better wording} such as likelihood estimation and uncertainty quantification
-which have already been developed extensively for less complex systems such as \acp{ode}
-\textbf{TODO CITATION}.
+By choosing \texttt{cellular\_raza} \cite{Pleyer2025} as a modeling framework, we retain flexibility
+with respect to model design thus effectively allowing us to reduce or extend our model as
+development progresses since \texttt{cellular\_raza} allows us to change the underlying
+representation of the cells.
+This facilitates model development if unidentifiabilities are encountered which are determined to be
+of structural (model-based) rather than practical nature (due to lack of data) \cite{Heinrich2025}.
+This allows us to iterate and find the model formulation which suits the data best while still
+retaining our mechanistic understanding of the problem at hand.
 
 % \begin{itemize}
 %     \item Summary:
@@ -2148,9 +2136,12 @@ package which provides flexibility in model design, thus enabling researchers to
 extend and combine existing building blocks.
 This allows researchers to extend the model and incorporate additional biological properties.
 
-Future work will focus on the data-generation capabilities of the software.
-We will aim to generate near-realistic microscopic brightfield images together with corresponding
-segmentation masks in order to train segmentation and tracking algorithms.
+Future work will dive deeper on the data-generation capabilities of the software.
+There is already ongoing progress which harnesses the capabilities of our model and imaging pipelines
+to construct near-realistic microscopic images together with corresponding cell masks.
+This combination of data allows will us to train segmentation and more importantly tracking algorithms
+built on machine-learning frameworks which thus require large amounts of data.
+
 On the biological side, a plethora of cellular properties waits to be investigated using this novel
 tecnhique.
 Another open question is how to efficiently scale up this operation in order to treat large numbers
