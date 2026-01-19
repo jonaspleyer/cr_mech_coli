@@ -16,7 +16,7 @@ def test_basic_predict():
     masks_data, positions_all, settings, iterations_data = crd.preprocessing(
         data_dir=Path("data/crm_divide/test")
     )
-    container = crd.predict(
+    container = crd.predict.predict(
         x0,
         positions_all[0],
         settings,
