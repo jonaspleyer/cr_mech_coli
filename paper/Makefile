@@ -44,4 +44,3 @@ zip: fresh
 	zip archive.zip *.tex
 	zip archive.zip *.pdf
 	zip archive.zip -r figures/
-	zip archive.zip -r docs/
