@@ -1843,46 +1843,29 @@ been possible by other approaches such as purely statistical models.
         \node at (0, 1.1)[anchor=north west, black]{\textbf{L}};
     \end{tikzonimage}\\
     \begin{tikzonimage}[width=0.25\textwidth]
-        {figures/crm_divide/profiles-pretty/pdf/profile-growth-rate-0-0.pdf}%
+        {figures/crm_divide/profiles-pretty/pdf/profile-division-length-3.pdf}%
         \node at (0, 1.1)[anchor=north west, black]{\textbf{M}};
     \end{tikzonimage}%
     \begin{tikzonimage}[width=0.25\textwidth]
-        {figures/crm_divide/profiles-pretty/pdf/profile-growth-rate-0-1.pdf}%
+        {figures/crm_divide/profiles-pretty/pdf/profile-growth-rate-0-0.pdf}%
         \node at (0, 1.1)[anchor=north west, black]{\textbf{N}};
     \end{tikzonimage}%
     \begin{tikzonimage}[width=0.25\textwidth]
-        {figures/crm_divide/profiles-pretty/pdf/profile-growth-rate-1-0.pdf}%
+        {figures/crm_divide/profiles-pretty/pdf/profile-growth-rate-0-1.pdf}%
         \node at (0, 1.1)[anchor=north west, black]{\textbf{O}};
     \end{tikzonimage}%
     \begin{tikzonimage}[width=0.25\textwidth]
-        {figures/crm_divide/profiles-pretty/pdf/profile-growth-rate-1-1.pdf}%
+        {figures/crm_divide/profiles-pretty/pdf/profile-growth-rate-1-0.pdf}%
         \node at (0, 1.1)[anchor=north west, black]{\textbf{P}};
-    \end{tikzonimage}\\
-    \begin{tikzonimage}[width=0.25\textwidth]
-        {figures/crm_divide/profiles-pretty/pdf/profile-growth-rate-2-0.pdf}%
-        \node at (0, 1.1)[anchor=north west, black]{\textbf{Q}};
-    \end{tikzonimage}%
-    \begin{tikzonimage}[width=0.25\textwidth]
-        {figures/crm_divide/profiles-pretty/pdf/profile-growth-rate-2-1.pdf}%
-        \node at (0, 1.1)[anchor=north west, black]{\textbf{R}};
-    \end{tikzonimage}%
-    \begin{tikzonimage}[width=0.25\textwidth]
-        {figures/crm_divide/profiles-pretty/pdf/profile-growth-rate-3-0.pdf}%
-        \node at (0, 1.1)[anchor=north west, black]{\textbf{S}};
-    \end{tikzonimage}%
-    \begin{tikzonimage}[width=0.25\textwidth]
-        {figures/crm_divide/profiles-pretty/pdf/profile-growth-rate-3-1.pdf}%
-        \node at (0, 1.1)[anchor=north west, black]{\textbf{T}};
     \end{tikzonimage}%
     \caption{
-        \text{TODO include missing profiles here}
-        Likelihood profiles of every estimated parameter.
-        (A-D) Division Lengths of initially placed cells.
-        (E-H) Growth rates of daughter cells.
-        The growth rates diplay larger values of noise within their profiles compared to the
-        division lengths.
-        \textbf{TODO add profiles for daughter cells}
-        \textbf{TODO possibly extend this description?}
+        Profiles of optimized cost functions when scanning along one parameter axis.
+        (A) Potential Stiffness (B) Strength (C) Radius of the Morse Potential.
+        (D-G) Growth rates of mother cells and (H,I) non-dividing cells.
+        (J-M) Division lengths of the mother cells.
+        (N-P) Growth rates of daughter cells.
+        For brevity, we display the remaining growth rates of the daughter cells in the
+        supplementary material Figure~\ref{fig:supplement-profiles-with-division}.
     }
     \label{fig:likelihood-profiles-comparison-with-division}
 \end{figure}
@@ -2362,8 +2345,29 @@ normal distribution with user-defined parameters.
 
 \begin{figure}
     \centering
+    \begin{tikzonimage}[width=0.25\textwidth]
+        {figures/crm_divide/profiles-pretty/pdf/profile-growth-rate-1-1.pdf}%
+        \node at (0, 1.1)[anchor=north west, black]{\textbf{Q}};
+    \end{tikzonimage}%
+    \begin{tikzonimage}[width=0.25\textwidth]
+        {figures/crm_divide/profiles-pretty/pdf/profile-growth-rate-2-0.pdf}%
+        \node at (0, 1.1)[anchor=north west, black]{\textbf{R}};
+    \end{tikzonimage}%
+    \begin{tikzonimage}[width=0.25\textwidth]
+        {figures/crm_divide/profiles-pretty/pdf/profile-growth-rate-2-1.pdf}%
+        \node at (0, 1.1)[anchor=north west, black]{\textbf{S}};
+    \end{tikzonimage}%
+    \begin{tikzonimage}[width=0.25\textwidth]
+        {figures/crm_divide/profiles-pretty/pdf/profile-growth-rate-3-0.pdf}%
+        \node at (0, 1.1)[anchor=north west, black]{\textbf{T}};
+    \end{tikzonimage}\\
+    \begin{tikzonimage}[width=0.25\textwidth]
+        {figures/crm_divide/profiles-pretty/pdf/profile-growth-rate-3-1.pdf}%
+        \node at (0, 1.1)[anchor=north west, black]{\textbf{U}};
+    \end{tikzonimage}%
     \includegraphics[width=0.5\textwidth]{figures/crm_divide/time-evolution.pdf}%
     \caption{TODO}
+    \label{fig:supplement-profiles-with-division}
 \end{figure}
 
 %###################################################################################################
