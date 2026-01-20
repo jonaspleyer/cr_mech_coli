@@ -837,6 +837,7 @@ def crm_divide_main():
             print_costs=False,
             show_progressbar=True,
         )
+        np.save(output_dir / "optimization-final-costs", final_costs)
         plot_profiles(
             final_parameters,
             bounds,
