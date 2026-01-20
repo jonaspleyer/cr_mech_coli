@@ -572,7 +572,7 @@ def default_parameters():
 def plot_growth_rate_distribution(final_parameters, output_dir):
     fig, ax = plt.subplots(figsize=(8, 8))
 
-    growth_rates = final_parameters[4:10]
+    growth_rates = final_parameters[3:9]
     new_growth_rates = final_parameters[14:22]
 
     data = np.array([*growth_rates, *new_growth_rates])
