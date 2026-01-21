@@ -1886,6 +1886,8 @@ These distinct choices may influence the obtained values at hand.
 
 Table~\ref{tab:comparison-growth-rates} shows the obtained values for the growth rates via the
 different techniques.
+It also contains the total division lengths $\tilde{l}=(n_\text{vertices}-1)l$ which are obtained by
+summing up all segment lengths.
 In the first section of the table, we see a comparison of calculated growth rates by utilizing
 extracted position or by counting the number of pixels associated with each cell over the course of
 the given time interval.
@@ -1907,7 +1909,7 @@ metric.
     % \textbf{Growth Parameters obtained by various Methods}
     \begin{tabular}{l c c c c c c}
         % \multicolumn{7}{l}{}\\
-        & \multicolumn{6}{c}{Estimated Growth Rates $[\mu]=\SI{}{\per\minute}$}\\
+        \multicolumn{7}{c}{Estimated Growth Rates $[\mu]=\SI{}{\per\minute}$}\\
         \toprule
         \textbf{Data Extraction} & Cell $0$ & Cell $1$ & Cell $2$ & Cell $3$ & Cell $4$ & Cell $5$\\
         \midrule
@@ -1927,8 +1929,8 @@ metric.
         Daughter                            & 0.0032 & 0.0179 & 0.0052 & 0.0185 & - & -\\
         Daughter                            & 0.0126 & 0.0048 & 0.0011 & 0.0005 & - & -\\
         \midrule
-        & \multicolumn{6}{c}{Division Lengths $[l(n_\text{vertices}-1)]=\unit{\micro\metre}$}\\
-                                            & 4.2159 & 4.5914 & 4.1607 & 3.9740\\
+        & \multicolumn{4}{c}{Division Lengths $[\tilde{l}]=\unit{\micro\metre}$}\\
+                                            & 2.1080 & 2.2957 & 2.0803 & 1.9870\\
         \bottomrule
     \end{tabular}
     \caption{
@@ -1957,7 +1959,7 @@ This can also explain the lower value for the radius compared to the other resul
 \begin{table}[H]
     \centering
     \begin{tabular}{l c c c c}
-        & \multicolumn{4}{c}{Estimated Kinetic Parameters}\\
+        \multicolumn{5}{c}{Estimated Kinetic Parameters}\\
         \toprule
         \makecell[l]{\\\textbf{Direct}}
             & \makecell{Damping\\$[\lambda]=\unit{\per\minute}$}
@@ -1965,13 +1967,13 @@ This can also explain the lower value for the radius compared to the other resul
             & \makecell{Strength\\$[V_0]=\unit{\micro\metre^2\per\minute^2}$}
             & \makecell{Radius\\$[r]=\unit{\micro\metre}$}\\
         \midrule
-        Mie                         & 3.670 & 2.358, 2.408 & 0.032 & 0.479\\
-        Mie $\lambda=\lambda_0$     & -     & 2.189, 2.236 & 0.010 & 0.478\\
-        Morse                       & 1.830 & 0.708 & 0.019 & 0.546\\
-        Morse $\lambda=\lambda_0$   & -     & 0.677 & 0.011 & 0.556\\
+        Mie                         & 3.670 & 2.358, 2.408 & 0.0081 & 0.239\\
+        Mie $\lambda=\lambda_0$     & -     & 2.189, 2.236 & 0.0024 & 0.239\\
+        Morse                       & 1.830 & 1.416 & 0.0047 & 0.273\\
+        Morse $\lambda=\lambda_0$   & -     & 1.353 & 0.0027 & 0.278\\
         \textbf{Imaging}\\
         \midrule
-        Morse $\lambda=\lambda_0$   & - & 5.476 & 0.015 & 0.410\\
+        Morse $\lambda=\lambda_0$   & - & 10.952 & 0.0038 & 0.205\\
         % & \multicolumn{4}{c}{Position-Space } & \multicolumn{2}{c}{Image-Space}\\
         % & Mie & Mie $\lambda=\lambda_0$ & Morse & Morse $\lambda=\lambda_0$\\% & Morse $\lambda=\lambda_0$\\
         \bottomrule
