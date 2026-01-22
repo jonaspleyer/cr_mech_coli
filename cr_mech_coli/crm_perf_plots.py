@@ -1,5 +1,10 @@
 """
-TODO
+This is script is used to obtain performance information of executing simulations given various
+configurations and plots the obtained results.
+It is meant to be run without any arguments and simply executes directly, storing information as
+image files.
+
+>>> crm_perf_plots
 """
 
 import cr_mech_coli as crm
@@ -17,7 +22,17 @@ def run_sim(
     rng_seed: int = 0,
     n_threads: int = 1,
     n_voxels: int = 1,
-):
+) -> tuple[float, int]:
+    """
+    Args:
+        n_agents(int): Number of initial agents
+        domain_size(float): Domain size in x and y direction
+        rng_seed(int): Seed to use for random generation of positions
+        n_threads(int): Number of threads to use for simulation
+        n_voxesl(int): Discretization of domain
+    Returns:
+        tuple[float, int]: Wall time and number of final cells
+    """
     config = crm.Configuration(
         domain_size=(domain_size + 100, domain_size + 100),
         n_threads=n_threads,
