@@ -1,6 +1,6 @@
 [package]
 name = "cr_mech_coli"
-version = "0.9.0"
+version = "0.9.1"
 resolver = "2"
 edition = "2021"
 exclude = ["paper", "paper_segmentation_tracking", "data", "docs", "omnipose", "plots"]
@@ -22,29 +22,29 @@ vtk-rs-link = { version = "0.3.1", optional = true }
 
 [dependencies]
 cellular_raza = { version="0.5.0", features = ["pyo3", "approx", "plotters"] }
-approx = { package = "approxim", version = "0.6.9", features = ["tuple_impl"] }
+approx = { package = "approxim", version = "0.6.10", features = ["tuple_impl"] }
 itertools = "0.14.0"
 nalgebra = { version = "0.34", features = ["serde", "serde-serialize"] }
 num = { version = "0.4.3", features = ["rand", "serde"] }
-numpy = { version = "0.26.0", features = ["half", "nalgebra"] }
-pyo3 = { version = "0.26", features = ["serde", "py-clone", "multiple-pymethods"] }
+numpy = { version = "0.27.1", features = ["half", "nalgebra"] }
+pyo3 = { version = "0.27.1", features = ["serde", "py-clone", "multiple-pymethods"] }
 rand = { version = "0.9", features = ["serde"] }
 rand_chacha = { version = "0.9", features = ["serde"] }
 rayon = "1.11.0"
 serde = { version = "1.0", features = ["derive"] }
 serde-pickle = "1.2"
-serde_json = { version = "1.0.148", features = ["arbitrary_precision", "float_roundtrip", "preserve_order", "std"] }
+serde_json = { version = "1.0.149", features = ["arbitrary_precision", "float_roundtrip", "preserve_order", "std"] }
 toml = "0.9"
-clap = { version = "4.5.53", features = ["derive"] }
+clap = { version = "4.5.54", features = ["derive"] }
 rand_distr = "0.5.1"
 short_default = "0.1.1"
-ndarray = "0.15"
-egobox-doe = "0.32.0"
-kdam = "0.6.3"
+ndarray = "0.16.1"
+egobox-doe = "0.35.0"
+kdam = "0.6.4"
 log = "0.4.28"
 env_logger = "0.11.8"
 geo = "0.32.0"
-plotters = "0.3.7"
+plotters = { version = "0.3.7", features = [], default-features = false }
 
 [features]
 vtk = ["dep:cmake", "dep:vtk-rs-link"]

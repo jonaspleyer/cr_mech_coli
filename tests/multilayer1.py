@@ -43,7 +43,7 @@ def __generate_arguments():
 
 
 def test_sample_parameters():
-    ml_configs = crmm.sample_parameters(*__generate_arguments())
+    ml_configs = crmm.sample_parameters(*__generate_arguments())[0]
     ml_configs = list(ml_configs)
 
     # Check length of generated configs
@@ -80,7 +80,7 @@ def test_produce_ydata_samples2():
     )
     ml_config.config.progressbar = None
     ml_configs = list(
-        crmm.sample_parameters(*__generate_arguments(), ml_config_default=ml_config)
+        crmm.sample_parameters(*__generate_arguments(), ml_config_default=ml_config)[0]
     )
 
     results2 = crmm.load_or_compute_ydata_samples(ml_configs[::10], n_threads_total=1)

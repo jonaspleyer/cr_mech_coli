@@ -444,11 +444,9 @@ def plot_interaction_potential(
     out,
 ):
     potential = settings.parameters.potential_type.to_short_string()
-    print(potential)
     if potential == "morse":
         __plot_morse_potential(settings, optimization_result, n_agents, out)
     if potential == "mie":
-        print("Mie")
         __plot_mie_potential(settings, optimization_result, n_agents, out)
 
 

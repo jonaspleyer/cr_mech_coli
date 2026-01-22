@@ -114,7 +114,7 @@ fn lhs_optimization_iter(
             n_points,
             n,
             &bounds,
-            &iterations_images,
+            iterations_images,
             positions_all,
             settings,
         )?;

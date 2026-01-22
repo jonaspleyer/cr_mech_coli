@@ -11,7 +11,7 @@ use serde::{Deserialize, Serialize};
 
 /// Contain s all parameters and configuration valuese of the crm_multilayer script
 #[pyclass(get_all, set_all)]
-#[derive(Clone, Debug, Deserialize, Serialize, AbsDiffEq)]
+#[derive(Debug, Deserialize, Serialize, AbsDiffEq)]
 #[approx(epsilon_type = f32)]
 pub struct MultilayerConfig {
     /// Contains base configuration. See :class:`Configuration`
@@ -60,6 +60,11 @@ impl PartialEq for MultilayerConfig {
 
 #[pymethods]
 impl MultilayerConfig {
+    fn __deepcopy__(&self) -> PyResult<Self> {
+        let toml_string = self.to_toml_string()?;
+        Self::load_from_toml_str(&toml_string)
+    }
+
     /// Clones the current MultilayerConfig with new optional keyword arguments
     ///
     /// Args:
@@ -68,7 +73,7 @@ impl MultilayerConfig {
     ///
     #[pyo3(signature = (**kwds))]
     pub fn clone_with_args(&self, py: Python, kwds: Option<&Bound<PyDict>>) -> PyResult<Py<Self>> {
-        let new_me: Py<Self> = Py::new(py, self.clone())?;
+        let new_me: Py<Self> = Py::new(py, self.__deepcopy__()?)?;
         if let Some(kwds) = kwds {
             for (key, value) in kwds.iter() {
                 let key: Py<PyString> = key.extract()?;

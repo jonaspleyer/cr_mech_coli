@@ -26,6 +26,8 @@ def plot_profile_single(
 
     settings = crm_fit.Settings.from_toml(path / "settings.toml")
     optim_res = crm_fit.OptimizationResult.load_from_file(path / "final_params.toml")
+    if name == "Strength":
+        print(n, f"{label:20}", optim_res.params[n])
     p_fixed = optim_res.params[n]
     final_cost = optim_res.cost
     displacement_error = settings.constants.displacement_error
@@ -272,9 +274,9 @@ if __name__ == "__main__":
     path_morse_partial = Path("figures/crm_fit/morse_partial")
 
     bounds = {
-        "Strength": (0, 0.04, 0.30),
+        "Strength": (0, 0.01, 0.075),
         "Damping": (0, 45.0),
-        "Radius": (0.1, 0.75),
+        "Radius": (0.05, 0.375),
     }
 
     plot_all_profiles_combined(

@@ -18,9 +18,11 @@ class MiePotentialF32:
     """
 
     radius: np.float32
-    potential_stiffness: np.float32
+    en: np.float32
+    em: np.float32
     cutoff: np.float32
     strength: np.float32
+    bound: np.float32
 
     @staticmethod
     def __new__(
@@ -40,7 +42,13 @@ class MorsePotentialF32:
     strength: np.float32
 
     @staticmethod
-    def __new__(cls, **kwargs) -> MorsePotentialF32: ...
+    def __new__(
+        cls,
+        radius: np.float32,
+        potential_stiffness: np.float32,
+        cutoff: np.float32,
+        strength: np.float32,
+    ) -> MorsePotentialF32: ...
 
 class SpringLengthThresholdSetter:
     l1: np.float32
@@ -60,7 +68,7 @@ class AgentSettings:
     """
 
     mechanics: RodMechanicsSettings
-    interaction: MorsePotentialF32
+    interaction: MorsePotentialF32 | MiePotentialF32
     growth_rate: np.float32
     growth_rate_setter: GrowthRateSetter
     spring_length_threshold: np.float32
@@ -99,7 +107,6 @@ class Configuration:
     Contains all settings needed to configure the simulation
     """
 
-    agent_settings: AgentSettings
     n_agents: int
     n_threads: int
     t0: np.float32 | float
@@ -138,7 +145,6 @@ class RodAgent:
     radius: np.float32
     growth_rate: np.float32
     spring_length_threshold: np.float32
-    damping: np.float32
     @staticmethod
     def __new__(
         cls,

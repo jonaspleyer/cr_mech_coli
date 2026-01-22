@@ -137,11 +137,8 @@ void render_img(Agent* agents, int n_agents, Camera camera, void* buffer)
     for (int i=0; i<n_agents; i++) {
         auto mesh = create_mesh(agents[i]);
 
-        vtkNew<vtkExtractEdges> edges;
-        edges->SetInputData(mesh);
-
         vtkNew<vtkCompositeDataGeometryFilter> polydata;
-        polydata->SetInputConnection(edges->GetOutputPort());
+        polydata->SetInputData(mesh);
 
         vtkNew<vtkPolyDataMapper> mapper;
         mapper->SetInputConnection(0, polydata->GetOutputPort(0));

@@ -292,6 +292,14 @@ impl PotentialType {
             (data,).into_pyobject_or_pyerr(py)?.into_any(),
         ))
     }
+
+    /// Obtains an copy of the inner type for Mie or Morse potential
+    pub fn clone_inner<'py>(&self, py: Python<'py>) -> PyResult<Bound<'py, PyAny>> {
+        match self {
+            PotentialType::Mie(mie) => mie.clone().into_bound_py_any(py),
+            PotentialType::Morse(morse) => morse.clone().into_bound_py_any(py),
+        }
+    }
 }
 
 /// TODO
@@ -445,7 +453,8 @@ const fn default_error_cost() -> f32 {
 
 pub(crate) fn get_inner<T>(ptp: &Py<T>, py: Python) -> T
 where
-    T: for<'a, 'py> pyo3::conversion::FromPyObjectBound<'a, 'py>,
+    T: for<'a, 'py> pyo3::conversion::FromPyObject<'a, 'py>,
+    for<'a, 'py> <T as pyo3::conversion::FromPyObject<'a, 'py>>::Error: std::fmt::Debug,
 {
     ptp.extract(py).unwrap()
 }

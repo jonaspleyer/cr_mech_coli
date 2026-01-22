@@ -18,9 +18,6 @@ jobs:
           nogil: false
       - name: Setup headless display for pyvista
         uses: pyvista/setup-headless-display-action@v3
-      - name: Install libfontconfig1-dev
-        if: ${{ contains(inputs.os, 'ubuntu') }}
-        run: sudo apt-get update && sudo apt-get install libfontconfig1-dev
       - name: Install packages and run pytest
         run: |
           python -m venv .venv
@@ -34,6 +31,6 @@ jobs:
       - name: Run Scripts
         run: |
           source .venv/bin/activate
-          crm_divide --only-mask-adjustment
+          crm_divide --only-mask-adjustment DE
           crm_fit data/crm_fit/mie_all --help
           crm_amir --help

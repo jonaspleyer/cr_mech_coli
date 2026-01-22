@@ -13,6 +13,7 @@
 \usepackage{float}
 \usepackage{nicefrac}       % compact symbols for 1/2, etc.
 \usepackage{microtype}      % microtypography
+\usepackage{makecell}
 \usepackage{mathrsfs}
 \usepackage{mathtools}
 \usepackage{onimage}
@@ -491,19 +492,19 @@ our established theoretical methods and computational functionalities.
 \begin{figure}[H]
     \centering
     \begin{tikzonimage}[width=0.5\textwidth]
-        {docs/source/_static/mechanics.pdf}
+        {figures/docs/mechanics.pdf}
         \node at (0, 1)[anchor=north west]{\textbf{A}};
     \end{tikzonimage}%
     \begin{tikzonimage}[width=0.5\textwidth]
-        {docs/source/_static/interaction.pdf}
+        {figures/docs/interaction.pdf}
         \node at (0, 1)[anchor=north west]{\textbf{B}};
     \end{tikzonimage}\\
     \begin{tikzonimage}[width=0.5\textwidth]
-        {docs/source/_static/mie-potential-shapes.pdf}
+        {figures/docs/mie-potential-shapes.pdf}
         \node at (0, 1)[anchor=north west]{\textbf{C}};
     \end{tikzonimage}%
     \begin{tikzonimage}[width=0.5\textwidth]
-        {docs/source/_static/morse-potential-shapes.pdf}
+        {figures/docs/morse-potential-shapes.pdf}
         \node at (0, 1)[anchor=north west]{\textbf{D}};
     \end{tikzonimage}%
     \caption{
@@ -670,7 +671,7 @@ The potential is of the form
 \end{equation}
 and has 3 parameters.
 The overall potential strength $V_0$, the radii of the particles $R_1,R_2$ and the potential
-stiffness $\lambda$ which controls the rate of change as one travels along the radial axis.
+stiffness $\omega$ which controls the rate of change as one travels along the radial axis.
 We also assign a spatial cutoff $\xi$ to the range of the interaction potential.
 Figure~\ref{fig:model-bacterium} (D) shows various configurations of a morse potential.
 
@@ -728,6 +729,7 @@ Table~\ref{table:list-of-parameters} shows a list of all parameters used within 
         Strength & $V_0$ & $\unit{\micro\metre^2\per\minute^2}$\\
         Exponent 1 & $n$ & $1$\\
         Exponent 2 & $m$ & $1$\\
+        Potential Stiffness & $\omega$ & $\unit{\per\micro\metre}$\\
         Bound & $\beta$ & $\unit{\micro\metre^2\per\minute^2}$\\
         Cutoff & $\zeta$ & $\unit{\micro\metre}$\\
         \multicolumn{4}{l}{\textbf{Growth \& Division}}\\
@@ -774,6 +776,8 @@ As highlighted before, the developed methods only depend on the spatial represen
 section~\ref{subsec:spatial-representation}.
 Consequently, these methods can be applied to a broader class of mechanical models that can exhibit
 varied cellular behaviors.
+They are also publicly available as a well-documented open-source python package
+(\href{https://github.com/jonaspleyer/cr_mech_coli}{cr\_mech\_coli}).
 
 % --------------------------------------------------------------------------------------------------
 \subsection{Visualization}
@@ -805,17 +809,17 @@ The resulting image is shown in Figure~\ref{fig:progression-image-generation} (C
 \begin{figure}[H]
     \centering
     \begin{tikzonimage}[width=0.32\textwidth]
-        {docs/source/_static/imaging-mesh.pdf}
+        {figures/docs/imaging-mesh.pdf}
         \node at (0.025, 0.975)[anchor=north west]{\textbf{A}};
     \end{tikzonimage}%
     \hspace{0.01\textwidth}%
     \begin{tikzonimage}[width=0.32\textwidth]
-        {docs/source/_static/11571737453049821261/raw_pv/000000400.png}
+        {figures/docs/11571737453049821261/raw_pv/000000400.png}
         \node at (0.025, 0.975)[anchor=north west, white]{\textbf{B}};
     \end{tikzonimage}%
     \hspace{0.01\textwidth}%
     \begin{tikzonimage}[width=0.32\textwidth]
-        {docs/source/_static/11571737453049821261/masks/000000400.png}
+        {figures/docs/11571737453049821261/masks/000000400.png}
         \node at (0.025, 0.975)[anchor=north west, white]{\textbf{C}};
     \end{tikzonimage}
     \caption{
@@ -950,59 +954,59 @@ Further details such as information about the covariances are given in the suppl
 \begin{figure}[H]
     \centering
     \begin{tikzonimage}[width=0.36\textwidth]
-        {docs/source/_static/fitting-methods/algorithm/image001042.png}
+        {figures/docs/fitting-methods/algorithm/image001042.png}
         \node at (0.025, 0.975)[anchor=north west, white]{\textbf{A}};
     \end{tikzonimage}%
     \hspace{0.01\textwidth}%
     \begin{tikzonimage}[width=0.36\textwidth]
-        {docs/source/_static/fitting-methods/algorithm/mask-zoom.pdf}
+        {figures/docs/fitting-methods/algorithm/mask-zoom.pdf}
         \node at (0.025, 0.975)[anchor=north west, white]{\textbf{B}};
     \end{tikzonimage}%
     \hspace{0.01\textwidth}%
     \begin{tikzonimage}[width=0.255\textwidth]
-        {docs/source/_static/fitting-methods/algorithm/interpolate-positions.pdf}
+        {figures/docs/fitting-methods/algorithm/interpolate-positions.pdf}
         \node at (0.025, 0.975)[anchor=north west, white]{\textbf{C}};
     \end{tikzonimage}\\
     \vspace{0.004\textwidth}%
     \begin{tikzonimage}[width=0.1625\textwidth]
-        {docs/source/_static/fitting-methods/extract_positions-001800.pdf}
+        {figures/docs/fitting-methods/extract_positions-001800.pdf}
         \node at (0.03, 0.99)[anchor=north west, white]{\textbf{D}};
     \end{tikzonimage}%
     \hspace{0.004\textwidth}%
     \begin{tikzonimage}[width=0.1625\textwidth]
-        {docs/source/_static/fitting-methods/extract_positions-003800.pdf}
+        {figures/docs/fitting-methods/extract_positions-003800.pdf}
         \node at (0.03, 0.99)[anchor=north west, white]{\textbf{E}};
     \end{tikzonimage}%
     \hspace{0.004\textwidth}%
     \begin{tikzonimage}[width=0.1625\textwidth]
-        {docs/source/_static/fitting-methods/extract_positions-005800.pdf}
+        {figures/docs/fitting-methods/extract_positions-005800.pdf}
         \node at (0.03, 0.99)[anchor=north west, white]{\textbf{F}};
     \end{tikzonimage}%
     \hspace{0.004\textwidth}%
     \begin{tikzonimage}[width=0.1625\textwidth]
-        {docs/source/_static/fitting-methods/extract_positions-007800.pdf}
+        {figures/docs/fitting-methods/extract_positions-007800.pdf}
         \node at (0.03, 0.99)[anchor=north west, white]{\textbf{G}};
     \end{tikzonimage}%
     \hspace{0.004\textwidth}%
     \begin{tikzonimage}[width=0.1625\textwidth]
-        {docs/source/_static/fitting-methods/extract_positions-009800.pdf}
+        {figures/docs/fitting-methods/extract_positions-009800.pdf}
         \node at (0.03, 0.99)[anchor=north west, white]{\textbf{H}};
     \end{tikzonimage}%
     \hspace{0.004\textwidth}%
     \begin{tikzonimage}[width=0.1625\textwidth]
-        {docs/source/_static/fitting-methods/extract_positions-009800-cropped.pdf}%
+        {figures/docs/fitting-methods/extract_positions-009800-cropped.pdf}%
         \node at (0, 1)[anchor=north west, white]{\textbf{I}};
     \end{tikzonimage}\\
     \begin{tikzonimage}[width=0.33\textwidth]
-        {docs/source/_static/fitting-methods/displacement-calculations.pdf}%
+        {figures/docs/fitting-methods/displacement-calculations.pdf}%
         \node at (0, 1)[anchor=north west, black]{\textbf{J}};
     \end{tikzonimage}%
     \begin{tikzonimage}[width=0.33\textwidth]
-        {docs/source/_static/fitting-methods/displacement-distribution.pdf}
+        {figures/docs/fitting-methods/displacement-distribution.pdf}
         \node at (0, 1)[anchor=north west, black]{\textbf{K}};
     \end{tikzonimage}%
     \begin{tikzonimage}[width=0.33\textwidth]
-        {docs/source/_static/fitting-methods/displacement-fit-over-time.pdf}
+        {figures/docs/fitting-methods/displacement-fit-over-time.pdf}
         \node at (0, 1)[anchor=north west, black]{\textbf{L}};
     \end{tikzonimage}%
     \caption{
@@ -1131,7 +1135,7 @@ Our proposed imaging-based method circumvents this fundamental limitation.
 
 \paragraph{The Metric}
 We develop an approach which can be understood as a metric in image space where we quantify
-differences in the segmentation profile of two bacterial configurations.
+differences in the segmentation masks of two bacterial configurations.
 Within the realm of image segmentation many metrics such as the Jaccard Index~\cite{Murphy1996},
 Dice-Sørensen Coefficient~\cite{Dice1945}, Precision and Recall~\cite{Takaya2015} or F1
 Score~\cite{Taha2015} are actively used to deal with similar questions.
@@ -1143,8 +1147,13 @@ We can use the previously introduced \nameref{subsection:visualization} methods 
 from the numerical results of the \ac{abm} simulation.
 Since we utilize an in-image encoding scheme, each pixel has a unique color value which is directly
 related to one particular cell or background (black).
+However, in the strictly 2D case, where cells should not be able to hide behind each other, it is
+also important to determine possible overlaps of segmentation regions for individual cells.
+These overlaps stem from parameter combinations which exhibit a low repulsive interaction force.
+Since such overlaps are unrealistic, we need to assign an additional penalty $p_o\geq0$ in this case.
+They can by definition not be found in the provided data segmentation masks.
 We can now compare the two masks pixel by pixel.
-Whenever two colors are not matching, a penalty of $p\in[0,1]$ is assigned for each point in the
+Whenever two colors are not matching, a penalty of $p=1$ is assigned for each point in the
 pixel-grid.
 With this approach it is important to take into account the parental relationship between the cells,
 by checking if either one of the colors corresponding to the compared cells is a daughter of the
@@ -1168,6 +1177,7 @@ The total cost between two images $I^1$ and $I^2$ is the sum of all individual p
 \begin{align*}
     L_I(I^1,I^2) &= \sum\limits_{i,j} p(I^1_{ij}, I^2_{ij})\\
     p(i^1,i^2) &= \begin{cases*}
+        p_o & \text{if $i^1$ or $i^2$ is in overlap}\\
         p_p & \text{if $i^1$ is daughter/mother of $i^2$}\\
         1 & \text{if } $i^1\neq i^2$\\
         0 & \text{else}
@@ -1214,32 +1224,32 @@ e.g. when dealing with division events.
 \begin{figure}[H]
     \centering
     \begin{tikzonimage}[width=0.24\textwidth]
-        {docs/source/_static/fitting-methods/progressions-1.pdf}
+        {figures/docs/fitting-methods/progressions-1.pdf}
         \node at (0.025, 0.975)[anchor=north west, white]{\textbf{A}};
     \end{tikzonimage}%
     \hspace{0.01\textwidth}%
     \begin{tikzonimage}[width=0.24\textwidth]
-        {docs/source/_static/fitting-methods/progressions-2.pdf}
+        {figures/docs/fitting-methods/progressions-2.pdf}
         \node at (0.025, 0.975)[anchor=north west, white]{\textbf{B}};
     \end{tikzonimage}%
     \hspace{0.01\textwidth}%
     \begin{tikzonimage}[width=0.24\textwidth]
-        {docs/source/_static/fitting-methods/progressions-3.pdf}
+        {figures/docs/fitting-methods/progressions-3.pdf}
         \node at (0.025, 0.975)[anchor=north west, white]{\textbf{C}};
     \end{tikzonimage}%
     \hspace{0.01\textwidth}%
     \begin{tikzonimage}[width=0.24\textwidth]
-        {docs/source/_static/fitting-methods/progressions-4.pdf}
+        {figures/docs/fitting-methods/progressions-4.pdf}
         \node at (0.025, 0.975)[anchor=north west, white]{\textbf{D}};
     \end{tikzonimage}\\
     \begin{minipage}{\textwidth}
         \begin{tikzonimage}[width=0.48\textwidth]
-            {docs/source/_static/fitting-methods/extract_positionsdivision-comparison.pdf}
+            {figures/docs/fitting-methods/extract_positionsdivision-comparison.pdf}
             \node at (0, 1)[anchor=north west]{\textbf{E}};
         \end{tikzonimage}%
         \hspace{0.01\textwidth}%
         \begin{tikzonimage}[width=0.48\textwidth]
-            {docs/source/_static/fitting-methods/penalty-time-flow.pdf}
+            {figures/docs/fitting-methods/penalty-time-flow.pdf}
             \node at (0, 0.975)[anchor=north west]{\textbf{F}};
         \end{tikzonimage}%
     \end{minipage}
@@ -1519,9 +1529,10 @@ Figure~\ref{fig:application-2-data-overview} (D) shows the length of the rods as
 extraction algorithm.
 To quantify this heterogeneity, we fit the individual curves with an exponential function
 \begin{equation}
-    l(t) = l_0 \exp(\lambda t).
+    l(t) = l_0 \exp(\mu t).
+    \label{eq:exponential-growth-model}
 \end{equation}
-where $l_0$ is the starting length of the rod and $\lambda$ is the growth rate.
+where $l_0$ is the starting length of the rod and $\mu$ is the growth rate.
 Figure~\ref{fig:application-2-data-overview} (E) shows the distribution of the obtained growth rates.
 We can see, the distinct phenotypic properties of the cells result in large deviations of the
 individual growth rates.
@@ -1558,7 +1569,7 @@ range of permissible parameter values which motivates the approach to treat this
 constant thus reducing our overall model.
 The parameters which characterize the Morse-type interaction are the potential stiffness (B),
 strength (E) and radius (F).
-While the potential stiffness (B) and radius (F) can be estimated well with the given data, the
+While the potential stiffness (B) and radius (F) can be estimated well from the given data, the
 potential strength (E) contains a practical unidentifiability~\cite{Raue2009} which is lifted when
 fixing the damping constant $\lambda=\SI{1}{\per\minute}$.
 In contrast to the Morse potential, the Mie potential uses two parameters $n,m$ (C,D) to determine
@@ -1579,7 +1590,7 @@ value.
 \begin{figure}[H]
     \centering
     \begin{tikzonimage}[width=0.49\textwidth]
-        {figures/crm_fit/morse_partial/snapshots/predicted-006667.png}%
+        {figures/crm_fit/morse_partial/snapshots/predicted-006562.png}%
         \node at (0.025, 0.975)[anchor=north west, white]{\textbf{A}};
     \end{tikzonimage}%
     \hspace{0.01\textwidth}%
@@ -1680,14 +1691,23 @@ studies.
 We therefore explicitly include this gap to assess the fidelity of our approach under these
 practical challenges.
 
+In order to compare the experimentally obtained data with simulation results, there are 4 main steps
+which are executed within any single optimization iteration.
+Firstly, results need to be generated by performing the simulation.
+Afterwards, the corresponding masks is generated and then adjusted in such as way that it can be
+compared directly with experimental cell masks.
+This requires us to map the cell-lineage forest (collection of trees) of the numerical result to the
+experimental data.
+Finally, we use the previously established lineage-aware image-based metric for the comparison.
+
 % Since we have already optimized said system, we can reduce the computational demand by choosing the
 % parameters which were obtained by our previous attempts and extend them with the parameters that the
 % daughter cells will carry.
-In addition to the previously used parameters, we also need to consider division lengths at
+In addition to the previously used parameters, we also need to estimate division lengths at
 which the bacteria split and the new individual growth rates of the daughter cells as additional
 parameters.
-Since our simulation involves the division of 4 cells into 8 new ones, this amounts to a total of $8$
-new growth rates and $4$ division lengths.
+Since our simulation involves the division of 4 cells into 8 new ones, this amounts to a total of
+$4$ division lengths and $8$ new growth rates .
 % But to decrease the size of the parameter space, we assume that the growth rates of the daughter
 % cells are identical between every sibling, leaving us at only $4$ new growth rates and a total of
 % $8$ parameters.
@@ -1701,42 +1721,51 @@ Figure~\ref{fig:celldiffs-progression-with-division} shows the difference betwee
 given by the data and the cell mask predicted by the best fit of our model.
 As expected, the fully-optimized system does not produce differences where the parental penalty is
 required.
-However, its value is frequently used within the the optimization scheme itself.
+However, this approach is still frequently used within the the optimization scheme itself and aids
+in smoothing the calculation of gradients between distinct results.
 
 % We can again calculate likelihood profiles for every optimized parameter.
 Since further mathematical analysis is required to assess how to utilize the Lineage-Aware
-Image-Space metric for maximum-likelihood approaches, we simply display the change of the cost
-function when fixing a single parameter.
+Image-Space metric for maximum-likelihood approaches, we simply display profiles of the cost
+function when fixing a single parameter and reoptimizing the remaining ones.
 While only confidence bands for likelihood profiles as presented in the previous sections could
 paint a clearer picture with regards to the identifiability of the parameters, we can still
 identify some trends.
-Figure~\ref{fig:likelihood-profiles-comparison-with-division} shows that some curves (F,G,I,L)
-exhibit a plateau close to the calculated optimum of the estimated parameter.
-This concerns the division lengths and some growth rates of the mother bacteria which both determine
-if and when a cell divides.
-Such behavior can be attributed to the missing images around the division events of the cells which
-were not able to be segmented.
-This presents a restriction on the lower and upper bounds of the parameter value.
-However for some parameters (H,J,K) the lower region of the plots contains a slight gradient,
-indicating that our mechanistic model is able to provide some level of information about the missing
-datapoints.
-It therefore further underlines the accuracy and predictive power of our methods.
-\textbf{TODO check this with results}
 
-The image-space metric is computationally much more expensive compared to the direct method.
-There are 4 main steps which are executed within any single optimization iteration that contribute
-to the total wall time.
-Rendering of the masks dominates the workload ($69.2(1.4)\%$), followed by the model prediction
-($15.63(21)\%$) and mask adjustment ($14.49(19)\%$) while the actual pixel-wise compariosn is
-negligible ($0.68(5)\%$) (see also Section \ref{section:supplement-performance}).
-The mask-adjustment step is necessary for every individual numerical simulation to ensure that masks
-obtained from the data are color-comparable to the ones produced by our computational model.
-To this end, we need to construct a set of family trees (forest) of the data-bacteria and compare
-with the \textit{in-silico} family trees.
-We can see that the generation of masks from the numerical results takes up the majority of the work.
-In addition, the step of mask adjustment would not have been required within the position-comparison
-algorithm.
-Combining these two values, the position-comparison algorithm is $\approx 6.13(8)$ times faster.
+We used the Morse potential as an interaction type since we have already seen in the preceding
+section that the mie potential could not be identified properly.
+The profiles in Figure~\ref{fig:likelihood-profiles-comparison-with-division} show that every
+parameter can be identified from the given data.
+The individual subplots show 3 curves containing the metric used for comparison, the same metric
+when removing contributions of the calculated overlaps and when setting the parent penalty $p_p=1$,
+thus ignoring these contributions.
+In particular, all interaction parameters such as the potential stiffness, strength and radius
+(A,B,C) are well bound from below and above.
+The potential stiffness is particularly influenced by contributions from overlaps, which well
+explicable since higher parameter values result in a steeper potential curve, thus beeing less
+permissible to overlapping radii.
+The profiles of the growth rates of cells (0-4) which lead to a division event, exhibit a stark
+negative peak which indicates good identifiability of these parameters.
+In contrast, the profiles of growth rates of cells (5,6) which do not divide during the time
+interval are less pronounced.
+The division lengths of the dividing cells (0-4) also show a clear negative dip, thus enabling a
+proper estimation this parameter.
+All growth rates for the daughter cells (M-T) show similar behaviour to the
+non-dividing cells which are present at the initial state.
+Their profiles indicate that a optimum was achieved and significantly increase with higher values
+while being less stringently bound from below.
+
+We can clearly see the effect of the parent-penalty in all parameters related to growth and
+division.
+It is a matter of future studies to further explore how this treatment can affect the optimization
+scheme and the values of the obtained parameters.
+
+Coming back to the lack of data around the division event, our results show that despite this
+incompleteness, our model is still able to determine the respective parameters such as division
+lengths and growth rates of cells (0-4) accurately.
+In particular, it exhibits not plateaus due to missing data points.
+This phenomon can be attributed to our mechanistic understanding of the problem and would not have
+been possible by other approaches such as purely statistical models.
 
 \begin{figure}[H]
     \centering
@@ -1768,169 +1797,207 @@ Combining these two values, the position-comparison algorithm is $\approx 6.13(8
 \begin{figure}[H]
     \centering
     \begin{tikzonimage}[width=0.25\textwidth]
-        {figures/crm_divide/profiles/profile-000000.png}%
-        \node at (0.15, 0.85)[anchor=north west, black]{\textbf{A}};
+        {figures/crm_divide/profiles-pretty/pdf/profile-potential-stiffness.pdf}%
+        \node at (0, 1.1)[anchor=north west, black]{\textbf{A}};
     \end{tikzonimage}%
     \begin{tikzonimage}[width=0.25\textwidth]
-        {figures/crm_divide/profiles/profile-000001.png}%
-        \node at (0.15, 0.85)[anchor=north west, black]{\textbf{B}};
+        {figures/crm_divide/profiles-pretty/pdf/profile-strength.pdf}%
+        \node at (0, 1.1)[anchor=north west, black]{\textbf{B}};
     \end{tikzonimage}%
     \begin{tikzonimage}[width=0.25\textwidth]
-        {figures/crm_divide/profiles/profile-000002.png}%
-        \node at (0.15, 0.85)[anchor=north west, black]{\textbf{C}};
+        {figures/crm_divide/profiles-pretty/pdf/profile-radius.pdf}%
+        \node at (0, 1.1)[anchor=north west, black]{\textbf{C}};
     \end{tikzonimage}%
     \begin{tikzonimage}[width=0.25\textwidth]
-        {figures/crm_divide/profiles/profile-000003.png}%
-        \node at (0.15, 0.85)[anchor=north west, black]{\textbf{D}};
+        {figures/crm_divide/profiles-pretty/pdf/profile-growth-rate-0.pdf}%
+        \node at (0, 1.1)[anchor=north west, black]{\textbf{D}};
     \end{tikzonimage}\\
     \begin{tikzonimage}[width=0.25\textwidth]
-        {figures/crm_divide/profiles/profile-000004.png}%
-        \node at (0.15, 0.85)[anchor=north west, black]{\textbf{E}};
+        {figures/crm_divide/profiles-pretty/pdf/profile-growth-rate-1.pdf}%
+        \node at (0, 1.1)[anchor=north west, black]{\textbf{E}};
     \end{tikzonimage}%
     \begin{tikzonimage}[width=0.25\textwidth]
-        {figures/crm_divide/profiles/profile-000005.png}%
-        \node at (0.15, 0.85)[anchor=north west, black]{\textbf{F}};
+        {figures/crm_divide/profiles-pretty/pdf/profile-growth-rate-2.pdf}%
+        \node at (0, 1.1)[anchor=north west, black]{\textbf{F}};
     \end{tikzonimage}%
     \begin{tikzonimage}[width=0.25\textwidth]
-        {figures/crm_divide/profiles/profile-000006.png}%
-        \node at (0.15, 0.85)[anchor=north west, black]{\textbf{G}};
+        {figures/crm_divide/profiles-pretty/pdf/profile-growth-rate-3.pdf}%
+        \node at (0, 1.1)[anchor=north west, black]{\textbf{G}};
     \end{tikzonimage}%
     \begin{tikzonimage}[width=0.25\textwidth]
-        {figures/crm_divide/profiles/profile-000007.png}%
-        \node at (0.15, 0.85)[anchor=north west, black]{\textbf{H}};
+        {figures/crm_divide/profiles-pretty/pdf/profile-growth-rate-4.pdf}%
+        \node at (0, 1.1)[anchor=north west, black]{\textbf{H}};
     \end{tikzonimage}\\
     \begin{tikzonimage}[width=0.25\textwidth]
-        {figures/crm_divide/profiles/profile-000008.png}%
-        \node at (0.15, 0.85)[anchor=north west, black]{\textbf{I}};
+        {figures/crm_divide/profiles-pretty/pdf/profile-growth-rate-5.pdf}%
+        \node at (0, 1.1)[anchor=north west, black]{\textbf{I}};
     \end{tikzonimage}%
     \begin{tikzonimage}[width=0.25\textwidth]
-        {figures/crm_divide/profiles/profile-000009.png}%
-        \node at (0.15, 0.85)[anchor=north west, black]{\textbf{J}};
+        {figures/crm_divide/profiles-pretty/pdf/profile-division-length-0.pdf}%
+        \node at (0, 1.1)[anchor=north west, black]{\textbf{J}};
     \end{tikzonimage}%
     \begin{tikzonimage}[width=0.25\textwidth]
-        {figures/crm_divide/profiles/profile-000010.png}%
-        \node at (0.15, 0.85)[anchor=north west, black]{\textbf{K}};
+        {figures/crm_divide/profiles-pretty/pdf/profile-division-length-1.pdf}%
+        \node at (0, 1.1)[anchor=north west, black]{\textbf{K}};
     \end{tikzonimage}%
     \begin{tikzonimage}[width=0.25\textwidth]
-        {figures/crm_divide/profiles/profile-000011.png}%
-        \node at (0.15, 0.85)[anchor=north west, black]{\textbf{L}};
+        {figures/crm_divide/profiles-pretty/pdf/profile-division-length-2.pdf}%
+        \node at (0, 1.1)[anchor=north west, black]{\textbf{L}};
+    \end{tikzonimage}\\
+    \begin{tikzonimage}[width=0.25\textwidth]
+        {figures/crm_divide/profiles-pretty/pdf/profile-division-length-3.pdf}%
+        \node at (0, 1.1)[anchor=north west, black]{\textbf{M}};
+    \end{tikzonimage}%
+    \begin{tikzonimage}[width=0.25\textwidth]
+        {figures/crm_divide/profiles-pretty/pdf/profile-growth-rate-0-0.pdf}%
+        \node at (0, 1.1)[anchor=north west, black]{\textbf{N}};
+    \end{tikzonimage}%
+    \begin{tikzonimage}[width=0.25\textwidth]
+        {figures/crm_divide/profiles-pretty/pdf/profile-growth-rate-0-1.pdf}%
+        \node at (0, 1.1)[anchor=north west, black]{\textbf{O}};
+    \end{tikzonimage}%
+    \begin{tikzonimage}[width=0.25\textwidth]
+        {figures/crm_divide/profiles-pretty/pdf/profile-growth-rate-1-0.pdf}%
+        \node at (0, 1.1)[anchor=north west, black]{\textbf{P}};
     \end{tikzonimage}%
     \caption{
-        \text{TODO include missing profiles here}
-        Likelihood profiles of every estimated parameter.
-        (A-D) Division Lengths of initially placed cells.
-        (E-H) Growth rates of daughter cells.
-        The growth rates diplay larger values of noise within their profiles compared to the
-        division lengths.
-        \textbf{TODO add profiles for daughter cells}
-        \textbf{TODO possibly extend this description?}
+        Profiles of optimized cost functions when scanning along one parameter axis.
+        (A) Potential Stiffness (B) Strength (C) Radius of the Morse Potential.
+        (D-G) Growth rates of mother cells and (H,I) non-dividing cells.
+        (J-M) Division lengths of the mother cells.
+        (N-P) Growth rates of daughter cells.
+        For brevity, we display the remaining growth rates of the daughter cells in the
+        supplementary material Figure~\ref{fig:supplement-profiles-with-division}.
     }
     \label{fig:likelihood-profiles-comparison-with-division}
 \end{figure}
 
-\textbf{TODO write text to compare the numerical values. This needs updated input from results.}
+\subsubsection{Comparison of Estimated Parameters}
+We finally aim to compare the obtained parameter values of the various approaches that we have used.
+It is important to keep in mind that the ground truth differs from the first part to the second one
+which involves division events and therefore a longer time interval.
+Furthermore, both methods involve additional steps when determining the overall growth of the
+bacteria.
+The direct approach utilizes the positions of the cells which involves their extraction via our
+developed algorithm.
+Meanwhile, the Lineage-Aware Image-Space metric utilizes only the masks of the data and thus
+involves one step less in the preprocessing steps.
+These distinct choices may influence the obtained values at hand.
+
 Table~\ref{tab:comparison-growth-rates} shows the obtained values for the growth rates via the
 different techniques.
-Although numerical values differ between the individual settings, each estimation technique was able
-to capture the same trends.
-Cell $0,1,3$ tend to be the fastest growing cells while $2,4,5$ are slower.
-Furthermore, we can see that daughter cells tend to grow quicker compared to mother cells,
-indicating the their parents were still adapting to the new environment.
+It also contains the total division lengths $\tilde{l}=(n_\text{vertices}-1)l$ which are obtained by
+summing up all segment lengths.
+In the first section of the table, we see a comparison of calculated growth rates by utilizing
+extracted position or by counting the number of pixels associated with each cell over the course of
+the given time interval.
+In both cases, the same exponential model as presented in equation~\ref{eq:exponential-growth-model}
+is fitted to the data.
+We can already see that this coice greatly influences the obtained results, leading to significant
+differences between the numerical values.
+
+Going further, the estimated growth rates pick up on similar trends.
+One clear trend within the direct position-space comparison block is the ordering of growth rates.
+The cells with largest to lowest growth rate are 4,2,3,5,1,0 where the order is only violated in
+the first case, switching between 3 and 5 which is not surprising due to their similarity in
+numerical values.
+However this trend is not picked up when estimating parameters with the Lineage-Aware Image-Space
+metric.
 
 \begin{table}[H]
     \centering
     % \textbf{Growth Parameters obtained by various Methods}
     \begin{tabular}{l c c c c c c}
         % \multicolumn{7}{l}{}\\
-        & \multicolumn{6}{c}{Growth Rates $[\mu]=\SI{}{\per\minute}$}\\
-        \textbf{Data Extraction} & Cell $0$ & Cell $1$ & Cell $2$ & Cell $3$ & Cell $4$ & Cell $5$\\
+        \multicolumn{7}{c}{Estimated Growth Rates $[\mu]=\SI{}{\per\minute}$}\\
         \toprule
-        % \multicolumn{7}{l}{\textbf{Data Extraction}}\\
-        % \midrule
-        Exponential Fit
-            & 0.0070
-            & 0.0054
-            & 0.0116
-            & 0.0076
-            & 0.0102
-            & 0.0084\\
+        \textbf{Data Extraction} & Cell $0$ & Cell $1$ & Cell $2$ & Cell $3$ & Cell $4$ & Cell $5$\\
+        \midrule
+        Position Fit & 0.0069 & 0.0054 & 0.0115 & 0.0076 & 0.0103 & 0.0084\\
+        Pixel Fit    & 0.0062 & 0.0068 & 0.0034 & 0.0071 & 0.0018 & 0.0059\\
 
         \multicolumn{7}{l}{\textbf{Direct Position-Space Metric}}\\
         \midrule
-        Mie
-            & 0.0079
-            & 0.0090
-            & 0.0131
-            & 0.0103
-            & 0.0215
-            & 0.0097\\
+        Mie                                 & 0.0079 & 0.0090 & 0.0131 & 0.0103 & 0.0215 & 0.0097\\
+        Mie $\lambda=\SI{1}{\per\minute}$   & 0.0060 & 0.0069 & 0.0109 & 0.0080 & 0.0186 & 0.0083\\
+        Morse                               & 0.0070 & 0.0078 & 0.0118 & 0.0089 & 0.0203 & 0.0094\\
+        Morse $\lambda=\SI{1}{\per\minute}$ & 0.0060 & 0.0070 & 0.0113 & 0.0078 & 0.0191 & 0.0093\\
 
-        Mie $\lambda=\SI{1}{\per\minute}$
-            & 0.0060
-            & 0.0069
-            & 0.0109
-            & 0.0080
-            & 0.0186
-            & 0.0083\\
-
-        % 0.00671 & 0.00746 & 0.01138 & 0.00848 & 0.02005 & 0.00952\\
-        Morse
-            & 0.0070
-            & 0.0078
-            & 0.0118
-            & 0.0089
-            & 0.0203
-            & 0.0094\\
-
-        Morse $\lambda=\SI{1}{\per\minute}$
-            & 0.0060
-            & 0.0070
-            & 0.0113
-            & 0.0078
-            & 0.0191
-            & 0.0093\\
-
-        \multicolumn{7}{l}{\textbf{Lineage-Aware Image-Space Metric (TODO)}}\\
+        \multicolumn{7}{l}{\textbf{Lineage-Aware Image-Space Metric}}\\
         \midrule
-        Imaging \ac{abm} Mie & 0.00104 & 0.00146 & 0.00206 & 0.00286 & 0.00190 & 0.00171\\
-        % & \textbf{Daughters}\\
-        % \midrule
-        % & Cell $0$ & Cell $1$ & Cell $2$ & Cell $3$ & Cell $4$ & Cell $5$\\
-        Daughter 0 & 0.00240 & 0.00494 & 0.00096 & 0.00363 & - & -\\
-        Daughter 1 & 0.00490 & 0.00226 & 0.00448 & 0.00048 & - & -\\
-        % 0.0014057073 & 0.0010807540 & 0.0023177727 & 0.0015120675 & 0.0020488179 & 0.0016726263\\
-        % direct & 0.0009785162 & 0.0012641432 & 0.0021701728 & 0.0015695889 & 0.0036255661 & 0.0018419186\\
+        Morse                               & 0.0073 & 0.0060 & 0.0092 & 0.0126 & 0.0091 & 0.0094\\
+        Daughter                            & 0.0032 & 0.0179 & 0.0052 & 0.0185 & - & -\\
+        Daughter                            & 0.0126 & 0.0048 & 0.0011 & 0.0005 & - & -\\
+        \midrule
+        & \multicolumn{4}{c}{Division Lengths $[\tilde{l}]=\unit{\micro\metre}$}\\
+                                            & 2.1080 & 2.2957 & 2.0803 & 1.9870\\
         \bottomrule
     \end{tabular}
     \caption{
-        \textbf{TODO maybe report uncertainties?;
-        Update and explain these values. And also add units!;
-        FIX NUMERICAL VALUES;
-        check ordering of values}
+        Growth Rates and division lengths calculated by the previously discussed approaches
+        including growth rates of the daughter cells.
+        The division lengths have been multiplied by the number of polygonal sections
+        $n_\text{vertices}-1$ to obtain a measure for the overall length of the bacterial rod.
     }
     \label{tab:comparison-growth-rates}
 \end{table}
 
+While growth rates can be directly compared between the various approaches, the same can not be done
+as easily with the remaining kinetic parameters which are listed in
+Table~\ref{tab:comparison-kinetic-parameters}.
+This results from the fact that the type of interaction potential greatly determines the values of
+these parameters and parameters such as the exponents $n,m$ or the potential stiffness $\omega$ have
+influences on the overall magnitude of the potential thus also influencing the strength $V_0$.
+As we have discussed earlier, the damping constant is frequently set to a fixed value to allow for
+proper parameter estimation of the system.
+However, one clear effect can be seen when comparing the potential stiffness $\omega$ of the direct
+approaches with the Imaging results.
+Due to the fact that the Image-Space metric penalizes overlapping regions of cells, the potential
+stiffness is much larger thus diminishing said effects.
+This can also explain the lower value for the radius compared to the other results.
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{l c c c c}
+        \multicolumn{5}{c}{Estimated Kinetic Parameters}\\
+        \toprule
+        \makecell[l]{\\\textbf{Direct}}
+            & \makecell{Damping\\$[\lambda]=\unit{\per\minute}$}
+            & \makecell{Exponents $n,m$/\\Stiffness $[\omega]=\unit{\per\micro\metre}$}
+            & \makecell{Strength\\$[V_0]=\unit{\micro\metre^2\per\minute^2}$}
+            & \makecell{Radius\\$[r]=\unit{\micro\metre}$}\\
+        \midrule
+        Mie                         & 3.670 & 2.358, 2.408 & 0.0081 & 0.239\\
+        Mie $\lambda=\lambda_0$     & -     & 2.189, 2.236 & 0.0024 & 0.239\\
+        Morse                       & 1.830 & 1.416 & 0.0047 & 0.273\\
+        Morse $\lambda=\lambda_0$   & -     & 1.353 & 0.0027 & 0.278\\
+        \textbf{Imaging}\\
+        \midrule
+        Morse $\lambda=\lambda_0$   & - & 10.952 & 0.0038 & 0.205\\
+        % & \multicolumn{4}{c}{Position-Space } & \multicolumn{2}{c}{Image-Space}\\
+        % & Mie & Mie $\lambda=\lambda_0$ & Morse & Morse $\lambda=\lambda_0$\\% & Morse $\lambda=\lambda_0$\\
+        \bottomrule
+    \end{tabular}
+    \caption{
+        Comparison of kinetic parameters between various approaches.
+        Damping constants are reduced to a fixed value where not provided.
+    }
+    \label{tab:comparison-kinetic-parameters}
+\end{table}
+
+% \textbf{TODO decide if we mention these}
+% \begin{itemize}
+%     \item plastic/elastic deformations
+%     \item non-uniform thickness of the rod
+%     \item polar interactions \cite{Duvernoy2018}
+%     \item other dynamics
+%     \item advantage of image-space metric: no need to specify number of vertices; more
+%         naturally aligned with biological reality (no vertices); keywords: Topology-Restricted vs.
+%         Topology-Agnostic
+% \end{itemize}
+
 %###################################################################################################
-\section{Discussion}
-
-\textbf{TODO decide if we mention these}
-\begin{itemize}
-    \item plastic/elastic deformations
-    \item non-uniform thickness of the rod
-    \item polar interactions \cite{Duvernoy2018}
-    \item other dynamics
-    \item advantage of image-space metric: no need to specify number of vertices; more
-        naturally aligned with biological reality (no vertices); keywords: Topology-Restricted vs.
-        Topology-Agnostic
-\end{itemize}
-
-Future extensions should introduce a time-dependent parent penalty $p=p(t)$ which grows with the age
-of the daughter cells.
-Furthermore, the developed algorithm relies on the comparison of two images and can as such make use
-of existing machine-learning workflows that construct cost functions for such
-scenarios~\cite{Dice1945}.\\
-\textbf{@Christian are these two sentences Discussion?}
+\section{Summary}
 
 With this work we have layed out how to estimate the parameters of \acp{abm} using
 microscopic image time series.
@@ -1940,53 +2007,53 @@ the rod and is implemented with \texttt{cellular\_raza} allowing it to be flexib
 readily applicable for computational studies.
 Furthermore, we devised novel methods to extract the spatial positions and other information of
 cell-agents from masks which have been segmented from microscopic images.
-The extracting method was validated using results from our computational model.
+The extraction algorithm was validated using results from our computational model.
 We further implemented a pipeline that can produce 3D visualizations of simulation snapshots and can
-generate cell masks from data as produced by our computational model.
+generate cell masks from simulation data by our computational model.
 These imaging techniques were also utilized to design a cost function that can compare snapshots
-of cellular states across cellular division events, allowing us to estimate parameters across a
-large time-span.
+of cellular states across cellular division events thus allowing us to estimate parameters in such
+scenarios.
 Finally, the combination of these preceding advancements were applied to 2 case studies, which showed
 that the profile-likelihood method can be used to effectively evaluate the ability of our system to
 properly identify the involved parameters.
 In the first example, we fit a simplified model of a singular bent rod to microscopic images.
 These results highlighted that a reduction of the systems parameters is necessary in order to
-identify them.
+properly identify them.
 In our next step, the same system was fitted to a series of microscopic images in two secarios,
 excluding and incorporating division events.
 Both results showed the ability of our model to effectively estimate individual parameters of the
 cells.
-The case including division events produced parameter profiles with minima that were not fully able
-to estimate the chosen parameters.
-These results ca be traced back to a gap within the provided segmentation masks.
+
+%###################################################################################################
+\section{Discussion}
 
 Our work shows that it is possible to estimate the parameters of \acp{abm} on a single-cell level.
-Together with the flexible nature of \texttt{cellular\_raza}, this opens up the possibility to
-design minimal \acp{abm} which can be fit to data.
-The developed methods are publicly available as a well-documented python package
-(\href{https://github.com/jonaspleyer/cr_mech_coli}{cr\_mech\_coli}).
+It also highlighted that unidentifiabilities can be caught and effectively reduced by classical
+model reduction techniques.
+Together with the flexible nature of \texttt{cellular\_raza} \cite{Pleyer2025}, this opens up the
+possibility to design minimal \acp{abm} which can be fit to experimental data.
 The individual treatment of the cells allows us in principle to estimate the distribution of the
 parameters directly without having to resort to any assumptions on the form of said distribution.
 This is true for any parameter, not just the growth rates, since our approach can be generalized to
-other individual cellular behaviors.
+other cellular properties.
 
-Future work should focus on multiple aspects that target challenges with respect to computational
-efficiency and accuracy and extending the described model.
+Future developments of these methods should focus on multiple aspects that target challenges with
+respect to computational efficiency, accuracy and extensions the described model.
 Additional biological effects include polar interactions~\cite{Duvernoy2018},
 differentiation~\cite{vanGestel2015}, extracellular reactions~\cite{Li2025}.
-When it comes to the designed algorithms, we have already discussed that the performance of
-generating masks from computational results is the limiting factor for the performance of the
-image-space metric.
-This problem could be targeted by rewriting existing code in C++ using native VTK~\cite{vtkBook}
-instead of relying on the wrapper library pyvista~\cite{Sullivan2019}.
-Another area of improvement is the position extraction algorithm which works well for cells living
+One significant area of improvement is the position extraction algorithm which works well for cells living
 in 2D or thin sheets but will not hold up when multiple bacteria are overlapping.
+In addition, the algorithm in its current state most often underestimates the length of the rods,
+leading to skewed results.
 This task is well suited to be tackled by a purpose-built machine-learning tool that can either
 reconstruct masks or accurately extrapolate positions from incomplete (possibly overlapping) masks.
-Finally, the results of our computational model can be used to generate synthetic near-realistic
-microscopic brightfield images together with their corresponding cell masks.
-This combination of data allows us to train segmentation and more importantly tracking algorithms
-which require large amounts of data.
+Within the presented framework, the parent penalty takes immediate effect surrounding the division
+event but also persists indefenitely.
+This simplification should be lifted and the parent penalty should be depening on the time
+difference between the division event and the current time point at which the comparison takes
+place.
+This would introduce a time-dependent variable $p=p(t)$ which grows with the age of the daughter cells.
+It will allow for a much more smooth transition from the pre-divided to the fully-divided system.
 
 In order to speed up the optimization process, it could also be valuable to initially consider all
 parameters as global ones and once a certain threshold of tolerance is matched, losening this
@@ -1996,24 +2063,19 @@ optimium more quickly in total.
 Another factor that could be considered to improve performance is that individual parameters of
 cells which are spatially separated will not have an immediate effect on each other, thus presenting
 a loosely coupled or fully decoupled relationship.
-Depening on the solver, this information could be exploited.
-Ultimately, we desire to apply these methods to large amounts of data, which is done most
-effectively by fitting our model to various image time-series simultanously which is yet to be
+Depening on the optimization routine, this information could be exploited.
+Ultimately, we desire to apply these methods to larger amounts of data, which is done most
+effectively by fitting our model to various time-series simultanously which is yet to be
 implemented.
 
-Our approach furthermore highlighted that we are able to detect non-identifiabilities.
-By choosing \texttt{cellular\_raza} as a modeling framework, we retain flexibility with respect to
-model design thus effectively allowing us to reduce our model as we continue working on it.
-\texttt{cellular\_raza} allows us to change the underlying representation if such unidentifiabilities
-are determined to be structural (model-based) rather than practical (due to lack of
-data).\textbf{TODO CITATION}
-This allows us to iterate and find the model formulation which suits the data best but still retain
-the mechanistic methodology of our approach.
-
-As we continue to develop these methods, we expect to be able to reuse many of the existing
-workflows\textbf{TODO better wording} such as likelihood estimation and uncertainty quantification
-which have already been developed extensively for less complex systems such as \acp{ode}
-\textbf{TODO CITATION}.
+By choosing \texttt{cellular\_raza} \cite{Pleyer2025} as a modeling framework, we retain flexibility
+with respect to model design thus effectively allowing us to reduce or extend our model as
+development progresses since \texttt{cellular\_raza} allows us to change the underlying
+representation of the cells.
+This facilitates model development if unidentifiabilities are encountered which are determined to be
+of structural (model-based) rather than practical nature (due to lack of data) \cite{Heinrich2025}.
+This allows us to iterate and find the model formulation which suits the data best while still
+retaining our mechanistic understanding of the problem at hand.
 
 % \begin{itemize}
 %     \item Summary:
@@ -2076,9 +2138,12 @@ package which provides flexibility in model design, thus enabling researchers to
 extend and combine existing building blocks.
 This allows researchers to extend the model and incorporate additional biological properties.
 
-Future work will focus on the data-generation capabilities of the software.
-We will aim to generate near-realistic microscopic brightfield images together with corresponding
-segmentation masks in order to train segmentation and tracking algorithms.
+Future work will dive deeper on the data-generation capabilities of the software.
+There is already ongoing progress which harnesses the capabilities of our model and imaging pipelines
+to construct near-realistic microscopic images together with corresponding cell masks.
+This combination of data allows will us to train segmentation and more importantly tracking algorithms
+built on machine-learning frameworks which thus require large amounts of data.
+
 On the biological side, a plethora of cellular properties waits to be investigated using this novel
 tecnhique.
 Another open question is how to efficiently scale up this operation in order to treat large numbers
@@ -2176,19 +2241,19 @@ In general, we do not anticipate that these scenarios are common for most practi
 \begin{figure}[H]
     \centering
     \begin{tikzonimage}[width=0.5\textwidth]
-        {docs/source/_static/fitting-methods/displacement-distribution.pdf}
+        {figures/docs/fitting-methods/displacement-distribution.pdf}
         \node at (0, 1)[anchor=north west, black]{\textbf{A}};
     \end{tikzonimage}%
     \begin{tikzonimage}[width=0.5\textwidth]
-        {docs/source/_static/fitting-methods/displacement-fit-over-time-covariance.pdf}
+        {figures/docs/fitting-methods/displacement-fit-over-time-covariance.pdf}
         \node at (0, 1)[anchor=north west, black]{\textbf{B}};
     \end{tikzonimage}\\
     \begin{tikzonimage}[width=0.5\textwidth]
-        {docs/source/_static/fitting-methods/displacement-distr-x.pdf}
+        {figures/docs/fitting-methods/displacement-distr-x.pdf}
         \node at (0, 1)[anchor=north west, black]{\textbf{C}};
     \end{tikzonimage}%
     \begin{tikzonimage}[width=0.5\textwidth]
-        {docs/source/_static/fitting-methods/displacement-distr-y.pdf}
+        {figures/docs/fitting-methods/displacement-distr-y.pdf}
         \node at (0, 1)[anchor=north west, black]{\textbf{D}};
     \end{tikzonimage}
     \caption{
@@ -2303,8 +2368,29 @@ normal distribution with user-defined parameters.
 
 \begin{figure}
     \centering
+    \begin{tikzonimage}[width=0.25\textwidth]
+        {figures/crm_divide/profiles-pretty/pdf/profile-growth-rate-1-1.pdf}%
+        \node at (0, 1.1)[anchor=north west, black]{\textbf{Q}};
+    \end{tikzonimage}%
+    \begin{tikzonimage}[width=0.25\textwidth]
+        {figures/crm_divide/profiles-pretty/pdf/profile-growth-rate-2-0.pdf}%
+        \node at (0, 1.1)[anchor=north west, black]{\textbf{R}};
+    \end{tikzonimage}%
+    \begin{tikzonimage}[width=0.25\textwidth]
+        {figures/crm_divide/profiles-pretty/pdf/profile-growth-rate-2-1.pdf}%
+        \node at (0, 1.1)[anchor=north west, black]{\textbf{S}};
+    \end{tikzonimage}%
+    \begin{tikzonimage}[width=0.25\textwidth]
+        {figures/crm_divide/profiles-pretty/pdf/profile-growth-rate-3-0.pdf}%
+        \node at (0, 1.1)[anchor=north west, black]{\textbf{T}};
+    \end{tikzonimage}\\
+    \begin{tikzonimage}[width=0.25\textwidth]
+        {figures/crm_divide/profiles-pretty/pdf/profile-growth-rate-3-1.pdf}%
+        \node at (0, 1.1)[anchor=north west, black]{\textbf{U}};
+    \end{tikzonimage}%
     \includegraphics[width=0.5\textwidth]{figures/crm_divide/time-evolution.pdf}%
     \caption{TODO}
+    \label{fig:supplement-profiles-with-division}
 \end{figure}
 
 %###################################################################################################
@@ -2395,7 +2481,7 @@ Figure~\ref{fig:timings-crm_divide}).
 \begin{figure}[H]
     \centering
     \begin{tikzonimage}[width=0.5\textwidth]
-        {docs/source/_static/performance/computation-time-with-initial-agents.pdf}
+        {figures/docs/computation-time-with-initial-agents.pdf}
         \node at (0, 1)[anchor=north west]{\textbf{A}};
     \end{tikzonimage}%
     \begin{tikzonimage}[width=0.5\textwidth]
@@ -2403,7 +2489,7 @@ Figure~\ref{fig:timings-crm_divide}).
         \node at (0, 1)[anchor=north west]{\textbf{B}};
     \end{tikzonimage}\\
     \begin{tikzonimage}[width=\textwidth]
-        {docs/source/_static/performance/flamegraph.pdf}
+        {figures/docs/flamegraph.pdf}
         \node at (0.02, 0.98)[anchor=north west]{\textbf{C}};
     \end{tikzonimage}\\
     \caption{
