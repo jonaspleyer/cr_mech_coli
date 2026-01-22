@@ -28,6 +28,9 @@ def __lhs_optim_func(args, polish=False):
 
 
 def minimize_lhs(params, bounds, args, callback, pyargs):
+    """
+    Performs parameter optimization with a Latin-Hypercube sampling
+    """
     bounds = np.array(bounds)
 
     sampler = qmc.LatinHypercube(d=len(params))
@@ -53,6 +56,9 @@ def minimize_lhs(params, bounds, args, callback, pyargs):
 
 
 def minimize_de(params, bounds, args, callback, pyargs):
+    """
+    Uses the `differential_evolution` algorithm to perform parameter estimation.
+    """
     res = sp.optimize.differential_evolution(
         objective_function,
         x0=params,
@@ -138,6 +144,9 @@ def __calculate_single_cost(optargs):
 
 
 def calculate_profiles(parameters, bounds, n_samples, args, pyargs):
+    """
+    Calculates profiles for every optimized parameter given the specified optimization bounds.
+    """
     b_low = np.array(bounds)[:, 0]
     b_high = np.array(bounds)[:, 1]
     n_param = np.repeat([np.arange(len(parameters))], n_samples, axis=0)
