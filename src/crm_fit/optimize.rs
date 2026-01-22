@@ -149,6 +149,8 @@ fn lhs_optimization_iter(
     Ok(result)
 }
 
+/// Performs a full optimization given microscopic data and configuration information of how the
+/// parameters should be treated.
 #[pyfunction]
 #[pyo3(signature = (iterations_images, positions_all, settings, n_workers=-1))]
 pub fn run_optimizer(

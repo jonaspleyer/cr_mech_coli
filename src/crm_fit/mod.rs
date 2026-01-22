@@ -18,6 +18,8 @@ pub fn crm_fit_rs(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<Settings>()?;
     m.add_class::<Others>()?;
     m.add_class::<PotentialType>()?;
+    m.add_class::<Mie>()?;
+    m.add_class::<Morse>()?;
     m.add_class::<OptimizationResult>()?;
     m.add_class::<OptimizationMethod>()?;
     m.add_class::<DifferentialEvolution>()?;
