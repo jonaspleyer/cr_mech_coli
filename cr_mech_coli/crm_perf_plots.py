@@ -37,6 +37,7 @@ def run_sim(
         domain_size=(domain_size + 100, domain_size + 100),
         n_threads=n_threads,
         n_voxels=(n_voxels, n_voxels),
+        t_max=200.0,
     )
     agent_settings = crm.AgentSettings()
     positions = crm.generate_positions(
