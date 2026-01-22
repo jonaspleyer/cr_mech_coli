@@ -677,7 +677,6 @@ def crm_amir_main():
 
     crm.plotting.set_mpl_rc_params()
 
-
     positions_data, iterations_data = obtain_data("out/crm_amir/", n_vertices=20)
 
     # Define globals for all optimizations
