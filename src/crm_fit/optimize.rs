@@ -9,14 +9,21 @@ use numpy::{PyUntypedArrayMethods, ToPyArray};
 use pyo3::prelude::*;
 use serde::{Deserialize, Serialize};
 
+/// Contains information of the progression of the optimization routine
 #[pyclass(get_all, set_all)]
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct OptimizationResult {
+    /// Final parameters obtained by the optimization
     pub params: Vec<f32>,
+    /// Final cost calculated
     pub cost: f32,
+    /// If the optimization was successfull
     pub success: Option<bool>,
+    /// Number of evaluations
     pub neval: Option<usize>,
+    /// Number of total iterations
     pub niter: Option<usize>,
+    /// Cost function at each step
     pub evals: Vec<f32>,
 }
 

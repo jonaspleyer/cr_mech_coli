@@ -204,7 +204,9 @@ impl Default for GrowthRateSetter {
     }
 }
 
-/// A basic cell-agent which makes use of
+/// A basic cell-agent
+///
+/// It which makes use of
 /// `RodMechanics <https://cellular-raza.com/docs/cellular_raza_building_blocks/structs.RodMechanics.html>`_
 #[pyclass]
 #[derive(CellAgent, Clone, Debug, Deserialize, Serialize, AbsDiffEq, PartialEq)]
