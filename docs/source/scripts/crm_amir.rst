@@ -8,3 +8,4 @@ crm_amir
     :show-inheritance:
     :undoc-members:
     :imported-members:
+    :exclude-members: crm_amir_main
