@@ -6,8 +6,8 @@
            version="5.3.1"
            xsi:schemaLocation="http://www.crossref.org/schema/5.3.1 http://www.crossref.org/schemas/crossref5.3.1.xsd">
   <head>
-    <doi_batch_id>20260103T173101-fae08a588fa522b96c78477450fc44b527a1da2d</doi_batch_id>
-    <timestamp>20260103173101</timestamp>
+    <doi_batch_id>20260125T230716-485a35064cf1678407f03b8a8c30eab1358eddf1</doi_batch_id>
+    <timestamp>20260125230716</timestamp>
     <depositor>
       <depositor_name>JOSS Admin</depositor_name>
       <email_address>admin@theoj.org</email_address>
@@ -37,8 +37,8 @@
       </journal_issue>
       <journal_article publication_type="full_text">
         <titles>
-          <title>cr_mech_coli: Parameter Estimation for Agent-Based
-Models of Elongated Bacteria</title>
+          <title>cr_mech_coli: A mechanical Agent-Based Model of
+Elongated Bacteria for Parameter Estimation and Data Generation</title>
         </titles>
         <contributors>
           <person_name sequence="first" contributor_role="author">
@@ -89,6 +89,331 @@ Models of Elongated Bacteria</title>
           </collection>
         </doi_data>
         <citation_list>
+          <citation key="Young2006">
+            <article_title>The selective value of bacterial
+shape</article_title>
+            <author>Young</author>
+            <journal_title>Microbiology and Molecular Biology
+Reviews</journal_title>
+            <issue>3</issue>
+            <volume>70</volume>
+            <doi>10.1128/mmbr.00001-06</doi>
+            <issn>1098-5557</issn>
+            <cYear>2006</cYear>
+            <unstructured_citation>Young, K. D. (2006). The selective
+value of bacterial shape. Microbiology and Molecular Biology Reviews,
+70(3), 660–703.
+https://doi.org/10.1128/mmbr.00001-06</unstructured_citation>
+          </citation>
+          <citation key="Young2007">
+            <article_title>Bacterial morphology: Why have different
+shapes?</article_title>
+            <author>Young</author>
+            <journal_title>Current Opinion in
+Microbiology</journal_title>
+            <issue>6</issue>
+            <volume>10</volume>
+            <doi>10.1016/j.mib.2007.09.009</doi>
+            <issn>1369-5274</issn>
+            <cYear>2007</cYear>
+            <unstructured_citation>Young, K. D. (2007). Bacterial
+morphology: Why have different shapes? Current Opinion in Microbiology,
+10(6), 596–600.
+https://doi.org/10.1016/j.mib.2007.09.009</unstructured_citation>
+          </citation>
+          <citation key="Pleyer2023">
+            <article_title>Agent-based models in cellular
+systems</article_title>
+            <author>Pleyer</author>
+            <journal_title>Frontiers in Physics</journal_title>
+            <volume>10</volume>
+            <doi>10.3389/fphy.2022.968409</doi>
+            <issn>2296-424X</issn>
+            <cYear>2023</cYear>
+            <unstructured_citation>Pleyer, J., &amp; Fleck, C. (2023).
+Agent-based models in cellular systems. Frontiers in Physics, 10.
+https://doi.org/10.3389/fphy.2022.968409</unstructured_citation>
+          </citation>
+          <citation key="Ghaffarizadeh2018">
+            <article_title>PhysiCell: An open source physics-based cell
+simulator for 3-d multicellular systems</article_title>
+            <author>Ghaffarizadeh</author>
+            <journal_title>PLOS Computational Biology</journal_title>
+            <issue>2</issue>
+            <volume>14</volume>
+            <doi>10.1371/journal.pcbi.1005991</doi>
+            <issn>1553-7358</issn>
+            <cYear>2018</cYear>
+            <unstructured_citation>Ghaffarizadeh, A., Heiland, R.,
+Friedman, S. H., Mumenthaler, S. M., &amp; Macklin, P. (2018).
+PhysiCell: An open source physics-based cell simulator for 3-d
+multicellular systems. PLOS Computational Biology, 14(2), e1005991.
+https://doi.org/10.1371/journal.pcbi.1005991</unstructured_citation>
+          </citation>
+          <citation key="Cooper2020">
+            <article_title>Chaste: Cancer, heart and soft tissue
+environment</article_title>
+            <author>Cooper</author>
+            <journal_title>Journal of Open Source
+Software</journal_title>
+            <issue>47</issue>
+            <volume>5</volume>
+            <doi>10.21105/joss.01848</doi>
+            <issn>2475-9066</issn>
+            <cYear>2020</cYear>
+            <unstructured_citation>Cooper, F., Baker, R., Bernabeu, M.,
+Bordas, R., Bowler, L., Bueno-Orovio, A., Byrne, H., Carapella, V.,
+Cardone-Noott, L., Cooper, J., Dutta, S., Evans, B., Fletcher, A.,
+Grogan, J., Guo, W., Harvey, D., Hendrix, M., Kay, D., Kursawe, J., …
+Gavaghan, D. (2020). Chaste: Cancer, heart and soft tissue environment.
+Journal of Open Source Software, 5(47), 1848.
+https://doi.org/10.21105/joss.01848</unstructured_citation>
+          </citation>
+          <citation key="Karolak2021">
+            <article_title>Concepts and applications of information
+theory to immuno-oncology</article_title>
+            <author>Karolak</author>
+            <journal_title>Trends in Cancer</journal_title>
+            <issue>4</issue>
+            <volume>7</volume>
+            <doi>10.1016/j.trecan.2020.12.013</doi>
+            <issn>2405-8033</issn>
+            <cYear>2021</cYear>
+            <unstructured_citation>Karolak, A., Branciamore, S., McCune,
+J. S., Lee, P. P., Rodin, A. S., &amp; Rockne, R. C. (2021). Concepts
+and applications of information theory to immuno-oncology. Trends in
+Cancer, 7(4), 335–346.
+https://doi.org/10.1016/j.trecan.2020.12.013</unstructured_citation>
+          </citation>
+          <citation key="DeRybel2014">
+            <article_title>Integration of growth and patterning during
+vascular tissue formation in arabidopsis</article_title>
+            <author>De Rybel</author>
+            <journal_title>Science</journal_title>
+            <issue>6197</issue>
+            <volume>345</volume>
+            <doi>10.1126/science.1255215</doi>
+            <issn>1095-9203</issn>
+            <cYear>2014</cYear>
+            <unstructured_citation>De Rybel, B., Adibi, M., Breda, A.
+S., Wendrich, J. R., Smit, M. E., Novák, O., Yamaguchi, N., Yoshida, S.,
+Van Isterdael, G., Palovaara, J., Nijsse, B., Boekschoten, M. V.,
+Hooiveld, G., Beeckman, T., Wagner, D., Ljung, K., Fleck, C., &amp;
+Weijers, D. (2014). Integration of growth and patterning during vascular
+tissue formation in arabidopsis. Science, 345(6197).
+https://doi.org/10.1126/science.1255215</unstructured_citation>
+          </citation>
+          <citation key="Kreutz2013">
+            <article_title>Profile likelihood in systems
+biology</article_title>
+            <author>Kreutz</author>
+            <journal_title>The FEBS Journal</journal_title>
+            <issue>11</issue>
+            <volume>280</volume>
+            <doi>10.1111/febs.12276</doi>
+            <issn>1742-4658</issn>
+            <cYear>2013</cYear>
+            <unstructured_citation>Kreutz, C., Raue, A., Kaschek, D.,
+&amp; Timmer, J. (2013). Profile likelihood in systems biology. The FEBS
+Journal, 280(11), 2564–2571.
+https://doi.org/10.1111/febs.12276</unstructured_citation>
+          </citation>
+          <citation key="Raue2014">
+            <article_title>Comparison of approaches for parameter
+identifiability analysis of biological systems</article_title>
+            <author>Raue</author>
+            <journal_title>Bioinformatics</journal_title>
+            <issue>10</issue>
+            <volume>30</volume>
+            <doi>10.1093/bioinformatics/btu006</doi>
+            <issn>1367-4803</issn>
+            <cYear>2014</cYear>
+            <unstructured_citation>Raue, A., Karlsson, J., Saccomani, M.
+P., Jirstrand, M., &amp; Timmer, J. (2014). Comparison of approaches for
+parameter identifiability analysis of biological systems.
+Bioinformatics, 30(10), 1440–1448.
+https://doi.org/10.1093/bioinformatics/btu006</unstructured_citation>
+          </citation>
+          <citation key="An2016">
+            <article_title>Optimization and control of agent-based
+models in biology: A perspective</article_title>
+            <author>An</author>
+            <journal_title>Bulletin of Mathematical
+Biology</journal_title>
+            <issue>1</issue>
+            <volume>79</volume>
+            <doi>10.1007/s11538-016-0225-6</doi>
+            <issn>1522-9602</issn>
+            <cYear>2016</cYear>
+            <unstructured_citation>An, G., Fitzpatrick, B. G.,
+Christley, S., Federico, P., Kanarek, A., Neilan, R. M., Oremland, M.,
+Salinas, R., Laubenbacher, R., &amp; Lenhart, S. (2016). Optimization
+and control of agent-based models in biology: A perspective. Bulletin of
+Mathematical Biology, 79(1), 63–87.
+https://doi.org/10.1007/s11538-016-0225-6</unstructured_citation>
+          </citation>
+          <citation key="Lima2021">
+            <article_title>Bayesian calibration of a stochastic,
+multiscale agent-based model for predicting in vitro tumor
+growth</article_title>
+            <author>Lima</author>
+            <journal_title>PLOS Computational Biology</journal_title>
+            <issue>11</issue>
+            <volume>17</volume>
+            <doi>10.1371/journal.pcbi.1008845</doi>
+            <issn>1553-7358</issn>
+            <cYear>2021</cYear>
+            <unstructured_citation>Lima, E. A. B. F., Faghihi, D.,
+Philley, R., Yang, J., Virostko, J., Phillips, C. M., &amp; Yankeelov,
+T. E. (2021). Bayesian calibration of a stochastic, multiscale
+agent-based model for predicting in vitro tumor growth. PLOS
+Computational Biology, 17(11), e1008845.
+https://doi.org/10.1371/journal.pcbi.1008845</unstructured_citation>
+          </citation>
+          <citation key="Dancik2010">
+            <article_title>Parameter estimation and sensitivity analysis
+in an agent-based model of leishmania major infection</article_title>
+            <author>Dancik</author>
+            <journal_title>Journal of Theoretical
+Biology</journal_title>
+            <issue>3</issue>
+            <volume>262</volume>
+            <doi>10.1016/j.jtbi.2009.10.007</doi>
+            <issn>0022-5193</issn>
+            <cYear>2010</cYear>
+            <unstructured_citation>Dancik, G. M., Jones, D. E., &amp;
+Dorman, K. S. (2010). Parameter estimation and sensitivity analysis in
+an agent-based model of leishmania major infection. Journal of
+Theoretical Biology, 262(3), 398–412.
+https://doi.org/10.1016/j.jtbi.2009.10.007</unstructured_citation>
+          </citation>
+          <citation key="Thiele2014">
+            <article_title>Facilitating parameter estimation and
+sensitivity analysis of agent-based models: A cookbook using NetLogo and
+“r”</article_title>
+            <author>Thiele</author>
+            <journal_title>Journal of Artificial Societies and Social
+Simulation</journal_title>
+            <issue>3</issue>
+            <volume>17</volume>
+            <doi>10.18564/jasss.2503</doi>
+            <issn>1460-7425</issn>
+            <cYear>2014</cYear>
+            <unstructured_citation>Thiele, J. C., Kurth, W., &amp;
+Grimm, V. (2014). Facilitating parameter estimation and sensitivity
+analysis of agent-based models: A cookbook using NetLogo and “r.”
+Journal of Artificial Societies and Social Simulation, 17(3).
+https://doi.org/10.18564/jasss.2503</unstructured_citation>
+          </citation>
+          <citation key="sullivan2019pyvista">
+            <article_title>PyVista: 3D plotting and mesh analysis
+through a streamlined interface for the Visualization Toolkit
+(VTK)</article_title>
+            <author>Sullivan</author>
+            <journal_title>Journal of Open Source
+Software</journal_title>
+            <issue>37</issue>
+            <volume>4</volume>
+            <doi>10.21105/joss.01450</doi>
+            <cYear>2019</cYear>
+            <unstructured_citation>Sullivan, B., &amp; Kaszynski, A.
+(2019). PyVista: 3D plotting and mesh analysis through a streamlined
+interface for the Visualization Toolkit (VTK). Journal of Open Source
+Software, 4(37), 1450.
+https://doi.org/10.21105/joss.01450</unstructured_citation>
+          </citation>
+          <citation key="Erhardt2024">
+            <article_title>plotters: A rust drawing library focus on
+data plotting for both WASM and native applications</article_title>
+            <author>Erhardt</author>
+            <cYear>2024</cYear>
+            <unstructured_citation>Erhardt, A. (2024). plotters: A rust
+drawing library focus on data plotting for both WASM and native
+applications (Version 0.3.7).
+https://github.com/plotters-rs/plotters</unstructured_citation>
+          </citation>
+          <citation key="vanderWalt2014">
+            <article_title>Scikit-image: Image processing in
+python</article_title>
+            <author>Walt</author>
+            <journal_title>PeerJ</journal_title>
+            <volume>2</volume>
+            <doi>10.7717/peerj.453</doi>
+            <issn>2167-8359</issn>
+            <cYear>2014</cYear>
+            <unstructured_citation>Walt, S. van der, Schönberger, J. L.,
+Nunez-Iglesias, J., Boulogne, F., Warner, J. D., Yager, N., Gouillart,
+E., &amp; Yu, T. (2014). Scikit-image: Image processing in python.
+PeerJ, 2, e453.
+https://doi.org/10.7717/peerj.453</unstructured_citation>
+          </citation>
+          <citation key="Lee1994">
+            <article_title>Building skeleton models via 3-d medial
+surface axis thinning algorithms</article_title>
+            <author>Lee</author>
+            <journal_title>CVGIP: Graphical Models and Image
+Processing</journal_title>
+            <issue>6</issue>
+            <volume>56</volume>
+            <doi>10.1006/cgip.1994.1042</doi>
+            <issn>1049-9652</issn>
+            <cYear>1994</cYear>
+            <unstructured_citation>Lee, T. C., Kashyap, R. L., &amp;
+Chu, C. N. (1994). Building skeleton models via 3-d medial surface axis
+thinning algorithms. CVGIP: Graphical Models and Image Processing,
+56(6), 462–478.
+https://doi.org/10.1006/cgip.1994.1042</unstructured_citation>
+          </citation>
+          <citation key="Cutler2022">
+            <article_title>Omnipose: A high-precision
+morphology-independent solution for bacterial cell
+segmentation</article_title>
+            <author>Cutler</author>
+            <journal_title>Nature Methods</journal_title>
+            <issue>11</issue>
+            <volume>19</volume>
+            <doi>10.1038/s41592-022-01639-4</doi>
+            <issn>1548-7105</issn>
+            <cYear>2022</cYear>
+            <unstructured_citation>Cutler, K. J., Stringer, C., Lo, T.
+W., Rappez, L., Stroustrup, N., Brook Peterson, S., Wiggins, P. A.,
+&amp; Mougous, J. D. (2022). Omnipose: A high-precision
+morphology-independent solution for bacterial cell segmentation. Nature
+Methods, 19(11), 1438–1448.
+https://doi.org/10.1038/s41592-022-01639-4</unstructured_citation>
+          </citation>
+          <citation key="Stringer2020">
+            <article_title>Cellpose: A generalist algorithm for cellular
+segmentation</article_title>
+            <author>Stringer</author>
+            <journal_title>Nature Methods</journal_title>
+            <issue>1</issue>
+            <volume>18</volume>
+            <doi>10.1038/s41592-020-01018-x</doi>
+            <issn>1548-7105</issn>
+            <cYear>2020</cYear>
+            <unstructured_citation>Stringer, C., Wang, T., Michaelos,
+M., &amp; Pachitariu, M. (2020). Cellpose: A generalist algorithm for
+cellular segmentation. Nature Methods, 18(1), 100–106.
+https://doi.org/10.1038/s41592-020-01018-x</unstructured_citation>
+          </citation>
+          <citation key="Hardo2022">
+            <article_title>Synthetic micrographs of bacteria (SyMBac)
+allows accurate segmentation of bacterial cells using deep neural
+networks</article_title>
+            <author>Hardo</author>
+            <journal_title>BMC Biology</journal_title>
+            <issue>1</issue>
+            <volume>20</volume>
+            <doi>10.1186/s12915-022-01453-6</doi>
+            <issn>1741-7007</issn>
+            <cYear>2022</cYear>
+            <unstructured_citation>Hardo, G., Noka, M., &amp; Bakshi, S.
+(2022). Synthetic micrographs of bacteria (SyMBac) allows accurate
+segmentation of bacterial cells using deep neural networks. BMC Biology,
+20(1).
+https://doi.org/10.1186/s12915-022-01453-6</unstructured_citation>
+          </citation>
         </citation_list>
       </journal_article>
     </journal>
