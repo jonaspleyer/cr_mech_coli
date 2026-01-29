@@ -2267,7 +2267,8 @@ In general, we do not anticipate that these scenarios are common for most practi
 \end{figure}
 
 %###################################################################################################
-\paragraph*{Experimental Setup of Amir et. al}
+\newpage
+\paragraph*{Data Preparation \& Experimental Setup of Application 1 (Amir et. al)}
 
 \textbf{TODO explain some of the derivations for the flow profile etc.}
 
@@ -2311,21 +2312,18 @@ In general, we do not anticipate that these scenarios are common for most practi
 \end{figure}
 
 %###################################################################################################
-\paragraph*{Analysis \& Usage of heterogeneous Parameter Value (TODO)}
-\label{sec:supplement-reuse-estimated-parameters}
-In order to reuse this model, we also provide the option to assign growth rates by sampling from a
-normal distribution with user-defined parameters.
+% \paragraph*{Analysis \& Usage of heterogeneous Parameter Value (TODO)}
+% \label{sec:supplement-reuse-estimated-parameters}
+% In order to reuse this model, we also provide the option to assign growth rates by sampling from a
+% normal distribution with user-defined parameters.
 
 %###################################################################################################
-\paragraph*{Application Data \& Preparation}
+\newpage
+\paragraph*{Data Preparation Application 2}
 \label{sec:supplement-data-details}
-
-\subparagraph*{Application 1}
-
-\subparagraph*{Application 2}
 \begin{itemize}
     \item Data from IWF Goettingen \cite{Trude1982}
-    \item $\SI{15}{\pixel\per\micro\metre}$
+    \item $\SI{30}{\pixel\per\micro\metre}$
     \item $8$ images are equivalent to $\SI{20}{\minute}$
 \end{itemize}
 
@@ -2365,7 +2363,7 @@ normal distribution with user-defined parameters.
     \label{fig:parameter-estimates-supplement-growth-rates}
 \end{figure}
 
-\begin{figure}
+\begin{figure}[H]
     \centering
     \begin{tikzonimage}[width=0.25\textwidth]
         {figures/crm_divide/profiles-pretty/pdf/profile-growth-rate-1-1.pdf}%
@@ -2454,55 +2452,56 @@ normal distribution with user-defined parameters.
 % \end{itemize}
 
 %###################################################################################################
-\paragraph*{Implementation \& Performance (TODO)}
-\label{section:supplement-performance}
-
-On the programming side, we are using the \texttt{pyo3} and \texttt{maturin} crates which allow us
-to easily generate Python bindings and enable us to interoperate between the two ecosystems.
-
-By using \texttt{cellular\_raza}, we can make use of multiple threads for running a single numerical
-simulation, using the built-in parallelization methods (see Supplementary Material,
-Figure~\ref{fig:timings-crm_divide}).
-
-\begin{itemize}
-    \item Quadratic Scaling (see figure~\ref{fig:timings-crm_divide}) comes from more dense
-        simulation
-    \item Overall number of agents which can be simulated is satisfactory for current purposes
-    \item Improvement from $1 \Rightarrow 2$ and $2\Rightarrow4$ threads; first is major; second
-        only minor
-    \item Flamegraph still shows much cycles running against hurdles::Barrier::wait $\Rightarrow$
-        this leaves room for improvement
-    \item Flamegraph also shows that $\approx 75\%$ of all cycles is related to actual work (not
-        just waiting).
-        In particular to update\_mechanics functions.
-\end{itemize}
-
-\begin{figure}[H]
-    \centering
-    \begin{tikzonimage}[width=0.5\textwidth]
-        {figures/docs/computation-time-with-initial-agents.pdf}
-        \node at (0, 1)[anchor=north west]{\textbf{A}};
-    \end{tikzonimage}%
-    \begin{tikzonimage}[width=0.5\textwidth]
-        {figures/crm_divide/timings.pdf}
-        \node at (0, 1)[anchor=north west]{\textbf{B}};
-    \end{tikzonimage}\\
-    \begin{tikzonimage}[width=\textwidth]
-        {figures/docs/flamegraph.pdf}
-        \node at (0.02, 0.98)[anchor=north west]{\textbf{C}};
-    \end{tikzonimage}\\
-    \caption{
-        (A) Wall time of the performed simulation with increasing number of final agents inside the
-        simulation domain.
-        (B) Distribution of computation time for the division script utilized in
-        section~\ref{sec:application-1-with-division}.
-        (C) Flamegraph of a typical simulation showcasing frequency of function calls for
-        parallelized execution of simulations.
-    }
-    \label{fig:timings-crm_divide}
-\end{figure}
+% \paragraph*{Implementation \& Performance (TODO)}
+% \label{section:supplement-performance}
+%
+% On the programming side, we are using the \texttt{pyo3} and \texttt{maturin} crates which allow us
+% to easily generate Python bindings and enable us to interoperate between the two ecosystems.
+%
+% By using \texttt{cellular\_raza}, we can make use of multiple threads for running a single numerical
+% simulation, using the built-in parallelization methods (see Supplementary Material,
+% Figure~\ref{fig:timings-crm_divide}).
+%
+% \begin{itemize}
+%     \item Quadratic Scaling (see figure~\ref{fig:timings-crm_divide}) comes from more dense
+%         simulation
+%     \item Overall number of agents which can be simulated is satisfactory for current purposes
+%     \item Improvement from $1 \Rightarrow 2$ and $2\Rightarrow4$ threads; first is major; second
+%         only minor
+%     \item Flamegraph still shows much cycles running against hurdles::Barrier::wait $\Rightarrow$
+%         this leaves room for improvement
+%     \item Flamegraph also shows that $\approx 75\%$ of all cycles is related to actual work (not
+%         just waiting).
+%         In particular to update\_mechanics functions.
+% \end{itemize}
+%
+% \begin{figure}[H]
+%     \centering
+%     \begin{tikzonimage}[width=0.5\textwidth]
+%         {figures/docs/computation-time-with-initial-agents.pdf}
+%         \node at (0, 1)[anchor=north west]{\textbf{A}};
+%     \end{tikzonimage}%
+%     \begin{tikzonimage}[width=0.5\textwidth]
+%         {figures/crm_divide/timings.pdf}
+%         \node at (0, 1)[anchor=north west]{\textbf{B}};
+%     \end{tikzonimage}\\
+%     \begin{tikzonimage}[width=\textwidth]
+%         {figures/docs/flamegraph.pdf}
+%         \node at (0.02, 0.98)[anchor=north west]{\textbf{C}};
+%     \end{tikzonimage}\\
+%     \caption{
+%         (A) Wall time of the performed simulation with increasing number of final agents inside the
+%         simulation domain.
+%         (B) Distribution of computation time for the division script utilized in
+%         section~\ref{sec:application-1-with-division}.
+%         (C) Flamegraph of a typical simulation showcasing frequency of function calls for
+%         parallelized execution of simulations.
+%     }
+%     \label{fig:timings-crm_divide}
+% \end{figure}
 
 %###################################################################################################
+\newpage
 \section*{Acknowledgements}
 \paragraph{Author Contributions}
 \textbf{Conceptualization:} Jonas Pleyer\\
