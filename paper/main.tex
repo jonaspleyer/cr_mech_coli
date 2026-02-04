@@ -2367,52 +2367,108 @@ remaining estimated parameter.
 
 %###################################################################################################
 \newpage
-\paragraph*{Data Preparation Application 2}
+\paragraph*{Application 2}
 \label{sec:supplement-data-details}
-\begin{itemize}
-    \item Data from IWF Goettingen \cite{Trude1982}
-    \item $\SI{30}{\pixel\per\micro\metre}$
-    \item $8$ images are equivalent to $\SI{20}{\minute}$
-\end{itemize}
 
-\begin{enumerate}
-    \item Have masks of data; reference image segmantation tools; or do it by hand
-    \item ensure that colors are matching for bacteria between time-steps
-    \item clean borders of images if needed
-    \item know domain size; otherwise use pixels
-\end{enumerate}
+The movies taken by Trude~\cite{Trude1982} are microscopic movies of growing bacteria.
+They contain various scenes covering cases between only a few individual bacteria and large
+collections.
+For our purpose, we extracted individual frames as images.
+Afterwards, we used the omnipose~\cite{Cutler2022} segmentation tool to obtain cell masks of the
+individual images.
+Since we chose an in-image color-based encoding scheme, it is of utmost importance that color values
+for the same cell match between individual time points.
+The total size of the domain and the duration of the movie were estimated from the provided citation
+information and context clues such as size of the bacteria itself.
+To this end, bacterial diameters were estimated with $\approx\SI{0.5}{\micro\metre}$ and the time
+interval spanning $8$ frames was estimated as $\SI{20}{\minute}$.
+This results in a conversion value of $h=\SI{30}{\pixel\per\micro\metre}$.
+Their particular numerical values are not relevant to the methods proposed in this work but would
+require closer inspection and clarification for studies targeting to extract precise numerical
+values of these systems.
+Alternatively, the same parameter estimations can also be achieved by utilizing pixel-based
+units.
+This can be achieved by rescaling all length which will provide identical results with respect to
+the profile-likelihood.
+However, values of the raw cost function will change since this involves a comparison of position in
+the respective space (i.e. pixel or position) and is not normalized by the corresponding
+displacement uncertainty.
 
-%###################################################################################################
-\paragraph*{Parameter Estimation Results (TODO)}
-\label{sec:supplement-parameter-profiles}
+The obtained constants are listed in Table~\ref{tab:supplement-application-1-constants}.
+As we have explained in the main text, the time series is split into an interval $T_1$ containing no
+division events and an interval $T_2$ which includes a single division event.
+We provide scripts which can be used to reconstruct our approach of obtaining this dataset.
+They can be found within the Github repository \url{https://github.com/jonaspleyer/cr_mech_coli/}
+under the \texttt{data} folder.
+
+\begin{table}[H]
+    \begin{tabularx}{\textwidth}{l r@{} @{\hspace{0.3em}}l X}
+        \textbf{Constant} & \multicolumn{2}{l}{\textbf{Value}} & \textbf{Description}\\
+        \toprule
+        $T_\text{1}$ & $17.5$&$\unit{\minute}$ & Total time without division.\\
+        $T_\text{2}$ & $74.375$&$\unit{\minute}$ & Total time including division events.\\
+        & $998-1295$ && Range of frames extracted from movie.\\
+        $h$ & $30$&$\unit{\pixel\per\micro\metre}$ & Conversion factor between pixels and lengths\\
+        $N_\text{vertices}$ & $8$ && Number of vertices use for the discretized rod\\
+        $\Delta x$ & $0.15$&$\unit{\micro\metre}$ & Displacement uncertainty used to calculate the
+        profile-likelihood\\
+        $L_x$ & $25.6$ & $\unit{\micro\metre}$ & Horizontal domain size.\\
+            & $768$ & $\unit{\pixel}$\\
+        $L_y$ & $19.2$ & $\unit{\micro\metre}$ & Vertical domain size.\\
+            & $576$ & $\unit{\pixel}$\\
+        \bottomrule
+    \end{tabularx}
+    \caption{Manually estimated constants which are used within the numerical simulation.}
+    \label{tab:supplement-application-1-constants}
+\end{table}
+% \begin{enumerate}
+%     \item Have masks of data; reference image segmantation tools; or do it by hand
+%     \item ensure that colors are matching for bacteria between time-steps
+%     \item clean borders of images if needed
+%     \item know domain size; otherwise use pixels
+% \end{enumerate}
+
+Figure~\ref{fig:supplement-optimization-progression} shows the progression of the raw cost function
+(not normalized by the squared uncertainty of the displacements) of the various optimizations.
+
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.5\textwidth]{figures/crm_fit/optimization-progression.pdf}
-    \caption{TODO}
+    \begin{tikzonimage}[width=0.5\textwidth]
+        {figures/crm_fit/optimization-progression.pdf}
+        \node at (0, 1.1)[anchor=north west, black]{\textbf{A}};
+    \end{tikzonimage}%
+    \begin{tikzonimage}[width=0.5\textwidth]
+        {figures/crm_divide/optimization-progression.pdf}
+        \node at (0, 1.1)[anchor=north west, black]{\textbf{B}};
+    \end{tikzonimage}%
+    \caption{
+        Optimization progression of the distinct model choices analyzed in Section~\ref{section:application-2}.
+        All cost functions exhibit rapic decay before a final optimum is reached.
+        The relative tolerance of the optimization algorithm was chosen conservatively low such that
+        stability of the final optimum is ensured.
+        (A) Progressions of cost functions for model choices without division events in units
+        $[L]=\unit{\micro\metre\squared}$.
+        (B) Cost function progression for the reduced Morse model with division events in units
+        $[L]=\unit{\pixel\squared}$.
+    }
+    \label{fig:supplement-optimization-progression}
 \end{figure}
 
-%TODO {explain profiles}
-\begin{figure}[H]
-    \centering
-    % \includegraphics[width=0.33\textwidth]
-    %     {figures/crm_fit/morse_profiles/profile-growth-rate-0.pdf}%
-    % \includegraphics[width=0.33\textwidth]
-    %     {figures/crm_fit/morse_profiles/profile-growth-rate-1.pdf}%
-    % \includegraphics[width=0.33\textwidth]
-    %     {figures/crm_fit/morse_profiles/profile-growth-rate-2.pdf}\\%
-    % \includegraphics[width=0.33\textwidth]
-    %     {figures/crm_fit/morse_profiles/profile-growth-rate-3.pdf}%
-    % \includegraphics[width=0.33\textwidth]
-    %     {figures/crm_fit/morse_profiles/profile-growth-rate-4.pdf}%
-    % \includegraphics[width=0.33\textwidth]
-    %     {figures/crm_fit/morse_profiles/profile-growth-rate-5.pdf}
-    \caption{Parameter estimation of growth rates for individual cells}%TODO extend caption}
-    \label{fig:parameter-estimates-supplement-growth-rates}
-\end{figure}
+Figure~\ref{fig:supplement-cost-evolution-time} shows the missing profiles of growth rates of the
+daughter cells left out in Figure~\ref{fig:likelihood-profiles-comparison-with-division}.
+Some of these parameter values such as (Q,S) and (U) could be compatible with a vanishing growth
+rate.
+However these statements can only be justified with a proper uncertainty analysis involving
+realistic displacement uncertainties.
+Furthermore, results from section~\ref{section:application-2} have shown that growth rates and
+division lengths can be estimated much more accurately when a division event is involved, thus
+providing effectively a lower and upper bound on both values.
+These small values of growth rates can be a result of not including enough datapoints after the
+initial division event such that the overall length of the bacteria seems constant in the short time
+interval after the division.
 
 \begin{figure}[H]
-    \centering
     \begin{tikzonimage}[width=0.25\textwidth]
         {figures/crm_divide/profiles-pretty/pdf/profile-growth-rate-1-1.pdf}%
         \node at (0, 1.1)[anchor=north west, black]{\textbf{Q}};
@@ -2433,9 +2489,43 @@ remaining estimated parameter.
         {figures/crm_divide/profiles-pretty/pdf/profile-growth-rate-3-1.pdf}%
         \node at (0, 1.1)[anchor=north west, black]{\textbf{U}};
     \end{tikzonimage}%
-    \includegraphics[width=0.5\textwidth]{figures/crm_divide/time-evolution.pdf}%
-    \caption{TODO}
+    \begin{tikzonimage}[width=0.25\textwidth]
+        {figures/crm_divide/growth-rate-distribution.pdf}%
+        \node at (0, 1.1)[anchor=north west, black]{\textbf{V}};
+    \end{tikzonimage}%
+    \caption{
+        (Q-U) Remaining parameter profiles for the growth rates of the daughter cells.
+        This extends Figure~\ref{fig:likelihood-profiles-comparison-with-division}.
+        The profile show that the parameters can be informed by the provided data.
+        (V) Distribution of estimated growth rates distinguishing between mother (dark blue) and
+        daughter (light blue) cells.
+    }
     \label{fig:supplement-profiles-with-division}
+\end{figure}
+
+To assess the fidelity of the estimated parameters with our model, we can investigate contributions
+to the cost function at the individual time points of the simulation.
+We expect that the differences indicated by the cost function are minimal at the start point and
+grow as time progresses.
+Our system ins inherently non-linear, containing exponential growth and complex interaction forces.
+This means that any parameter choice which is not optimal can lead to large deviations with
+increasing time.
+For a Lipschitz-continous system, this deviation can be bound by an exponential envelope of
+differences surrounding the true values, which results in an exponential temporal progression of the
+cost function itself.
+However in our case, Figure~\ref{fig:supplement-cost-evolution-time} (A) clearly shows a linear
+trend, indicating that model the prediction utilizing the estimated parameters provides a good
+approximation to the provided data points.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{figures/crm_divide/time-evolution.pdf}%
+    \caption{
+        Contributions to the overall cost function at evaluated time points of the simulation.
+        The fully optimized system does not contain any configurations in which a parent penalty $p$
+        is utilized.
+    }
+    \label{fig:supplement-cost-evolution-time}
 \end{figure}
 
 %###################################################################################################
