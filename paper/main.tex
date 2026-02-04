@@ -1319,11 +1319,13 @@ in such scenarios.
 
 % --------------------------------------------------------------------------------------------------
 \subsection{Application 1: Elastic deformations of \acl{ecoli}}
+\label{sec:application-1-amir}
 
 To assess that our model can be applied to single cells and showcase the usefulness of the
 previously developed comparison techniques,
 will use our previously developed computational model and apply it directly to the data provided
-by the experiments of Amir et. al~\cite{Amir2014,Amir2014_2}.
+by the experiments of Amir et. al~\cite{Amir2014,Amir2014_2} (see
+\nameref{sec:supplement-amir-details}).
 The experimental setup is displayed in figure~\ref{fig:amir-bending-simulation} (A).
 They studied how a single \ac{ecoli}, which is partially confined within a narrow tube, reacts
 to a horizontal fluid flow that exerts a force onto the bacterium.
@@ -2268,9 +2270,34 @@ In general, we do not anticipate that these scenarios are common for most practi
 
 %###################################################################################################
 \newpage
-\paragraph*{Data Preparation \& Experimental Setup of Application 1 (Amir et. al)}
+\paragraph*{Application 1 (Amir et. al)}
+\label{sec:supplement-amir-details}
 
-\textbf{TODO explain some of the derivations for the flow profile etc.}
+The studies performed by Amir et. al~\cite{Amir2014,Amir2014_2} provided movies of microscopic
+images which showcased 3 states in total:
+An initial state, a bent state and the final relaxed state.
+To effectively estimate the positions of the bacterium at these time points, we manually modified
+the provided images by amplifying light shadings of the green cellular envelope.
+This is displayed in Figure~\ref{fig:supplement-amir-progression} (A-C) as the bright green cellular
+shape.
+Our position extraction algorithm provides the discretized vertices of the bacterium (shown in red).
+Figures (D-F) show renders of the corresponding simulation snapshots where dark gray symbolizes the
+area in which the confinement of the tube is employed as described in
+section~\ref{sec:application-1-amir}.
+The system is specified by the estimated parameters and a range of constants which can be obtained
+from the experimental conditions.
+These are listed in Table~\ref{tab:supplement-amir-constants}.
+The number of vertices $N_\text{vertices}$ should be chosen large enough such that the bending of
+the rod can be properly captured.
+Values which are too small will inadvertently lead to undesired interactions with the confinement
+condition imposed by the narrow tube.\\
+To fully model this system, a force exerted by the flowing fluid is taken into account.
+The utilized flow profile was derived from a standard laminar flow along a tube with Neumann
+boundary conditions~\cite{Wolschin2021}.
+This profile was experimentally measured and confirmed~\cite{Amir2014}.
+Furthermore, the publication explicitly stated values for the size of the flow domain north of the
+confined tube $L_{y,\text{domain}}$ which leaves us only with the strength of the flow force as the
+remaining estimated parameter.
 
 \begin{figure}[H]
     \centering
@@ -2309,7 +2336,27 @@ In general, we do not anticipate that these scenarios are common for most practi
         (D-F) Snapshots of the numerical simulation showing the rod in its initial, fully bent and
         fully relaxed state.
     }
+    \label{fig:supplement-amir-progression}
 \end{figure}
+
+\begin{table}[H]
+    \begin{tabularx}{\textwidth}{l r@{} @{\hspace{0.3em}}l X}
+        \textbf{Constant} & \multicolumn{2}{l}{\textbf{Value}} & \textbf{Description}\\
+        \toprule
+        $t_\text{bend}$ & $7$&$\unit{\second}$ & Interval with active flow\\
+        $t_\text{relax}$ & $17$&$\unit{\second}$ & Relaxation interval after deactivating flow\\
+        $h$ & $10.2$&$\unit{\pixel\per\micro\metre}$ & Conversion factor between pixels and lengths\\
+        $N_\text{vertices}$ & $20$ && Number of vertices use for the discretized rod\\
+        $\Delta x$ & $0.8$&$\unit{\micro\metre}$ & Displacement uncertainty used to calculate the profile-likelihood\\
+        $L_\text{y,domain}$ & $59.22$ & $\unit{\micro\metre}$ & Vertical size of the domain.\\
+            & $604$ & $\unit{\pixel}$\\
+        $L_\text{tube}$ & $19.61$ & $\unit{\micro\metre}$ & Size of the tube which confines the bacterium.\\
+            & $200$ & $\unit{\pixel}$\\
+        \bottomrule
+    \end{tabularx}
+    \caption{Constants utilized for the numerical simulation.}
+    \label{tab:supplement-amir-constants}
+\end{table}
 
 %###################################################################################################
 % \paragraph*{Analysis \& Usage of heterogeneous Parameter Value (TODO)}
