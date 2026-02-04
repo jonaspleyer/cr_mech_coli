@@ -2,7 +2,7 @@ CC:=latexmk
 OPTIONS:=-pdf
 TARGET:=main
 
-all: onimage figures
+all: onimage figures coverletter
 	$(CC) $(OPTIONS) $(TARGET)
 
 onimage:
@@ -15,6 +15,9 @@ overview:
 
 visualization:
 	$(CC) $(OPTIONS) figures/concept/visualization.tex
+
+coverletter:
+	$(CC) $(OPTIONS) coverletter.tex
 
 clean_partial:
 	rm -f *.aux
@@ -29,7 +32,7 @@ clean_partial:
 	rm -f *.ins
 	rm -f *.log
 	rm -f *.out
-	rm -f *main.toc
+	rm -f *.toc
 	rm -f archive.zip
 
 clean: clean_partial

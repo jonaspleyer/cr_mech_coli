@@ -1,0 +1,93 @@
+\documentclass[10pt]{article}
+
+\usepackage{parskip}
+\usepackage[top=2cm,bottom=2cm,left=2.5cm,right=2.5cm]{geometry}
+\usepackage{url}
+
+\begin{document}
+
+Jonas Pleyer\textsuperscript{1}, Christian Fleck\textsuperscript{1}\\
+\bigskip
+\textbf{1} Freiburg Center for Data-Analysis and Modeling, University of Freiburg, Freiburg Germany
+
+February 4, 2026\\
+The Editors PLOS Computational Biology\\
+Submission of manuscript "Methods for analyzing models of elongated bacteria"
+
+\vspace{1cm}
+
+Dear Editor,
+
+We are pleased to submit our manuscript titled "Methods for analyzing models of elongated bacteria"
+for consideration for publication in \textit{PLOS Computational Biology}.
+
+% \textbf{Short Introduction}
+% \begin{itemize}
+%     \item lack of methods for estimating parameters of ABMs
+%     \item in particular with emphasis on individual-based level
+%     \item elongated bacteria (such as B.subtilis, E.Coli) are important and have distinct mechanical
+%         properties which enables such analyses
+%     \item most ABMs do not capture flexible nature of such cells
+% \end{itemize}
+%
+% \textbf{What did we do?}
+% \begin{itemize}
+%     \item address gap: develop novel methods to estimate parameters
+%     \item develop mechanistic, mechanical model of elongated bacteria
+%     \item show how single-cell parameters can be estimated, even when involving division events
+% \end{itemize}
+%
+% \textbf{Why is this suited for PLOS?}
+% \begin{itemize}
+%     \item science: better tools to computationally study bacterial behaviour
+%     \item methods: develop even more advanced models while being able to quantify them is new milestone
+%     \item novelty: first ever profile-likelihood application to ABMs on single-cell level with division
+% \end{itemize}
+
+Individual-Based modeling hase become a popular technique to construct spatial models of elongated
+bacteria such as \textit{E.Coli} and \textit{B.Subtilits}.
+The distinct mechanical features of these foundational organisms deeply influence cellular
+properties such as growth and interactions.
+Despite their importance, current computational frameworks not only often lack the ability to
+model the flexible nature of these rods, but these tools also fall short when it comes to estimating
+the mechanical parameters of these complex models.
+
+In this work, we address this methodological gap by introducing a novel framework that links
+mechanistic modeling with quantitative data analysis.
+Our contributions are threefold:
+
+\begin{enumerate}
+    \item We develop a novel computational model which represents bacteria as deformable rods
+        capable of growth, elastic bending and physical interactions
+    \item We develop methods to extract positional information of individual cells from segmented
+        microscopic images and to compare the numerical output of our simulation with time-series of
+        cell masks from experimentally obtained microscopic images.
+        These methods allow the parameter estimation of models for cases without and involving
+        division events.
+    \item We demonstrate that these methods allow us to rigorously estimate the mechanical
+        parameters of our model via the profile-likelihood technique on the single-cell level.
+        To this end, we apply them in two scenarios thus validating our model against biological
+        data and even considering cellular heterogeneity.
+\end{enumerate}
+
+We believe that this study is ideally suited for PLOS Computational Biology because it fits
+thematically and considerably extends the list of methods with which researchers are able to study
+bacterial mechanics in a systematic and quantitative manner even on the single-cell level.
+
+The scientific contributions of this manuscript represent original work and have not been published
+or submitted for publication elsewhere.
+However we are currently working towards a publication in the Journal of Open Source Software (JOSS)
+which publishes software instead of scientific results.
+This will include the mentioned software provided in the Github repository
+\url{https://github.com/jonaspleyer/cr_mech_coli} together with methods that enable the generation
+of realistic microscopic images which are not relevant to this publication.
+
+We have no conflicts of interest to declare.
+
+Thank you for your consideration of our work.
+We look forward to hearing from you.
+
+Sincerely,\\
+Jonas Pleyer
+
+\end{document}
