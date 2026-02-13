@@ -1,0 +1,408 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+CLI entry point for crm_gen (Synthetic Microscope Image Generation).
+
+Provides one command with three subcommands::
+
+    crm_gen --config config.toml run
+    crm_gen --config config.toml clone image.tif mask.tif
+    crm_gen --config config.toml fit
+"""
+
+import argparse
+import sys
+import shutil
+from pathlib import Path
+from datetime import datetime
+
+
+def _build_run_parser(subparsers):
+    """
+    Add the ``run`` subcommand to the argument parser.
+
+    Args:
+        subparsers: Subparser group from argparse.
+    """
+    subparsers.add_parser(
+        "run",
+        help="Run the synthetic image generation pipeline",
+        description="Run bacteria growth simulation and generate synthetic "
+                    "microscope images. All parameters come from the TOML "
+                    "config file.",
+    )
+
+
+def _build_clone_parser(subparsers):
+    """
+    Add the ``clone`` subcommand to the argument parser.
+
+    Args:
+        subparsers: Subparser group from argparse.
+    """
+    clone_parser = subparsers.add_parser(
+        "clone",
+        help="Clone a real microscope image to synthetic",
+        description="Create a synthetic version of a real microscope image "
+                    "using cell positions extracted from a segmentation mask. "
+                    "Imaging parameters come from the TOML config file.",
+    )
+    clone_parser.add_argument(
+        "microscope_image",
+        type=str,
+        help="Path to real microscope image (TIF)",
+    )
+    clone_parser.add_argument(
+        "segmentation_mask",
+        type=str,
+        help="Path to segmentation mask (TIF)",
+    )
+    clone_parser.add_argument(
+        "--output", "-o",
+        type=str,
+        default="./synthetic_output",
+        help="Output directory (default: ./synthetic_output)",
+    )
+    clone_parser.add_argument(
+        "--n-vertices",
+        type=int,
+        default=None,
+        help="Number of vertices per cell (overrides config, default: 8)",
+    )
+    clone_parser.add_argument(
+        "--seed",
+        type=int,
+        default=None,
+        help="Random seed (overrides config)",
+    )
+
+
+def _build_fit_parser(subparsers):
+    """
+    Add the ``fit`` subcommand to the argument parser.
+
+    Args:
+        subparsers: Subparser group from argparse.
+    """
+    subparsers.add_parser(
+        "fit",
+        help="Optimize parameters to match real microscope images",
+        description="Optimize synthetic image generation parameters to match "
+                    "real microscope images using differential evolution. "
+                    "All parameters come from the TOML config file "
+                    "([optimization] section).",
+    )
+
+
+def _run_generate(config, config_path):
+    """
+    Run the synthetic image generation pipeline.
+
+    Args:
+        config (dict): Parsed TOML configuration.
+        config_path (Path): Path to the config file (copied to output dir).
+    """
+    from .pipeline import run_pipeline
+
+    pipeline_config = config.get('pipeline', {})
+    simulation_config = config.get('simulation', {})
+    rendering_config = config.get('rendering', {})
+    synthetic_config = config.get('synthetic', {})
+    background_config = config.get('background', {})
+    halo_config = config.get('halo', {})
+    brightness_config = config.get('brightness', {})
+
+    # Extract pipeline parameters
+    output_dir = pipeline_config.get('output_dir', './outputs')
+    n_simulations = pipeline_config.get('n_simulations', 1)
+    n_frames = pipeline_config.get('n_frames', 10)
+    image_size = tuple(pipeline_config.get('image_size', [512, 512]))
+    seed = pipeline_config.get('seed', 0)
+    if seed == 0:
+        seed = None
+    n_workers = pipeline_config.get('n_workers', 0)
+    if n_workers == 0:
+        n_workers = None
+    skip_synthetic = pipeline_config.get('skip_synthetic', False)
+    delete_generated = pipeline_config.get('delete_generated', False)
+
+    # Extract simulation parameters
+    n_bacteria = simulation_config.get('n_bacteria', [1, 10])
+    if isinstance(n_bacteria, list):
+        n_bacteria_range = (int(n_bacteria[0]), int(n_bacteria[1]))
+    else:
+        n_bacteria_range = (int(n_bacteria), int(n_bacteria))
+
+    border_distance = simulation_config.get('border_distance', 5.0)
+    n_vertices = int(simulation_config.get('n_vertices', 8))
+
+    slt = simulation_config.get('spring_length_threshold', [6.0, 6.0])
+    if isinstance(slt, list):
+        max_bacteria_length = float(slt[0])
+    else:
+        max_bacteria_length = float(slt)
+
+    # Copy config file to output directory
+    output_path = Path(output_dir)
+    output_path.mkdir(parents=True, exist_ok=True)
+    shutil.copy(config_path, output_path / "config.toml")
+
+    run_pipeline(
+        output_dir=output_dir,
+        n_frames=n_frames,
+        image_size=image_size,
+        n_bacteria_range=n_bacteria_range,
+        border_distance=border_distance,
+        max_bacteria_length=max_bacteria_length,
+        simulation_seed=seed,
+        n_vertices=n_vertices,
+        skip_synthetic=skip_synthetic,
+        delete_generated=delete_generated,
+        n_workers=n_workers,
+        sim_param_ranges=simulation_config,
+        rendering_config=rendering_config,
+        synthetic_config=synthetic_config,
+        background_config=background_config,
+        halo_config=halo_config,
+        brightness_config=brightness_config,
+        n_simulations=n_simulations,
+    )
+
+
+def _run_clone(args, config):
+    """
+    Create a synthetic clone of a real microscope image.
+
+    Args:
+        args: Parsed CLI arguments (microscope_image, segmentation_mask,
+            output, n_vertices, seed).
+        config (dict): Parsed TOML configuration.
+    """
+    from .scene import create_synthetic_scene
+
+    synthetic_config = config.get('synthetic', {})
+    background_config = config.get('background', {})
+    brightness_config = config.get('brightness', {})
+    simulation_config = config.get('simulation', {})
+
+    # CLI overrides > config > defaults
+    n_vertices = args.n_vertices
+    if n_vertices is None:
+        n_vertices = int(simulation_config.get('n_vertices', 8))
+
+    seed = args.seed
+    if seed is None:
+        seed = synthetic_config.get('seed', None)
+
+    create_synthetic_scene(
+        microscope_image_path=args.microscope_image,
+        segmentation_mask_path=args.segmentation_mask,
+        output_dir=args.output,
+        n_vertices=n_vertices,
+        seed=seed,
+        bg_base_brightness=synthetic_config.get('bg_base_brightness', 0.56),
+        bg_gradient_strength=synthetic_config.get('bg_gradient_strength', 0.027),
+        bac_halo_intensity=synthetic_config.get('bac_halo_intensity', 0.30),
+        bg_noise_scale=int(synthetic_config.get('bg_noise_scale', 20)),
+        psf_sigma=synthetic_config.get('psf_sigma', 1.0),
+        peak_signal=synthetic_config.get('peak_signal', 1000.0),
+        gaussian_sigma=synthetic_config.get('gaussian_sigma', 0.01),
+        brightness_mode=brightness_config.get('mode', 'original'),
+        brightness_range=tuple(brightness_config.get('brightness_range', [0.8, 0.3])),
+        num_dark_spots_range=tuple(background_config.get(
+            'num_dark_spots_range', [0, 5]
+        )),
+    )
+
+
+def _run_fit(config, config_path):
+    """
+    Optimize synthetic image parameters to match real microscope images.
+
+    Args:
+        config (dict): Parsed TOML configuration.
+        config_path (Path): Path to the config file (copied to output dir).
+    """
+    from .optimization import (
+        find_real_images,
+        optimize_parameters,
+        compute_final_metrics,
+        save_results,
+        generate_all_synthetics,
+        DEFAULT_BOUNDS,
+        DEFAULT_WEIGHTS,
+    )
+    from .visualization import generate_comparison_plot, generate_detailed_plots
+
+    opt_config = config.get('optimization', {})
+
+    # Required: input_dir
+    input_dir = opt_config.get('input_dir', '')
+    if not input_dir:
+        print("Error: [optimization] input_dir is required in the config file.")
+        sys.exit(1)
+
+    # Optimization parameters
+    output_dir_base = opt_config.get('output_dir', '')
+    limit = opt_config.get('limit', 0) or None
+    n_vertices = opt_config.get('n_vertices', 8)
+    maxiter = opt_config.get('maxiter', 50)
+    popsize = opt_config.get('popsize', 15)
+    workers = opt_config.get('workers', -1)
+    seed = opt_config.get('seed', 42)
+    resume = opt_config.get('resume', False)
+    no_checkpoint = opt_config.get('no_checkpoint', False)
+    save_all_synthetics = opt_config.get('save_all_synthetics', False)
+
+    # Metric weights
+    metric_weights_config = opt_config.get('metric_weights', {})
+    weights = {
+        'histogram_distance': metric_weights_config.get(
+            'histogram_distance', DEFAULT_WEIGHTS['histogram_distance']
+        ),
+        'ssim': metric_weights_config.get('ssim', DEFAULT_WEIGHTS['ssim']),
+        'psnr': metric_weights_config.get('psnr', DEFAULT_WEIGHTS['psnr']),
+    }
+
+    # Region weights
+    region_weights_config = opt_config.get('region_weights', {})
+    region_weights = {
+        'background': region_weights_config.get('background', 0.5),
+        'foreground': region_weights_config.get('foreground', 0.5),
+    }
+
+    # Create output directory with timestamp
+    timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    if not output_dir_base:
+        output_dir = Path(f"./fit_results_{timestamp}")
+    else:
+        output_dir = Path(output_dir_base) / f"fit_results_{timestamp}"
+
+    output_dir.mkdir(parents=True, exist_ok=True)
+    shutil.copy(config_path, output_dir / "config.toml")
+    print(f"Output directory: {output_dir}\n")
+
+    # Find image pairs
+    image_pairs = find_real_images(Path(input_dir), limit=limit)
+
+    # Optimize parameters
+    results = optimize_parameters(
+        image_pairs=image_pairs,
+        bounds=DEFAULT_BOUNDS,
+        weights=weights,
+        region_weights=region_weights,
+        maxiter=maxiter,
+        popsize=popsize,
+        workers=workers,
+        seed=seed,
+        n_vertices=n_vertices,
+        resume=resume,
+        no_checkpoint=no_checkpoint,
+    )
+
+    # Compute final metrics
+    avg_metrics, per_image_metrics = compute_final_metrics(
+        image_pairs=image_pairs,
+        params=results['parameters'],
+        output_dir=output_dir,
+        n_vertices=n_vertices,
+    )
+
+    # Save results
+    save_results(
+        results=results,
+        avg_metrics=avg_metrics,
+        per_image_metrics=per_image_metrics,
+        output_dir=output_dir,
+    )
+
+    # Generate comparison plot
+    generate_comparison_plot(
+        image_pairs=image_pairs,
+        params=results['parameters'],
+        output_dir=output_dir,
+        n_vertices=n_vertices,
+        num_examples=4,
+    )
+
+    # Generate detailed per-image plots
+    generate_detailed_plots(
+        image_pairs=image_pairs,
+        params=results['parameters'],
+        per_image_metrics=per_image_metrics,
+        output_dir=output_dir,
+        n_vertices=n_vertices,
+    )
+
+    # Generate all synthetics if requested
+    if save_all_synthetics:
+        generate_all_synthetics(
+            image_pairs=image_pairs,
+            params=results['parameters'],
+            output_dir=output_dir,
+            n_vertices=n_vertices,
+        )
+
+    print("\n" + "=" * 80)
+    print("ALL DONE!")
+    print("=" * 80)
+    print(f"Results saved to: {output_dir}")
+    print("=" * 80 + "\n")
+
+
+def crm_gen_main():
+    """
+    Main CLI entry point for crm_gen.
+
+    Parses the top-level ``--config`` flag and dispatches to the appropriate
+    subcommand (``run``, ``clone``, or ``fit``).
+    """
+    from .config import load_config
+
+    module_dir = Path(__file__).parent
+    default_config = module_dir / "default_config.toml"
+
+    parser = argparse.ArgumentParser(
+        prog="crm_gen",
+        description="Synthetic Microscope Image Generation for cr_mech_coli",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    )
+    parser.add_argument(
+        "--config", "-c",
+        type=str,
+        default=str(default_config) if default_config.exists() else None,
+        help="Path to TOML configuration file",
+    )
+
+    subparsers = parser.add_subparsers(dest="command", help="Subcommand")
+    _build_run_parser(subparsers)
+    _build_clone_parser(subparsers)
+    _build_fit_parser(subparsers)
+
+    args = parser.parse_args()
+
+    if args.command is None:
+        parser.print_help()
+        sys.exit(0)
+
+    # Load configuration
+    if args.config is None:
+        print("Error: No config file specified and no default config found.")
+        print("Use --config to specify a TOML configuration file.")
+        sys.exit(1)
+
+    config_path = Path(args.config)
+    if not config_path.exists():
+        print(f"Error: Configuration file not found: {config_path}")
+        sys.exit(1)
+
+    print(f"Loading configuration from: {config_path}")
+    config = load_config(str(config_path))
+
+    # Dispatch to subcommand
+    if args.command == "run":
+        _run_generate(config, config_path)
+    elif args.command == "clone":
+        _run_clone(args, config)
+    elif args.command == "fit":
+        _run_fit(config, config_path)

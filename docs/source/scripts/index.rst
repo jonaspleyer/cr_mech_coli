@@ -10,3 +10,4 @@ Scripts
     crm_divide <crm_divide>
     crm_multilayer <crm_multilayer>
     crm_perf_plots <crm_perf_plots>
+    crm_gen <crm_gen>
