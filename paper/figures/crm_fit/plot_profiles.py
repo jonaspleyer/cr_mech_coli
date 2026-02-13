@@ -237,7 +237,7 @@ def plot_all_profiles_combined(*args, odir, bounds={}):
         plt.close(fig)
 
 
-def plot_optimization_progressions_combined(*args, ylim=(3.5, 6)):
+def plot_optimization_progressions_combined(*args, ylim=(0.9, 1.45)):
     crm.plotting.set_mpl_rc_params()
     fig, ax = plt.subplots(figsize=(8, 8))
     crm.plotting.configure_ax(ax)

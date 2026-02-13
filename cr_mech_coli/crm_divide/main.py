@@ -1,35 +1,3 @@
-"""
-.. code-block:: text
-    :caption: Usage of the `crm_divide` script
-
-    crm_divide -h
-
-    usage: crm_divide [-h] [-i ITERATION] [--output-dir OUTPUT_DIR] [--skip-profiles] [--skip-time-evolution]
-                    [--skip-snapshots] [--skip-timings] [--skip-mask-adjustment] [--only-mask-adjustment]
-                    [-w WORKERS]
-
-    Fits the Bacterial Rods model to a system of cells.
-
-    options:
-    -h, --help            show this help message and exit
-    -i, --iteration ITERATION
-                            Use existing output folder instead of creating new one
-    --output-dir OUTPUT_DIR
-                            Directory where to store results
-    --skip-profiles       Skip plotting of profiles
-    --skip-time-evolution
-                            Skip plotting of the time evolution of costs
-    --skip-snapshots      Skip plotting of snapshots and masks
-    --skip-timings        Skip plotting of the timings
-    --skip-mask-adjustment
-                            Skip plotting of the adjusted masks
-    --only-mask-adjustment
-                            Only plot adjusted masks
-    -w, --workers WORKERS
-                            Number of threads to utilize
-
-"""
-
 import numpy as np
 from glob import glob
 from pathlib import Path
@@ -55,6 +23,10 @@ crm.plotting.set_mpl_rc_params()
 
 
 def preprocessing(data_dir, n_masks=None):
+    """
+    Performs preprocessing steps such as extract positions, load configuration files and sets
+    parameters accordingly.
+    """
     if n_masks is None:
         files_images = sorted(glob(str(data_dir / "images/*")))
         files_masks = sorted(glob(str(data_dir / "masks/*.csv")))
@@ -106,6 +78,12 @@ def preprocessing(data_dir, n_masks=None):
 def plot_mask_adjustment(
     output_dir, masks_data, positions_all, settings, iterations_data
 ):
+    """
+    This function is mainly used for debugging.
+    It plots snapshots of how a given image is adjusted such that segmentation masks from data and
+    numerically generated results can be compared directly.
+    To do this, the tree of the numerical simulation needs to be matched to the tree of the data.
+    """
     radius = 0.2050713645353225423
     strength = 0.0025
     # en = 6.0
@@ -288,6 +266,9 @@ def plot_profiles(
     output_dir,
     pyargs,
 ):
+    """
+    Calculates or loads profiles and plots them split by different cost contributions.
+    """
     n_samples = pyargs.profiles_samples
     # First try loading results
     try:
@@ -402,6 +383,9 @@ def plot_timings(
     output_dir,
     n_samples: int = 3,
 ):
+    """
+    Calculates and plots timings of individual steps utilized within the cost function
+    """
     times = []
     for _ in tqdm(range(n_samples), total=n_samples, desc="Measure Timings"):
         times.append(
@@ -460,6 +444,9 @@ def run_optimizer(
     args,
     pyargs,
 ):
+    """
+    Wrapper method to call :function:`.minimize_lhs` or :function:`.minimize_de`.
+    """
     global evals
     evals = []
 
@@ -487,6 +474,9 @@ def plot_snapshots(
     color_to_cell,
     parent_map,
 ):
+    """
+    Plots snapshots and differences of the optimized system to the provided data
+    """
     (output_dir / "masks_predicted").mkdir(parents=True, exist_ok=True)
     (output_dir / "masks_adjusted").mkdir(parents=True, exist_ok=True)
     (output_dir / "masks_diff").mkdir(parents=True, exist_ok=True)
@@ -501,7 +491,12 @@ def plot_snapshots(
         cv.imwrite(f"{output_dir}/masks_diff/{n:06}.png", diff)
 
 
-def default_parameters():
+def default_parameters() -> tuple[list[float], list[tuple[float, float]]]:
+    """
+    Returns:
+        tuple[list[float], list[tuple[float, float]]]: Initial values and corresponding bounds for
+        optimization
+    """
     x0 = [
         # Radius
         4.101427290706450846e-01,
@@ -587,6 +582,9 @@ def default_parameters():
 
 
 def plot_growth_rate_distribution(final_parameters, output_dir):
+    """
+    Plots the distribution of growth_rates obtained from the optimization routine
+    """
     fig, ax = plt.subplots(figsize=(8, 8))
 
     growth_rates = final_parameters[3:9]

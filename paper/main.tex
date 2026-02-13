@@ -140,8 +140,8 @@ Jonas Pleyer\textsuperscript{1}, Christian Fleck\textsuperscript{1}\\
 
 \end{flushleft}
 
-\textbf{Discussed Keywords (Working Title)}\\
-Parameter Estimation (Mechanical Properties, Rod-shaped, Single-cell), \ac{abm}, Methods
+% \textbf{Discussed Keywords (Working Title)}\\
+% Parameter Estimation (Mechanical Properties, Rod-shaped, Single-cell), \ac{abm}, Methods
 % keywords can be removed
 % \keywords{}
 
@@ -178,10 +178,10 @@ written in Rust and integrate into our previously devleped agent-based simulatio
 
 \linenumbers
 
-\pagebreak
-\renewcommand{\contentsname}{Table of Contents (remove before submission)}
-\tableofcontents
-\vfill
+% \pagebreak
+% \renewcommand{\contentsname}{Table of Contents (remove before submission)}
+% \tableofcontents
+% \vfill
 \pagebreak
 
 % \begin{itemize}
@@ -449,7 +449,6 @@ We therefore need account for this phenomenon as well.
             rod or at the tip~\cite{Robert2014,Takeuchi2005}.\\
         (3) & Division &
             Rod-Shaped bacteria divide in the middle of the rod into two new agents.\\
-            % Bacteria can form multilayers during their growth phase \cite{Duvernoy2018}.\\
         &\multicolumn{2}{l}{\textbf{(CC) Cell-Cell Interactions}}\\
         \midrule
         (4) & Adhesion &
@@ -1320,11 +1319,13 @@ in such scenarios.
 
 % --------------------------------------------------------------------------------------------------
 \subsection{Application 1: Elastic deformations of \acl{ecoli}}
+\label{sec:application-1-amir}
 
 To assess that our model can be applied to single cells and showcase the usefulness of the
 previously developed comparison techniques,
 will use our previously developed computational model and apply it directly to the data provided
-by the experiments of Amir et. al~\cite{Amir2014,Amir2014_2}.
+by the experiments of Amir et. al~\cite{Amir2014,Amir2014_2} (see
+\nameref{sec:supplement-amir-details}).
 The experimental setup is displayed in figure~\ref{fig:amir-bending-simulation} (A).
 They studied how a single \ac{ecoli}, which is partially confined within a narrow tube, reacts
 to a horizontal fluid flow that exerts a force onto the bacterium.
@@ -1512,8 +1513,8 @@ Section~\ref{subsec:image-space-metric}).
         \nameref{sec:supplement-data-details}).
         (D) Analysis of growth for the chosen time interval.
         (E) Distribution of growth parameters shows cell-cell variability of the analyzed sample.
-        The obtained results are further discussed in the supplementary material
-        (Section~\ref{sec:supplement-reuse-estimated-parameters}).
+        % The obtained results are further discussed in the supplementary material
+        % (Section~\ref{sec:supplement-reuse-estimated-parameters}).
     }
     \label{fig:application-2-data-overview}
 \end{figure}
@@ -2268,9 +2269,35 @@ In general, we do not anticipate that these scenarios are common for most practi
 \end{figure}
 
 %###################################################################################################
-\paragraph*{Experimental Setup of Amir et. al}
+\newpage
+\paragraph*{Application 1 (Amir et. al)}
+\label{sec:supplement-amir-details}
 
-\textbf{TODO explain some of the derivations for the flow profile etc.}
+The studies performed by Amir et. al~\cite{Amir2014,Amir2014_2} provided movies of microscopic
+images which showcased 3 states in total:
+An initial state, a bent state and the final relaxed state.
+To effectively estimate the positions of the bacterium at these time points, we manually modified
+the provided images by amplifying light shadings of the green cellular envelope.
+This is displayed in Figure~\ref{fig:supplement-amir-progression} (A-C) as the bright green cellular
+shape.
+Our position extraction algorithm provides the discretized vertices of the bacterium (shown in red).
+Figures (D-F) show renders of the corresponding simulation snapshots where dark gray symbolizes the
+area in which the confinement of the tube is employed as described in
+section~\ref{sec:application-1-amir}.
+The system is specified by the estimated parameters and a range of constants which can be obtained
+from the experimental conditions.
+These are listed in Table~\ref{tab:supplement-amir-constants}.
+The number of vertices $N_\text{vertices}$ should be chosen large enough such that the bending of
+the rod can be properly captured.
+Values which are too small will inadvertently lead to undesired interactions with the confinement
+condition imposed by the narrow tube.\\
+To fully model this system, a force exerted by the flowing fluid is taken into account.
+The utilized flow profile was derived from a standard laminar flow along a tube with Neumann
+boundary conditions~\cite{Wolschin2021}.
+This profile was experimentally measured and confirmed~\cite{Amir2014}.
+Furthermore, the publication explicitly stated values for the size of the flow domain north of the
+confined tube $L_{y,\text{domain}}$ which leaves us only with the strength of the flow force as the
+remaining estimated parameter.
 
 \begin{figure}[H]
     \centering
@@ -2309,65 +2336,139 @@ In general, we do not anticipate that these scenarios are common for most practi
         (D-F) Snapshots of the numerical simulation showing the rod in its initial, fully bent and
         fully relaxed state.
     }
+    \label{fig:supplement-amir-progression}
 \end{figure}
 
-%###################################################################################################
-\paragraph*{Analysis \& Usage of heterogeneous Parameter Value (TODO)}
-\label{sec:supplement-reuse-estimated-parameters}
-In order to reuse this model, we also provide the option to assign growth rates by sampling from a
-normal distribution with user-defined parameters.
+\begin{table}[H]
+    \begin{tabularx}{\textwidth}{l r@{} @{\hspace{0.3em}}l X}
+        \textbf{Constant} & \multicolumn{2}{l}{\textbf{Value}} & \textbf{Description}\\
+        \toprule
+        $t_\text{bend}$ & $7$&$\unit{\second}$ & Interval with active flow\\
+        $t_\text{relax}$ & $17$&$\unit{\second}$ & Relaxation interval after deactivating flow\\
+        $h$ & $10.2$&$\unit{\pixel\per\micro\metre}$ & Conversion factor between pixels and lengths\\
+        $N_\text{vertices}$ & $20$ && Number of vertices use for the discretized rod\\
+        $\Delta x$ & $0.8$&$\unit{\micro\metre}$ & Displacement uncertainty used to calculate the profile-likelihood\\
+        $L_\text{y,domain}$ & $59.22$ & $\unit{\micro\metre}$ & Vertical size of the domain
+        extending further than the shown images.\\
+            & $604$ & $\unit{\pixel}$\\
+        $L_\text{tube}$ & $19.61$ & $\unit{\micro\metre}$ & Size of the tube which confines the bacterium.\\
+            & $200$ & $\unit{\pixel}$\\
+        \bottomrule
+    \end{tabularx}
+    \caption{Constants utilized for the numerical simulation.}
+    \label{tab:supplement-amir-constants}
+\end{table}
 
 %###################################################################################################
-\paragraph*{Application Data \& Preparation}
+% \paragraph*{Analysis \& Usage of heterogeneous Parameter Value (TODO)}
+% \label{sec:supplement-reuse-estimated-parameters}
+% In order to reuse this model, we also provide the option to assign growth rates by sampling from a
+% normal distribution with user-defined parameters.
+
+%###################################################################################################
+\newpage
+\paragraph*{Application 2}
 \label{sec:supplement-data-details}
 
-\subparagraph*{Application 1}
+The movies taken by Trude~\cite{Trude1982} are microscopic movies of growing bacteria.
+They contain various scenes covering cases between only a few individual bacteria and large
+collections.
+For our purpose, we extracted individual frames as images.
+Afterwards, we used the omnipose~\cite{Cutler2022} segmentation tool to obtain cell masks of the
+individual images.
+Since we chose an in-image color-based encoding scheme, it is of utmost importance that color values
+for the same cell match between individual time points.
+The total size of the domain and the duration of the movie were estimated from the provided citation
+information and context clues such as size of the bacteria itself.
+To this end, bacterial diameters were estimated with $\approx\SI{0.5}{\micro\metre}$ and the time
+interval spanning $8$ frames was estimated as $\SI{20}{\minute}$.
+This results in a conversion value of $h=\SI{30}{\pixel\per\micro\metre}$.
+Their particular numerical values are not relevant to the methods proposed in this work but would
+require closer inspection and clarification for studies targeting to extract precise numerical
+values of these systems.
+Alternatively, the same parameter estimations can also be achieved by utilizing pixel-based
+units.
+This can be achieved by rescaling all length which will provide identical results with respect to
+the profile-likelihood.
+However, values of the raw cost function will change since this involves a comparison of position in
+the respective space (i.e. pixel or position) and is not normalized by the corresponding
+displacement uncertainty.
 
-\subparagraph*{Application 2}
-\begin{itemize}
-    \item Data from IWF Goettingen \cite{Trude1982}
-    \item $\SI{15}{\pixel\per\micro\metre}$
-    \item $8$ images are equivalent to $\SI{20}{\minute}$
-\end{itemize}
+The obtained constants are listed in Table~\ref{tab:supplement-application-1-constants}.
+As we have explained in the main text, the time series is split into an interval $T_1$ containing no
+division events and an interval $T_2$ which includes a single division event.
+We provide scripts which can be used to reconstruct our approach of obtaining this dataset.
+They can be found within the Github repository \url{https://github.com/jonaspleyer/cr_mech_coli/}
+under the \texttt{data} folder.
 
-\begin{enumerate}
-    \item Have masks of data; reference image segmantation tools; or do it by hand
-    \item ensure that colors are matching for bacteria between time-steps
-    \item clean borders of images if needed
-    \item know domain size; otherwise use pixels
-\end{enumerate}
+\begin{table}[H]
+    \begin{tabularx}{\textwidth}{l r@{} @{\hspace{0.3em}}l X}
+        \textbf{Constant} & \multicolumn{2}{l}{\textbf{Value}} & \textbf{Description}\\
+        \toprule
+        $T_\text{1}$ & $17.5$&$\unit{\minute}$ & Total time without division.\\
+        $T_\text{2}$ & $74.375$&$\unit{\minute}$ & Total time including division events.\\
+        & $998-1295$ && Range of frames extracted from movie.\\
+        $h$ & $30$&$\unit{\pixel\per\micro\metre}$ & Conversion factor between pixels and lengths\\
+        $N_\text{vertices}$ & $8$ && Number of vertices use for the discretized rod\\
+        $\Delta x$ & $0.15$&$\unit{\micro\metre}$ & Displacement uncertainty used to calculate the
+        profile-likelihood\\
+        $L_x$ & $25.6$ & $\unit{\micro\metre}$ & Horizontal domain size.\\
+            & $768$ & $\unit{\pixel}$\\
+        $L_y$ & $19.2$ & $\unit{\micro\metre}$ & Vertical domain size.\\
+            & $576$ & $\unit{\pixel}$\\
+        \bottomrule
+    \end{tabularx}
+    \caption{Manually estimated constants which are used within the numerical simulation.}
+    \label{tab:supplement-application-1-constants}
+\end{table}
+% \begin{enumerate}
+%     \item Have masks of data; reference image segmantation tools; or do it by hand
+%     \item ensure that colors are matching for bacteria between time-steps
+%     \item clean borders of images if needed
+%     \item know domain size; otherwise use pixels
+% \end{enumerate}
 
-%###################################################################################################
-\paragraph*{Parameter Estimation Results (TODO)}
-\label{sec:supplement-parameter-profiles}
+Figure~\ref{fig:supplement-optimization-progression} shows the progression of the raw cost function
+(not normalized by the squared uncertainty of the displacements) of the various optimizations.
+
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.5\textwidth]{figures/crm_fit/optimization-progression.pdf}
-    \caption{TODO}
+    \begin{tikzonimage}[width=0.5\textwidth]
+        {figures/crm_fit/optimization-progression.pdf}
+        \node at (0, 1.1)[anchor=north west, black]{\textbf{A}};
+    \end{tikzonimage}%
+    \begin{tikzonimage}[width=0.5\textwidth]
+        {figures/crm_divide/optimization-progression.pdf}
+        \node at (0, 1.1)[anchor=north west, black]{\textbf{B}};
+    \end{tikzonimage}%
+    \caption{
+        Optimization progression of the distinct model choices analyzed in Section~\ref{section:application-2}.
+        All cost functions exhibit rapic decay before a final optimum is reached.
+        The relative tolerance of the optimization algorithm was chosen conservatively low such that
+        stability of the final optimum is ensured.
+        (A) Progressions of cost functions for model choices without division events in units
+        $[L]=\unit{\micro\metre\squared}$.
+        (B) Cost function progression for the reduced Morse model with division events in units
+        $[L]=\unit{\pixel\squared}$.
+    }
+    \label{fig:supplement-optimization-progression}
 \end{figure}
 
-%TODO {explain profiles}
+Figure~\ref{fig:supplement-cost-evolution-time} shows the missing profiles of growth rates of the
+daughter cells left out in Figure~\ref{fig:likelihood-profiles-comparison-with-division}.
+Some of these parameter values such as (Q,S) and (U) could be compatible with a vanishing growth
+rate.
+However these statements can only be justified with a proper uncertainty analysis involving
+realistic displacement uncertainties.
+Furthermore, results from section~\ref{section:application-2} have shown that growth rates and
+division lengths can be estimated much more accurately when a division event is involved, thus
+providing effectively a lower and upper bound on both values.
+These small values of growth rates can be a result of not including enough datapoints after the
+initial division event such that the overall length of the bacteria seems constant in the short time
+interval after the division.
+
 \begin{figure}[H]
-    \centering
-    % \includegraphics[width=0.33\textwidth]
-    %     {figures/crm_fit/morse_profiles/profile-growth-rate-0.pdf}%
-    % \includegraphics[width=0.33\textwidth]
-    %     {figures/crm_fit/morse_profiles/profile-growth-rate-1.pdf}%
-    % \includegraphics[width=0.33\textwidth]
-    %     {figures/crm_fit/morse_profiles/profile-growth-rate-2.pdf}\\%
-    % \includegraphics[width=0.33\textwidth]
-    %     {figures/crm_fit/morse_profiles/profile-growth-rate-3.pdf}%
-    % \includegraphics[width=0.33\textwidth]
-    %     {figures/crm_fit/morse_profiles/profile-growth-rate-4.pdf}%
-    % \includegraphics[width=0.33\textwidth]
-    %     {figures/crm_fit/morse_profiles/profile-growth-rate-5.pdf}
-    \caption{Parameter estimation of growth rates for individual cells}%TODO extend caption}
-    \label{fig:parameter-estimates-supplement-growth-rates}
-\end{figure}
-
-\begin{figure}
-    \centering
     \begin{tikzonimage}[width=0.25\textwidth]
         {figures/crm_divide/profiles-pretty/pdf/profile-growth-rate-1-1.pdf}%
         \node at (0, 1.1)[anchor=north west, black]{\textbf{Q}};
@@ -2388,9 +2489,43 @@ normal distribution with user-defined parameters.
         {figures/crm_divide/profiles-pretty/pdf/profile-growth-rate-3-1.pdf}%
         \node at (0, 1.1)[anchor=north west, black]{\textbf{U}};
     \end{tikzonimage}%
-    \includegraphics[width=0.5\textwidth]{figures/crm_divide/time-evolution.pdf}%
-    \caption{TODO}
+    \begin{tikzonimage}[width=0.25\textwidth]
+        {figures/crm_divide/growth-rate-distribution.pdf}%
+        \node at (0, 1.1)[anchor=north west, black]{\textbf{V}};
+    \end{tikzonimage}%
+    \caption{
+        (Q-U) Remaining parameter profiles for the growth rates of the daughter cells.
+        This extends Figure~\ref{fig:likelihood-profiles-comparison-with-division}.
+        The profile show that the parameters can be informed by the provided data.
+        (V) Distribution of estimated growth rates distinguishing between mother (dark blue) and
+        daughter (light blue) cells.
+    }
     \label{fig:supplement-profiles-with-division}
+\end{figure}
+
+To assess the fidelity of the estimated parameters with our model, we can investigate contributions
+to the cost function at the individual time points of the simulation.
+We expect that the differences indicated by the cost function are minimal at the start point and
+grow as time progresses.
+Our system ins inherently non-linear, containing exponential growth and complex interaction forces.
+This means that any parameter choice which is not optimal can lead to large deviations with
+increasing time.
+For a Lipschitz-continous system, this deviation can be bound by an exponential envelope of
+differences surrounding the true values, which results in an exponential temporal progression of the
+cost function itself.
+However in our case, Figure~\ref{fig:supplement-cost-evolution-time} (A) clearly shows a linear
+trend, indicating that model the prediction utilizing the estimated parameters provides a good
+approximation to the provided data points.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{figures/crm_divide/time-evolution.pdf}%
+    \caption{
+        Contributions to the overall cost function at evaluated time points of the simulation.
+        The fully optimized system does not contain any configurations in which a parent penalty $p$
+        is utilized.
+    }
+    \label{fig:supplement-cost-evolution-time}
 \end{figure}
 
 %###################################################################################################
@@ -2455,55 +2590,56 @@ normal distribution with user-defined parameters.
 % \end{itemize}
 
 %###################################################################################################
-\paragraph*{Implementation \& Performance (TODO)}
-\label{section:supplement-performance}
-
-On the programming side, we are using the \texttt{pyo3} and \texttt{maturin} crates which allow us
-to easily generate Python bindings and enable us to interoperate between the two ecosystems.
-
-By using \texttt{cellular\_raza}, we can make use of multiple threads for running a single numerical
-simulation, using the built-in parallelization methods (see Supplementary Material,
-Figure~\ref{fig:timings-crm_divide}).
-
-\begin{itemize}
-    \item Quadratic Scaling (see figure~\ref{fig:timings-crm_divide}) comes from more dense
-        simulation
-    \item Overall number of agents which can be simulated is satisfactory for current purposes
-    \item Improvement from $1 \Rightarrow 2$ and $2\Rightarrow4$ threads; first is major; second
-        only minor
-    \item Flamegraph still shows much cycles running against hurdles::Barrier::wait $\Rightarrow$
-        this leaves room for improvement
-    \item Flamegraph also shows that $\approx 75\%$ of all cycles is related to actual work (not
-        just waiting).
-        In particular to update\_mechanics functions.
-\end{itemize}
-
-\begin{figure}[H]
-    \centering
-    \begin{tikzonimage}[width=0.5\textwidth]
-        {figures/docs/computation-time-with-initial-agents.pdf}
-        \node at (0, 1)[anchor=north west]{\textbf{A}};
-    \end{tikzonimage}%
-    \begin{tikzonimage}[width=0.5\textwidth]
-        {figures/crm_divide/timings.pdf}
-        \node at (0, 1)[anchor=north west]{\textbf{B}};
-    \end{tikzonimage}\\
-    \begin{tikzonimage}[width=\textwidth]
-        {figures/docs/flamegraph.pdf}
-        \node at (0.02, 0.98)[anchor=north west]{\textbf{C}};
-    \end{tikzonimage}\\
-    \caption{
-        (A) Wall time of the performed simulation with increasing number of final agents inside the
-        simulation domain.
-        (B) Distribution of computation time for the division script utilized in
-        section~\ref{sec:application-1-with-division}.
-        (C) Flamegraph of a typical simulation showcasing frequency of function calls for
-        parallelized execution of simulations.
-    }
-    \label{fig:timings-crm_divide}
-\end{figure}
+% \paragraph*{Implementation \& Performance (TODO)}
+% \label{section:supplement-performance}
+%
+% On the programming side, we are using the \texttt{pyo3} and \texttt{maturin} crates which allow us
+% to easily generate Python bindings and enable us to interoperate between the two ecosystems.
+%
+% By using \texttt{cellular\_raza}, we can make use of multiple threads for running a single numerical
+% simulation, using the built-in parallelization methods (see Supplementary Material,
+% Figure~\ref{fig:timings-crm_divide}).
+%
+% \begin{itemize}
+%     \item Quadratic Scaling (see figure~\ref{fig:timings-crm_divide}) comes from more dense
+%         simulation
+%     \item Overall number of agents which can be simulated is satisfactory for current purposes
+%     \item Improvement from $1 \Rightarrow 2$ and $2\Rightarrow4$ threads; first is major; second
+%         only minor
+%     \item Flamegraph still shows much cycles running against hurdles::Barrier::wait $\Rightarrow$
+%         this leaves room for improvement
+%     \item Flamegraph also shows that $\approx 75\%$ of all cycles is related to actual work (not
+%         just waiting).
+%         In particular to update\_mechanics functions.
+% \end{itemize}
+%
+% \begin{figure}[H]
+%     \centering
+%     \begin{tikzonimage}[width=0.5\textwidth]
+%         {figures/docs/computation-time-with-initial-agents.pdf}
+%         \node at (0, 1)[anchor=north west]{\textbf{A}};
+%     \end{tikzonimage}%
+%     \begin{tikzonimage}[width=0.5\textwidth]
+%         {figures/crm_divide/timings.pdf}
+%         \node at (0, 1)[anchor=north west]{\textbf{B}};
+%     \end{tikzonimage}\\
+%     \begin{tikzonimage}[width=\textwidth]
+%         {figures/docs/flamegraph.pdf}
+%         \node at (0.02, 0.98)[anchor=north west]{\textbf{C}};
+%     \end{tikzonimage}\\
+%     \caption{
+%         (A) Wall time of the performed simulation with increasing number of final agents inside the
+%         simulation domain.
+%         (B) Distribution of computation time for the division script utilized in
+%         section~\ref{sec:application-1-with-division}.
+%         (C) Flamegraph of a typical simulation showcasing frequency of function calls for
+%         parallelized execution of simulations.
+%     }
+%     \label{fig:timings-crm_divide}
+% \end{figure}
 
 %###################################################################################################
+\newpage
 \section*{Acknowledgements}
 \paragraph{Author Contributions}
 \textbf{Conceptualization:} Jonas Pleyer\\

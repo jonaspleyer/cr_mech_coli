@@ -7,6 +7,7 @@ use cellular_raza::prelude::{
 };
 use pyo3::prelude::*;
 
+/// Runs a simulation given parameters, initial positions and provided settings of the setup.
 #[pyfunction]
 pub fn run_simulation(
     py: Python,
@@ -28,7 +29,8 @@ pub fn run_simulation(
     Ok(run_simulation_with_agents(&config, agents)?)
 }
 
-/// TODO
+/// Uses the given input information to assign values to parameters based on initial positions and
+/// parameter configuration.
 pub fn define_initial_agents(
     parameters: Vec<f32>,
     initial_positions: numpy::ndarray::ArrayView3<f32>,

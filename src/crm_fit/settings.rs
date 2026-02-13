@@ -6,18 +6,19 @@ use cellular_raza::prelude::StorageOption;
 use pyo3::{prelude::*, IntoPyObjectExt};
 use serde::{Deserialize, Serialize};
 
-/// TODO
+/// Float which is sampled by the optimizer
 #[pyclass(get_all, set_all, module = "cr_mech_coli.crm_fit")]
 #[derive(Clone, Debug, Serialize, Deserialize, AbsDiffEq, PartialEq)]
 #[approx(epsilon_type = f32)]
 pub struct SampledFloat {
-    /// TODO
+    /// Minimum value
     pub min: f32,
-    /// TODO
+    /// Maximum value
     pub max: f32,
-    /// TODO
+    /// Initial value (if applicable for the optimizer)
     pub initial: f32,
-    /// TODO
+    /// Determines if the parameter should be treated as given per cell or if it is identical
+    /// across all cells.
     #[approx(equal)]
     pub individual: Option<bool>,
 }
@@ -45,13 +46,13 @@ impl SampledFloat {
 #[derive(Clone, Debug, Serialize, Deserialize, AbsDiffEq, PartialEq)]
 #[approx(epsilon_type = f32)]
 pub enum Parameter {
-    /// TODO
+    /// Contains a :class:`.SampledFloat`
     #[serde(untagged)]
     SampledFloat(SampledFloat),
-    /// TODO
+    /// Contains a fixed value for the parameter
     #[serde(untagged)]
     Float(f32),
-    /// TODO
+    /// Contains a list of fixed values which are applied to the individual cells.
     #[serde(untagged)]
     #[approx(into_iter)]
     List(Vec<f32>),
@@ -95,23 +96,23 @@ fn parameter_from_obj(obj: &Bound<PyAny>) -> PyResult<Parameter> {
     }
 }
 
-/// TODO
+/// Contains all parameters for the `crm_fit` script
 #[pyclass(get_all, module = "cr_mech_coli.crm_fit")]
 #[derive(Clone, Debug, Serialize, Deserialize, AbsDiffEq, PartialEq)]
 pub struct Parameters {
-    /// TODO
+    /// Thickness of the bacterial rod
     pub radius: Parameter,
-    /// TODO
+    /// Rigidity which controls the mechanical flexibility of the rod
     pub rigidity: Parameter,
-    /// TODO
+    /// Auxiliary parameter to enforce the correct distance of vertices
     pub spring_tension: Parameter,
-    /// TODO
+    /// Stokesian damping constant
     pub damping: Parameter,
-    /// TODO
+    /// Interaction strength of the potential
     pub strength: Parameter,
-    /// TODO
+    /// The type of interaction potential. See :class:`.PotentialType`.
     pub potential_type: PotentialType,
-    /// TODO
+    /// Growth rate of the bacterium
     pub growth_rate: Parameter,
 }
 
@@ -219,35 +220,37 @@ impl_setters!(
     growth_rate set_growth_rate count_growth_rate;
 );
 
-/// TODO
+/// Parametes for the :class:`MorsePotentialF32`
 #[pyclass(get_all, set_all, module = "cr_mech_coli.crm_fit")]
 #[derive(Clone, Debug, Serialize, Deserialize, AbsDiffEq, PartialEq)]
 #[approx(epsilon_type = f32)]
 pub struct Morse {
-    /// TODO
+    /// Potential stiffness
     pub potential_stiffness: Parameter,
 }
 
-/// TODO
+/// Parameters for the :class:`.MiePotentialF32`
 #[pyclass(get_all, set_all, module = "cr_mech_coli.crm_fit")]
 #[derive(Clone, Debug, Serialize, Deserialize, AbsDiffEq, PartialEq)]
 #[approx(epsilon_type = f32)]
 pub struct Mie {
-    /// TODO
+    /// Exponent `n`
     pub en: Parameter,
-    /// TODO
+    /// Exponent `m`
     pub em: Parameter,
-    /// TODO
+    /// Upper bound of the potential force
     pub bound: f32,
 }
 
-/// TODO
+/// The interaction type provided to the optimization routine
+///
+/// See :class:`.Mie` and :class:`.Morse`.
 #[pyclass(get_all, set_all, module = "cr_mech_coli.crm_fit")]
 #[derive(Clone, Debug, Serialize, Deserialize, AbsDiffEq, PartialEq)]
 pub enum PotentialType {
-    /// TODO
+    /// See :class:`.Mie`
     Mie(Mie),
-    /// TODO
+    /// See :class:`.Morse`
     Morse(Morse),
 }
 
@@ -302,7 +305,7 @@ impl PotentialType {
     }
 }
 
-/// TODO
+/// Parameters to control optimization scheme via the `differential_evolution` algorithm.
 #[pyclass(get_all, set_all, module = "cr_mech_coli.crm_fit")]
 #[derive(Clone, Debug, Serialize, Deserialize, AbsDiffEq, PartialEq)]
 #[approx(epsilon_type = f32)]
@@ -335,7 +338,7 @@ pub struct DifferentialEvolution {
     pub polish: bool,
 }
 
-/// TODO
+/// Parameters to control optimization scheme via an incremental lowering with the Latin-Hypercube algorithm.
 #[pyclass(get_all, set_all, module = "cr_mech_coli.crm_fit")]
 #[derive(Clone, Debug, Serialize, Deserialize, AbsDiffEq, PartialEq)]
 #[approx(epsilon_type = f32)]
@@ -351,7 +354,8 @@ pub struct LatinHypercube {
     pub relative_reduction: f32,
 }
 
-/// TODO
+/// Utilizes the :class:`.LatinHypercube` and performs a local minimization with the Nelder-Mead
+/// method of `scipy`.
 #[pyclass(get_all, set_all, module = "cr_mech_coli.crm_fit")]
 #[derive(Clone, Debug, Serialize, Deserialize, AbsDiffEq, PartialEq)]
 #[approx(epsilon_type = f32)]

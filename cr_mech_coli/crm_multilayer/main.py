@@ -1,7 +1,3 @@
-"""
-TODO
-"""
-
 from matplotlib.colors import hex2color
 import cr_mech_coli as crm
 import numpy as np

@@ -2,36 +2,52 @@
 .. code-block:: text
     :caption: Usage of the `crm_fit` script
 
-    crm_fit -h
-
-    usage: crm_fit [-h] [-i ITERATION] [-w WORKERS] [-d DATA]
-                [-o OUTPUT_FOLDER] [--skip-profiles] [--skip-masks]
-                [--skip-param-space] [--skip-distributions]
+    usage: crm_fit [-h] [-i ITERATION] [-w WORKERS] [-o OUTPUT_FOLDER] [--skip-profiles]
+                [--skip-masks] [--skip-param-space] [--skip-distributions]
+                [--fit-growth-rates] [--skip-interaction-potential]
+                [--profiles-samples PROFILES_SAMPLES]
+                [--profiles-maxiter PROFILES_MAXITER]
+                [--profiles-method PROFILES_METHOD] [--profiles-pre-global]
+                [--profiles-pre-maxiter PROFILES_PRE_MAXITER]
+                data
 
     Fits the Bacterial Rods model to a system of cells.
+
+    positional arguments:
+    data                  Directory containing initial and final snapshots with masks.
 
     options:
     -h, --help            show this help message and exit
     -i, --iteration ITERATION
-                            Use existing output folder instead of
-                            creating new one
+                            Use existing output folder instead of creating new one
     -w, --workers WORKERS
                             Number of threads
-    -d, --data DATA       Directory containing initial and final
-                            snapshots with masks.
     -o, --output-folder OUTPUT_FOLDER
-                            Folder to store all output in. If left
-                            unspecified, the output folder will be
-                            generated via OUTPUT_FOLDER='./out/crm_fit/
-                            POTENTIAL_TYPE/ITERATION/' where ITERATION
-                            is the next number larger than any already
-                            existing one and POTENTIAL_TYPE is obtained
-                            from the settings.toml file
+                            Folder to store all output in. If left unspecified, the
+                            output folder will be generated via
+                            OUTPUT_FOLDER='./out/crm_fit/POTENTIAL_TYPE/ITERATION/' where
+                            ITERATION is the next number larger than any already existing
+                            one and POTENTIAL_TYPE is obtained from the settings.toml
+                            file
     --skip-profiles       Skips Plotting of profiles for parameters
-    --skip-masks          Skips Plotting of masks and microscopic
-                            images
+    --skip-masks          Skips Plotting of masks and microscopic images
     --skip-param-space    Skips visualization of parameter space
     --skip-distributions  Skips plotting of distributions
+    --fit-growth-rates    Estimate individual growth rates initially by fitting an
+                            exponential curve to rod lengths.
+    --skip-interaction-potential
+                            Plot the shape of the interaction potential
+    --profiles-samples PROFILES_SAMPLES
+                            Number of samples per parameter
+    --profiles-maxiter PROFILES_MAXITER
+                            Number of optimization steps for each profile point
+    --profiles-method PROFILES_METHOD
+                            Method to be used to minimize cost function in profiles
+    --profiles-pre-global
+                            Perform a pre-optimization with the differential_evolution
+                            algorithm before locally minimizing.
+    --profiles-pre-maxiter PROFILES_PRE_MAXITER
+                            Number of iterations for global pre-optimization
 
 .. warning::
     It is important that the input files for the masks are named in ascending order.
