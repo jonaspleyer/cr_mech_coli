@@ -366,6 +366,7 @@ GPT-5 was also used to polish the writing but all core contributions and the ini
 by the authors.
 
 # Acknowledgements
+JB acknowledges support from the German Research Foundation (DFG) under grant 499552394 (SFB 1597 - Small Data).
 
 # References
 
