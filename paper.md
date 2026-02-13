@@ -9,12 +9,24 @@ authors:
   - name: Jonas Pleyer
     orcid: 0009-0001-0613-7978
     affiliation: 1
+  - name: Moritz Steinmaier
+    orcid:
+    affiliation: 2
+  - name: Jelena Bratulić
+    orcid: 0009-0007-2835-4168
+    affiliation: 2
+  - name: Thomas Brox
+    orcid: 0000-0002-6282-8861
+    affiliation: 2
   - name: Christian Fleck
     affiliation: 1
     orcid: 0000-0002-6371-4495
 affiliations:
   - index: 1
     name: Freiburg Center for Data Analysis and Modelling and AI (FDMAI), University of Freiburg, Freiburg, Germany
+    ror: 0245cg223
+  - index: 2
+    name: Computer Vision Group, Faculty of Engineering, University of Freiburg, Freiburg, Germany
     ror: 0245cg223
 date: 13 March 2025
 bibliography: paper.bib
