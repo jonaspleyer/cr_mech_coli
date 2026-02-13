@@ -226,7 +226,7 @@ relationships between cells are indicated in gray.
         \vspace*{-1.059\textwidth}
         \hspace*{0.5em}\textbf{\color{white}C}
         \vspace*{1.059\textwidth}
-    \end{minipage}\\
+    \end{minipage}
     \begin{minipage}{0.24\textwidth}
         \includegraphics[width=\textwidth]{docs/source/_static/fitting-methods/progressions-1.pdf}%
         \vspace*{-\textwidth}
