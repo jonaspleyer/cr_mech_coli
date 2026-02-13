@@ -38,50 +38,58 @@ header-includes:
 ---
 
 # Summary
-`cr_mech_coli` is a Python package with an Agent-Based Model of flexible, elongated bacteria which
-provides extensive methods to fit this model to microscopic data.
-The package consists of the computational model, visualization methods, data extraction techniques
-and predefined cost functions as well as other components which can be combined modularly to enable
-parameter estimation workflows.
-It is backed by a Rust codebase which builds on `cellular_raza` [@Pleyer2025].
-This package aims to tighten the gap between agent-based modeling and classical model validation
-and calibration techniques.
+Creating numerical simulations of biological systems is a challenging problem commonly addressed
+using Agent-Based Models (ABMs) [@Pleyer2023;@Ghaffarizadeh2018].
+We present `cr_mech_coli` - a Python package with an Agent-Based Model of flexible and elongated
+rod-shaped bacterial colonies, such as _E.Coli_ or _B.Subtilis_.
+It provides a mechanistic representation of rod-shaped bacteria and bridges the agent-based
+simulation with microscopic data.
+Our software builds upon `cellular_raza` [@Pleyer2025] and comprises a computational model, data
+extraction techniques, predefined cost functions, visualization, and realistic synthetic microscopic
+rendering, and other modular components for the parameter estimation workflow.
+Additionally,  our `cr_mech_coli` support generation of synthetic labeled microscopic images from
+the simulation output, which can be used for training the machine learning models for cell
+segmentation and tracking.
+With this package, we bridge the gap among agent-based modeling, classical model validation, and
+calibration techniques, enabling fast and reliable simulation of bacterial growth systems using
+labeled microscopic images and videos.
 
 # Statement of Need
 Agent-Based Models (ABMs) provide a natural lens to map biological systems to numerical simulations
 [@Pleyer2023;@Ghaffarizadeh2018;@Cooper2020;@Karolak2021;@DeRybel2014].
 They express cellular behaviour in functions of individual agents.
-Although a plethora of tools exist to study various types of cells [@Young2006;@Young2007] such as
-spherical, hexagonal and cylindrical they mostly lack in their ability to describe flexible
-elongated bacteria.
-Moreover in order to validate the computational model against experimental data, parameter
-estimation techniques [@Kreutz2013;@Raue2014] to calibrate the model at hand are required which have
-so far not been applied in this scenario.
-This significantly limits the ability of such agent-based models to accurately describe the
+Although existing tools study various cell types, including spherical, hexagonal, and cylindrical
+[@Young2006;@Young2007], they mostly lack the ability to model flexible, elongated bacteria, such
+as _E.coli_.
+Moreover, to validate the computational model against experimental data, parameter estimation
+techniques to calibrate the model [@Kreutz2013;@Raue2014] are required, which have not yet been
+applied in this scenario.
+This significantly limits the ability of such Agent-Based Models to accurately describe the
 underlying biological reality.
 
-There is currently no systematic effort to properly estimate parameters of agents on a single-cell
+There is currently no systematic approach to estimating agent-level parameters at the single-cell
 level within an agent-based modeling framework.
-Existing calibration attempts [@An2016;@Lima2021;@Dancik2010;@Thiele2014] often rely on population data
-by aligning distributions of obtained readouts of the chosen target system.
+Existing calibration attempts [@An2016;@Lima2021;@Dancik2010;@Thiele2014] often rely on population
+data by aligning the distributions of readouts obtained from the chosen target system.
 They therefore fail to properly capture the intrinsic cellular heterogeneity of these systems.
-This leaves gaps with respect to the interpretability of which parameters are the driving factors
-for the observed phenomena.
+This leaves gaps regarding the interpretability of which parameters drive the observed phenomena.
 
-To address this methodological gap, our crate `cr_mech_coli` provides a complete framework.
-It provides a pre-defined mechanical model for such elongated bacteria, often referred to as rods
+Our `cr_mech_coli` addresses this methodological gap by providing a complete framework as a
+user-friendly Python package.
+It provides a predefined mechanical model for such elongated bacteria, often referred to as rods,
 which can be used in 2D and 3D scenarios.
-In order to initialize such a model from microscopic images, we also provide methods to extract
-positional information of such agents from masks generated from microscopic images.
+To initialize such a model from microscopic images, we also provide methods to extract positional
+information for agents from masks generated from these images.
 Furthermore, to compare numerical simulation results with microscopic images, we provide a variety
-of methods that can either compare the underlying cellular representation as a collection of
-vertices or generate new cell masks which can then be used for comparison.
-The software is built in a modular, generalized fashion, thus allowing researchers to be reused
-across a variety of models and with different estimation techniques.
-It is accompanied with an external publication which gives a more detailed description
-of the mathematical model and applies these methods to a collection of case-studies.
+of methods that either compare the underlying cellular representation as a set of vertices or
+generate new cell masks for comparison.
+Our software operates in a modular and generalizable fashion, allowing researchers to use it across
+a variety of models and estimation techniques.
+It is accompanied by an external publication that gives a more detailed description of the
+mathematical model and applies these methods to a collection of case studies.
+**Citation?**
 
-# Internals
+# Software Design
 ## Computational Model
 \autoref{table:simulation-aspects} contains a list of the simulated aspect of bacterial behaviour.
 We represent the bacteria as a collection of vertices $\{\textbf{x}_i\}$ which can be viewed as a
@@ -232,7 +240,7 @@ the experimental cell masks.
 To properly achieve this, the cell lineage of the data needs to be mapped to the numerical results.
 We use an in-image encoding scheme, where color values are uniquely assigned to particular cells
 across the duration of the complete simulation time.
-\autoref{fig:parameter-estimation} (D,E) show two images of differing configurations which are being
+\autoref{fig:parameter-estimation} (D,E) shows two images of differing configurations which are being
 compared to each other.
 When only comparing color values directly, we arrive at subfigure (F) where differences are
 highlighted in white and matches are black.
@@ -303,6 +311,13 @@ relationships between cells are indicated in gray.
     }
     \label{fig:parameter-estimation}
 \end{figure}
+
+# AI usage disclosure
+We used GPT-5 [@openai2025introducing] as a coding assistant during implementation of the data
+generation functionality encapsulated within the `crm_imaging` module and `crm_gen_*` scripts.
+All other code-related implementations were done without the assistance of AI systems.
+GPT-5 was also used to polish the writing but all core contributions and the initial draft were done
+by the authors.
 
 # Acknowledgements
 
