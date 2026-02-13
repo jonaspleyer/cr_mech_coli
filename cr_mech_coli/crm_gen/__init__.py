@@ -133,37 +133,3 @@ from .metrics import (
 
 # CLI entry point
 from .main import crm_gen_main
-
-__version__ = "0.1.0"
-__all__ = [
-    # Scene
-    'create_synthetic_scene',
-    'apply_synthetic_effects',
-    # Pipeline
-    'run_pipeline',
-    'run_simulation',
-    'compute_cell_ages',
-    'load_config',
-    # Background
-    'generate_phase_contrast_background',
-    # Filters
-    'apply_psf_blur',
-    'apply_halo_effect',
-    'apply_microscope_effects',
-    'apply_phase_contrast_pipeline',
-    'add_poisson_noise',
-    'add_gaussian_noise',
-    # Bacteria
-    'apply_original_brightness',
-    'apply_age_based_brightness',
-    'extract_original_brightness',
-    # Metrics
-    'compute_all_metrics',
-    'compute_ssim',
-    'compute_psnr',
-    'compute_color_distribution',
-    'load_image',
-    'plot_metrics',
-    # CLI
-    'crm_gen_main',
-]
