@@ -1,11 +1,13 @@
 """
-Pipeline for generating synthetic bacteria microscope images.
+End-to-end orchestration of synthetic training-data generation.
 
 This module combines cr_mech_coli simulation with synthetic image generation:
 
-    1. Runs a bacteria growth simulation to generate sequences of frames
-    2. Tracks cell ages throughout the simulation
-    3. Creates realistic synthetic microscope images with age-based brightness
+    1. Samples simulation parameters
+    2. Runs growth simulations & tracks cell lineages
+    3. Renders raw images with segmentation masks
+    4. Applies microscope-style post-processing
+    5. Writes TIFF outputs with JSON metadata
     
 """
 
