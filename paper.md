@@ -172,54 +172,7 @@ This is displayed in more detail in \autoref{fig:model-vertices-interaction} (B)
     \label{fig:model-vertices-interaction}
 \end{figure}
 
-## Visualization & Data Generation
-We use `pyvista` [@sullivan2019pyvista] to render our results as 3D objects.
-As \autoref{fig:image-generation} (A) shows, the rod is visualized by combining a series of spheres
-and cylinders into a smooth mesh.
-This resulting intermediate representation can then either be rendered as an artistic visualization
-of the system (\autoref{fig:image-generation} (B)) or we can project the image along the z-axis,
-which enables us to generate cell masks (\autoref{fig:image-generation} (C)).
-There is ongoing work on how to render realistic microscopic images such that deep learning
-frameworks for cell segmentation and cell tracking can be fed with the combination of realistic
-images and exact cell masks.
-We also utilize the `plotters` library [@Erhardt2024] for the strictly 2D case in which we can
-simplify the visualization process and achieve significant speedups.
-
-\begin{figure}[!h]
-    \centering
-    \begin{minipage}{0.32\textwidth}
-        \includegraphics[width=\textwidth]{docs/source/_static/imaging-mesh.pdf}%
-        \vspace*{-\textwidth}
-        \hspace*{0.5em}\textbf{A}
-        \vspace*{\textwidth}
-    \end{minipage}%
-    \hspace{0.01\textwidth}%
-    \begin{minipage}{0.32\textwidth}
-        \includegraphics[width=\textwidth]{docs/source/_static/11571737453049821261/raw_pv/000000400.png}%
-        \vspace*{-\textwidth}
-        \hspace*{0.5em}\textbf{\color{white}B}
-        \vspace*{\textwidth}
-    \end{minipage}%
-    \hspace{0.01\textwidth}%
-    \begin{minipage}{0.32\textwidth}
-        \includegraphics[width=\textwidth]{docs/source/_static/11571737453049821261/masks/000000400.png}%
-        \vspace*{-\textwidth}
-        \hspace*{0.5em}\textbf{\color{white}C}
-        \vspace*{\textwidth}
-    \end{minipage}%
-    \caption{
-        (A) Cells are rendered by combining spheres and cylinders into a single mesh.
-        Spheres are highlighted in blue and cylinders in gray.
-        (B) A result from combining sphere and cylinder meshes to obtain the shape of a bacterium.
-        (C) Unique color values are assigned to each agent and additional lighting effects are
-        removed which ensures that the final image only contains one singular color per cell and
-        black background.
-        Finally, the image is rendered by projecting along the z-axis.
-    }
-    \label{fig:image-generation}
-\end{figure}
-
-## Parameter Estimation
+## Data Extraction
 In order to be able to estimate parameters of the computational model, we require methods that allow
 us to compare experimental data to numerical outputs.
 To achieve this we utilize the discretization in vertices $\{\textbf{x}_i\}$.
@@ -310,6 +263,52 @@ relationships between cells are indicated in gray.
         remaining parameters are reoptimized.
     }
     \label{fig:parameter-estimation}
+\end{figure}
+
+## Visualization & Data Generation
+We use `pyvista` [@sullivan2019pyvista] to render our results as 3D objects.
+As \autoref{fig:image-generation} (A) shows, the rod is visualized by combining a series of spheres
+and cylinders into a smooth mesh.
+The resulting intermediate representation can then be rendered as an artistic visualization
+of the system (\autoref{fig:image-generation} (B)), or projected along the z-axis to generate cell
+masks (\autoref{fig:image-generation} (C)).
+There is ongoing work on rendering realistic microscopic images so that deep learning frameworks for
+cell segmentation and cell tracking can be trained on realistic images and ground-truth cell masks.
+We also utilize the `plotters` library [@Erhardt2024] for the strictly 2D case in which we can
+simplify the visualization process and achieve significant speedups.
+
+\begin{figure}[!h]
+    \centering
+    \begin{minipage}{0.32\textwidth}
+        \includegraphics[width=\textwidth]{docs/source/_static/imaging-mesh.pdf}%
+        \vspace*{-\textwidth}
+        \hspace*{0.5em}\textbf{A}
+        \vspace*{\textwidth}
+    \end{minipage}%
+    \hspace{0.01\textwidth}%
+    \begin{minipage}{0.32\textwidth}
+        \includegraphics[width=\textwidth]{docs/source/_static/11571737453049821261/raw_pv/000000400.png}%
+        \vspace*{-\textwidth}
+        \hspace*{0.5em}\textbf{\color{white}B}
+        \vspace*{\textwidth}
+    \end{minipage}%
+    \hspace{0.01\textwidth}%
+    \begin{minipage}{0.32\textwidth}
+        \includegraphics[width=\textwidth]{docs/source/_static/11571737453049821261/masks/000000400.png}%
+        \vspace*{-\textwidth}
+        \hspace*{0.5em}\textbf{\color{white}C}
+        \vspace*{\textwidth}
+    \end{minipage}%
+    \caption{
+        (A) Cells are rendered by combining spheres and cylinders into a single mesh.
+        Spheres are highlighted in blue and cylinders in gray.
+        (B) A result from combining sphere and cylinder meshes to obtain the shape of a bacterium.
+        (C) Unique color values are assigned to each agent and additional lighting effects are
+        removed which ensures that the final image only contains one singular color per cell and
+        black background.
+        Finally, the image is rendered by projecting along the z-axis.
+    }
+    \label{fig:image-generation}
 \end{figure}
 
 # AI usage disclosure
