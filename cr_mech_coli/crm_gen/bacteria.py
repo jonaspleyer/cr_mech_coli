@@ -1,9 +1,10 @@
 """
-Bacteria-specific image processing for synthetic phase contrast microscopy.
+Per-cell brightness assignment for synthetic bacteria.
 
-This module provides functions for transferring brightness from original
-microscope images to synthetic bacteria renderings, creating realistic
-brightness variations that match the source images.
+Computes an additive brightness adjustment for each cell in a synthetic image,
+either by matching measured intensities from a real microscope image or by
+interpolating between configurable brightness bounds based on cell age.
+Optionally overlays multi-scale spatial noise for intra-cell variation.
 """
 
 import numpy as np

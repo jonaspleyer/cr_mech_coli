@@ -1,12 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Visualization utilities for synthetic microscope image optimization.
+Diagnostic plotting for synthetic image optimization.
 
-This module provides functions for visualizing optimization results:
-
-- generate_comparison_plot(): Overview with examples
-- generate_detailed_plots(): Per-image detailed analysis with region-specific metrics
+Generates side-by-side comparisons of real and synthetic microscope images
+with intensity histograms and region-specific quality metrics (SSIM, PSNR,
+histogram distance).
 """
 
 import numpy as np

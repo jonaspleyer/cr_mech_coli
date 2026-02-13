@@ -1,13 +1,14 @@
 """
-Module to create synthetic microscope images from real microscope images and segmentation masks
-using the cr_mech_coli simulation model.
+Single-frame compositing of synthetic microscope images.
 
-This module:
+Takes a rendered cell image and segmentation mask, then applies a sequence of
+optical effects to produce a realistic microscope frame:
 
-    1. Loads a real microscope image and its segmentation mask
-    2. Extracts cell positions from the mask
-    3. Creates a synthetic copy using cr_mech_coli simulation
-    4. Saves both the synthetic image and mask
+    1. Generate a phase-contrast background with gradient and texture
+    2. Composite foreground cells onto the background
+    3. Adjust per-cell brightness (age-based or matched to a real image)
+    4. Add halo artifacts around cell boundaries
+    5. Apply PSF blur, Poisson shot noise, and Gaussian readout noise
 
 """
 

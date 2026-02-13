@@ -3,7 +3,7 @@
 """
 Parameter optimization for synthetic microscope image generation.
 
-This module optimizes the parameters of create_synthetic_scene() to match
+This module optimizes the selected parameters to match
 real microscope images using a weighted combination of:
 
 - Color/Intensity Distribution (histogram L1 distance)
