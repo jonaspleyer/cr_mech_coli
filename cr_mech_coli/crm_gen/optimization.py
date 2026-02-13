@@ -17,11 +17,12 @@ global optimization across multiple CPU cores.
 # Configure offscreen rendering for headless cluster environments
 # Must be set BEFORE importing pyvista/vtk
 import os
-os.environ['PYVISTA_OFF_SCREEN'] = 'true'
-os.environ['VTK_DEFAULT_RENDER_WINDOW_OFFSCREEN'] = '1'
+
+os.environ["PYVISTA_OFF_SCREEN"] = "true"
+os.environ["VTK_DEFAULT_RENDER_WINDOW_OFFSCREEN"] = "1"
 # Force OSMesa software rendering (avoids EGL/GPU permission issues on clusters)
-os.environ.setdefault('DISPLAY', '')
-os.environ.setdefault('VTK_USE_OFFSCREEN_EGL', '0')
+os.environ.setdefault("DISPLAY", "")
+os.environ.setdefault("VTK_USE_OFFSCREEN_EGL", "0")
 
 from pathlib import Path
 from datetime import datetime
@@ -44,34 +45,31 @@ from .metrics import compute_all_metrics, load_image
 # ============================================================================
 
 DEFAULT_BOUNDS = [
-    (0.2, 0.6),      # bg_base_brightness
-    (0.0, 0.04),     # bg_gradient_strength; Default: (0.0, 0.02)
-    (0.01, 0.6),     # bac_halo_intensity
-    (1, 25),         # bg_noise_scale (background illumination noise scale)
-    (0.1, 3.0),      # psf_sigma (optical blur)
-    (1, 10000),      # peak_signal (Poisson noise, higher = less noise)
-    (0.001, 0.05)    # gaussian_sigma (readout noise)
+    (0.2, 0.6),  # bg_base_brightness
+    (0.0, 0.04),  # bg_gradient_strength; Default: (0.0, 0.02)
+    (0.01, 0.6),  # bac_halo_intensity
+    (1, 25),  # bg_noise_scale (background illumination noise scale)
+    (0.1, 3.0),  # psf_sigma (optical blur)
+    (1, 10000),  # peak_signal (Poisson noise, higher = less noise)
+    (0.001, 0.05),  # gaussian_sigma (readout noise)
 ]
 
 PARAM_NAMES = [
-    'bg_base_brightness',
-    'bg_gradient_strength',
-    'bac_halo_intensity',
-    'bg_noise_scale',
-    'psf_sigma',
-    'peak_signal',
-    'gaussian_sigma'
+    "bg_base_brightness",
+    "bg_gradient_strength",
+    "bac_halo_intensity",
+    "bg_noise_scale",
+    "psf_sigma",
+    "peak_signal",
+    "gaussian_sigma",
 ]
 
-DEFAULT_WEIGHTS = {
-    'histogram_distance': 0.01,
-    'ssim': 1.0,
-    'psnr': 0.02
-}
+DEFAULT_WEIGHTS = {"histogram_distance": 0.01, "ssim": 1.0, "psnr": 0.02}
 
 # ============================================================================
 # Checkpoint Manager for Differential Evolution
 # ============================================================================
+
 
 class DECheckpointManager:
     """
@@ -102,7 +100,7 @@ class DECheckpointManager:
         best_x: np.ndarray,
         best_fun: float,
         convergence: float,
-        config: dict
+        config: dict,
     ) -> Path:
         """
         Save current optimization state to a checkpoint file.
@@ -124,7 +122,7 @@ class DECheckpointManager:
 
         filename = f"checkpoint_{self.run_start_time}_iter{iteration:04d}.npz"
         checkpoint_path = self.checkpoint_dir / filename
-        temp_base = checkpoint_path.with_suffix('.tmp')
+        temp_base = checkpoint_path.with_suffix(".tmp")
 
         try:
             np.savez(
@@ -136,13 +134,13 @@ class DECheckpointManager:
                 best_fun=best_fun,
                 convergence=convergence,
                 run_start_time=self.run_start_time,
-                config_json=json.dumps(config)
+                config_json=json.dumps(config),
             )
-            actual_temp_file = Path(str(temp_base) + '.npz')
+            actual_temp_file = Path(str(temp_base) + ".npz")
             shutil.move(str(actual_temp_file), str(checkpoint_path))
 
         except Exception as e:
-            actual_temp_file = Path(str(temp_base) + '.npz')
+            actual_temp_file = Path(str(temp_base) + ".npz")
             if actual_temp_file.exists():
                 actual_temp_file.unlink()
             raise e
@@ -159,7 +157,7 @@ class DECheckpointManager:
         checkpoints = sorted(
             self.checkpoint_dir.glob("checkpoint_*.npz"),
             key=lambda p: p.stat().st_mtime,
-            reverse=True
+            reverse=True,
         )
         return checkpoints[0] if checkpoints else None
 
@@ -184,15 +182,15 @@ class DECheckpointManager:
         try:
             with np.load(checkpoint_path, allow_pickle=True) as data:
                 checkpoint = {
-                    'iteration': int(data['iteration']),
-                    'population': data['population'],
-                    'population_energies': data['population_energies'],
-                    'best_x': data['best_x'],
-                    'best_fun': float(data['best_fun']),
-                    'convergence': float(data['convergence']),
-                    'run_start_time': str(data['run_start_time']),
-                    'config': json.loads(str(data['config_json'])),
-                    'checkpoint_path': checkpoint_path
+                    "iteration": int(data["iteration"]),
+                    "population": data["population"],
+                    "population_energies": data["population_energies"],
+                    "best_x": data["best_x"],
+                    "best_fun": float(data["best_fun"]),
+                    "convergence": float(data["convergence"]),
+                    "run_start_time": str(data["run_start_time"]),
+                    "config": json.loads(str(data["config_json"])),
+                    "checkpoint_path": checkpoint_path,
                 }
             return checkpoint
 
@@ -211,15 +209,15 @@ class DECheckpointManager:
         Returns:
             bool: True if the checkpoint is compatible, False otherwise.
         """
-        saved_config = checkpoint['config']
+        saved_config = checkpoint["config"]
 
-        if 'bounds' in saved_config and 'bounds' in current_config:
-            if not np.allclose(saved_config['bounds'], current_config['bounds']):
+        if "bounds" in saved_config and "bounds" in current_config:
+            if not np.allclose(saved_config["bounds"], current_config["bounds"]):
                 print("Warning: Checkpoint bounds do not match current bounds")
                 return False
 
-        if 'popsize' in saved_config and 'popsize' in current_config:
-            if saved_config['popsize'] != current_config['popsize']:
+        if "popsize" in saved_config and "popsize" in current_config:
+            if saved_config["popsize"] != current_config["popsize"]:
                 print("Warning: Checkpoint popsize does not match current popsize")
                 return False
 
@@ -229,6 +227,7 @@ class DECheckpointManager:
 # ============================================================================
 # Picklable Objective Function Class (for cluster multiprocessing)
 # ============================================================================
+
 
 class ObjectiveFunction:
     """
@@ -273,7 +272,7 @@ class ObjectiveFunction:
             temp_dir.mkdir(exist_ok=True)
 
             total_loss = 0
-            for (real_img_path_str, mask_path_str) in self.image_pairs:
+            for real_img_path_str, mask_path_str in self.image_pairs:
                 real_img_path = Path(real_img_path_str)
                 mask_path = Path(mask_path_str)
 
@@ -288,7 +287,7 @@ class ObjectiveFunction:
                     bg_noise_scale=int(params[3]),
                     psf_sigma=params[4],
                     peak_signal=params[5],
-                    gaussian_sigma=params[6]
+                    gaussian_sigma=params[6],
                 )
 
                 if synthetic_img.dtype == np.uint8:
@@ -297,11 +296,15 @@ class ObjectiveFunction:
                 real_img = load_image(real_img_path)
                 original_mask = tiff.imread(mask_path)
 
-                real_fg = extract_masked_region(real_img, original_mask, 'foreground')
-                synth_fg = extract_masked_region(synthetic_img, synthetic_mask, 'foreground')
+                real_fg = extract_masked_region(real_img, original_mask, "foreground")
+                synth_fg = extract_masked_region(
+                    synthetic_img, synthetic_mask, "foreground"
+                )
 
-                real_bg = extract_masked_region(real_img, original_mask, 'background')
-                synth_bg = extract_masked_region(synthetic_img, synthetic_mask, 'background')
+                real_bg = extract_masked_region(real_img, original_mask, "background")
+                synth_bg = extract_masked_region(
+                    synthetic_img, synthetic_mask, "background"
+                )
 
                 metrics_fg = compute_all_metrics(real_fg, synth_fg)
                 metrics_bg = compute_all_metrics(real_bg, synth_bg)
@@ -312,7 +315,7 @@ class ObjectiveFunction:
                     self.weights,
                     metrics_bg=metrics_bg,
                     metrics_fg=metrics_fg,
-                    region_weights=self.region_weights
+                    region_weights=self.region_weights,
                 )
                 total_loss += loss
 
@@ -327,6 +330,7 @@ class ObjectiveFunction:
 # ============================================================================
 # Core Functions
 # ============================================================================
+
 
 def find_real_images(input_dir: Path, limit: int = None) -> List[Tuple[Path, Path]]:
     """
@@ -387,7 +391,7 @@ def compute_weighted_loss(
     weights: Dict,
     metrics_bg: Optional[Dict] = None,
     metrics_fg: Optional[Dict] = None,
-    region_weights: Optional[Dict] = None
+    region_weights: Optional[Dict] = None,
 ) -> float:
     """
     Compute weighted loss from metrics dictionary.
@@ -405,38 +409,37 @@ def compute_weighted_loss(
     Returns:
         float: Weighted loss value (lower is better).
     """
-    def compute_loss_from_summary(summary: Dict) -> float:
-        hist_dist = summary['histogram_distance']
-        ssim_score = summary['ssim_score']
-        psnr_db = summary['psnr_db']
 
-        loss_hist = weights['histogram_distance'] * hist_dist
-        loss_ssim = weights['ssim'] * (1.0 - ssim_score)
-        loss_psnr = weights['psnr'] * (1.0 / max(psnr_db, 1.0))
+    def compute_loss_from_summary(summary: Dict) -> float:
+        hist_dist = summary["histogram_distance"]
+        ssim_score = summary["ssim_score"]
+        psnr_db = summary["psnr_db"]
+
+        loss_hist = weights["histogram_distance"] * hist_dist
+        loss_ssim = weights["ssim"] * (1.0 - ssim_score)
+        loss_psnr = weights["psnr"] * (1.0 / max(psnr_db, 1.0))
 
         return loss_hist + loss_ssim + loss_psnr
 
     if metrics_bg is not None and metrics_fg is not None:
         if region_weights is None:
-            region_weights = {'background': 0.5, 'foreground': 0.5}
+            region_weights = {"background": 0.5, "foreground": 0.5}
 
-        bg_loss = compute_loss_from_summary(metrics_bg['summary'])
-        fg_loss = compute_loss_from_summary(metrics_fg['summary'])
+        bg_loss = compute_loss_from_summary(metrics_bg["summary"])
+        fg_loss = compute_loss_from_summary(metrics_fg["summary"])
 
         total_loss = (
-            region_weights['background'] * bg_loss +
-            region_weights['foreground'] * fg_loss
+            region_weights["background"] * bg_loss
+            + region_weights["foreground"] * fg_loss
         )
 
         return total_loss
     else:
-        return compute_loss_from_summary(metrics['summary'])
+        return compute_loss_from_summary(metrics["summary"])
 
 
 def extract_masked_region(
-    image: np.ndarray,
-    mask: np.ndarray,
-    region: str
+    image: np.ndarray, mask: np.ndarray, region: str
 ) -> np.ndarray:
     """
     Extract foreground or background region from image using mask.
@@ -454,19 +457,25 @@ def extract_masked_region(
 
     if len(image.shape) == 2 and len(mask.shape) == 2:
         if image.shape != mask.shape:
-            raise ValueError(f"Image and mask shapes must match: {image.shape} vs {mask.shape}")
+            raise ValueError(
+                f"Image and mask shapes must match: {image.shape} vs {mask.shape}"
+            )
     elif len(image.shape) == 2:
         if image.shape != mask.shape:
-            raise ValueError(f"Image and mask shapes must match: {image.shape} vs {mask.shape}")
+            raise ValueError(
+                f"Image and mask shapes must match: {image.shape} vs {mask.shape}"
+            )
 
     extracted = image.copy()
 
-    if region == 'foreground':
+    if region == "foreground":
         extracted[mask == 0] = 0.0
-    elif region == 'background':
+    elif region == "background":
         extracted[mask > 0] = 0.0
     else:
-        raise ValueError(f"Invalid region: {region}. Must be 'foreground' or 'background'")
+        raise ValueError(
+            f"Invalid region: {region}. Must be 'foreground' or 'background'"
+        )
 
     return extracted
 
@@ -482,7 +491,7 @@ def optimize_parameters(
     seed: int = 42,
     n_vertices: int = 8,
     resume: bool = False,
-    no_checkpoint: bool = False
+    no_checkpoint: bool = False,
 ) -> Dict:
     """
     Optimize synthetic image parameters using differential evolution.
@@ -507,22 +516,22 @@ def optimize_parameters(
         Dict: Optimization results including 'parameters', 'optimization_info',
             'bounds', and 'weights'.
     """
-    print("\n" + "="*80)
+    print("\n" + "=" * 80)
     print("STARTING PARAMETER OPTIMIZATION")
-    print("="*80)
+    print("=" * 80)
     print(f"Number of images: {len(image_pairs)}")
-    print(f"Parameter bounds:")
+    print("Parameter bounds:")
     for name, (low, high) in zip(PARAM_NAMES, bounds):
         print(f"  {name}: [{low}, {high}]")
-    print(f"Metric weights:")
+    print("Metric weights:")
     for key, value in weights.items():
         print(f"  {key}: {value}")
-    print(f"Differential evolution settings:")
+    print("Differential evolution settings:")
     print(f"  maxiter: {maxiter}")
     print(f"  popsize: {popsize}")
     print(f"  workers: {workers}")
     print(f"  seed: {seed}")
-    print("="*80 + "\n")
+    print("=" * 80 + "\n")
 
     temp_base_dir = tempfile.mkdtemp(prefix="fit_temp_")
     print(f"Using temporary directory: {temp_base_dir}\n")
@@ -535,13 +544,13 @@ def optimize_parameters(
             weights=weights,
             temp_base_dir=temp_base_dir,
             n_vertices=n_vertices,
-            region_weights=region_weights
+            region_weights=region_weights,
         )
 
         checkpoint_dir = Path("./checkpoints")
         checkpoint_mgr = None if no_checkpoint else DECheckpointManager(checkpoint_dir)
 
-        init_population = 'latinhypercube'
+        init_population = "latinhypercube"
         start_iter = 0
         run_start_time = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 
@@ -549,15 +558,17 @@ def optimize_parameters(
             checkpoint = checkpoint_mgr.load_checkpoint()
             if checkpoint:
                 config = {
-                    'bounds': bounds,
-                    'popsize': popsize,
+                    "bounds": bounds,
+                    "popsize": popsize,
                 }
                 if checkpoint_mgr.validate_checkpoint(checkpoint, config):
-                    init_population = checkpoint['population']
-                    start_iter = checkpoint['iteration']
-                    run_start_time = checkpoint['run_start_time']
+                    init_population = checkpoint["population"]
+                    start_iter = checkpoint["iteration"]
+                    run_start_time = checkpoint["run_start_time"]
                     checkpoint_mgr.run_start_time = run_start_time
-                    print(f"\n*** RESUMING from checkpoint at iteration {start_iter} ***")
+                    print(
+                        f"\n*** RESUMING from checkpoint at iteration {start_iter} ***"
+                    )
                     print(f"    Best loss so far: {checkpoint['best_fun']:.6f}")
                     print(f"    Checkpoint: {checkpoint['checkpoint_path'].name}\n")
                 else:
@@ -575,10 +586,14 @@ def optimize_parameters(
             progress = current_iter / maxiter
             bar_length = 40
             filled_length = int(bar_length * progress)
-            bar = '█' * filled_length + '░' * (bar_length - filled_length)
+            bar = "█" * filled_length + "░" * (bar_length - filled_length)
 
-            print(f"\r\033[K", end='')
-            print(f"Iter {current_iter:3d}/{maxiter} [{bar}] {progress*100:5.1f}%", end='', flush=True)
+            print(f"\r\033[K", end="")
+            print(
+                f"Iter {current_iter:3d}/{maxiter} [{bar}] {progress * 100:5.1f}%",
+                end="",
+                flush=True,
+            )
 
             if checkpoint_mgr:
                 checkpoint_mgr.save_checkpoint(
@@ -587,25 +602,29 @@ def optimize_parameters(
                     population_energies=intermediate_result.population_energies,
                     best_x=intermediate_result.x,
                     best_fun=intermediate_result.fun,
-                    convergence=intermediate_result.convergence if hasattr(intermediate_result, 'convergence') else 0.0,
+                    convergence=intermediate_result.convergence
+                    if hasattr(intermediate_result, "convergence")
+                    else 0.0,
                     config={
-                        'bounds': bounds,
-                        'popsize': popsize,
-                        'maxiter': maxiter,
-                        'weights': weights,
-                        'region_weights': region_weights
-                    }
+                        "bounds": bounds,
+                        "popsize": popsize,
+                        "maxiter": maxiter,
+                        "weights": weights,
+                        "region_weights": region_weights,
+                    },
                 )
 
             xk = intermediate_result.x
             if current_iter % 5 == 0:
                 print()
-                print(f"  └─ Params: bg={xk[0]:.3f}, grad={xk[1]:.5f}, halo={xk[2]:.3f}, noise={int(xk[3])}, "
-                      f"psf={xk[4]:.2f}, peak={xk[5]:.0f}, gauss={xk[6]:.4f}")
+                print(
+                    f"  └─ Params: bg={xk[0]:.3f}, grad={xk[1]:.5f}, halo={xk[2]:.3f}, noise={int(xk[3])}, "
+                    f"psf={xk[4]:.2f}, peak={xk[5]:.0f}, gauss={xk[6]:.4f}"
+                )
 
-        print("\n" + "┌" + "─"*78 + "┐")
-        print("│" + " "*25 + "OPTIMIZATION RUNNING" + " "*33 + "│")
-        print("└" + "─"*78 + "┘\n")
+        print("\n" + "┌" + "─" * 78 + "┐")
+        print("│" + " " * 25 + "OPTIMIZATION RUNNING" + " " * 33 + "│")
+        print("└" + "─" * 78 + "┘\n")
         print("This may take a while depending on the number of images and iterations.")
         print("Progress updates will appear below:\n")
 
@@ -615,14 +634,14 @@ def optimize_parameters(
             maxiter=remaining_iters,
             popsize=popsize,
             workers=workers,
-            updating='deferred' if workers != 1 else 'immediate',
+            updating="deferred" if workers != 1 else "immediate",
             polish=False,
             init=init_population,
-            strategy='best1bin',
+            strategy="best1bin",
             seed=seed if start_iter == 0 else None,
             disp=False,
             callback=callback,
-            mutation=(0.5, 1.3)
+            mutation=(0.5, 1.3),
         )
 
         end_time = time.time()
@@ -630,40 +649,42 @@ def optimize_parameters(
 
         print("\n")
 
-        print("\n" + "="*80)
+        print("\n" + "=" * 80)
         print("OPTIMIZATION COMPLETE")
-        print("="*80)
+        print("=" * 80)
         print(f"Success: {result.success}")
         print(f"Message: {result.message}")
         print(f"Number of iterations: {result.nit}")
         print(f"Number of function evaluations: {result.nfev}")
         print(f"Final loss: {result.fun:.6f}")
-        print(f"Optimization duration: {elapsed_time/60:.2f} minutes ({elapsed_time:.1f} seconds)")
+        print(
+            f"Optimization duration: {elapsed_time / 60:.2f} minutes ({elapsed_time:.1f} seconds)"
+        )
         print("\nOptimized parameters:")
         for name, value in zip(PARAM_NAMES, result.x):
             print(f"  {name}: {value:.6f}")
-        print("="*80 + "\n")
+        print("=" * 80 + "\n")
 
         optimization_results = {
-            'timestamp': datetime.now().strftime("%Y-%m-%d_%H-%M-%S"),
-            'optimization_info': {
-                'num_images': len(image_pairs),
-                'num_iterations': int(result.nit),
-                'num_function_evaluations': int(result.nfev),
-                'final_loss': float(result.fun),
-                'optimization_duration_seconds': float(elapsed_time),
-                'optimization_duration_minutes': float(elapsed_time / 60),
-                'success': bool(result.success),
-                'message': result.message
+            "timestamp": datetime.now().strftime("%Y-%m-%d_%H-%M-%S"),
+            "optimization_info": {
+                "num_images": len(image_pairs),
+                "num_iterations": int(result.nit),
+                "num_function_evaluations": int(result.nfev),
+                "final_loss": float(result.fun),
+                "optimization_duration_seconds": float(elapsed_time),
+                "optimization_duration_minutes": float(elapsed_time / 60),
+                "success": bool(result.success),
+                "message": result.message,
             },
-            'parameters': {
+            "parameters": {
                 name: float(value) for name, value in zip(PARAM_NAMES, result.x)
             },
-            'bounds': {
+            "bounds": {
                 name: [float(low), float(high)]
                 for name, (low, high) in zip(PARAM_NAMES, bounds)
             },
-            'weights': weights
+            "weights": weights,
         }
 
         return optimization_results
@@ -678,7 +699,7 @@ def compute_final_metrics(
     image_pairs: List[Tuple[Path, Path]],
     params: Dict,
     output_dir: Path,
-    n_vertices: int
+    n_vertices: int,
 ) -> Tuple[Dict, List[Dict]]:
     """
     Compute final metrics for all images with optimized parameters.
@@ -711,13 +732,13 @@ def compute_final_metrics(
                 segmentation_mask_path=mask_path,
                 output_dir=temp_dir,
                 n_vertices=n_vertices,
-                bg_base_brightness=params['bg_base_brightness'],
-                bg_gradient_strength=params['bg_gradient_strength'],
-                bac_halo_intensity=params['bac_halo_intensity'],
-                bg_noise_scale=int(params['bg_noise_scale']),
-                psf_sigma=params['psf_sigma'],
-                peak_signal=params['peak_signal'],
-                gaussian_sigma=params['gaussian_sigma']
+                bg_base_brightness=params["bg_base_brightness"],
+                bg_gradient_strength=params["bg_gradient_strength"],
+                bac_halo_intensity=params["bac_halo_intensity"],
+                bg_noise_scale=int(params["bg_noise_scale"]),
+                psf_sigma=params["psf_sigma"],
+                peak_signal=params["peak_signal"],
+                gaussian_sigma=params["gaussian_sigma"],
             )
 
             if synthetic_img.dtype == np.uint8:
@@ -726,64 +747,85 @@ def compute_final_metrics(
             real_img = load_image(real_img_path)
             original_mask = tiff.imread(mask_path)
 
-            real_fg = extract_masked_region(real_img, original_mask, 'foreground')
-            real_bg = extract_masked_region(real_img, original_mask, 'background')
+            real_fg = extract_masked_region(real_img, original_mask, "foreground")
+            real_bg = extract_masked_region(real_img, original_mask, "background")
 
-            synth_fg = extract_masked_region(synthetic_img, synthetic_mask, 'foreground')
-            synth_bg = extract_masked_region(synthetic_img, synthetic_mask, 'background')
+            synth_fg = extract_masked_region(
+                synthetic_img, synthetic_mask, "foreground"
+            )
+            synth_bg = extract_masked_region(
+                synthetic_img, synthetic_mask, "background"
+            )
 
             metrics_full = compute_all_metrics(real_img, synthetic_img)
             metrics_fg = compute_all_metrics(real_fg, synth_fg)
             metrics_bg = compute_all_metrics(real_bg, synth_bg)
 
-            per_image_metrics.append({
-                'image_name': real_img_path.name,
-                'full_histogram_distance': metrics_full['summary']['histogram_distance'],
-                'full_ssim_score': metrics_full['summary']['ssim_score'],
-                'full_psnr_db': metrics_full['summary']['psnr_db'],
-                'fg_histogram_distance': metrics_fg['summary']['histogram_distance'],
-                'fg_ssim_score': metrics_fg['summary']['ssim_score'],
-                'fg_psnr_db': metrics_fg['summary']['psnr_db'],
-                'bg_histogram_distance': metrics_bg['summary']['histogram_distance'],
-                'bg_ssim_score': metrics_bg['summary']['ssim_score'],
-                'bg_psnr_db': metrics_bg['summary']['psnr_db']
-            })
+            per_image_metrics.append(
+                {
+                    "image_name": real_img_path.name,
+                    "full_histogram_distance": metrics_full["summary"][
+                        "histogram_distance"
+                    ],
+                    "full_ssim_score": metrics_full["summary"]["ssim_score"],
+                    "full_psnr_db": metrics_full["summary"]["psnr_db"],
+                    "fg_histogram_distance": metrics_fg["summary"][
+                        "histogram_distance"
+                    ],
+                    "fg_ssim_score": metrics_fg["summary"]["ssim_score"],
+                    "fg_psnr_db": metrics_fg["summary"]["psnr_db"],
+                    "bg_histogram_distance": metrics_bg["summary"][
+                        "histogram_distance"
+                    ],
+                    "bg_ssim_score": metrics_bg["summary"]["ssim_score"],
+                    "bg_psnr_db": metrics_bg["summary"]["psnr_db"],
+                }
+            )
 
     finally:
         if temp_dir.exists():
             shutil.rmtree(temp_dir)
 
     avg_metrics = {
-        'full_histogram_distance': np.mean([m['full_histogram_distance'] for m in per_image_metrics]),
-        'full_ssim_score': np.mean([m['full_ssim_score'] for m in per_image_metrics]),
-        'full_psnr_db': np.mean([m['full_psnr_db'] for m in per_image_metrics]),
-        'fg_histogram_distance': np.mean([m['fg_histogram_distance'] for m in per_image_metrics]),
-        'fg_ssim_score': np.mean([m['fg_ssim_score'] for m in per_image_metrics]),
-        'fg_psnr_db': np.mean([m['fg_psnr_db'] for m in per_image_metrics]),
-        'bg_histogram_distance': np.mean([m['bg_histogram_distance'] for m in per_image_metrics]),
-        'bg_ssim_score': np.mean([m['bg_ssim_score'] for m in per_image_metrics]),
-        'bg_psnr_db': np.mean([m['bg_psnr_db'] for m in per_image_metrics])
+        "full_histogram_distance": np.mean(
+            [m["full_histogram_distance"] for m in per_image_metrics]
+        ),
+        "full_ssim_score": np.mean([m["full_ssim_score"] for m in per_image_metrics]),
+        "full_psnr_db": np.mean([m["full_psnr_db"] for m in per_image_metrics]),
+        "fg_histogram_distance": np.mean(
+            [m["fg_histogram_distance"] for m in per_image_metrics]
+        ),
+        "fg_ssim_score": np.mean([m["fg_ssim_score"] for m in per_image_metrics]),
+        "fg_psnr_db": np.mean([m["fg_psnr_db"] for m in per_image_metrics]),
+        "bg_histogram_distance": np.mean(
+            [m["bg_histogram_distance"] for m in per_image_metrics]
+        ),
+        "bg_ssim_score": np.mean([m["bg_ssim_score"] for m in per_image_metrics]),
+        "bg_psnr_db": np.mean([m["bg_psnr_db"] for m in per_image_metrics]),
     }
 
     print("\nAverage metrics across all images:")
-    print(f"  Full Image - Histogram: {avg_metrics['full_histogram_distance']:.4f}, "
-          f"SSIM: {avg_metrics['full_ssim_score']:.4f}, "
-          f"PSNR: {avg_metrics['full_psnr_db']:.2f} dB")
-    print(f"  Foreground - Histogram: {avg_metrics['fg_histogram_distance']:.4f}, "
-          f"SSIM: {avg_metrics['fg_ssim_score']:.4f}, "
-          f"PSNR: {avg_metrics['fg_psnr_db']:.2f} dB")
-    print(f"  Background - Histogram: {avg_metrics['bg_histogram_distance']:.4f}, "
-          f"SSIM: {avg_metrics['bg_ssim_score']:.4f}, "
-          f"PSNR: {avg_metrics['bg_psnr_db']:.2f} dB")
+    print(
+        f"  Full Image - Histogram: {avg_metrics['full_histogram_distance']:.4f}, "
+        f"SSIM: {avg_metrics['full_ssim_score']:.4f}, "
+        f"PSNR: {avg_metrics['full_psnr_db']:.2f} dB"
+    )
+    print(
+        f"  Foreground - Histogram: {avg_metrics['fg_histogram_distance']:.4f}, "
+        f"SSIM: {avg_metrics['fg_ssim_score']:.4f}, "
+        f"PSNR: {avg_metrics['fg_psnr_db']:.2f} dB"
+    )
+    print(
+        f"  Background - Histogram: {avg_metrics['bg_histogram_distance']:.4f}, "
+        f"SSIM: {avg_metrics['bg_ssim_score']:.4f}, "
+        f"PSNR: {avg_metrics['bg_psnr_db']:.2f} dB"
+    )
 
     return avg_metrics, per_image_metrics
 
 
 def save_results(
-    results: Dict,
-    avg_metrics: Dict,
-    per_image_metrics: List[Dict],
-    output_dir: Path
+    results: Dict, avg_metrics: Dict, per_image_metrics: List[Dict], output_dir: Path
 ):
     """
     Save optimization results to JSON and CSV files.
@@ -796,21 +838,30 @@ def save_results(
     """
     print(f"\nSaving results to: {output_dir}")
 
-    results['average_metrics'] = avg_metrics
+    results["average_metrics"] = avg_metrics
 
     params_path = output_dir / "optimized_params.json"
-    with open(params_path, 'w') as f:
+    with open(params_path, "w") as f:
         json.dump(results, f, indent=2)
     print(f"  Saved: {params_path.name}")
 
     csv_path = output_dir / "per_image_metrics.csv"
-    with open(csv_path, 'w', newline='') as f:
-        writer = csv.DictWriter(f, fieldnames=[
-            'image_name',
-            'full_histogram_distance', 'full_ssim_score', 'full_psnr_db',
-            'fg_histogram_distance', 'fg_ssim_score', 'fg_psnr_db',
-            'bg_histogram_distance', 'bg_ssim_score', 'bg_psnr_db'
-        ])
+    with open(csv_path, "w", newline="") as f:
+        writer = csv.DictWriter(
+            f,
+            fieldnames=[
+                "image_name",
+                "full_histogram_distance",
+                "full_ssim_score",
+                "full_psnr_db",
+                "fg_histogram_distance",
+                "fg_ssim_score",
+                "fg_psnr_db",
+                "bg_histogram_distance",
+                "bg_ssim_score",
+                "bg_psnr_db",
+            ],
+        )
         writer.writeheader()
         writer.writerows(per_image_metrics)
     print(f"  Saved: {csv_path.name}")
@@ -820,7 +871,7 @@ def generate_all_synthetics(
     image_pairs: List[Tuple[Path, Path]],
     params: Dict,
     output_dir: Path,
-    n_vertices: int
+    n_vertices: int,
 ):
     """
     Generate synthetic images for all image pairs with optimized parameters.
@@ -842,13 +893,13 @@ def generate_all_synthetics(
             segmentation_mask_path=mask_path,
             output_dir=synth_dir,
             n_vertices=n_vertices,
-            bg_base_brightness=params['bg_base_brightness'],
-            bg_gradient_strength=params['bg_gradient_strength'],
-            bac_halo_intensity=params['bac_halo_intensity'],
-            bg_noise_scale=int(params['bg_noise_scale']),
-            psf_sigma=params['psf_sigma'],
-            peak_signal=params['peak_signal'],
-            gaussian_sigma=params['gaussian_sigma']
+            bg_base_brightness=params["bg_base_brightness"],
+            bg_gradient_strength=params["bg_gradient_strength"],
+            bac_halo_intensity=params["bac_halo_intensity"],
+            bg_noise_scale=int(params["bg_noise_scale"]),
+            psf_sigma=params["psf_sigma"],
+            peak_signal=params["peak_signal"],
+            gaussian_sigma=params["gaussian_sigma"],
         )
 
     print(f"  Saved synthetic images to: {synth_dir}")

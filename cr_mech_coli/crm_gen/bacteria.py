@@ -8,20 +8,14 @@ brightness variations that match the source images.
 
 import numpy as np
 import random
-from scipy.ndimage import (
-    gaussian_filter,
-    zoom,
-    label
-)
+from scipy.ndimage import gaussian_filter, zoom, label
 from typing import Dict
 
 import cr_mech_coli as crm
 
 
 def extract_original_brightness(
-    original_image: np.ndarray,
-    original_mask: np.ndarray,
-    colors: list
+    original_image: np.ndarray, original_mask: np.ndarray, colors: list
 ) -> Dict[int, float]:
     """
     Extract mean brightness for each original bacterium.
@@ -61,7 +55,7 @@ def extract_original_brightness(
         # Find pixels with this color/label in original mask
         if is_grayscale_mask:
             # Grayscale mask: color is an integer label
-            color_mask = (original_mask == color)
+            color_mask = original_mask == color
         else:
             # RGB mask: color is a tuple/array
             color = np.array(color)
@@ -77,8 +71,7 @@ def extract_original_brightness(
         if num_components > 1:
             # Find largest component (most likely the correct bacterium)
             component_sizes = [
-                np.sum(labeled_components == i)
-                for i in range(1, num_components + 1)
+                np.sum(labeled_components == i) for i in range(1, num_components + 1)
             ]
             largest_component = np.argmax(component_sizes) + 1
             component_mask = labeled_components == largest_component
@@ -96,9 +89,7 @@ def extract_original_brightness(
 
 
 def create_synthetic_brightness_map(
-    synthetic_mask: np.ndarray,
-    brightness_map: Dict[int, float],
-    n_cells: int
+    synthetic_mask: np.ndarray, brightness_map: Dict[int, float], n_cells: int
 ) -> np.ndarray:
     """
     Create brightness map for synthetic bacteria.
@@ -136,7 +127,7 @@ def add_brightness_noise(
     brightness_map: np.ndarray,
     synthetic_mask: np.ndarray,
     noise_strength: float,
-    seed: int = None
+    seed: int = None,
 ) -> np.ndarray:
     """
     Add Perlin-like noise variation around mean brightness values.
@@ -165,8 +156,8 @@ def add_brightness_noise(
     noise = np.zeros((h, w), dtype=np.float32)
 
     for octave in range(2):
-        frequency = 2 ** octave
-        amplitude = 0.5 ** octave
+        frequency = 2**octave
+        amplitude = 0.5**octave
 
         # Coarse noise grid
         octave_h = max(h // (frequency * 8), 4)
@@ -206,7 +197,7 @@ def apply_original_brightness(
     original_mask: np.ndarray,
     colors: list,
     noise_strength: float = 0.0,
-    seed: int = None
+    seed: int = None,
 ) -> np.ndarray:
     """
     Apply brightness from original bacteria to synthetic bacteria.
@@ -293,7 +284,7 @@ def compute_age_based_brightness(
     cell_ages: Dict,
     cell_colors: Dict,
     brightness_range: tuple = (0.8, 0.3),
-    max_age: int = None
+    max_age: int = None,
 ) -> np.ndarray:
     """
     Compute brightness map based on cell age.
@@ -352,7 +343,9 @@ def compute_age_based_brightness(
             normalized_age = 0.0
 
         # Linear interpolation: young (0) -> young_brightness, old (1) -> old_brightness
-        brightness = young_brightness + normalized_age * (old_brightness - young_brightness)
+        brightness = young_brightness + normalized_age * (
+            old_brightness - young_brightness
+        )
 
         # Vary brightness between cells by adding small random variation (±10% of the range)
         variation = random.uniform(0.9, 1.1)
@@ -370,7 +363,7 @@ def apply_age_based_brightness(
     brightness_range: tuple = (0.8, 0.3),
     max_age: int = None,
     noise_strength: float = 0.0,
-    seed: int = None
+    seed: int = None,
 ) -> np.ndarray:
     """
     Apply age-based brightness to synthetic bacteria image.

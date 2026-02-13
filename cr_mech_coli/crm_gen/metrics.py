@@ -15,10 +15,13 @@ to match real microscope images.
 
 import numpy as np
 from pathlib import Path
-from typing import Dict, Tuple, Optional
+from typing import Dict, Optional
 import tifffile
 from skimage import img_as_float
-from skimage.metrics import structural_similarity as ssim, peak_signal_noise_ratio as psnr
+from skimage.metrics import (
+    structural_similarity as ssim,
+    peak_signal_noise_ratio as psnr,
+)
 import matplotlib.pyplot as plt
 import json
 
@@ -38,9 +41,7 @@ def load_image(path: Path) -> np.ndarray:
 
 
 def compute_color_distribution(
-    image1: np.ndarray,
-    image2: np.ndarray,
-    bins: int = 256
+    image1: np.ndarray, image2: np.ndarray, bins: int = 256
 ) -> Dict[str, np.ndarray]:
     """
     Compute and compare color/intensity distributions of two images.
@@ -67,18 +68,16 @@ def compute_color_distribution(
     hist_distance = np.sum(hist_diff)
 
     return {
-        'hist1': hist1,
-        'hist2': hist2,
-        'bin_edges': bin_edges,
-        'histogram_diff': hist_diff,
-        'histogram_distance': float(hist_distance)
+        "hist1": hist1,
+        "hist2": hist2,
+        "bin_edges": bin_edges,
+        "histogram_diff": hist_diff,
+        "histogram_distance": float(hist_distance),
     }
 
 
 def compute_ssim(
-    image1: np.ndarray,
-    image2: np.ndarray,
-    data_range: float = 1.0
+    image1: np.ndarray, image2: np.ndarray, data_range: float = 1.0
 ) -> Dict[str, float]:
     """
     Compute Structural Similarity Index (SSIM) between two images.
@@ -103,15 +102,11 @@ def compute_ssim(
         # Grayscale image
         ssim_score = ssim(image1, image2, data_range=data_range)
 
-    return {
-        'ssim': float(ssim_score)
-    }
+    return {"ssim": float(ssim_score)}
 
 
 def compute_psnr(
-    image1: np.ndarray,
-    image2: np.ndarray,
-    data_range: float = 1.0
+    image1: np.ndarray, image2: np.ndarray, data_range: float = 1.0
 ) -> Dict[str, float]:
     """
     Compute Peak Signal-to-Noise Ratio (PSNR) between two images.
@@ -130,15 +125,11 @@ def compute_psnr(
     """
     psnr_value = psnr(image1, image2, data_range=data_range)
 
-    return {
-        'psnr': float(psnr_value)
-    }
+    return {"psnr": float(psnr_value)}
 
 
 def compute_all_metrics(
-    original: np.ndarray,
-    synthetic: np.ndarray,
-    bins: int = 256
+    original: np.ndarray, synthetic: np.ndarray, bins: int = 256
 ) -> Dict[str, any]:
     """
     Compute all metrics comparing original and synthetic images.
@@ -177,23 +168,20 @@ def compute_all_metrics(
 
     # Combine all results
     results = {
-        'color_distribution': color_dist,
-        'ssim': ssim_result,
-        'psnr': psnr_result,
-        'summary': {
-            'histogram_distance': color_dist['histogram_distance'],
-            'ssim_score': ssim_result['ssim'],
-            'psnr_db': psnr_result['psnr']
-        }
+        "color_distribution": color_dist,
+        "ssim": ssim_result,
+        "psnr": psnr_result,
+        "summary": {
+            "histogram_distance": color_dist["histogram_distance"],
+            "ssim_score": ssim_result["ssim"],
+            "psnr_db": psnr_result["psnr"],
+        },
     }
 
     return results
 
 
-def save_metrics_json(
-    metrics: Dict,
-    output_path: Path
-) -> None:
+def save_metrics_json(metrics: Dict, output_path: Path) -> None:
     """
     Save metrics to a JSON file.
 
@@ -203,22 +191,22 @@ def save_metrics_json(
     """
     # Convert numpy arrays to lists for JSON serialization
     metrics_serializable = {
-        'summary': metrics['summary'],
-        'color_distribution': {
-            'hist1': metrics['color_distribution']['hist1'].tolist(),
-            'hist2': metrics['color_distribution']['hist2'].tolist(),
-            'bin_edges': metrics['color_distribution']['bin_edges'].tolist(),
-            'histogram_diff': metrics['color_distribution']['histogram_diff'].tolist(),
-            'histogram_distance': metrics['color_distribution']['histogram_distance']
+        "summary": metrics["summary"],
+        "color_distribution": {
+            "hist1": metrics["color_distribution"]["hist1"].tolist(),
+            "hist2": metrics["color_distribution"]["hist2"].tolist(),
+            "bin_edges": metrics["color_distribution"]["bin_edges"].tolist(),
+            "histogram_diff": metrics["color_distribution"]["histogram_diff"].tolist(),
+            "histogram_distance": metrics["color_distribution"]["histogram_distance"],
         },
-        'ssim': metrics['ssim'],
-        'psnr': metrics['psnr']
+        "ssim": metrics["ssim"],
+        "psnr": metrics["psnr"],
     }
 
     output_path = Path(output_path)
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
-    with open(output_path, 'w') as f:
+    with open(output_path, "w") as f:
         json.dump(metrics_serializable, f, indent=2)
 
     print(f"Metrics saved to: {output_path}")
@@ -229,7 +217,7 @@ def plot_metrics(
     synthetic: np.ndarray,
     metrics: Dict,
     output_path: Optional[Path] = None,
-    title: str = "Image Comparison Metrics"
+    title: str = "Image Comparison Metrics",
 ) -> None:
     """
     Create a visualization of all metrics.
@@ -251,68 +239,121 @@ def plot_metrics(
         synthetic = np.mean(synthetic, axis=2)
 
     fig, axes = plt.subplots(2, 2, figsize=(14, 10))
-    fig.suptitle(title, fontsize=14, fontweight='bold')
+    fig.suptitle(title, fontsize=14, fontweight="bold")
 
     # 1. Color/Intensity Distribution (top-left)
     ax = axes[0, 0]
-    bin_centers = (metrics['color_distribution']['bin_edges'][:-1] +
-                   metrics['color_distribution']['bin_edges'][1:]) / 2
-    ax.plot(bin_centers, metrics['color_distribution']['hist1'],
-            label='Original', color='#2E86AB', linewidth=2, alpha=0.7)
-    ax.plot(bin_centers, metrics['color_distribution']['hist2'],
-            label='Synthetic', color='#A23B72', linewidth=2, alpha=0.7)
-    ax.set_xlabel('Intensity', fontsize=10)
-    ax.set_ylabel('Density', fontsize=10)
-    ax.set_title(f'Color Distribution\nL1 Distance: {metrics["summary"]["histogram_distance"]:.4f}',
-                 fontsize=11, fontweight='bold')
+    bin_centers = (
+        metrics["color_distribution"]["bin_edges"][:-1]
+        + metrics["color_distribution"]["bin_edges"][1:]
+    ) / 2
+    ax.plot(
+        bin_centers,
+        metrics["color_distribution"]["hist1"],
+        label="Original",
+        color="#2E86AB",
+        linewidth=2,
+        alpha=0.7,
+    )
+    ax.plot(
+        bin_centers,
+        metrics["color_distribution"]["hist2"],
+        label="Synthetic",
+        color="#A23B72",
+        linewidth=2,
+        alpha=0.7,
+    )
+    ax.set_xlabel("Intensity", fontsize=10)
+    ax.set_ylabel("Density", fontsize=10)
+    ax.set_title(
+        f"Color Distribution\nL1 Distance: {metrics['summary']['histogram_distance']:.4f}",
+        fontsize=11,
+        fontweight="bold",
+    )
     ax.legend(fontsize=9)
     ax.grid(alpha=0.3)
 
     # 2. SSIM Score (top-right)
     ax = axes[0, 1]
-    ssim_score = metrics['summary']['ssim_score']
-    color = '#2ECC71' if ssim_score > 0.9 else '#F39C12' if ssim_score > 0.7 else '#E74C3C'
-    ax.text(0.5, 0.5, f'{ssim_score:.4f}',
-            ha='center', va='center', fontsize=48, fontweight='bold',
-            color=color, transform=ax.transAxes)
-    ax.set_title('SSIM Score\n(Structural Similarity)', fontsize=11, fontweight='bold')
-    ax.text(0.5, 0.25, 'Range: -1 to 1 (higher is better)',
-            ha='center', va='center', fontsize=9, style='italic',
-            transform=ax.transAxes, color='gray')
-    ax.axis('off')
+    ssim_score = metrics["summary"]["ssim_score"]
+    color = (
+        "#2ECC71" if ssim_score > 0.9 else "#F39C12" if ssim_score > 0.7 else "#E74C3C"
+    )
+    ax.text(
+        0.5,
+        0.5,
+        f"{ssim_score:.4f}",
+        ha="center",
+        va="center",
+        fontsize=48,
+        fontweight="bold",
+        color=color,
+        transform=ax.transAxes,
+    )
+    ax.set_title("SSIM Score\n(Structural Similarity)", fontsize=11, fontweight="bold")
+    ax.text(
+        0.5,
+        0.25,
+        "Range: -1 to 1 (higher is better)",
+        ha="center",
+        va="center",
+        fontsize=9,
+        style="italic",
+        transform=ax.transAxes,
+        color="gray",
+    )
+    ax.axis("off")
 
     # 3. PSNR Value (bottom-left)
     ax = axes[1, 0]
-    psnr_value = metrics['summary']['psnr_db']
-    color = '#2ECC71' if psnr_value > 30 else '#F39C12' if psnr_value > 20 else '#E74C3C'
-    ax.text(0.5, 0.5, f'{psnr_value:.2f} dB',
-            ha='center', va='center', fontsize=40, fontweight='bold',
-            color=color, transform=ax.transAxes)
-    ax.set_title('PSNR\n(Peak Signal-to-Noise Ratio)', fontsize=11, fontweight='bold')
-    ax.text(0.5, 0.25, 'Typical range: 20-50 dB (higher is better)',
-            ha='center', va='center', fontsize=9, style='italic',
-            transform=ax.transAxes, color='gray')
-    ax.axis('off')
+    psnr_value = metrics["summary"]["psnr_db"]
+    color = (
+        "#2ECC71" if psnr_value > 30 else "#F39C12" if psnr_value > 20 else "#E74C3C"
+    )
+    ax.text(
+        0.5,
+        0.5,
+        f"{psnr_value:.2f} dB",
+        ha="center",
+        va="center",
+        fontsize=40,
+        fontweight="bold",
+        color=color,
+        transform=ax.transAxes,
+    )
+    ax.set_title("PSNR\n(Peak Signal-to-Noise Ratio)", fontsize=11, fontweight="bold")
+    ax.text(
+        0.5,
+        0.25,
+        "Typical range: 20-50 dB (higher is better)",
+        ha="center",
+        va="center",
+        fontsize=9,
+        style="italic",
+        transform=ax.transAxes,
+        color="gray",
+    )
+    ax.axis("off")
 
     # 4. Side-by-side image comparison (bottom-right)
     ax = axes[1, 1]
     # Both images are now grayscale after conversion at function start
     combined = np.hstack([original, synthetic])
-    ax.imshow(combined, cmap='gray', vmin=0, vmax=1)
-    ax.set_title('Visual Comparison', fontsize=11, fontweight='bold')
-    ax.axis('off')
+    ax.imshow(combined, cmap="gray", vmin=0, vmax=1)
+    ax.set_title("Visual Comparison", fontsize=11, fontweight="bold")
+    ax.axis("off")
 
     # Add labels
     h, w = original.shape[:2]
-    ax.text(w//2, h + 10, 'Original', ha='center', fontsize=9, fontweight='bold')
-    ax.text(w + w//2, h + 10, 'Synthetic', ha='center', fontsize=9, fontweight='bold')
+    ax.text(w // 2, h + 10, "Original", ha="center", fontsize=9, fontweight="bold")
+    ax.text(w + w // 2, h + 10, "Synthetic", ha="center", fontsize=9, fontweight="bold")
 
     plt.tight_layout()
 
     if output_path:
         output_path = Path(output_path)
         output_path.parent.mkdir(parents=True, exist_ok=True)
-        plt.savefig(output_path, dpi=150, bbox_inches='tight')
+        plt.savefig(output_path, dpi=150, bbox_inches="tight")
         print(f"Plot saved to: {output_path}")
 
     plt.close()

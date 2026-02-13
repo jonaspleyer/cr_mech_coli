@@ -28,8 +28,8 @@ def _build_run_parser(subparsers):
         "run",
         help="Run the synthetic image generation pipeline",
         description="Run bacteria growth simulation and generate synthetic "
-                    "microscope images. All parameters come from the TOML "
-                    "config file.",
+        "microscope images. All parameters come from the TOML "
+        "config file.",
     )
 
 
@@ -44,8 +44,8 @@ def _build_clone_parser(subparsers):
         "clone",
         help="Clone a real microscope image to synthetic",
         description="Create a synthetic version of a real microscope image "
-                    "using cell positions extracted from a segmentation mask. "
-                    "Imaging parameters come from the TOML config file.",
+        "using cell positions extracted from a segmentation mask. "
+        "Imaging parameters come from the TOML config file.",
     )
     clone_parser.add_argument(
         "microscope_image",
@@ -58,7 +58,8 @@ def _build_clone_parser(subparsers):
         help="Path to segmentation mask (TIF)",
     )
     clone_parser.add_argument(
-        "--output", "-o",
+        "--output",
+        "-o",
         type=str,
         default="./synthetic_output",
         help="Output directory (default: ./synthetic_output)",
@@ -88,9 +89,9 @@ def _build_fit_parser(subparsers):
         "fit",
         help="Optimize parameters to match real microscope images",
         description="Optimize synthetic image generation parameters to match "
-                    "real microscope images using differential evolution. "
-                    "All parameters come from the TOML config file "
-                    "([optimization] section).",
+        "real microscope images using differential evolution. "
+        "All parameters come from the TOML config file "
+        "([optimization] section).",
     )
 
 
@@ -104,39 +105,39 @@ def _run_generate(config, config_path):
     """
     from .pipeline import run_pipeline
 
-    pipeline_config = config.get('pipeline', {})
-    simulation_config = config.get('simulation', {})
-    rendering_config = config.get('rendering', {})
-    synthetic_config = config.get('synthetic', {})
-    background_config = config.get('background', {})
-    halo_config = config.get('halo', {})
-    brightness_config = config.get('brightness', {})
+    pipeline_config = config.get("pipeline", {})
+    simulation_config = config.get("simulation", {})
+    rendering_config = config.get("rendering", {})
+    synthetic_config = config.get("synthetic", {})
+    background_config = config.get("background", {})
+    halo_config = config.get("halo", {})
+    brightness_config = config.get("brightness", {})
 
     # Extract pipeline parameters
-    output_dir = pipeline_config.get('output_dir', './outputs')
-    n_simulations = pipeline_config.get('n_simulations', 1)
-    n_frames = pipeline_config.get('n_frames', 10)
-    image_size = tuple(pipeline_config.get('image_size', [512, 512]))
-    seed = pipeline_config.get('seed', 0)
+    output_dir = pipeline_config.get("output_dir", "./outputs")
+    n_simulations = pipeline_config.get("n_simulations", 1)
+    n_frames = pipeline_config.get("n_frames", 10)
+    image_size = tuple(pipeline_config.get("image_size", [512, 512]))
+    seed = pipeline_config.get("seed", 0)
     if seed == 0:
         seed = None
-    n_workers = pipeline_config.get('n_workers', 0)
+    n_workers = pipeline_config.get("n_workers", 0)
     if n_workers == 0:
         n_workers = None
-    skip_synthetic = pipeline_config.get('skip_synthetic', False)
-    delete_generated = pipeline_config.get('delete_generated', False)
+    skip_synthetic = pipeline_config.get("skip_synthetic", False)
+    delete_generated = pipeline_config.get("delete_generated", False)
 
     # Extract simulation parameters
-    n_bacteria = simulation_config.get('n_bacteria', [1, 10])
+    n_bacteria = simulation_config.get("n_bacteria", [1, 10])
     if isinstance(n_bacteria, list):
         n_bacteria_range = (int(n_bacteria[0]), int(n_bacteria[1]))
     else:
         n_bacteria_range = (int(n_bacteria), int(n_bacteria))
 
-    border_distance = simulation_config.get('border_distance', 5.0)
-    n_vertices = int(simulation_config.get('n_vertices', 8))
+    border_distance = simulation_config.get("border_distance", 5.0)
+    n_vertices = int(simulation_config.get("n_vertices", 8))
 
-    slt = simulation_config.get('spring_length_threshold', [6.0, 6.0])
+    slt = simulation_config.get("spring_length_threshold", [6.0, 6.0])
     if isinstance(slt, list):
         max_bacteria_length = float(slt[0])
     else:
@@ -180,19 +181,19 @@ def _run_clone(args, config):
     """
     from .scene import create_synthetic_scene
 
-    synthetic_config = config.get('synthetic', {})
-    background_config = config.get('background', {})
-    brightness_config = config.get('brightness', {})
-    simulation_config = config.get('simulation', {})
+    synthetic_config = config.get("synthetic", {})
+    background_config = config.get("background", {})
+    brightness_config = config.get("brightness", {})
+    simulation_config = config.get("simulation", {})
 
     # CLI overrides > config > defaults
     n_vertices = args.n_vertices
     if n_vertices is None:
-        n_vertices = int(simulation_config.get('n_vertices', 8))
+        n_vertices = int(simulation_config.get("n_vertices", 8))
 
     seed = args.seed
     if seed is None:
-        seed = synthetic_config.get('seed', None)
+        seed = synthetic_config.get("seed", None)
 
     create_synthetic_scene(
         microscope_image_path=args.microscope_image,
@@ -200,18 +201,18 @@ def _run_clone(args, config):
         output_dir=args.output,
         n_vertices=n_vertices,
         seed=seed,
-        bg_base_brightness=synthetic_config.get('bg_base_brightness', 0.56),
-        bg_gradient_strength=synthetic_config.get('bg_gradient_strength', 0.027),
-        bac_halo_intensity=synthetic_config.get('bac_halo_intensity', 0.30),
-        bg_noise_scale=int(synthetic_config.get('bg_noise_scale', 20)),
-        psf_sigma=synthetic_config.get('psf_sigma', 1.0),
-        peak_signal=synthetic_config.get('peak_signal', 1000.0),
-        gaussian_sigma=synthetic_config.get('gaussian_sigma', 0.01),
-        brightness_mode=brightness_config.get('mode', 'original'),
-        brightness_range=tuple(brightness_config.get('brightness_range', [0.8, 0.3])),
-        num_dark_spots_range=tuple(background_config.get(
-            'num_dark_spots_range', [0, 5]
-        )),
+        bg_base_brightness=synthetic_config.get("bg_base_brightness", 0.56),
+        bg_gradient_strength=synthetic_config.get("bg_gradient_strength", 0.027),
+        bac_halo_intensity=synthetic_config.get("bac_halo_intensity", 0.30),
+        bg_noise_scale=int(synthetic_config.get("bg_noise_scale", 20)),
+        psf_sigma=synthetic_config.get("psf_sigma", 1.0),
+        peak_signal=synthetic_config.get("peak_signal", 1000.0),
+        gaussian_sigma=synthetic_config.get("gaussian_sigma", 0.01),
+        brightness_mode=brightness_config.get("mode", "original"),
+        brightness_range=tuple(brightness_config.get("brightness_range", [0.8, 0.3])),
+        num_dark_spots_range=tuple(
+            background_config.get("num_dark_spots_range", [0, 5])
+        ),
     )
 
 
@@ -234,41 +235,41 @@ def _run_fit(config, config_path):
     )
     from .visualization import generate_comparison_plot, generate_detailed_plots
 
-    opt_config = config.get('optimization', {})
+    opt_config = config.get("optimization", {})
 
     # Required: input_dir
-    input_dir = opt_config.get('input_dir', '')
+    input_dir = opt_config.get("input_dir", "")
     if not input_dir:
         print("Error: [optimization] input_dir is required in the config file.")
         sys.exit(1)
 
     # Optimization parameters
-    output_dir_base = opt_config.get('output_dir', '')
-    limit = opt_config.get('limit', 0) or None
-    n_vertices = opt_config.get('n_vertices', 8)
-    maxiter = opt_config.get('maxiter', 50)
-    popsize = opt_config.get('popsize', 15)
-    workers = opt_config.get('workers', -1)
-    seed = opt_config.get('seed', 42)
-    resume = opt_config.get('resume', False)
-    no_checkpoint = opt_config.get('no_checkpoint', False)
-    save_all_synthetics = opt_config.get('save_all_synthetics', False)
+    output_dir_base = opt_config.get("output_dir", "")
+    limit = opt_config.get("limit", 0) or None
+    n_vertices = opt_config.get("n_vertices", 8)
+    maxiter = opt_config.get("maxiter", 50)
+    popsize = opt_config.get("popsize", 15)
+    workers = opt_config.get("workers", -1)
+    seed = opt_config.get("seed", 42)
+    resume = opt_config.get("resume", False)
+    no_checkpoint = opt_config.get("no_checkpoint", False)
+    save_all_synthetics = opt_config.get("save_all_synthetics", False)
 
     # Metric weights
-    metric_weights_config = opt_config.get('metric_weights', {})
+    metric_weights_config = opt_config.get("metric_weights", {})
     weights = {
-        'histogram_distance': metric_weights_config.get(
-            'histogram_distance', DEFAULT_WEIGHTS['histogram_distance']
+        "histogram_distance": metric_weights_config.get(
+            "histogram_distance", DEFAULT_WEIGHTS["histogram_distance"]
         ),
-        'ssim': metric_weights_config.get('ssim', DEFAULT_WEIGHTS['ssim']),
-        'psnr': metric_weights_config.get('psnr', DEFAULT_WEIGHTS['psnr']),
+        "ssim": metric_weights_config.get("ssim", DEFAULT_WEIGHTS["ssim"]),
+        "psnr": metric_weights_config.get("psnr", DEFAULT_WEIGHTS["psnr"]),
     }
 
     # Region weights
-    region_weights_config = opt_config.get('region_weights', {})
+    region_weights_config = opt_config.get("region_weights", {})
     region_weights = {
-        'background': region_weights_config.get('background', 0.5),
-        'foreground': region_weights_config.get('foreground', 0.5),
+        "background": region_weights_config.get("background", 0.5),
+        "foreground": region_weights_config.get("foreground", 0.5),
     }
 
     # Create output directory with timestamp
@@ -303,7 +304,7 @@ def _run_fit(config, config_path):
     # Compute final metrics
     avg_metrics, per_image_metrics = compute_final_metrics(
         image_pairs=image_pairs,
-        params=results['parameters'],
+        params=results["parameters"],
         output_dir=output_dir,
         n_vertices=n_vertices,
     )
@@ -319,7 +320,7 @@ def _run_fit(config, config_path):
     # Generate comparison plot
     generate_comparison_plot(
         image_pairs=image_pairs,
-        params=results['parameters'],
+        params=results["parameters"],
         output_dir=output_dir,
         n_vertices=n_vertices,
         num_examples=4,
@@ -328,7 +329,7 @@ def _run_fit(config, config_path):
     # Generate detailed per-image plots
     generate_detailed_plots(
         image_pairs=image_pairs,
-        params=results['parameters'],
+        params=results["parameters"],
         per_image_metrics=per_image_metrics,
         output_dir=output_dir,
         n_vertices=n_vertices,
@@ -338,7 +339,7 @@ def _run_fit(config, config_path):
     if save_all_synthetics:
         generate_all_synthetics(
             image_pairs=image_pairs,
-            params=results['parameters'],
+            params=results["parameters"],
             output_dir=output_dir,
             n_vertices=n_vertices,
         )
@@ -368,7 +369,8 @@ def crm_gen_main():
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
     parser.add_argument(
-        "--config", "-c",
+        "--config",
+        "-c",
         type=str,
         default=str(default_config) if default_config.exists() else None,
         help="Path to TOML configuration file",

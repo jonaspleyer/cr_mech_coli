@@ -16,7 +16,7 @@ def create_base_background(
     base_brightness: float = 0.6,
     gradient_strength: float = 0.05,
     perlin_scale: int = 4,
-    seed: int = None
+    seed: int = None,
 ) -> np.ndarray:
     """
     Create a base background with subtle gradients mimicking illumination variations.
@@ -46,9 +46,9 @@ def create_base_background(
 
     for octave in range(num_octaves):
         # Scale factor: 1, 2, 4, 8 (each octave doubles frequency)
-        frequency = 2 ** octave
+        frequency = 2**octave
         # Amplitude factor: 1.0, 0.5, 0.25, 0.125 (each octave halves amplitude)
-        amplitude = persistence ** octave
+        amplitude = persistence**octave
 
         # Create noise at this frequency scale
         # Higher frequency = smaller grid = finer details
@@ -69,7 +69,9 @@ def create_base_background(
         smooth_gradient += octave_noise * amplitude
 
     # Normalize to [-1, 1] and scale by gradient strength
-    smooth_gradient = (smooth_gradient - smooth_gradient.mean()) / (smooth_gradient.std() + 1e-10)
+    smooth_gradient = (smooth_gradient - smooth_gradient.mean()) / (
+        smooth_gradient.std() + 1e-10
+    )
     smooth_gradient = smooth_gradient * gradient_strength
 
     # Create base background with gradient
@@ -86,7 +88,7 @@ def add_darker_spots(
     num_spots_range: Tuple[int, int] = (0, 50),
     spot_intensity: float = 0.15,
     spot_size_range: Tuple[float, float] = (2.0, 8.0),
-    seed: int = None
+    seed: int = None,
 ) -> np.ndarray:
     """
     Add randomly distributed darker spots to simulate debris or artifacts.
@@ -129,7 +131,7 @@ def add_darker_spots(
 
         # Create Gaussian spot
         y_grid, x_grid = np.ogrid[:height, :width]
-        distance = np.sqrt((y_grid - y)**2 + (x_grid - x)**2)
+        distance = np.sqrt((y_grid - y) ** 2 + (x_grid - x) ** 2)
         gaussian_spot = np.exp(-(distance**2) / (2 * sigma**2))
 
         # Subtract dark spot from background
@@ -146,7 +148,7 @@ def add_lighter_spots(
     num_spots_range: Tuple[int, int] = (0, 30),
     spot_intensity: float = 0.12,
     spot_size_range: Tuple[float, float] = (3.0, 12.0),
-    seed: int = None
+    seed: int = None,
 ) -> np.ndarray:
     """
     Add randomly distributed lighter spots to simulate phase artifacts or bright debris.
@@ -189,7 +191,7 @@ def add_lighter_spots(
 
         # Create Gaussian spot
         y_grid, x_grid = np.ogrid[:height, :width]
-        distance = np.sqrt((y_grid - y)**2 + (x_grid - x)**2)
+        distance = np.sqrt((y_grid - y) ** 2 + (x_grid - x) ** 2)
         gaussian_spot = np.exp(-(distance**2) / (2 * sigma**2))
 
         # Add bright spot to background
@@ -205,7 +207,7 @@ def add_fine_texture(
     background: np.ndarray,
     texture_strength: float = 0.02,
     texture_scale: float = 1.5,
-    seed: int = None
+    seed: int = None,
 ) -> np.ndarray:
     """
     Add fine texture to simulate microscopic surface variations and optical artifacts.
@@ -241,10 +243,7 @@ def add_fine_texture(
     return result
 
 
-def add_gaussian_blur(
-    background: np.ndarray,
-    sigma: float = 1.0
-) -> np.ndarray:
+def add_gaussian_blur(background: np.ndarray, sigma: float = 1.0) -> np.ndarray:
     """
     Apply Gaussian blur to the background.
 
@@ -274,7 +273,7 @@ def generate_phase_contrast_background(
     texture_scale: float = 1.5,
     blur_sigma: float = 3.0,
     seed: int = None,
-    return_uint8: bool = True
+    return_uint8: bool = True,
 ) -> np.ndarray:
     """
     Generate a complete phase contrast microscopy background with all features.
@@ -317,7 +316,7 @@ def generate_phase_contrast_background(
         base_brightness=base_brightness,
         gradient_strength=gradient_strength,
         perlin_scale=perlin_scale,
-        seed=seed
+        seed=seed,
     )
 
     # Step 2: Add darker spots (debris, artifacts)
@@ -326,7 +325,7 @@ def generate_phase_contrast_background(
         num_spots_range=num_dark_spots_range,
         spot_intensity=dark_spot_intensity,
         spot_size_range=dark_spot_size_range,
-        seed=seed
+        seed=seed,
     )
 
     # Step 3: Add lighter spots (bright artifacts, phase halos)
@@ -335,7 +334,7 @@ def generate_phase_contrast_background(
         num_spots_range=num_light_spots_range,
         spot_intensity=light_spot_intensity,
         spot_size_range=light_spot_size_range,
-        seed=seed
+        seed=seed,
     )
 
     # Step 4: Add fine texture
@@ -343,7 +342,7 @@ def generate_phase_contrast_background(
         background=background,
         texture_strength=texture_strength,
         texture_scale=texture_scale,
-        seed=seed
+        seed=seed,
     )
 
     # Step 5: Apply Gaussian blur to simulate optical effects

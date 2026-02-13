@@ -8,17 +8,18 @@ This module:
     2. Extracts cell positions from the mask
     3. Creates a synthetic copy using cr_mech_coli simulation
     4. Saves both the synthetic image and mask
-    
+
 """
 
 # Configure offscreen rendering for headless cluster environments
 # Must be set BEFORE importing pyvista/vtk
 import os
-os.environ.setdefault('PYVISTA_OFF_SCREEN', 'true')
-os.environ.setdefault('VTK_DEFAULT_RENDER_WINDOW_OFFSCREEN', '1')
+
+os.environ.setdefault("PYVISTA_OFF_SCREEN", "true")
+os.environ.setdefault("VTK_DEFAULT_RENDER_WINDOW_OFFSCREEN", "1")
 # Force OSMesa software rendering (avoids EGL/GPU permission issues on clusters)
-os.environ.setdefault('DISPLAY', '')
-os.environ.setdefault('VTK_USE_OFFSCREEN_EGL', '0')
+os.environ.setdefault("DISPLAY", "")
+os.environ.setdefault("VTK_USE_OFFSCREEN_EGL", "0")
 
 import cr_mech_coli as crm
 import numpy as np
@@ -69,13 +70,13 @@ def apply_synthetic_effects(
     # Brightness noise strength
     brightness_noise_strength: float = 0.0,
     # Separate background seed for consistent backgrounds across frames
-    bg_seed: int = None
+    bg_seed: int = None,
 ) -> np.ndarray:
     """
     Apply synthetic microscope effects to a raw rendered image.
 
     This function handles the post-processing pipeline:
-    
+
     1. Generate phase contrast background
     2. Combine foreground with background
     3. Apply brightness adjustment (original or age-based)
@@ -155,20 +156,20 @@ def apply_synthetic_effects(
         num_light_spots_range=num_light_spots_range,
         texture_strength=texture_strength,
         texture_scale=texture_scale,
-        blur_sigma=bg_blur_sigma
+        blur_sigma=bg_blur_sigma,
     )
 
     # Combine synthetic image with background
     synthetic_image = np.where(
-        binary_mask[..., np.newaxis],
-        synthetic_image,
-        bg[..., np.newaxis]
+        binary_mask[..., np.newaxis], synthetic_image, bg[..., np.newaxis]
     )
 
     # Apply brightness based on selected mode
     if brightness_mode == "age":
         if cell_ages is None or cell_colors_map is None:
-            raise ValueError("cell_ages and cell_colors_map are required when brightness_mode='age'")
+            raise ValueError(
+                "cell_ages and cell_colors_map are required when brightness_mode='age'"
+            )
         brightness_adjustment = bacteria.apply_age_based_brightness(
             synthetic_image,
             synthetic_mask=mask,
@@ -177,11 +178,13 @@ def apply_synthetic_effects(
             brightness_range=brightness_range,
             max_age=max_age,
             noise_strength=brightness_noise_strength,
-            seed=seed
+            seed=seed,
         )
     else:
         if original_image is None or original_mask is None or original_colors is None:
-            raise ValueError("original_image, original_mask, and original_colors are required when brightness_mode='original'")
+            raise ValueError(
+                "original_image, original_mask, and original_colors are required when brightness_mode='original'"
+            )
         brightness_adjustment = bacteria.apply_original_brightness(
             synthetic_image,
             synthetic_mask=mask,
@@ -189,7 +192,7 @@ def apply_synthetic_effects(
             original_mask=original_mask,
             colors=original_colors,
             noise_strength=brightness_noise_strength,
-            seed=seed
+            seed=seed,
         )
 
     # Apply adjustment (additive)
@@ -207,7 +210,7 @@ def apply_synthetic_effects(
         inner_width=halo_inner_width,
         outer_width=halo_outer_width,
         blur_sigma=halo_blur_sigma,
-        fade_type=halo_fade_type
+        fade_type=halo_fade_type,
     )
 
     # Apply microscope effects (PSF, noise)
@@ -219,7 +222,7 @@ def apply_synthetic_effects(
         peak_signal=peak_signal,
         apply_gaussian=apply_gaussian,
         gaussian_sigma=gaussian_sigma,
-        seed=seed
+        seed=seed,
     )
 
     return synthetic_image
@@ -247,7 +250,7 @@ def create_synthetic_scene(
     # Dark spots range
     num_dark_spots_range: tuple = (0, 5),
     # Output naming
-    output_prefix: str = "syn_"
+    output_prefix: str = "syn_",
 ) -> tuple[np.ndarray, np.ndarray]:
     """
     Creates a synthetic microscope image from a real one using cr_mech_coli.
@@ -296,9 +299,7 @@ def create_synthetic_scene(
 
     # Extract cell positions from the segmentation mask
     positions, lengths, radii, colors = crm.extract_positions(
-        segmentation_mask,
-        n_vertices=n_vertices,
-        domain_size=domain_size
+        segmentation_mask, n_vertices=n_vertices, domain_size=domain_size
     )
 
     n_cells = len(positions)
@@ -324,7 +325,7 @@ def create_synthetic_scene(
         # pos has shape (n_vertices, 2), we need (n_vertices, 3)
         pos_3d = np.zeros((pos.shape[0], 3), dtype=np.float32)
         pos_3d[:, :2] = pos  # Copy x, y coordinates
-        pos_3d[:, 2] = 0.0   # Set z coordinate to 0
+        pos_3d[:, 2] = 0.0  # Set z coordinate to 0
 
         # Ensure position array is contiguous
         pos_array = np.ascontiguousarray(pos_3d, dtype=np.float32)
@@ -333,11 +334,7 @@ def create_synthetic_scene(
         vel = np.zeros_like(pos_array, dtype=np.float32)
 
         # Create RodAgent with default settings
-        rod_agent = RodAgent(
-            pos=pos_array,
-            vel=vel,
-            **rod_args
-        )
+        rod_agent = RodAgent(pos=pos_array, vel=vel, **rod_args)
 
         # Override radius with extracted value
         rod_agent.radius = float(radius) * 0.95
@@ -357,7 +354,9 @@ def create_synthetic_scene(
     render_settings.kernel_size = 2
     render_settings.noise = 0
     render_settings.bg_brightness = 0
-    render_settings.cell_brightness = 0  # Start with black bacteria, brightness added from original
+    render_settings.cell_brightness = (
+        0  # Start with black bacteria, brightness added from original
+    )
 
     # Additional settings for a more microscope-like appearance
     render_settings.ambient = 0.3
@@ -403,7 +402,7 @@ def create_synthetic_scene(
         num_dark_spots_range=num_dark_spots_range,
         original_image=microscope_image,
         original_mask=segmentation_mask,
-        original_colors=colors
+        original_colors=colors,
     )
 
     # Save results with output_prefix + original filename
@@ -413,7 +412,7 @@ def create_synthetic_scene(
     output_image_path = output_dir / f"{output_prefix}{image_name}.tif"
     output_mask_path = output_dir / f"{output_prefix}{mask_name}.tif"
 
-    tiff.imwrite(output_image_path, synthetic_image, compression='zlib')
-    tiff.imwrite(output_mask_path, synthetic_mask, compression='zlib')
+    tiff.imwrite(output_image_path, synthetic_image, compression="zlib")
+    tiff.imwrite(output_mask_path, synthetic_mask, compression="zlib")
 
     return synthetic_image, synthetic_mask

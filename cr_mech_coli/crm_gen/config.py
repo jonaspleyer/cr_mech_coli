@@ -34,7 +34,7 @@ def load_config(config_path: str) -> Dict[str, Any]:
     Returns:
         Dict[str, Any]: Nested dictionary with configuration sections.
     """
-    with open(config_path, 'rb') as f:
+    with open(config_path, "rb") as f:
         return tomllib.load(f)
 
 
@@ -54,32 +54,25 @@ def get_default_config() -> Dict[str, Any]:
 
 # Default values for optimization parameters
 DEFAULT_OPTIMIZATION_BOUNDS = [
-    (0.2, 0.6),      # bg_base_brightness
-    (0.0, 0.04),     # bg_gradient_strength
-    (0.01, 0.6),     # bac_halo_intensity
-    (1, 25),         # bg_noise_scale
-    (0.1, 3.0),      # psf_sigma
-    (1, 10000),      # peak_signal
-    (0.001, 0.05)    # gaussian_sigma
+    (0.2, 0.6),  # bg_base_brightness
+    (0.0, 0.04),  # bg_gradient_strength
+    (0.01, 0.6),  # bac_halo_intensity
+    (1, 25),  # bg_noise_scale
+    (0.1, 3.0),  # psf_sigma
+    (1, 10000),  # peak_signal
+    (0.001, 0.05),  # gaussian_sigma
 ]
 
 PARAM_NAMES = [
-    'bg_base_brightness',
-    'bg_gradient_strength',
-    'bac_halo_intensity',
-    'bg_noise_scale',
-    'psf_sigma',
-    'peak_signal',
-    'gaussian_sigma'
+    "bg_base_brightness",
+    "bg_gradient_strength",
+    "bac_halo_intensity",
+    "bg_noise_scale",
+    "psf_sigma",
+    "peak_signal",
+    "gaussian_sigma",
 ]
 
-DEFAULT_METRIC_WEIGHTS = {
-    'histogram_distance': 0.01,
-    'ssim': 1.0,
-    'psnr': 0.02
-}
+DEFAULT_METRIC_WEIGHTS = {"histogram_distance": 0.01, "ssim": 1.0, "psnr": 0.02}
 
-DEFAULT_REGION_WEIGHTS = {
-    'background': 0.5,
-    'foreground': 0.5
-}
+DEFAULT_REGION_WEIGHTS = {"background": 0.5, "foreground": 0.5}

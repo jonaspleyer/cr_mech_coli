@@ -15,13 +15,10 @@ and creating the characteristic phase contrast appearance.
 
 import numpy as np
 from scipy.ndimage import gaussian_filter, convolve
-from typing import Tuple, Union, Optional
+from typing import Tuple, Optional
 
 
-def create_gaussian_psf(
-    size: int = 7,
-    sigma: float = 1.0
-) -> np.ndarray:
+def create_gaussian_psf(size: int = 7, sigma: float = 1.0) -> np.ndarray:
     """
     Create a 2D Gaussian Point Spread Function kernel.
 
@@ -58,10 +55,7 @@ def create_gaussian_psf(
     return psf
 
 
-def create_airy_psf(
-    size: int = 15,
-    radius: float = 3.0
-) -> np.ndarray:
+def create_airy_psf(size: int = 15, radius: float = 3.0) -> np.ndarray:
     """
     Create a 2D Airy disk Point Spread Function (more physically accurate).
 
@@ -104,10 +98,10 @@ def create_airy_psf(
 
 def apply_psf_blur(
     image: np.ndarray,
-    psf_type: str = 'gaussian',
+    psf_type: str = "gaussian",
     psf_sigma: float = 1.0,
     psf_size: int = 7,
-    airy_radius: float = 3.0
+    airy_radius: float = 3.0,
 ) -> np.ndarray:
     """
     Apply Point Spread Function blur to simulate optical blur from microscope.
@@ -147,9 +141,9 @@ def apply_psf_blur(
         img_float = image.astype(np.float64)
 
     # Create PSF kernel
-    if psf_type.lower() == 'gaussian':
+    if psf_type.lower() == "gaussian":
         psf_kernel = create_gaussian_psf(size=psf_size, sigma=psf_sigma)
-    elif psf_type.lower() == 'airy':
+    elif psf_type.lower() == "airy":
         psf_kernel = create_airy_psf(size=psf_size, radius=airy_radius)
     else:
         raise ValueError(f"Unknown PSF type: {psf_type}. Use 'gaussian' or 'airy'")
@@ -157,12 +151,12 @@ def apply_psf_blur(
     # Apply convolution
     if len(img_float.shape) == 2:
         # Grayscale image
-        result = convolve(img_float, psf_kernel, mode='reflect')
+        result = convolve(img_float, psf_kernel, mode="reflect")
     else:
         # RGB/multi-channel image - convolve each channel
         result = np.zeros_like(img_float)
         for i in range(img_float.shape[2]):
-            result[:, :, i] = convolve(img_float[:, :, i], psf_kernel, mode='reflect')
+            result[:, :, i] = convolve(img_float[:, :, i], psf_kernel, mode="reflect")
 
     # Clip to valid range
     result = np.clip(result, 0.0, 1.0)
@@ -175,9 +169,7 @@ def apply_psf_blur(
 
 
 def add_poisson_noise(
-    image: np.ndarray,
-    peak_signal: float = 1000.0,
-    seed: Optional[int] = None
+    image: np.ndarray, peak_signal: float = 1000.0, seed: Optional[int] = None
 ) -> np.ndarray:
     """
     Add Poisson (shot) noise to simulate photon counting noise.
@@ -250,9 +242,7 @@ def add_poisson_noise(
 
 
 def add_gaussian_noise(
-    image: np.ndarray,
-    sigma: float = 0.01,
-    seed: Optional[int] = None
+    image: np.ndarray, sigma: float = 0.01, seed: Optional[int] = None
 ) -> np.ndarray:
     """
     Add Gaussian (readout) noise to simulate camera electronics noise.
@@ -304,10 +294,7 @@ def add_gaussian_noise(
     return result
 
 
-def apply_gaussian_blur(
-    image: np.ndarray,
-    sigma: float = 1.0
-) -> np.ndarray:
+def apply_gaussian_blur(image: np.ndarray, sigma: float = 1.0) -> np.ndarray:
     """
     Apply Gaussian blur to an image.
 
@@ -362,10 +349,9 @@ def apply_gaussian_blur(
 # Phase Contrast Halo Effects
 # ============================================================================
 
+
 def create_halo_mask(
-    mask: np.ndarray,
-    inner_width: float = 2.0,
-    outer_width: float = 8.0
+    mask: np.ndarray, inner_width: float = 2.0, outer_width: float = 8.0
 ) -> Tuple[np.ndarray, np.ndarray]:
     """
     Create inner and outer halo regions around bacteria mask boundaries.
@@ -385,7 +371,7 @@ def create_halo_mask(
         Tuple[np.ndarray, np.ndarray]: (inner_halo_mask, outer_halo_mask) - Boolean
             arrays indicating halo regions.
     """
-    from scipy.ndimage import distance_transform_edt, binary_dilation
+    from scipy.ndimage import distance_transform_edt
 
     # Convert to boolean if needed
     if mask.dtype != bool:
@@ -409,7 +395,9 @@ def create_halo_mask(
 
     # Outer halo: further from edge, only outside
     # This will be the darker/fading ring
-    outer_halo_mask = (distance_outside > inner_width) & (distance_outside <= outer_width)
+    outer_halo_mask = (distance_outside > inner_width) & (
+        distance_outside <= outer_width
+    )
 
     return inner_halo_mask, outer_halo_mask
 
@@ -418,7 +406,7 @@ def create_halo_gradient(
     mask: np.ndarray,
     inner_width: float = 2.0,
     outer_width: float = 8.0,
-    fade_type: str = 'exponential'
+    fade_type: str = "exponential",
 ) -> np.ndarray:
     """
     Create a smooth gradient field for halo intensity that fades from edge outward.
@@ -453,20 +441,24 @@ def create_halo_gradient(
     # Create gradient based on distance
     # Inside bacteria: gradient increases towards edge
     inside_region = mask_bool
-    gradient[inside_region] = np.clip(1.0 - distance_inside[inside_region] / inner_width, 0, 1)
+    gradient[inside_region] = np.clip(
+        1.0 - distance_inside[inside_region] / inner_width, 0, 1
+    )
 
     # Outside bacteria: gradient decreases from edge
     outside_region = ~mask_bool
     dist_norm = distance_outside[outside_region] / outer_width
 
-    if fade_type == 'linear':
+    if fade_type == "linear":
         gradient[outside_region] = np.clip(1.0 - dist_norm, 0, 1)
-    elif fade_type == 'exponential':
+    elif fade_type == "exponential":
         # Exponential decay for more realistic falloff
         gradient[outside_region] = np.exp(-6 * dist_norm) * (dist_norm <= 1.0)
-    elif fade_type == 'gaussian':
+    elif fade_type == "gaussian":
         # Gaussian falloff
-        gradient[outside_region] = np.exp(-0.5 * (dist_norm * 3)**2) * (dist_norm <= 1.0)
+        gradient[outside_region] = np.exp(-0.5 * (dist_norm * 3) ** 2) * (
+            dist_norm <= 1.0
+        )
     else:
         raise ValueError(f"Unknown fade_type: {fade_type}")
 
@@ -477,11 +469,11 @@ def apply_halo_effect(
     image: np.ndarray,
     mask: np.ndarray,
     halo_intensity: float = 0.15,
-    halo_type: str = 'bright',
+    halo_type: str = "bright",
     inner_width: float = 2.0,
     outer_width: float = 8.0,
-    fade_type: str = 'exponential',
-    blur_sigma: float = 1.5
+    fade_type: str = "exponential",
+    blur_sigma: float = 1.5,
 ) -> np.ndarray:
     """
     Apply phase contrast halo effect around bacteria edges.
@@ -523,20 +515,17 @@ def apply_halo_effect(
 
     # Create halo gradient
     gradient = create_halo_gradient(
-        mask_bool,
-        inner_width=inner_width,
-        outer_width=outer_width,
-        fade_type=fade_type
+        mask_bool, inner_width=inner_width, outer_width=outer_width, fade_type=fade_type
     )
 
     # Apply Gaussian blur to smooth the gradient
     gradient_smooth = gaussian_filter(gradient, sigma=blur_sigma)
 
     # Create halo intensity field based on type
-    if halo_type == 'bright':
+    if halo_type == "bright":
         # Bright halo (positive phase shift)
         halo_field = gradient_smooth * halo_intensity
-    elif halo_type == 'mixed':
+    elif halo_type == "mixed":
         # Mixed: bright inner, bright outer (reduced intensity)
         inner_halo, outer_halo = create_halo_mask(mask_bool, inner_width, outer_width)
 
@@ -547,7 +536,9 @@ def apply_halo_effect(
         outer_gradient = gaussian_filter(outer_halo.astype(float), sigma=blur_sigma)
         halo_field += outer_gradient * halo_intensity * 0.2
     else:
-        raise ValueError(f"Unknown halo_type: {halo_type}. Use 'bright', 'dark', or 'mixed'")
+        raise ValueError(
+            f"Unknown halo_type: {halo_type}. Use 'bright', 'dark', or 'mixed'"
+        )
 
     # Apply halo to image
     if len(img_float.shape) == 2:
@@ -573,14 +564,14 @@ def apply_phase_contrast_pipeline(
     # Halo parameters
     apply_halo: bool = True,
     halo_intensity: float = 0.15,
-    halo_type: str = 'mixed',
+    halo_type: str = "mixed",
     halo_inner_width: float = 2.0,
     halo_outer_width: float = 8.0,
-    halo_fade_type: str = 'exponential',
+    halo_fade_type: str = "exponential",
     halo_blur_sigma: float = 1.5,
     # PSF parameters
     apply_psf: bool = True,
-    psf_type: str = 'gaussian',
+    psf_type: str = "gaussian",
     psf_sigma: float = 1.0,
     psf_size: int = 7,
     # Noise parameters
@@ -588,13 +579,13 @@ def apply_phase_contrast_pipeline(
     peak_signal: float = 1000.0,
     apply_gaussian: bool = True,
     gaussian_sigma: float = 0.01,
-    seed: Optional[int] = None
+    seed: Optional[int] = None,
 ) -> np.ndarray:
     """
     Complete phase contrast microscopy pipeline with halo effects.
 
     This pipeline applies effects in the correct order for realistic phase contrast:
-    
+
     1. Halo effects (optical phase shift at edges)
     2. PSF blur (optical diffraction)
     3. Poisson noise (photon shot noise)
@@ -637,34 +628,23 @@ def apply_phase_contrast_pipeline(
             inner_width=halo_inner_width,
             outer_width=halo_outer_width,
             fade_type=halo_fade_type,
-            blur_sigma=halo_blur_sigma
+            blur_sigma=halo_blur_sigma,
         )
 
     # Step 2: Apply PSF blur (optical diffraction)
     if apply_psf:
         result = apply_psf_blur(
-            result,
-            psf_type=psf_type,
-            psf_sigma=psf_sigma,
-            psf_size=psf_size
+            result, psf_type=psf_type, psf_sigma=psf_sigma, psf_size=psf_size
         )
 
     # Step 3: Apply Poisson noise (photon shot noise)
     if apply_poisson:
-        result = add_poisson_noise(
-            result,
-            peak_signal=peak_signal,
-            seed=seed
-        )
+        result = add_poisson_noise(result, peak_signal=peak_signal, seed=seed)
 
     # Step 4: Apply Gaussian noise (camera readout noise)
     if apply_gaussian:
         gaussian_seed = (seed + 1) if seed is not None else None
-        result = add_gaussian_noise(
-            result,
-            sigma=gaussian_sigma,
-            seed=gaussian_seed
-        )
+        result = add_gaussian_noise(result, sigma=gaussian_sigma, seed=gaussian_seed)
 
     return result
 
@@ -674,7 +654,7 @@ def apply_microscope_effects(
     mask: Optional[np.ndarray] = None,
     # PSF parameters
     apply_psf: bool = True,
-    psf_type: str = 'gaussian',
+    psf_type: str = "gaussian",
     psf_sigma: float = 1.0,
     psf_size: int = 7,
     airy_radius: float = 3.0,
@@ -685,7 +665,7 @@ def apply_microscope_effects(
     peak_signal: float = 1000.0,
     apply_gaussian: bool = True,
     gaussian_sigma: float = 0.01,
-    seed: Optional[int] = None
+    seed: Optional[int] = None,
 ) -> np.ndarray:
     """
     Apply complete microscope imaging effects pipeline to synthetic image.
@@ -739,7 +719,7 @@ def apply_microscope_effects(
                 psf_type=psf_type,
                 psf_sigma=psf_sigma,
                 psf_size=psf_size,
-                airy_radius=airy_radius
+                airy_radius=airy_radius,
             )
 
             # Blur bacteria with stronger PSF
@@ -748,7 +728,7 @@ def apply_microscope_effects(
                 psf_type=psf_type,
                 psf_sigma=psf_sigma * bacteria_blur_factor,
                 psf_size=max(psf_size, int(psf_size * bacteria_blur_factor)),
-                airy_radius=airy_radius * bacteria_blur_factor
+                airy_radius=airy_radius * bacteria_blur_factor,
             )
 
             # Combine: use bacteria blur where mask is True, background blur elsewhere
@@ -757,7 +737,9 @@ def apply_microscope_effects(
                 result = np.where(mask_bool, bacteria_blurred, bg_blurred)
             else:
                 # RGB
-                result = np.where(mask_bool[..., np.newaxis], bacteria_blurred, bg_blurred)
+                result = np.where(
+                    mask_bool[..., np.newaxis], bacteria_blurred, bg_blurred
+                )
         else:
             # Apply uniform blur across entire image
             result = apply_psf_blur(
@@ -765,25 +747,17 @@ def apply_microscope_effects(
                 psf_type=psf_type,
                 psf_sigma=psf_sigma,
                 psf_size=psf_size,
-                airy_radius=airy_radius
+                airy_radius=airy_radius,
             )
 
     # Step 2: Apply Poisson noise (shot noise from photon detection)
     if apply_poisson:
-        result = add_poisson_noise(
-            result,
-            peak_signal=peak_signal,
-            seed=seed
-        )
+        result = add_poisson_noise(result, peak_signal=peak_signal, seed=seed)
 
     # Step 3: Apply Gaussian noise (camera readout noise)
     if apply_gaussian:
         # Use different seed if seed was provided
         gaussian_seed = (seed + 1) if seed is not None else None
-        result = add_gaussian_noise(
-            result,
-            sigma=gaussian_sigma,
-            seed=gaussian_seed
-        )
+        result = add_gaussian_noise(result, sigma=gaussian_sigma, seed=gaussian_seed)
 
     return result
