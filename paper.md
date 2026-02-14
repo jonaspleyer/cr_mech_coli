@@ -90,6 +90,10 @@ mathematical model and applies these methods to a collection of case studies.
 **Citation?**
 
 # Software Design
+Our framework comprises 3 crucial components: a computational model that simulates bacterial
+behaviour; a visualization pipeline for realistic synthetic microscopy imaging and rendering; and
+parameter estimation that infers model parameters from real microscopic images.
+
 ## Computational Model
 \autoref{table:simulation-aspects} contains a list of the simulated aspect of bacterial behaviour.
 We represent the bacteria as a collection of vertices $\{\textbf{x}_i\}$ which can be viewed as a
@@ -173,9 +177,9 @@ This is displayed in more detail in \autoref{fig:model-vertices-interaction} (B)
 \end{figure}
 
 ## Data Extraction
-In order to be able to estimate parameters of the computational model, we require methods that allow
-us to compare experimental data to numerical outputs.
-To achieve this we utilize the discretization in vertices $\{\textbf{x}_i\}$.
+To estimate the parameters of the computational model, we require methods that enable comparison of
+experimental data with numerical outputs.
+To achieve this, we utilize the discretization in vertices $\{\textbf{x}_i\}$.
 We assume that the given microscopic image (such as in \autoref{fig:parameter-estimation} (A))
 has already been segmented by a fitting segmentation tool [@Cutler2022;@Stringer2020;@Hardo2022].
 Using the `scikit-image` package [@vanderWalt2014], we perform a skeletonization for each individual
