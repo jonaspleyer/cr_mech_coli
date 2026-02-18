@@ -75,9 +75,11 @@ They also fail to properly capture the individual nature of these systems, inclu
 as cellular heterogeneity.
 This leaves gaps regarding the interpretability of which parameters drive the observed phenomena.
 
-Another challenge lies in the generation of realistic data. In the modern age, diffusion-based
-techniques are readily available but will lack the mechanistic understanding of  the underlying model.
-Therefore the fidelity of images generated in series will lack.
+Another challenge lies in generating synthetic, but realistic-looking data.
+Recently, diffusion-based models have demonstrated strong performance for static configurations.
+However, they still fall short in time-series and video tasks, as recent studies show that video
+diffusion models struggle with physical reasoning and with maintaining consistent mechanics, even
+when trained with large amounts of data [@kang2024how, @motamed2025generative].
 
 Our `cr_mech_coli` addresses this methodological gap by providing a complete framework as a
 user-friendly Python package.
