@@ -183,6 +183,7 @@ def _run_clone(args, config):
 
     synthetic_config = config.get("synthetic", {})
     background_config = config.get("background", {})
+    halo_config = config.get("halo", {})
     brightness_config = config.get("brightness", {})
     simulation_config = config.get("simulation", {})
 
@@ -203,16 +204,28 @@ def _run_clone(args, config):
         seed=seed,
         bg_base_brightness=synthetic_config.get("bg_base_brightness", 0.56),
         bg_gradient_strength=synthetic_config.get("bg_gradient_strength", 0.027),
-        bac_halo_intensity=synthetic_config.get("bac_halo_intensity", 0.30),
+        bac_halo_intensity=synthetic_config.get("bac_halo_intensity", 0.40),
         bg_noise_scale=int(synthetic_config.get("bg_noise_scale", 20)),
         psf_sigma=synthetic_config.get("psf_sigma", 1.0),
-        peak_signal=synthetic_config.get("peak_signal", 1000.0),
+        peak_signal=synthetic_config.get("peak_signal", 6000.0),
         gaussian_sigma=synthetic_config.get("gaussian_sigma", 0.01),
         brightness_mode=brightness_config.get("mode", "original"),
-        brightness_range=tuple(brightness_config.get("brightness_range", [0.8, 0.3])),
-        num_dark_spots_range=tuple(
-            background_config.get("num_dark_spots_range", [0, 5])
-        ),
+        brightness_range=tuple(brightness_config.get("brightness_range", [0.6, 0.3])),
+        num_dark_spots_range=tuple(background_config.get("num_dark_spots_range", [0, 5])),
+        brightness_noise_strength=brightness_config.get("noise_strength", 0.0),
+        apply_psf=synthetic_config.get("apply_psf", True),
+        apply_poisson=synthetic_config.get("apply_poisson", True),
+        apply_gaussian=synthetic_config.get("apply_gaussian", True),
+        halo_type=halo_config.get("halo_type", "bright"),
+        halo_inner_width=halo_config.get("inner_width", 2.0),
+        halo_outer_width=halo_config.get("outer_width", 50.0),
+        halo_blur_sigma=halo_config.get("blur_sigma", 0.5),
+        halo_fade_type=halo_config.get("fade_type", "exponential"),
+        dark_spot_size_range=tuple(background_config.get("dark_spot_size_range", [2, 5])),
+        num_light_spots_range=tuple(background_config.get("num_light_spots_range", [0, 0])),
+        texture_strength=background_config.get("texture_strength", 0.02),
+        texture_scale=background_config.get("texture_scale", 1.5),
+        bg_blur_sigma=background_config.get("blur_sigma", 0.8),
     )
 
 
