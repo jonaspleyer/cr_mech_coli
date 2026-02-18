@@ -203,16 +203,15 @@ def _run_clone(args, config):
         seed=seed,
         bg_base_brightness=synthetic_config.get("bg_base_brightness", 0.56),
         bg_gradient_strength=synthetic_config.get("bg_gradient_strength", 0.027),
-        bac_halo_intensity=synthetic_config.get("bac_halo_intensity", 0.30),
+        bac_halo_intensity=synthetic_config.get("bac_halo_intensity", 0.40),
         bg_noise_scale=int(synthetic_config.get("bg_noise_scale", 20)),
         psf_sigma=synthetic_config.get("psf_sigma", 1.0),
-        peak_signal=synthetic_config.get("peak_signal", 1000.0),
+        peak_signal=synthetic_config.get("peak_signal", 6000.0),
         gaussian_sigma=synthetic_config.get("gaussian_sigma", 0.01),
         brightness_mode=brightness_config.get("mode", "original"),
-        brightness_range=tuple(brightness_config.get("brightness_range", [0.8, 0.3])),
-        num_dark_spots_range=tuple(
-            background_config.get("num_dark_spots_range", [0, 5])
-        ),
+        brightness_range=tuple(brightness_config.get("brightness_range", [0.6, 0.3])),
+        num_dark_spots_range=tuple(background_config.get("num_dark_spots_range", [0, 5])),
+        brightness_noise_strength=brightness_config.get("noise_strength", 0.0),
     )
 
 

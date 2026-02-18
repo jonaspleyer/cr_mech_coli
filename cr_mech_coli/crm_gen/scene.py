@@ -252,6 +252,8 @@ def create_synthetic_scene(
     num_dark_spots_range: tuple = (0, 5),
     # Output naming
     output_prefix: str = "syn_",
+    # Brightness noise
+    brightness_noise_strength: float = 0.0,
 ) -> tuple[np.ndarray, np.ndarray]:
     """
     Creates a synthetic microscope image from a real one using cr_mech_coli.
@@ -404,6 +406,7 @@ def create_synthetic_scene(
         original_image=microscope_image,
         original_mask=segmentation_mask,
         original_colors=colors,
+        brightness_noise_strength=brightness_noise_strength,
     )
 
     # Save results with output_prefix + original filename
