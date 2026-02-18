@@ -38,21 +38,20 @@ header-includes:
 ---
 
 # Summary
-Creating numerical simulations of biological systems is a challenging problem commonly addressed
+Constructing numerical simulations of biological systems is a challenging problem commonly addressed
 using Agent-Based Models (ABMs) [@Pleyer2023;@Ghaffarizadeh2018].
-We present `cr_mech_coli` - a Python package with an Agent-Based Model of flexible and elongated
-rod-shaped bacterial colonies, such as _E.Coli_ or _B.Subtilis_.
-It provides a mechanistic representation of rod-shaped bacteria and bridges the agent-based
-simulation with microscopic data.
+We present `cr_mech_coli` –- a Python package with of an Agent-Based Model for elongated, flexible
+rod-shaped bacteria, such as _E.Coli_ or _B.Subtilis_.
+It provides a mechanistic representation of rod-shaped bacteria and bridges the gap between the
+numerical Agent-based simulation and microscopic image data.
 Our software builds upon `cellular_raza` [@Pleyer2025] and comprises a computational model, data
 extraction techniques, predefined cost functions, visualization, and realistic synthetic microscopic
 rendering, and other modular components for the parameter estimation workflow.
-Additionally,  our `cr_mech_coli` support generation of synthetic labeled microscopic images from
-the simulation output, which can be used for training the machine learning models for cell
+Additionally,  `cr_mech_coli` is able to generate synthetic labeled microscopic images from
+any simulation output, which can be used to train machine learning models targeting cell
 segmentation and tracking.
-With this package, we bridge the gap among agent-based modeling, classical model validation, and
-calibration techniques, enabling fast and reliable simulation of bacterial growth systems using
-labeled microscopic images and videos.
+This package closes the gap between agent-based modeling, model validation & calibration and data
+synthesis.
 
 # Statement of Need
 Agent-Based Models (ABMs) provide a natural lens to map biological systems to numerical simulations
@@ -60,19 +59,25 @@ Agent-Based Models (ABMs) provide a natural lens to map biological systems to nu
 They express cellular behaviour in functions of individual agents.
 Although existing tools study various cell types, including spherical, hexagonal, and cylindrical
 [@Young2006;@Young2007], they mostly lack the ability to model flexible, elongated bacteria, such
-as _E.coli_.
+as _B.subtilis_.
 Moreover, to validate the computational model against experimental data, parameter estimation
 techniques to calibrate the model [@Kreutz2013;@Raue2014] are required, which have not yet been
-applied in this scenario.
-This significantly limits the ability of such Agent-Based Models to accurately describe the
+applied in these scenarios.
+This significantly limits the confidence in such Agent-Based Models to accurately describe the
 underlying biological reality.
 
 There is currently no systematic approach to estimating agent-level parameters at the single-cell
 level within an agent-based modeling framework.
 Existing calibration attempts [@An2016;@Lima2021;@Dancik2010;@Thiele2014] often rely on population
-data by aligning the distributions of readouts obtained from the chosen target system.
-They therefore fail to properly capture the intrinsic cellular heterogeneity of these systems.
+data by aligning the distributions of readouts obtained from the chosen target system instead of
+estimating parameters on the cellular level.
+They also fail to properly capture the individual nature of these systems, including effects such 
+as cellular heterogeneity.
 This leaves gaps regarding the interpretability of which parameters drive the observed phenomena.
+
+Another challenge lies in the generation of realistic data. In the modern age, diffusion-based
+techniques are readily available but will lack the mechanistic understanding of  the underlying model.
+Therefore the fidelity of images generated in series will lack.
 
 Our `cr_mech_coli` addresses this methodological gap by providing a complete framework as a
 user-friendly Python package.
@@ -82,31 +87,36 @@ To initialize such a model from microscopic images, we also provide methods to e
 information for agents from masks generated from these images.
 Furthermore, to compare numerical simulation results with microscopic images, we provide a variety
 of methods that either compare the underlying cellular representation as a set of vertices or
-generate new cell masks for comparison.
+generate new cell masks which can be used in traditional image-comparison schemes.
 Our software operates in a modular and generalizable fashion, allowing researchers to use it across
 a variety of models and estimation techniques.
-It is accompanied by an external publication that gives a more detailed description of the
-mathematical model and applies these methods to a collection of case studies.
-**Citation?**
+While this publication focuses on the software, we are concurrently preparing another submission
+that provides a more detailed description of the mathematical model and applies these methods to a
+collection of case studies.
 
-# Software Design
-Our framework comprises 3 crucial components: a computational model that simulates bacterial
-behaviour; a visualization pipeline for realistic synthetic microscopy imaging and rendering; and
-parameter estimation that infers model parameters from real microscopic images.
+# Software design
+Our framework comprises 4 interleaved components:
+
+1. A computational model that simulates bacterial behaviour
+2. Methods to generate instance-level cell masks
+3. Parameter estimation methods for fitting a computational model to data
+4. Visualization methods for rendering realistic synthetic microscopic images
 
 ## Computational Model
-\autoref{table:simulation-aspects} contains a list of the simulated aspect of bacterial behaviour.
+\autoref{table:simulation-aspects} contains a list of the simulated aspects of bacterial behaviour.
 We represent the bacteria as a collection of vertices $\{\textbf{x}_i\}$ which can be viewed as a
 discretization of the bacterium (\autoref{fig:model-vertices-interaction} (A)).
 The vertices are connected via springs with fixed lengths.
 Growth is simulated by gradually increasing the size of these segments.
-To describe the flexibility of the rods, we use a bending force describing a bent beam which is
+To describe the flexibility of the rods, we use a bending force describing a bent beam, which is
 applied at each vertex individually.
-The interaction between bacteria can be described by a Morse or a Mie interaction potential which
+The interaction between bacteria can be described by a Morse or a Mie interaction potential, which
 generalizes the popular Lennard-Jones potential.
 Interactions are calculated from each vertex to the nearest point on the polygon of the interaction
 partner.
 This is displayed in more detail in \autoref{fig:model-vertices-interaction} (B).
+Our model takes a generalist stance, allowing researchers to build on top of it and making it
+applicable to a wide range of bacterial systems.
 
 \begin{table}[!h]
     \centering
@@ -176,38 +186,47 @@ This is displayed in more detail in \autoref{fig:model-vertices-interaction} (B)
     \label{fig:model-vertices-interaction}
 \end{figure}
 
-## Data Extraction
+## Parameter Estimation
 To estimate the parameters of the computational model, we require methods that enable comparison of
 experimental data with numerical outputs.
-To achieve this, we utilize the discretization in vertices $\{\textbf{x}_i\}$.
+Furthermore, we need to be able to initialize our model with experimental data by specifying values
+of the discretization vertices $\{\textbf{x}_i\}$.
+And finally, numerically obtained results need to be compared with experimental data to facilitate
+parameter estimation techniques.
+
+### Data Extraction & Direct Comparison
+We utilize the discretization in vertices $\{\textbf{x}_i\}$.
 We assume that the given microscopic image (such as in \autoref{fig:parameter-estimation} (A))
 has already been segmented by a fitting segmentation tool [@Cutler2022;@Stringer2020;@Hardo2022].
 Using the `scikit-image` package [@vanderWalt2014], we perform a skeletonization for each individual
-cell-submask with the method developed by @Lee1994 (see \autoref{fig:parameter-estimation} (B)).
-Afterwards, we extract the individual vertices from the skeleton (\autoref{fig:parameter-estimation} (C)).
+cell-submask @Lee1994 (see \autoref{fig:parameter-estimation} (B)).
+Afterwards, we extract the individual vertices from the skeleton (\autoref{fig:parameter-estimation}
+(C)).
 These positions can now be used to initialize the agents correctly in space as well as for comparing
 numerical outputs to data.
 
-The aforementioned technique can not be applied when division events change the number of present
-vertices since this would require comparing the arrays of uneven dimension.
-We can therefore realize another approach which is also void of the assumption about the underlying
-discretization of the agents.
-That is to render cell masks for the numerically obtained results and compare the resulting image to
-the experimental cell masks.
-To properly achieve this, the cell lineage of the data needs to be mapped to the numerical results.
-We use an in-image encoding scheme, where color values are uniquely assigned to particular cells
-across the duration of the complete simulation time.
-\autoref{fig:parameter-estimation} (D,E) shows two images of differing configurations which are being
+### Using Instance-Level Masks for Imaging-Based Comparison
+The extraction algorithm enables comparison of cellular states across intervals without division
+events.
+However, this technique can not be applied when division events change the number of present
+vertices, since this would require comparing arrays of unequal dimensions.
+We can, therefore, realize another approach in which we render cell masks of the numerically
+obtained results and compare the resulting image to the experimental cell masks.
+This technique does not require any assumptions about the agents' underlying spatial representation.
+To properly compare cellular states, the cell lineage of the data needs to be mapped to the
+numerical results.
+We use an in-image encoding scheme that assigns instance-level segmentation masks, where each
+instance (specific cell) is paired with a unique persistent color throughout the entire simulation.
+\autoref{fig:parameter-estimation} (D,E) shows two images of differing configurations that are being
 compared to each other.
-When only comparing color values directly, we arrive at subfigure (F) where differences are
+When only comparing instance masks directly, we arrive at subfigure (F), where differences are
 highlighted in white and matches are black.
-However, since the time of the division event is not precisely determined and segmentation tools are
-prone to mislabeling already divided bacteria, we also need to take into account the parental
-relationship between the bacteria.
-This means that upon comparing two color values which are related by either one color corresponding
-to a cell that is the daughter of the other, that the assigned cost value has to be adjusted.
-This procedure is shown in \autoref{fig:parameter-estimation} (G) where differences with parental
-relationships between cells are indicated in gray.
+In practice, the time of the division event is often not precisely determined, and segmentation
+tools are prone to mislabeling already divided bacteria. Therefore, we account for the parental
+relationship between the bacteria when comparing different cellular configurations.
+We adjust the assigned cost value when the two instances are in a mother-daughter relationship, as
+shown in \autoref{fig:parameter-estimation} (G). The differences in parental relationships between
+the cells are indicated in gray.
 
 \begin{figure}[!h]
     \centering
@@ -263,19 +282,21 @@ relationships between cells are indicated in gray.
         (B) Segmentation mask of (A) with extracted skeleton as overlay.
         (C) Extrapolated vertices from the skeleton of the bacterium in (B).
         (D-E) Snapshots of two synthetic masks which are being compared.
-        (F-G) Difference of (D) to (E). Matching colors are black, differences are white.
+        (F-G) Difference of (D) to (E).
+Matching colors are black, differences are white.
         (G) additionally includes parental relationships, indicating that one cell is the daughter
         of the other.
     }
 \end{figure}
 
-## Parameter Estimation
-
+### Scripts
 We combine the computational model with the data extraction techniques to estimate the parameters of
 our model.
 To this end, we provide a predefined script `crm_fit` which is able to automatically perform this
 task.
-Furthermore, we provide exemplary scripts `crm_amir` and `crm_divide` how the library `cr_mech_coli`
+It can automatically generate likelihood profiles of the estimated parameters, as shown in
+\autoref{fig:likelihood-profiles} (A-C).
+Furthermore, we provide exemplary scripts `crm_amir` and `crm_divide` to show how `cr_mech_coli`
 can be used in particular settings, the former containing a model of a flexible elongated rod and
 the latter including division events.
 Our methods are designed in such a way that standardized tools can be used in tandem with
@@ -317,37 +338,63 @@ parameter estimation.
 \end{figure}
 
 ## Visualization & Data Generation
-We use `pyvista` [@sullivan2019pyvista] to render our results as 3D objects.
-As \autoref{fig:image-generation} (A) shows, the rod is visualized by combining a series of spheres
-and cylinders into a smooth mesh.
-The resulting intermediate representation can then be rendered as an artistic visualization
-of the system (\autoref{fig:image-generation} (B)), or projected along the z-axis to generate cell
-masks (\autoref{fig:image-generation} (C)).
-There is ongoing work on rendering realistic microscopic images so that deep learning frameworks for
-cell segmentation and cell tracking can be trained on realistic images and ground-truth cell masks.
-We also utilize the `plotters` library [@Erhardt2024] for the strictly 2D case in which we can
-simplify the visualization process and achieve significant speedups.
+Our framework further supports visualization of the computational model's output, providing a
+resource-efficient and scalable method for generating high-quality segmentation and tracking data
+for training deep learning models.
+Visualization builds on representing cellular structures as meshes in PyVista
+[@sullivan2019pyvista], as shown in \autoref{fig:pipeline} (A), where each rod-shaped bacterium is
+constructed by merging a series of spheres and cylinders into a continuous, smooth mesh.
+Afterwards, these 3D models are projected along the z-axis, producing raw intensity images
+(\autoref{fig:pipeline} (B)) and corresponding ground-truth segmentation masks
+(\autoref{fig:pipeline} (D)).
+However, the resulting raw-intensity images do not resemble realistic microscopic data, missing
+optical effects and distortions such as sensor noise, halo effects, and cellular texture.
+Thus, to minimize the domain gap between synthetic and empirical data, the raw projection is
+processed through a physics-inspired imaging pipeline, simulating the specific distortions and
+artifacts inherent to real-world microscopy, as shown in  (\autoref{fig:pipeline} (C)).
+We apply a multi-layered transformation sequence:
+
+- Environmental Modeling: We construct a spatially varying background by integrating multi-scale
+  noise, illumination gradients, and simulated debris.
+- Optical Artifacts: Characteristic phase-contrast halos are generated using distance-transform
+  masks with configurable attenuation, whereas optical diffraction is modeled via point spread
+  function (PSF) convolution.
+- Sensor Noise: To replicate digital acquisition artifacts, we inject signal-dependent Poisson
+  (shot) noise and Gaussian (readout) noise.
+
+To represent different configurations of various microscopic apparatuses, we adopt an automated
+parameter-fitting routine based on differential evolution [@storn1997differential].
+The optimization procedure tunes the simulation's core imaging parameters against real reference
+images by minimizing a weighted objective function of Structural Similarity (SSIM), Peak
+Signal-to-Noise Ratio (PSNR), and histogram distance.
 
 \begin{figure}[!h]
     \centering
-    \begin{minipage}{0.32\textwidth}
+    \begin{minipage}{0.24\textwidth}
         \includegraphics[width=\textwidth]{docs/source/_static/imaging-mesh.pdf}%
         \vspace*{-\textwidth}
         \hspace*{0.5em}\textbf{A}
         \vspace*{\textwidth}
     \end{minipage}%
     \hspace{0.01\textwidth}%
-    \begin{minipage}{0.32\textwidth}
-        \includegraphics[width=\textwidth]{docs/source/_static/11571737453049821261/raw_pv/000000400.png}%
+    \begin{minipage}{0.24\textwidth}
+        \includegraphics[width=\textwidth]{figures/raw_rendering.png}%
         \vspace*{-\textwidth}
         \hspace*{0.5em}\textbf{\color{white}B}
         \vspace*{\textwidth}
     \end{minipage}%
     \hspace{0.01\textwidth}%
-    \begin{minipage}{0.32\textwidth}
-        \includegraphics[width=\textwidth]{docs/source/_static/11571737453049821261/masks/000000400.png}%
+    \begin{minipage}{0.24\textwidth}
+        \includegraphics[width=\textwidth]{figures/final_image.png}%
         \vspace*{-\textwidth}
         \hspace*{0.5em}\textbf{\color{white}C}
+        \vspace*{\textwidth}
+    \end{minipage}%
+    \hspace{0.01\textwidth}%
+    \begin{minipage}{0.24\textwidth}
+        \includegraphics[width=\textwidth]{figures/segmentation_mask.png}%
+        \vspace*{-\textwidth}
+        \hspace*{0.5em}\textbf{\color{white}D}
         \vspace*{\textwidth}
     \end{minipage}%
     \caption{
@@ -362,15 +409,30 @@ simplify the visualization process and achieve significant speedups.
     \label{fig:image-generation}
 \end{figure}
 
+# Research impact statement
+`cr_mech_coli` provides a user-friendly pipeline for simulating bacterial populations and offers a
+reliable, easily modifiable framework for researchers studying bacterial growth and its properties.
+A realistic synthetic microscopic image generation pipeline can be leveraged to produce high-quality
+labeled segmentation masks and tracking ground-truth data for training a deep learning model,
+thereby addressing a key bottleneck in quantitative microbiology and AI-assisted biochemistry
+applications, where manually annotated ground-truth data are scarce and expensive to obtain.
+
 # AI usage disclosure
-We used GPT-5 [@openai2025introducing] as a coding assistant during implementation of the data
-generation functionality encapsulated within the `crm_imaging` module and `crm_gen_*` scripts.
+We used Claude Opus [@claude_opus2025] as a coding assistant during the implementation of the data
+generation functionality encapsulated within the `crm_imaging` module and `crm_gen` scripts.
 All other code-related implementations were done without the assistance of AI systems.
-GPT-5 was also used to polish the writing but all core contributions and the initial draft were done
-by the authors.
+Further, we used Grammarly [@grammarly] to polish the writing, while all core contributions and the
+initial draft were done by the authors.
 
 # Acknowledgements
-JB acknowledges support from the German Research Foundation (DFG) under grant 499552394 (SFB 1597 - Small Data).
+JB acknowledges support from the German Research Foundation (DFG) under grant 499552394
+(SFB 1597 - Small Data).
+
+## Author Contributions
+**Conceptualization:** Jonas Pleyer, Jelena Bratulić, Moritz Steinmaier\newline
+**Software:** Jonas Pleyer, Moritz Steinmaier\newline
+**Writing:** Jonas Pleyer, Jelena Bratulić, Moritz Steinmaier\newline
+**Supervision:** Christian Fleck, Thomas Brox
 
 # References
 
