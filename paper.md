@@ -278,14 +278,12 @@ the cells are indicated in gray.
         \vspace*{\textwidth}
     \end{minipage}
     \caption{
-        (A) Microscopic image of 6 \textit{E.Coli} used as initial datapoint.
-        (B) Segmentation mask of (A) with extracted skeleton as overlay.
-        (C) Extrapolated vertices from the skeleton of the bacterium in (B).
-        (D-E) Snapshots of two synthetic masks which are being compared.
-        (F-G) Difference of (D) to (E).
-Matching colors are black, differences are white.
-        (G) additionally includes parental relationships, indicating that one cell is the daughter
-        of the other.
+        (A) Microscopic image of 6 \textit{E.Coli} used as an initial datapoint.
+        (B) Segmentation mask of (A) with the extracted skeleton overlaid.
+        (C) Extrapolated vertices from the skeleton of the bacterium from (B).
+        (D-E) Snapshots of two synthetic masks that are being compared.
+        (F-G) Difference of (D) to (E). Matching colors are black, differences are white.
+        (G) additionally includes parental relationships, indicating that one cell is the daughter of the other, shown in gray.
     }
 \end{figure}
 
@@ -401,10 +399,8 @@ Signal-to-Noise Ratio (PSNR), and histogram distance.
         (A) Cells are rendered by combining spheres and cylinders into a single mesh.
         Spheres are highlighted in blue and cylinders in gray.
         (B) A result from combining sphere and cylinder meshes to obtain the shape of a bacterium.
-        (C) Unique color values are assigned to each agent and additional lighting effects are
-        removed which ensures that the final image only contains one singular color per cell and
-        black background.
-        Finally, the image is rendered by projecting along the z-axis.
+        (C) Rendered image after applying photo-realistic filters.
+        (D) Instance-level cell masks with unique color assignment to each agent.
     }
     \label{fig:image-generation}
 \end{figure}
