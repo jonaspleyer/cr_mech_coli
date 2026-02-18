@@ -183,6 +183,7 @@ def _run_clone(args, config):
 
     synthetic_config = config.get("synthetic", {})
     background_config = config.get("background", {})
+    halo_config = config.get("halo", {})
     brightness_config = config.get("brightness", {})
     simulation_config = config.get("simulation", {})
 
@@ -212,6 +213,19 @@ def _run_clone(args, config):
         brightness_range=tuple(brightness_config.get("brightness_range", [0.6, 0.3])),
         num_dark_spots_range=tuple(background_config.get("num_dark_spots_range", [0, 5])),
         brightness_noise_strength=brightness_config.get("noise_strength", 0.0),
+        apply_psf=synthetic_config.get("apply_psf", True),
+        apply_poisson=synthetic_config.get("apply_poisson", True),
+        apply_gaussian=synthetic_config.get("apply_gaussian", True),
+        halo_type=halo_config.get("halo_type", "bright"),
+        halo_inner_width=halo_config.get("inner_width", 2.0),
+        halo_outer_width=halo_config.get("outer_width", 50.0),
+        halo_blur_sigma=halo_config.get("blur_sigma", 0.5),
+        halo_fade_type=halo_config.get("fade_type", "exponential"),
+        dark_spot_size_range=tuple(background_config.get("dark_spot_size_range", [2, 5])),
+        num_light_spots_range=tuple(background_config.get("num_light_spots_range", [0, 0])),
+        texture_strength=background_config.get("texture_strength", 0.02),
+        texture_scale=background_config.get("texture_scale", 1.5),
+        bg_blur_sigma=background_config.get("blur_sigma", 0.8),
     )
 
 

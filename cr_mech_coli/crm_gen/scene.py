@@ -254,6 +254,22 @@ def create_synthetic_scene(
     output_prefix: str = "syn_",
     # Brightness noise
     brightness_noise_strength: float = 0.0,
+    # Effect toggles
+    apply_psf: bool = True,
+    apply_poisson: bool = True,
+    apply_gaussian: bool = True,
+    # Halo params
+    halo_type: str = "bright",
+    halo_inner_width: float = 2.0,
+    halo_outer_width: float = 50.0,
+    halo_blur_sigma: float = 0.5,
+    halo_fade_type: str = "exponential",
+    # Remaining background params
+    dark_spot_size_range: tuple = (2, 5),
+    num_light_spots_range: tuple = (0, 0),
+    texture_strength: float = 0.02,
+    texture_scale: float = 1.5,
+    bg_blur_sigma: float = 0.8,
 ) -> tuple[np.ndarray, np.ndarray]:
     """
     Creates a synthetic microscope image from a real one using cr_mech_coli.
@@ -407,6 +423,19 @@ def create_synthetic_scene(
         original_mask=segmentation_mask,
         original_colors=colors,
         brightness_noise_strength=brightness_noise_strength,
+        apply_psf=apply_psf,
+        apply_poisson=apply_poisson,
+        apply_gaussian=apply_gaussian,
+        halo_type=halo_type,
+        halo_inner_width=halo_inner_width,
+        halo_outer_width=halo_outer_width,
+        halo_blur_sigma=halo_blur_sigma,
+        halo_fade_type=halo_fade_type,
+        dark_spot_size_range=dark_spot_size_range,
+        num_light_spots_range=num_light_spots_range,
+        texture_strength=texture_strength,
+        texture_scale=texture_scale,
+        bg_blur_sigma=bg_blur_sigma,
     )
 
     # Save results with output_prefix + original filename
