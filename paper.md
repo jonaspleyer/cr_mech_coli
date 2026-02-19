@@ -162,8 +162,7 @@ applicable to a wide range of bacterial systems.
         possible.
         These are the assumptions for the basic model that we are presenting here.
         In order for our methods to work, we are really only required to satisfy the assumption of
-        our spatial representation (see \nameref{subsec:spatial-representation}) and thus, these
-        assumptions can also be loosened if required.
+        our spatial representation and thus, these assumptions can also be loosened if required.
     }
     \label{table:simulation-aspects}
 \end{table}
