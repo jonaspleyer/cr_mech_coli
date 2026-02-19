@@ -451,7 +451,7 @@ applications, where manually annotated ground-truth data are scarce and expensiv
 
 # AI usage disclosure
 We used Claude Opus [@claude_opus2025] as a coding assistant during the implementation of the data
-generation functionality encapsulated within the `crm_imaging` module and `crm_gen` scripts.
+generation functionality encapsulated within the `crm_gen` module and script.
 All other code-related implementations were done without the assistance of AI systems.
 Further, we used Grammarly [@grammarly] to polish the writing, while all core contributions and the
 initial draft were done by the authors.
