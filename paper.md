@@ -291,6 +291,7 @@ the cells are indicated in gray.
         (F-G) Difference of (D) to (E). Matching colors are black, differences are white.
         (G) additionally includes parental relationships, indicating that one cell is the daughter of the other, shown in gray.
     }
+    \label{fig:parameter-estimation}
 \end{figure}
 
 ### Scripts
@@ -338,7 +339,7 @@ parameter estimation.
         Afterwards, each individual parameter is scanned within its optimization interval while the
         remaining parameters are reoptimized.
     }
-    \label{fig:parameter-estimation}
+    \label{fig:likelihood-profiles}
 \end{figure}
 
 ## Visualization & Data Generation
