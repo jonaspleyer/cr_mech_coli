@@ -44,3 +44,4 @@ from .fitting import *
 from .simulation import *
 from .imaging import *
 from .plotting import *
+from .crm_gen import *
