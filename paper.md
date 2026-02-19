@@ -422,7 +422,7 @@ by using our mechanistic model.
     \end{minipage}%
     \hspace{0.01\textwidth}%
     \begin{minipage}{0.32\textwidth}
-        \includegraphics[width=\textwidth]{figures/synthetic_CEX_masks.png}%
+        \includegraphics[width=\textwidth]{figures/original_CEX_masks.png}%
         \vspace*{-\textwidth}
         \hspace*{0.5em}\textbf{\color{white}G}
         \vspace*{\textwidth}
@@ -433,7 +433,8 @@ by using our mechanistic model.
         (B) A result from combining sphere and cylinder meshes to obtain the shape of a bacterium.
         (C) Rendered image after applying photo-realistic filters.
         (D) Instance-level cell masks with unique color assignment to each agent.
-        (E) Real microscopic image.
+        (E) Real microscopic image of the M90T strain of \textit{Shigella flexneri} taken from the
+        omnipose data set (\protect\hyperlink{ref-Cutler2022}{Cutler et al., 2022}).
         (F) Synthetically generated microscopic image with optimized parameters.
         (G) Instance-level cell masks corresponding to (E).
     }
