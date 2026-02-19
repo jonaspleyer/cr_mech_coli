@@ -50,7 +50,25 @@ The next figure shows this evaluation for the above presented time series.
 Constucting a Cost Function
 ---------------------------
 
-- Talk about how to measure differences between masks
+The previously explained extraction algorithm allows us to obtain positional information in the form
+of the cells vertices.
+These vertices can also be used for parameter estimation purposes, by simply applying any chosen
+distance metric.
+However, in the case when the bacteria divide, the direct comparison of extracted and simulated
+vertices fails, since particular time points of the simulation or real data contain more/less cells
+than the other.
+This would require us to compare arrays of varying dimension.
+However, we can circumvent this situation by following a different approach.
+By synthetically generating instance-level cell masks, we can compare said masks to the experimental
+ones.
+We can now compare the synthetic and experimental image, assigning a penalty $p$ whenever two pixels
+are not matching.
+However we need to take into account if the cells associated with the respective color are related
+to each other, by either one being daughter or mother of the other.
+By assigning a reduced penalty $p_p<p$ in this case, we account for the fact that the cell in
+question will divide, thus eventually producing a matching value, although the current timing may
+not yet be appropriate (depending on the optimized scenario).
+The differences which are calculated by this method are presented in the next figures.
 
 .. subfigure:: AB
     :layout-sm: A|B
@@ -61,8 +79,8 @@ Constucting a Cost Function
     .. image:: _static/fitting-methods/progressions-1.png
     .. image:: _static/fitting-methods/progressions-2.png
 
-    Snapshots at `t=40min` and `t=60min`.
-    All cells have undergone a division event.
+    Two states of a system which are being compared to each other.
+    The second snapshot contains 5 more cells due to additional division events.
 
 .. subfigure:: AB
     :layout-sm: A|B
@@ -75,15 +93,4 @@ Constucting a Cost Function
 
     Calculations of differences between the images.
     The first image purely calculates the differing area while the second approach also takes into
-    account if cells are related and weighs this specific overlapping area less.
-
-.. figure:: _static/fitting-methods/penalty-time-flow.png
-
-   We performed penalty calculations for successive simulation snapshots with two different
-   techniques.
-   Due to the overall exponential growth of the ensemble, we also expect an exponential difference
-   (its derivative) reported by our implemented methods as time increases.
-   We can clearly see that cell-division introduces undesirable spikes between individual
-   time-steps when not accounting for cell-lineage.
-   When weighing differences between daughter and parent-cells with a penalty of :math:`p=0`, these
-   enormous spikes are regularized.
+    account if cells are related and weighs this specific overlapping area with $p_p$.
