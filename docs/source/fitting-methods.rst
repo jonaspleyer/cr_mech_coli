@@ -61,11 +61,11 @@ This would require us to compare arrays of varying dimension.
 However, we can circumvent this situation by following a different approach.
 By synthetically generating instance-level cell masks, we can compare said masks to the experimental
 ones.
-We can now compare the synthetic and experimental image, assigning a penalty $p$ whenever two pixels
+We can now compare the synthetic and experimental image, assigning a penalty :math:`p` whenever two pixels
 are not matching.
 However we need to take into account if the cells associated with the respective color are related
 to each other, by either one being daughter or mother of the other.
-By assigning a reduced penalty $p_p<p$ in this case, we account for the fact that the cell in
+By assigning a reduced penalty :math:`p_p<p` in this case, we account for the fact that the cell in
 question will divide, thus eventually producing a matching value, although the current timing may
 not yet be appropriate (depending on the optimized scenario).
 The differences which are calculated by this method are presented in the next figures.
@@ -93,4 +93,5 @@ The differences which are calculated by this method are presented in the next fi
 
     Calculations of differences between the images.
     The first image purely calculates the differing area while the second approach also takes into
-    account if cells are related and weighs this specific overlapping area with $p_p$.
+    account if cells are related and weighs this specific overlapping area with a reduced penalty
+    value :math:`p_p`.
