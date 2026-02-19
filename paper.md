@@ -283,7 +283,8 @@ the cells are indicated in gray.
         \vspace*{\textwidth}
     \end{minipage}
     \caption{
-        (A) Microscopic image of 6 \textit{E.Coli} used as an initial datapoint.
+        (A) Microscopic image of 6 \textit{E.Coli} used as an initial datapoint
+        (\protect\hyperlink{ref-Trude1982}{Trude et al., 1982}).
         (B) Segmentation mask of (A) with the extracted skeleton overlaid.
         (C) Extrapolated vertices from the skeleton of the bacterium from (B).
         (D-E) Snapshots of two synthetic masks that are being compared.
