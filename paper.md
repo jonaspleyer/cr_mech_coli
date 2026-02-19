@@ -41,7 +41,7 @@ header-includes:
 Constructing numerical simulations of biological systems is a challenging problem commonly addressed
 using Agent-Based Models (ABMs) [@Pleyer2023;@Ghaffarizadeh2018].
 We present `cr_mech_coli`, a Python package providing a mechanistic Agent-Based Model for elongated,
-flexible rod-shaped bacteria, such as _E.Coli_ or _B.Subtilis_.
+flexible rod-shaped bacteria, such as _E.Coli_ or _B.subtilis_.
 It bridges the gap between numerical Agent-based simulations and microscopic image data by providing
 parameter estimation functionalities and data generation capabilities.
 Our software builds upon `cellular_raza` [@Pleyer2025] and comprises a computational model, data
