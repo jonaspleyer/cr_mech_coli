@@ -4,13 +4,13 @@ Changelog
 cr_mech_coli 0.9.0 `(30.12.2025) <_static/changelog/0.9.0.diff>`_
 -----------------------------------------------------------------
 
-- Changes to `crm_divide <scripts/crm_divide>`
+- Changes to :ref:`crm_divide`
     - Intermediately store calculated results when optimizing
     - Adjust plots and parameters
     - Rescale domain to mimick real parameters
     - Properly estimate growth rates
     - Plot split costs in profiles
-- Changes to `crm_fit <scripts/crm_fit>`
+- Changes to :ref:`crm_fit`
     - Now plots profiles with likelihood
 - Improve mask generation: Automatically aim to adjust zoom values
 - Add files containing paper and results
