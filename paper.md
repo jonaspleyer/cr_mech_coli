@@ -311,21 +311,21 @@ parameter estimation.
 \begin{figure}[!h]
     \centering
     \begin{minipage}{0.3\textwidth}
-        \includegraphics[width=\textwidth]{paper/figures/crm_fit/mie_all/profiles/damping.pdf}%
+        \includegraphics[width=\textwidth]{figures/damping.pdf}%
         \vspace*{-\textwidth}
         \textbf{A}
         \vspace*{\textwidth}
     \end{minipage}%
     \hspace{0.01\textwidth}%
     \begin{minipage}{0.3\textwidth}
-        \includegraphics[width=\textwidth]{paper/figures/crm_fit/mie_all/profiles/strength.pdf}%
+        \includegraphics[width=\textwidth]{figures/strength.pdf}%
         \vspace*{-\textwidth}
         \textbf{B}
         \vspace*{\textwidth}
     \end{minipage}%
     \hspace{0.01\textwidth}%
     \begin{minipage}{0.3\textwidth}
-        \includegraphics[width=\textwidth]{paper/figures/crm_fit/mie_all/profiles/radius.pdf}%
+        \includegraphics[width=\textwidth]{figures/radius.pdf}%
         \vspace*{-\textwidth}
         \textbf{C}
         \vspace*{\textwidth}
