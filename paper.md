@@ -369,8 +369,14 @@ We apply a multi-layered transformation sequence:
 To represent different configurations of various microscopic apparatuses, we adopt an automated
 parameter-fitting routine based on differential evolution [@storn1997differential].
 The optimization procedure tunes the simulation's core imaging parameters against real reference
-images by minimizing a weighted objective function of Structural Similarity (SSIM), Peak
-Signal-to-Noise Ratio (PSNR), and histogram distance.
+images (\autoref{fig:pipeline} (E)) by minimizing a weighted objective function of Structural
+Similarity (SSIM), Peak Signal-to-Noise Ratio (PSNR), and histogram distance.
+To this end, we extract the positional vertices $\{\textbf{x}_i\}$ from provided cell masks
+(\autoref{fig:pipeline} (G)) and estimate the thicknesses of the bacteria in order to initialize the
+rendering engine.
+The resulting image (\autoref{fig:pipeline} (F)) then closely resembles the provided input image.
+Using the optimized visualization parameters, we are now able to generate arbitrary amounts of data
+by using our mechanistic model.
 
 \begin{figure}[!h]
     \centering
@@ -400,6 +406,26 @@ Signal-to-Noise Ratio (PSNR), and histogram distance.
         \vspace*{-\textwidth}
         \hspace*{0.5em}\textbf{\color{white}D}
         \vspace*{\textwidth}
+    \end{minipage}
+    \begin{minipage}{0.32\textwidth}
+        \includegraphics[width=\textwidth]{figures/original_CEX.png}%
+        \vspace*{-\textwidth}
+        \hspace*{0.5em}\textbf{\color{white}E}
+        \vspace*{\textwidth}
+    \end{minipage}%
+    \hspace{0.01\textwidth}%
+    \begin{minipage}{0.32\textwidth}
+        \includegraphics[width=\textwidth]{figures/synthetic_CEX.png}%
+        \vspace*{-\textwidth}
+        \hspace*{0.5em}\textbf{\color{white}F}
+        \vspace*{\textwidth}
+    \end{minipage}%
+    \hspace{0.01\textwidth}%
+    \begin{minipage}{0.32\textwidth}
+        \includegraphics[width=\textwidth]{figures/synthetic_CEX_masks.png}%
+        \vspace*{-\textwidth}
+        \hspace*{0.5em}\textbf{\color{white}G}
+        \vspace*{\textwidth}
     \end{minipage}%
     \caption{
         (A) Cells are rendered by combining spheres and cylinders into a single mesh.
@@ -407,6 +433,9 @@ Signal-to-Noise Ratio (PSNR), and histogram distance.
         (B) A result from combining sphere and cylinder meshes to obtain the shape of a bacterium.
         (C) Rendered image after applying photo-realistic filters.
         (D) Instance-level cell masks with unique color assignment to each agent.
+        (E) Real microscopic image.
+        (F) Synthetically generated microscopic image with optimized parameters.
+        (G) Instance-level cell masks corresponding to (E).
     }
     \label{fig:image-generation}
 \end{figure}
