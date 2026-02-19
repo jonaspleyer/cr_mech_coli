@@ -312,21 +312,21 @@ parameter estimation.
 \begin{figure}[!h]
     \centering
     \begin{minipage}{0.3\textwidth}
-        \includegraphics[width=\textwidth]{figures/damping.pdf}%
+        \includegraphics[width=\textwidth]{docs/source/_static/figures-paper/damping.pdf}%
         \vspace*{-\textwidth}
         \textbf{A}
         \vspace*{\textwidth}
     \end{minipage}%
     \hspace{0.01\textwidth}%
     \begin{minipage}{0.3\textwidth}
-        \includegraphics[width=\textwidth]{figures/strength.pdf}%
+        \includegraphics[width=\textwidth]{docs/source/_static/figures-paper/strength.pdf}%
         \vspace*{-\textwidth}
         \textbf{B}
         \vspace*{\textwidth}
     \end{minipage}%
     \hspace{0.01\textwidth}%
     \begin{minipage}{0.3\textwidth}
-        \includegraphics[width=\textwidth]{figures/radius.pdf}%
+        \includegraphics[width=\textwidth]{docs/source/_static/figures-paper/radius.pdf}%
         \vspace*{-\textwidth}
         \textbf{C}
         \vspace*{\textwidth}
@@ -389,41 +389,41 @@ by using our mechanistic model.
     \end{minipage}%
     \hspace{0.01\textwidth}%
     \begin{minipage}{0.24\textwidth}
-        \includegraphics[width=\textwidth]{figures/raw_rendering.png}%
+        \includegraphics[width=\textwidth]{docs/source/_static/figures-paper/raw_rendering.png}%
         \vspace*{-\textwidth}
         \hspace*{0.5em}\textbf{\color{white}B}
         \vspace*{\textwidth}
     \end{minipage}%
     \hspace{0.01\textwidth}%
     \begin{minipage}{0.24\textwidth}
-        \includegraphics[width=\textwidth]{figures/final_image.png}%
+        \includegraphics[width=\textwidth]{docs/source/_static/figures-paper/final_image.png}%
         \vspace*{-\textwidth}
         \hspace*{0.5em}\textbf{\color{white}C}
         \vspace*{\textwidth}
     \end{minipage}%
     \hspace{0.01\textwidth}%
     \begin{minipage}{0.24\textwidth}
-        \includegraphics[width=\textwidth]{figures/segmentation_mask.png}%
+        \includegraphics[width=\textwidth]{docs/source/_static/figures-paper/segmentation_mask.png}%
         \vspace*{-\textwidth}
         \hspace*{0.5em}\textbf{\color{white}D}
         \vspace*{\textwidth}
     \end{minipage}
     \begin{minipage}{0.32\textwidth}
-        \includegraphics[width=\textwidth]{figures/original_CEX.png}%
+        \includegraphics[width=\textwidth]{docs/source/_static/figures-paper/original_CEX.png}%
         \vspace*{-\textwidth}
         \hspace*{0.5em}\textbf{\color{white}E}
         \vspace*{\textwidth}
     \end{minipage}%
     \hspace{0.01\textwidth}%
     \begin{minipage}{0.32\textwidth}
-        \includegraphics[width=\textwidth]{figures/synthetic_CEX.png}%
+        \includegraphics[width=\textwidth]{docs/source/_static/figures-paper/synthetic_CEX.png}%
         \vspace*{-\textwidth}
         \hspace*{0.5em}\textbf{\color{white}F}
         \vspace*{\textwidth}
     \end{minipage}%
     \hspace{0.01\textwidth}%
     \begin{minipage}{0.32\textwidth}
-        \includegraphics[width=\textwidth]{figures/original_CEX_masks.png}%
+        \includegraphics[width=\textwidth]{docs/source/_static/figures-paper/original_CEX_masks.png}%
         \vspace*{-\textwidth}
         \hspace*{0.5em}\textbf{\color{white}G}
         \vspace*{\textwidth}
