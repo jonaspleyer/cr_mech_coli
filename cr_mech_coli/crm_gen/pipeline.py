@@ -161,7 +161,7 @@ def compute_cell_ages(
     return ages
 
 
-def run_simulation(
+def run_simulation_image_gen(
     n_frames: int,
     image_size: Tuple[int, int],
     n_bacteria_range: Tuple[int, int],
@@ -624,7 +624,7 @@ def run_pipeline(
                 if key not in ('n_bacteria', 'border_distance', 'n_vertices'):
                     print(f"    {key}: {val}")
 
-        container, config = run_simulation(
+        container, config = run_simulation_image_gen(
             n_frames=n_frames,
             image_size=image_size,
             n_bacteria_range=n_bacteria_actual,

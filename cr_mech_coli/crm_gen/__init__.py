@@ -84,7 +84,7 @@ from .scene import (
 # Pipeline
 from .pipeline import (
     run_pipeline,
-    run_simulation,
+    run_simulation_image_gen,
     compute_cell_ages,
 )
 
