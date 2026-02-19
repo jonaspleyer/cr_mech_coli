@@ -355,7 +355,7 @@ However, the resulting raw-intensity images do not resemble realistic microscopi
 optical effects and distortions such as sensor noise, halo effects, and cellular texture.
 Thus, to minimize the domain gap between synthetic and empirical data, the raw projection is
 processed through a physics-inspired imaging pipeline, simulating the specific distortions and
-artifacts inherent to real-world microscopy, as shown in  (\autoref{fig:pipeline} (C)).
+artifacts inherent to real-world microscopy, as shown in (\autoref{fig:pipeline} (C)).
 We apply a multi-layered transformation sequence:
 
 - Environmental Modeling: We construct a spatially varying background by integrating multi-scale
