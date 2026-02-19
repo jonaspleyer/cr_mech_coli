@@ -78,12 +78,12 @@ This leaves gaps regarding the interpretability of which parameters drive the ob
 Another challenge lies in generating synthetic, realistic-looking data that extends beyond visual
 appearance to include accurate cellular dynamics.
 Recently, diffusion-based models have demonstrated strong performance on static configurations
-[@Han2025, @eschweiler2024celldiffusion, @Sturm2024 ].
+[@Han2025;@eschweiler2024celldiffusion;@Sturm2024 ].
 However, they still struggle with the temporal domain and with ensuring consistency in modeling
 mechanistic properties alongside the cells' visual appearance.
 Moreover, recent studies on video diffusion models report systematic failures in physical reasoning
 and in modeling consistent physical dynamics, even when trained at scale
-[@kang2024how, @motamed2025generative].
+[@kang2024how;@motamed2025generative].
 
 Our `cr_mech_coli` addresses this methodological gap by providing a complete framework as a
 user-friendly Python package.
