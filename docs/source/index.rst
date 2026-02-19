@@ -89,7 +89,6 @@ This step is under active development and the example images below are an initia
     Model <model>
     Fitting Methods <fitting-methods>
     Image Generation <image-generation>
-    Performance <performance>
     References <references>
     Changelog <changelog>
 
