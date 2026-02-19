@@ -371,7 +371,7 @@ parameter-fitting routine based on differential evolution [@storn1997differentia
 The optimization procedure tunes the simulation's core imaging parameters against real reference
 images (\autoref{fig:pipeline} (E)) by minimizing a weighted objective function of Structural
 Similarity (SSIM), Peak Signal-to-Noise Ratio (PSNR), and histogram distance.
-To this end, we extract the positional vertices $\{\textbf{x}_i\}$ from provided cell masks
+To this end, we extract the positional vertices $\{\textbf{x}_i\}$ from the provided cell masks
 (\autoref{fig:pipeline} (G)) and estimate the thicknesses of the bacteria in order to initialize the
 rendering engine.
 The resulting image (\autoref{fig:pipeline} (F)) then closely resembles the provided input image.
@@ -437,7 +437,7 @@ by using our mechanistic model.
         (F) Synthetically generated microscopic image with optimized parameters.
         (G) Instance-level cell masks corresponding to (E).
     }
-    \label{fig:image-generation}
+    \label{fig:pipeline}
 \end{figure}
 
 # Research impact statement
