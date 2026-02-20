@@ -10,7 +10,7 @@ authors:
     orcid: 0009-0001-0613-7978
     affiliation: 1
   - name: Moritz Steinmaier
-    orcid:
+    orcid: 0009-0006-3192-9439
     affiliation: 2
   - name: Jelena Bratulić
     orcid: 0009-0007-2835-4168
