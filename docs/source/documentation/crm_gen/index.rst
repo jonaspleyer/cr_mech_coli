@@ -1,10 +1,10 @@
 Synthetic Microscope Image Generation (``crm_gen``)
 ----------------------------------------------------
 
-``crm_gen`` provides tools for generating realistic synthetic microscope images of rod-shaped bacteria. It combines the ``cr_mech_coli`` simulation
-framework with a modular image synthesis pipeline, enabling the creation of
-labelled training data for cell segmentation models and the validation of
-imaging workflows against real microscope data.
+``crm_gen`` provides tools for generating realistic synthetic microscope images of rod-shaped bacteria. 
+It combines the ``cr_mech_coli`` simulation framework with a modular image synthesis pipeline, 
+enabling the creation of labelled training data for cell segmentation models and the validation of
+imaging workflows against real microscopic data.
 
 The module is available as both a command-line tool and a Python library:
 
@@ -28,7 +28,7 @@ Module Structure
    * - :doc:`pipeline <pipeline>`
      - Orchestrates the full simulation-to-image pipeline; main programmatic entry point.
    * - :doc:`scene <scene>`
-     - Composites a single frame: rendered cells on background with microscope effects applied.
+     - Orchestrates single-frame image synthesis: composites rendered cells onto a background, adjusts per-cell brightness via bacteria, and applies optical effects from filters.
    * - :doc:`background <background>`
      - Generates synthetic phase contrast background textures.
    * - :doc:`bacteria <bacteria>`
