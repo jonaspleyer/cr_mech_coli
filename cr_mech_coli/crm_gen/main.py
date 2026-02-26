@@ -5,9 +5,9 @@ CLI entry point for crm_gen (Synthetic Microscope Image Generation).
 
 Provides one command with three subcommands::
 
-    crm_gen --config config.toml run
-    crm_gen --config config.toml clone image.tif mask.tif
-    crm_gen --config config.toml fit
+    crm_gen run   [--config path/to/gen_config.toml]
+    crm_gen clone img.tif mask.tif [--config path/to/gen_config.toml]
+    crm_gen fit   path/to/input/dir [--config path/to/fit_config.toml]
 """
 
 import argparse
@@ -17,35 +17,44 @@ from pathlib import Path
 from datetime import datetime
 
 
-def _build_run_parser(subparsers):
+def _build_run_parser(subparsers, default_gen_config):
     """
     Add the ``run`` subcommand to the argument parser.
 
     Args:
         subparsers: Subparser group from argparse.
+        default_gen_config (Path): Default path to the generation config file.
     """
-    subparsers.add_parser(
+    run_parser = subparsers.add_parser(
         "run",
         help="Run the synthetic image generation pipeline",
         description="Run bacteria growth simulation and generate synthetic "
-        "microscope images. All parameters come from the TOML "
+        "microscope images. All parameters come from the generation "
         "config file.",
+    )
+    run_parser.add_argument(
+        "--config",
+        "-c",
+        type=str,
+        default=str(default_gen_config) if default_gen_config.exists() else None,
+        help="Path to generation TOML config file",
     )
 
 
-def _build_clone_parser(subparsers):
+def _build_clone_parser(subparsers, default_gen_config):
     """
     Add the ``clone`` subcommand to the argument parser.
 
     Args:
         subparsers: Subparser group from argparse.
+        default_gen_config (Path): Default path to the generation config file.
     """
     clone_parser = subparsers.add_parser(
         "clone",
         help="Clone a real microscope image to synthetic",
         description="Create a synthetic version of a real microscope image "
         "using cell positions extracted from a segmentation mask. "
-        "Imaging parameters come from the TOML config file.",
+        "Imaging parameters come from the generation config file.",
     )
     clone_parser.add_argument(
         "microscope_image",
@@ -76,22 +85,42 @@ def _build_clone_parser(subparsers):
         default=None,
         help="Random seed (overrides config)",
     )
+    clone_parser.add_argument(
+        "--config",
+        "-c",
+        type=str,
+        default=str(default_gen_config) if default_gen_config.exists() else None,
+        help="Path to generation TOML config file",
+    )
 
 
-def _build_fit_parser(subparsers):
+def _build_fit_parser(subparsers, default_fit_config):
     """
     Add the ``fit`` subcommand to the argument parser.
 
     Args:
         subparsers: Subparser group from argparse.
+        default_fit_config (Path): Default path to the fit config file.
     """
-    subparsers.add_parser(
+    fit_parser = subparsers.add_parser(
         "fit",
-        help="Optimize parameters to match real microscope images",
-        description="Optimize synthetic image generation parameters to match "
+        help="Optimise parameters to match real microscope images",
+        description="Optimise synthetic image generation parameters to match "
         "real microscope images using differential evolution. "
-        "All parameters come from the TOML config file "
-        "([optimization] section).",
+        "The imaging parameters are the output of the fit. "
+        "Optimisation hyperparameters come from the fit config file.",
+    )
+    fit_parser.add_argument(
+        "input_dir",
+        type=str,
+        help="Directory containing real microscope images (searched recursively)",
+    )
+    fit_parser.add_argument(
+        "--config",
+        "-c",
+        type=str,
+        default=str(default_fit_config) if default_fit_config.exists() else None,
+        help="Path to fit TOML config file",
     )
 
 
@@ -229,13 +258,14 @@ def _run_clone(args, config):
     )
 
 
-def _run_fit(config, config_path):
+def _run_fit(args, config, config_path):
     """
-    Optimize synthetic image parameters to match real microscope images.
+    Optimise synthetic image parameters to match real microscope images.
 
     Args:
-        config (dict): Parsed TOML configuration.
-        config_path (Path): Path to the config file (copied to output dir).
+        args: Parsed CLI arguments (input_dir).
+        config (dict): Parsed fit TOML configuration ([optimization] section).
+        config_path (Path): Path to the fit config file (copied to output dir).
     """
     from .optimization import (
         find_real_images,
@@ -245,18 +275,16 @@ def _run_fit(config, config_path):
         generate_all_synthetics,
         DEFAULT_BOUNDS,
         DEFAULT_WEIGHTS,
+        PARAM_NAMES,
     )
     from .visualization import generate_comparison_plot, generate_detailed_plots
 
     opt_config = config.get("optimization", {})
 
-    # Required: input_dir
-    input_dir = opt_config.get("input_dir", "")
-    if not input_dir:
-        print("Error: [optimization] input_dir is required in the config file.")
-        sys.exit(1)
+    # input_dir comes from the CLI positional argument
+    input_dir = args.input_dir
 
-    # Optimization parameters
+    # Optimisation parameters
     output_dir_base = opt_config.get("output_dir", "")
     limit = opt_config.get("limit", 0) or None
     n_vertices = opt_config.get("n_vertices", 8)
@@ -285,6 +313,19 @@ def _run_fit(config, config_path):
         "foreground": region_weights_config.get("foreground", 0.5),
     }
 
+    # Parameter bounds — read from config, fall back to DEFAULT_BOUNDS with warnings
+    bounds_config = opt_config.get("bounds", {})
+    bounds = []
+    for name, default_bound in zip(PARAM_NAMES, DEFAULT_BOUNDS):
+        if name in bounds_config:
+            bounds.append(tuple(bounds_config[name]))
+        else:
+            print(
+                f"Warning: bounds for '{name}' not found in config — "
+                f"using default {list(default_bound)}"
+            )
+            bounds.append(default_bound)
+
     # Create output directory with timestamp
     timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
     if not output_dir_base:
@@ -302,7 +343,7 @@ def _run_fit(config, config_path):
     # Optimize parameters
     results = optimize_parameters(
         image_pairs=image_pairs,
-        bounds=DEFAULT_BOUNDS,
+        bounds=bounds,
         weights=weights,
         region_weights=region_weights,
         maxiter=maxiter,
@@ -368,31 +409,27 @@ def crm_gen_main():
     """
     Main CLI entry point for crm_gen.
 
-    Parses the top-level ``--config`` flag and dispatches to the appropriate
-    subcommand (``run``, ``clone``, or ``fit``).
+    Dispatches to the appropriate subcommand (``run``, ``clone``, or ``fit``).
+    Each subcommand has its own optional ``--config`` argument with a sensible
+    default: ``run`` and ``clone`` use ``configs/default_gen_config.toml``;
+    ``fit`` uses ``configs/default_fit_config.toml``.
     """
     from .config import load_config
 
-    module_dir = Path(__file__).parent
-    default_config = module_dir / "default_config.toml"
+    configs_dir = Path(__file__).parent / "configs"
+    default_gen_config = configs_dir / "default_gen_config.toml"
+    default_fit_config = configs_dir / "default_fit_config.toml"
 
     parser = argparse.ArgumentParser(
         prog="crm_gen",
         description="Synthetic Microscope Image Generation for cr_mech_coli",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
-    parser.add_argument(
-        "--config",
-        "-c",
-        type=str,
-        default=str(default_config) if default_config.exists() else None,
-        help="Path to TOML configuration file",
-    )
 
     subparsers = parser.add_subparsers(dest="command", help="Subcommand")
-    _build_run_parser(subparsers)
-    _build_clone_parser(subparsers)
-    _build_fit_parser(subparsers)
+    _build_run_parser(subparsers, default_gen_config)
+    _build_clone_parser(subparsers, default_gen_config)
+    _build_fit_parser(subparsers, default_fit_config)
 
     args = parser.parse_args()
 
@@ -403,7 +440,10 @@ def crm_gen_main():
     # Load configuration
     if args.config is None:
         print("Error: No config file specified and no default config found.")
-        print("Use --config to specify a TOML configuration file.")
+        if args.command == "fit":
+            print("Use --config to specify a fit TOML configuration file.")
+        else:
+            print("Use --config to specify a generation TOML configuration file.")
         sys.exit(1)
 
     config_path = Path(args.config)
@@ -420,4 +460,4 @@ def crm_gen_main():
     elif args.command == "clone":
         _run_clone(args, config)
     elif args.command == "fit":
-        _run_fit(config, config_path)
+        _run_fit(args, config, config_path)

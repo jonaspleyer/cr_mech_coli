@@ -8,7 +8,7 @@ optical effects to produce a realistic microscope frame:
     2. Composite foreground cells onto the background
     3. Adjust per-cell brightness (age-based or matched to a real image)
     4. Add halo artifacts around cell boundaries
-    5. Apply PSF blur, Poisson shot noise, and Gaussian readout noise
+    5. Apply Point Spread Function (PSF) blur, Poisson shot noise, and Gaussian readout noise
 
 """
 
