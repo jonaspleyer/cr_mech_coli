@@ -4,46 +4,81 @@ Synthetic Microscope Image Generation submodule for cr_mech_coli.
 
 ## Overview
 
-This module provides tools for generating realistic synthetic phase contrast microscope images of bacteria, using the cr_mech_coli simulation framework. It includes:
+This module provides tools for generating realistic synthetic phase contrast
+microscope images of bacteria, using the cr_mech_coli simulation framework.
+It includes:
 
 - **Bacteria growth simulation** with configurable parameters
 - **Synthetic image generation** with realistic microscope effects
-- **Image cloning** - recreate real microscope images as synthetic versions
-- **Parameter optimization** to match real microscope images
+- **Image cloning** — recreate real microscope images as synthetic versions
+- **Parameter optimisation** to match real microscope images
 
 ## CLI Usage
 
-After installation, one command with three subcommands is available:
+After installation, one command with three subcommands is available.
+Each subcommand has an optional `--config` argument; positional arguments
+come first, `--config` always last.
 
 ### crm_gen run
 
 Run the full synthetic image generation pipeline:
 
 ```bash
-crm_gen --config my_config.toml run
+crm_gen run                          # use default generation config
+crm_gen run --config my_gen.toml     # custom generation config
 ```
 
-This runs a bacteria growth simulation and generates synthetic microscope images with age-based brightness variations.
+Runs a bacteria growth simulation and generates synthetic microscope images.
+Uses a *generation config* (`configs/default_gen_config.toml` by default).
 
 ### crm_gen clone
 
 Clone a real microscope image to synthetic:
 
 ```bash
-crm_gen --config my_config.toml clone image.tif mask.tif --output ./output
+crm_gen clone image.tif mask.tif
+crm_gen clone image.tif mask.tif --output ./output --config my_gen.toml
 ```
 
-This extracts cell positions from the mask and recreates the image synthetically using parameters from the config file.
+Extracts cell positions from the segmentation mask and recreates the image
+synthetically using imaging parameters from the generation config.
 
 ### crm_gen fit
 
-Optimize synthetic image parameters to match real images:
+Optimise synthetic image parameters to match real microscope images:
 
 ```bash
-crm_gen --config my_config.toml fit
+crm_gen fit path/to/real/images/
+crm_gen fit path/to/real/images/ --config my_fit.toml
 ```
 
-Uses differential evolution to find optimal parameters for matching real microscope images. Requires `[optimization] input_dir` in the config file.
+Uses differential evolution to find optimal imaging parameters for matching
+real microscope images. The input directory is a required positional argument.
+Uses a *fit config* (`configs/default_fit_config.toml` by default) — this
+contains only optimisation hyperparameters; the imaging parameters themselves
+are the *output* of the fit.
+
+## Configuration
+
+`run` and `clone` use a **generation config** with the following sections:
+
+- `[pipeline]` — Output settings, number of simulations and frames
+- `[simulation]` — Physics parameters (growth rate, cell interactions)
+- `[rendering]` — PyVista render settings
+- `[synthetic]` — The 7 optimised imaging parameters (output of `fit`)
+- `[background]` — Background generation settings
+- `[halo]` — Phase contrast halo effect settings
+- `[brightness]` — Cell brightness mode (age-based or original)
+
+`fit` uses a **fit config** with the following sections:
+
+- `[optimization]` — Differential evolution hyperparameters and output settings
+- `[optimization.bounds]` — Search bounds `[min, max]` for each imaging parameter
+- `[optimization.metric_weights]` — Weights for SSIM, PSNR, histogram distance
+- `[optimization.region_weights]` — Foreground vs. background loss weighting
+
+Default configs are in `configs/default_gen_config.toml` and
+`configs/default_fit_config.toml`.
 
 ## Python API
 
@@ -71,35 +106,24 @@ synthetic_img, synthetic_mask = create_synthetic_scene(
 )
 ```
 
-## Configuration
-
-All subcommands share a single TOML configuration file. See `default_config.toml` for all available options:
-
-- `[pipeline]` - Output settings, number of simulations/frames
-- `[simulation]` - Physics parameters (growth rate, interactions)
-- `[rendering]` - PyVista render settings
-- `[synthetic]` - The 7 optimized imaging parameters
-- `[background]` - Background generation settings
-- `[halo]` - Phase contrast halo effect settings
-- `[brightness]` - Cell brightness mode (age-based or original)
-- `[optimization]` - Differential evolution settings for `crm_gen fit`
-
 ## Module Structure
 
 ```
 crm_gen/
-├── __init__.py          # Public API
-├── main.py              # CLI entry point (subparsers)
-├── config.py            # Configuration utilities
-├── default_config.toml  # Default configuration
-├── pipeline.py          # Main pipeline
-├── scene.py             # Scene generation
-├── background.py        # Background generation
-├── filters.py           # Microscope effects
-├── bacteria.py          # Brightness transfer
-├── metrics.py           # Image comparison metrics
-├── optimization.py      # Parameter optimization
-└── visualization.py     # Plotting utilities
+├── __init__.py               # Public API
+├── main.py                   # CLI entry point (subparsers)
+├── config.py                 # Configuration utilities
+├── configs/
+│   ├── default_gen_config.toml   # Default generation config (run, clone)
+│   └── default_fit_config.toml   # Default fit config (fit)
+├── pipeline.py               # Full simulation-to-image pipeline
+├── scene.py                  # Single-frame compositing (uses background, bacteria, filters)
+├── background.py             # Phase contrast background generation
+├── filters.py                # Optical effects and sensor noise (PSF, Poisson, Gaussian)
+├── bacteria.py               # Per-cell brightness assignment
+├── metrics.py                # Image comparison metrics (SSIM, PSNR, histogram)
+├── optimization.py           # Differential evolution parameter optimisation
+└── visualization.py          # Diagnostic plots for optimisation results
 ```
 
 ## Dependencies

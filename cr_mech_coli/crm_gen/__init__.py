@@ -5,74 +5,21 @@ A submodule for cr_mech_coli that provides:
 
 - Synthetic microscope image generation pipeline
 - Image cloning from real microscope images
-- Parameter optimization to match real images
+- Parameter optimisation to match real microscope images
 
-.. code-block:: text
-    :caption: Usage of the crm_gen script
+Three CLI subcommands are available. Each has an optional ``--config``
+argument (positional arguments always come first):
 
-    usage: crm_gen [-h] [--config CONFIG] {run,clone,fit} ...
+.. code-block:: bash
 
-    Synthetic Microscope Image Generation for cr_mech_coli
+    crm_gen run   [--config path/to/gen_config.toml]
+    crm_gen clone img.tif mask.tif [--config path/to/gen_config.toml]
+    crm_gen fit   path/to/real/images/ [--config path/to/fit_config.toml]
 
-    positional arguments:
-    {run,clone,fit}         Subcommand
-        run                 Run the synthetic image generation pipeline
-        clone               Clone a real microscope image to synthetic
-        fit                 Optimize parameters to match real microscope images
-
-    options:
-      -h, --help            show this help message and exit
-      --config CONFIG, -c CONFIG
-                            Path to TOML configuration file
-
-
-    ------------------------------------------------------------------------
-
-
-
-    usage: crm_gen run [-h]
-
-    Run bacteria growth simulation and generate synthetic microscope images. All parameters come
-    from the TOML config file.
-
-    options:
-      -h, --help  show this help message and exit
-
-
-    ------------------------------------------------------------------------
-
-
-
-    usage: crm_gen clone [-h] [--output OUTPUT] [--n-vertices N_VERTICES] [--seed SEED]
-                      microscope_image segmentation_mask
-
-    Create a synthetic version of a real microscope image using cell positions extracted from a
-    segmentation mask. Imaging parameters come from the TOML config file.
-
-    positional arguments:
-      microscope_image      Path to real microscope image (TIF)
-      segmentation_mask     Path to segmentation mask (TIF)
-
-    options:
-      -h, --help            show this help message and exit
-      --output OUTPUT, -o OUTPUT
-                            Output directory (default: ./synthetic_output)
-      --n-vertices N_VERTICES
-                            Number of vertices per cell (overrides config, default: 8)
-      --seed SEED           Random seed (overrides config)
-
-
-    ------------------------------------------------------------------------
-
-
-
-    usage: crm_gen fit [-h]
-
-    Optimize synthetic image generation parameters to match real microscope images using
-    differential evolution. All parameters come from the TOML config file ([optimization] section).
-
-    options:
-      -h, --help  show this help message and exit
+``run`` and ``clone`` use a *generation config* (imaging and simulation
+parameters). ``fit`` uses a separate *fit config* (optimisation
+hyperparameters and search bounds only); the imaging parameters are the
+*output* of the fit. Default configs are in ``configs/``.
 """
 
 # Core scene generation
