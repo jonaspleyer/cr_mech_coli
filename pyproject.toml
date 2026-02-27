@@ -19,6 +19,9 @@ dependencies = [
     "scikit-image>=0.24",
     "pytest>=8",
     "matplotlib",
+    "scipy",
+    "tifffile",
+    "tomli; python_version < '3.11'",
 ]
 [project.scripts]
 crm_fit = "cr_mech_coli:crm_fit.crm_fit_main"
