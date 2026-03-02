@@ -20,7 +20,7 @@ The module is available as both a command-line tool and a Python library:
     crm_gen fit path/to/real/images/ --config my_fit.toml
 
 ``run`` and ``clone`` use a *generation config* (imaging and simulation
-parameters). ``fit`` uses a separate *fit config* (optimisation
+parameters). ``fit`` uses a separate *fit config* (optimization
 hyperparameters only: ``maxiter``, ``popsize``, etc.). The imaging
 parameters themselves are the *output* of the fit.
 
@@ -52,9 +52,9 @@ Module Structure
    * - :doc:`metrics <metrics>`
      - Computes SSIM, PSNR, and histogram distance between synthetic and real images.
    * - :doc:`optimization <optimization>`
-     - Optimises imaging parameters to match real images via differential evolution.
+     - Optimizes imaging parameters to match real images via differential evolution.
    * - :doc:`visualization <visualization>`
-     - Generates diagnostic plots for inspecting optimisation results.
+     - Generates diagnostic plots for inspecting optimization results.
    * - :doc:`configuration <configuration>`
      - Loads and manages TOML configuration files and default parameter constants.
 
