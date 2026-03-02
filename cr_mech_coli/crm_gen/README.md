@@ -11,7 +11,7 @@ It includes:
 - **Bacteria growth simulation** with configurable parameters
 - **Synthetic image generation** with realistic microscope effects
 - **Image cloning** — recreate real microscope images as synthetic versions
-- **Parameter optimisation** to match real microscope images
+- **Parameter optimization** to match real microscope images
 
 ## CLI Usage
 
@@ -45,7 +45,7 @@ synthetically using imaging parameters from the generation config.
 
 ### crm_gen fit
 
-Optimise synthetic image parameters to match real microscope images:
+Optimize synthetic image parameters to match real microscope images:
 
 ```bash
 crm_gen fit path/to/real/images/
@@ -55,7 +55,7 @@ crm_gen fit path/to/real/images/ --config my_fit.toml
 Uses differential evolution to find optimal imaging parameters for matching
 real microscope images. The input directory is a required positional argument.
 Uses a *fit config* (`configs/default_fit_config.toml` by default) — this
-contains only optimisation hyperparameters; the imaging parameters themselves
+contains only optimization hyperparameters; the imaging parameters themselves
 are the *output* of the fit.
 
 ## Configuration
@@ -65,7 +65,7 @@ are the *output* of the fit.
 - `[pipeline]` — Output settings, number of simulations and frames
 - `[simulation]` — Physics parameters (growth rate, cell interactions)
 - `[rendering]` — PyVista render settings
-- `[synthetic]` — The 7 optimised imaging parameters (output of `fit`)
+- `[synthetic]` — The 7 optimized imaging parameters (output of `fit`)
 - `[background]` — Background generation settings
 - `[halo]` — Phase contrast halo effect settings
 - `[brightness]` — Cell brightness mode (age-based or original)
