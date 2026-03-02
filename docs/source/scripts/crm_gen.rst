@@ -53,9 +53,9 @@ Options:
 
 **crm_gen fit**
 
-Optimises the 7 synthetic imaging parameters to match a directory of real
+Optimizes the 7 synthetic imaging parameters to match a directory of real
 microscope images using differential evolution. The imaging parameters are the
-*output* of the fit; the fit config contains only optimisation hyperparameters
+*output* of the fit; the fit config contains only optimization hyperparameters
 and search bounds.
 
 .. code-block:: bash

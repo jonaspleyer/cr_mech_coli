@@ -108,7 +108,7 @@ def _build_fit_parser(subparsers, default_fit_config):
         description="Optimise synthetic image generation parameters to match "
         "real microscope images using differential evolution. "
         "The imaging parameters are the output of the fit. "
-        "Optimisation hyperparameters come from the fit config file.",
+        "Optimization hyperparameters come from the fit config file.",
     )
     fit_parser.add_argument(
         "input_dir",
