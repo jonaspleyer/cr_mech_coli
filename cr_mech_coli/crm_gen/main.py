@@ -104,11 +104,11 @@ def _build_fit_parser(subparsers, default_fit_config):
     """
     fit_parser = subparsers.add_parser(
         "fit",
-        help="Optimise parameters to match real microscope images",
-        description="Optimise synthetic image generation parameters to match "
+        help="Optimize parameters to match real microscope images",
+        description="Optimize synthetic image generation parameters to match "
         "real microscope images using differential evolution. "
         "The imaging parameters are the output of the fit. "
-        "Optimisation hyperparameters come from the fit config file.",
+        "Optimization hyperparameters come from the fit config file.",
     )
     fit_parser.add_argument(
         "input_dir",
@@ -260,7 +260,7 @@ def _run_clone(args, config):
 
 def _run_fit(args, config, config_path):
     """
-    Optimise synthetic image parameters to match real microscope images.
+    Optimize synthetic image parameters to match real microscope images.
 
     Args:
         args: Parsed CLI arguments (input_dir).
@@ -284,7 +284,7 @@ def _run_fit(args, config, config_path):
     # input_dir comes from the CLI positional argument
     input_dir = args.input_dir
 
-    # Optimisation parameters
+    # Optimization parameters
     output_dir_base = opt_config.get("output_dir", "")
     limit = opt_config.get("limit", 0) or None
     n_vertices = opt_config.get("n_vertices", 8)
