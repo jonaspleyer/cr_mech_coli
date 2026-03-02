@@ -5,7 +5,7 @@ A submodule for cr_mech_coli that provides:
 
 - Synthetic microscope image generation pipeline
 - Image cloning from real microscope images
-- Parameter optimisation to match real microscope images
+- Parameter optimization to match real microscope images
 
 Three CLI subcommands are available. Each has an optional ``--config``
 argument (positional arguments always come first):
@@ -17,7 +17,7 @@ argument (positional arguments always come first):
     crm_gen fit   path/to/real/images/ [--config path/to/fit_config.toml]
 
 ``run`` and ``clone`` use a *generation config* (imaging and simulation
-parameters). ``fit`` uses a separate *fit config* (optimisation
+parameters). ``fit`` uses a separate *fit config* (optimization
 hyperparameters and search bounds only); the imaging parameters are the
 *output* of the fit. Default configs are in ``configs/``.
 """
