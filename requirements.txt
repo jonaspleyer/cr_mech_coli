@@ -7,4 +7,3 @@ pytest>=8.0
 matplotlib
 scipy
 tifffile
-tomli; python_version < "3.11"
