@@ -151,9 +151,9 @@ Jonas Pleyer\textsuperscript{1}, Christian Fleck\textsuperscript{1}\\
 \section*{Abstract}
 Elongated bacteria such as \acl{ecoli} and \acl{bsubtilis} possess distinct mechanical
 and physiological properties that shape their growth, division, and collective behaviors.
-Despite the importance of these organisms, existing computational frameworks rarely capture their
-flexible filamentous morphology, limiting the ability to study their mechanics in a systematic and
-quantitatively grounded way.
+Despite their importance, existing computational frameworks rarely capture these organisms'
+flexible filamentous morphology.
+This limits the ability to study their mechanics systematically and quantitatively.
 Agent-based models are well suited for representing individual cells and their interactions, yet
 their application to flexible rod-shaped bacteria has been hindered by the absence of appropriate
 mechanical formulations and by the lack of practical methods for estimating model parameters from
@@ -163,18 +163,15 @@ rods capable of growth, elastic bending, and mechanical interactions.
 We develop a novel set of imaging- and geometry-based methods that extract cell shape and positional
 information from segmented microscopy data and quantitatively compare it with model simulations at
 the single-cell level.
-These methods allow for a detailed analysis of the underlying dynamics of the model.
-They allow us to apply maximum-likelihood and profile-likelihood estimation techniques to determine
-the parameters of the underlying model.
-We apply them across multiple experimental scenarios of increasing complexity, including cases that
-exhibit substantial cell-cell variability and show how these methods can be used to perform model
-validation and reduction.
-Our results demonstrate that direct parameter estimation with cellular heterogeneity for complex
-agent-based models of bacteria is feasible and can yield biologically interpretable constraints on
-cellular parameters.
-The developed are readiliy available as a modular Python package backed by a high-performing backend
-written in Rust and integrate into our previously devleped agent-based simulation framework
-\texttt{cellular\_raza}.
+These methods allow for a detailed analysis of the underlying dynamics of the model and enable the
+application of maximum-likelihood and profile-likelihood estimation techniques to determine
+the parameters of the model. We apply the developed methods to multiple experimental scenarios of
+increasing complexity, including cases that
+exhibit substantial cell-cell variability.
+We demonstrate how these methods can be used for model validation and reduction.
+The developed methods are readily available as a modular Python package with a high-performing
+Rust-based backend.
+They integrate with our previously developed agent-based simulation framework \texttt{cellular\_raza}.
 
 \section*{Author summary}
 
@@ -276,27 +273,28 @@ Only a few \acp{abm} support even the less complex cylindrical
 shapes~\cite{Kang2014,Breitwieser2021,Gorochowski2012} but none are able to capture
 flexible filamentous bacteria.
 This poses a problem in the computational study of these systems.
+Although \acp{abm} appear to be ideal for modeling individual elongated bacteria, this potential
+has yet to be fully realized.
 
-Although \acp{abm} seem destined to be applied to the modeling of individual elongated bacteria,
-this potential has not been fully realized yet.
-Another major problem is how to perform parameter estimations for \acp{abm}.
+Another major problem is how to estimate parameters for \acp{abm}.
 Classical approaches in systems biology include techniques such as maximum
 likelihood~\cite{Kreutz2013,Raue2014} or maximum a posteriori estimation, identifiability analysis
 and model reduction~\cite{Simpson2025,Gbor2015,Banga2008,Ashyraliyev2009}.
 While some attempts have been made to properly calibrate the \ac{abm} at hand and estimate its
 parameters~\cite{An2016,Lima2021,Dancik2010,Thiele2014} these methods are not widely applied and are
 generally not used to explicitly capture any possible heterogeneity within the cellular population.
-However, this can leave important questions unanswered:
-Which combination of parameters drive the observed phenomena?
-Can these parameters be identified given a set of datapoints?
-Is there a simpler, i.e. reduced model that can describe the same phenomena?
-If \acp{abm} are not able to answer these questions, their results will significantly lack in
-explanatory power and their ability to link to the specific problem at hand.
 
+However, this can leave important questions unanswered:
+which combination of parameters drive the observed phenomena?
+Can these parameters be identified given a set of datapoints?
+Is there a simpler, i.e., reduced model that can describe the same phenomena?
+If \acp{abm} cannot answer these questions, their results will lack explanatory power and the
+ability to link to the specific problem at hand.
 The aforementioned problems present significant gaps in the scientific literature.
 First, no model can be explained or interpreted without knowing the roles and values of its
 parameters or how they are constrained.
-Furthermore, models which are not properly calibrated, i.e. by a data-based approach or via
+
+Furthermore, models which are not properly calibrated, i.e., by a data-based approach or via
 domain-specific knowledge, cannot guarantee to accurately represent the underlying biological reality.
 Finally, elongated bacteria are fundamental organisms which can be seen as a precursor to
 more complex shapes such as spiral bacteria.
@@ -305,19 +303,16 @@ emergent phenomena such as the formation of biofilms~\cite{Li2025} or bacterial
 swarming~\cite{Starru2007}.
 
 In this work, we address these challenges with the aim to further close the previously identified
-gaps.
-We provide a framework that links mechanistic modeling of elongated bacteria with quantitative
+gaps. We provide a framework that links mechanistic modeling of elongated bacteria with quantitative
 analysis methods (Figure~\ref{fig:flowchart-project-structure}).
 First, we construct a novel mechanical model for flexible, elongated bacteria that captures growth,
 division, elastic deformations of the rod and mechanical interactions between cells.
-Second, we develop computational methods which utilize segmented microscopic images to quantitatively
-compare numerical results with biological data on the single-cell level.
+Second, we develop computational methods which utilize segmented microscopic images to
+quantitatively compare numerical results with biological data on the single-cell level.
 With these methods we can estimate the parameters of our model in three scenarios, each probing
-different aspects of our model with increasing levels of complexity.
-
-A key feature of this framework is its modularity.
+different aspects of our model with increasing levels of complexity. A key feature of this framework is its modularity.
 While most subcomponents (see Figure~\ref{fig:flowchart-project-structure}) rely on the spatial
-representation of bacteria as discretized vertices, others i.e. the
+representation of bacteria as discretized vertices, others, i.e., the
 \nameref{subsec:image-space-metric} operate purely on segmentation masks, making them fully
 model-agnostic.
 This enables researchers to freely reuse our developed methods across a wide range of models for
@@ -388,8 +383,8 @@ cellular behaviors.
         Modular framework for parameter estimation of elongated bacteria.
         The framework relies on a unified spatial representation (left) which discretizes
         bacteria into vertices.
-        Building on top are visualization methods (top), a novel computational model for flexible
-        elongated bacteria (middle) and data extraction routines (bottom).
+        The building blocks are visualisation methods (top), a novel computational model for
+        flexible, elongated bacteria (middle), and data extraction routines (bottom).
         Analysis methods (bottom right) utilize extraction methods and can be informed by the model
         or used to guide modeling choices.
         The parameter estimation module integrates the preceding ones and allows us to calibrate the
@@ -407,32 +402,29 @@ cellular behaviors.
 The mechanical behavior of rod-shaped bacteria is governed by a plethora of effects.
 In this work, we aim to establish a model which is general enough such that it can be reused as the
 basis for many variants of rod-shaped bacteria but also explicit enough such that we can quantify
-its parameters.
-We thus utilize only a minimal set of assumptions.
+its parameters. We thus utilize only a minimal set of assumptions.
 When describing the bacterial system, we distinguish between intra-cellular processes and cell-cell
-interactions.
-We restrict ourselves to the features discussed below and summarize them in
+interactions. We restrict ourselves to the features discussed below and summarize them in
 Table~\ref{table:simulation-aspects}.
 
-While some rod-shaped bacteria grow by inserting new material at the ends, \ac{ecoli} and
-\ac{bsubtilis} utilize a method where new material is inserted along the cylindrical part of
-the rod. The details of the division event (i.e. Z-Ring formation) are very intricate and are heavily
+While some rod-shaped bacteria grow by inserting new material only at the ends, \ac{ecoli} and
+\ac{bsubtilis} insert new material along the cylindrical part of the rod leading to exponential
+growth of individual bacteria~\cite{Amir2014,Takeuchi2005}.
+The details of the division event (i.e. Z-Ring formation) are very intricate and are heavily
 studied as a subject on their own~\cite{Harry2001}.
-On a higher level view, the rod is split apart at a point close to the center of the cell, thus
-creating two new daughter cells.
-It was shown that the best predictor for when the division event occurs, is the length of the rod as
-opposed to the age of bacterium~\cite{Robert2014}.
-Furthermore, not only the growth of the whole colony but also the growth of individual bacteria is
-exponential~\cite{Amir2014,Takeuchi2005}.
-The growth rates of individual bacteria and other process parameters can be heterogeneous which
-should be accounted for as well \cite{Koutsoumanis2013}.
+On a higher level view, the rod is split apart at a point close to the center during cell division,
+thus creating two new daughter cells.
+It was shown that the length of the rod is the best predictor of when the division event occurs, as
+opposed to the age of the bacterium~\cite{Robert2014}.
+Furthermore, the growth rates of individual bacteria and other process parameters can be
+heterogeneous, and this should also be taken into account.\cite{Koutsoumanis2013}.
 
 Many bacteria organize into biofilms~\cite{Dunne2002,Ong1999} which play a key role in the survival
 of the collective.
 Their formation is only possible due to the attractive nature of bacterial interactions between
 each other~\cite{Berne2018}.
 This interaction is characterized by a long-range attraction and short-ranged
-adherance~\cite{Verwey1947,Trejo2013}.
+adherance~\cite{Verwey1947,Trejo2013} {\bf [what about repulsion?]}.
 We therefore need account for this phenomenon as well.
 
 \begin{table}[H]
@@ -444,30 +436,28 @@ We therefore need account for this phenomenon as well.
         &\multicolumn{2}{l}{\textbf{(C) Cellular}}\\
         \midrule
         (1) & Rod-Shaped Mechanics &
-            Rod-shaped bacteria are flexible rods which are able to freely move around (off-lattice
-            approach) \cite{Takeuchi2005,Ursell2014,Amir2014_2}.\\
+            Rod-shaped bacteria are flexible rods that can move around freely (off-lattice
+            approach)~\cite{Takeuchi2005,Ursell2014,Amir2014_2}.\\
         (2) & Growth &
-            Cells grow exponentially by inserting new material either along the circular part of the
-            rod or at the tip~\cite{Robert2014,Takeuchi2005}.\\
+            Cells grow exponentially by inserting new material either along the cylindrical part of the
+            rod or at the tip {\bf [das führt doch zu linearem Wachstum?]}~\cite{Robert2014,Takeuchi2005}.\\
         (3) & Division &
             Rod-Shaped bacteria divide in the middle of the rod into two new agents.\\
         &\multicolumn{2}{l}{\textbf{(CC) Cell-Cell Interactions}}\\
         \midrule
         (4) & Adhesion &
             Bacteria attract at longer distances and adhere to each other at shorter
-            distances~\cite{Verwey1947,Trejo2013}.\\
+            distances {\bf [keine Repulsion nötig?]}~\cite{Verwey1947,Trejo2013}.\\
         \bottomrule
     \end{tabularx}
     \caption{
         This table lists aspects of cellular behavior which we consider in our computational model.
-        It is split into cellular aspects (C) which concern only an individual bacterium and
-        interactions between cells (CC).
-        These aspects are generalized in order to fit to as many types of rod-shaped bacteria as
-        possible.
-        These are the assumptions for the basic model that we are presenting here.
+        It is divided into two categories: cellular aspects (C), which only concern an individual
+        bacterium, and interactions between cells (CC).
+        These aspects are generalized to fit as many types of rod-shaped bacteria as possible.
         In order for our methods to work, we are really only required to satisfy the assumption of
         our spatial representation (see \nameref{subsec:spatial-representation}) and thus, these
-        assumptions can also be loosened if required.
+        assumptions can also be loosened if required {\bf [unverständlich, klingt wie ein Widerspruch]}.
     }
     \label{table:simulation-aspects}
 \end{table}
@@ -475,18 +465,20 @@ We therefore need account for this phenomenon as well.
 % --------------------------------------------------------------------------------------------------
 \subsection{Spatial Representation}
 \label{subsec:spatial-representation}
-This work makes use of a one powerful assumption concerning the mathematical representation of the
-cells.
-To model the spatial mechanics of elongated bacteria \cite{Billaudeau2017}, we represent them as a
+
+This work makes use of a powerful assumption concerning the mathematical representation of the
+cells. To model the spatial mechanics of elongated bacteria \cite{Billaudeau2017}, we represent them as a
 collection of auxiliary vertices $\{\vec{x}_i\}$.
 We treat this collection of vertices as a discretization of the rod where the individual segments
 between the vertices carry no explicit physical or biological meaning.
-This assumption alone is enough to be able to build visualization and data-extraction pipelines (see
-\ref{fig:flowchart-project-structure}).
+This assumption {\bf [wo ist die Assumption?]} alone is enough to be able to build visualization
+and data-extraction pipelines (see \ref{fig:flowchart-project-structure}).
+
 Our computational model builds on top of this assumption and utilizes this representation to
 define the dynamics of the vertices $\{\vec{x}_i\}$.
 For this study, we will choose a particular type of model incorporating a chosen set effects.
-But researchers are in general free to adapt the model for the specific problem at hand.
+But researchers are in general free to adapt the model for the specific problem at hand
+{\bf [natürlich, in einer freien Wissenschaft sollte es so sein. Was meinst du hier genau?]}.
 By building on our discretization scheme, future modeling approaches will be able to directly reuse
 our established theoretical methods and computational functionalities.
 
@@ -515,134 +507,113 @@ our established theoretical methods and computational functionalities.
         A bacterial agent which is not interacting with any external objects will tend to the
         equilibrium state of a straight rod with no curvature.
         (B) Schematic of calculating the physical interaction between two bacteria.
-        Vertices on the upper agent are interacting with nearest points on the polygon by the lower
+        Vertices on the upper agent are interacting with nearest points on the polygon of the lower
         agent.
         (C) Potential curves of the Mie potential for various combinations of exponents $n,m$ with
-        upper bound $\beta=2.5U_0$ and cutoff $\zeta=3.5(R_1+R_2)$.
+        upper bound $\beta=2.5\,U_0$ and cutoff $\zeta=3.5\,(R_1+R_2)$ (red line).
         (D) Potential curves of the Morse potential with various stiffnesses $\omega$ and cutoff
-        $\zeta=3.5(R_1+R_2)$.
+        $\zeta=3.5\,(R_1+R_2)$ (red line).
     }
     \label{fig:model-bacterium}
 \end{figure}
 
 % --------------------------------------------------------------------------------------------------
-\subsection{Mechanics}
+\subsection{Cellular Mechanics}
 \label{subsection:mechanical-model-mechanics}
+
 In rod-shaped bacteria, the MreB protein plays a key role for the maintenance of the cellular shape.
 It forms an actin-like cytoskeleton~\cite{Erickson2001,Dersch2020} and localizes specifically at
-regions of negative curvature thus introducing heterogeneous cell growth~\cite{Ursell2014} which
+regions of negative curvature thus introducing heterogeneous cell growth~\cite{Ursell2014}
+{\bf [das "thus" legt nahe, dass die Verbindung zwischen "negative curvature"
+und "heterogeneous growth" klar ist. Mir ist das überhaupt nicht deutlich]} which
 results in a bending force during growth.
 This feedback mechanism will result in straight rod-shaped bacteria if not interfered from the
-external environment~\cite{Wang2010}.
-
-We use principles from discrete differential geometry~\cite{bobenko2008discrete} to describe the
-stiffness of the bacterial rod~\cite{Amir2014_2}.
-As explained above, MReB will counteract the bending of the rod, resulting in a stiffening force.
-We model the bacterium as a bending beam.
+external environment~\cite{Wang2010} {\bf [Unklar]}. We model the bacterium as a bending beam and
 % In principle, this stress will be dependent on the position inside the cell~\cite{Chatterjee1988},
 % but for sake of simplicity we chose to model the bacterium as a bending beam.
-Using our discretization $\vec{x}_i$, we connect the vertices by springs of length $l$.
+discretize the bacteria into vertices $\vec{x}_i$, connected by elastic springs of length $l$.
+Figure~\ref{fig:model-bacterium} (A) shows an bacterial rod represented by $6$ vertices.
 % which can be represented by a collection of vertices $\vec{x}_i$ which are connected by a
 % springs of lengths $l$.
-We use the notation $\vec{w}_i:=\vec{x}_i-\vec{x}_{i-1}$ with which the resulting force acting
-between two vertices if given by
+
+With the notation $\vec{w}_i:=\vec{x}_i-\vec{x}_{i-1}$ the resulting force acting between two vertices is given by:
 \begin{equation}
     \vec{F}_{i,\text{springs}} =
         -\gamma\left(1 - \frac{l}{\left|\vec{w}_i\right|}\right) \vec{w}_i
         + \gamma\left(1 - \frac{l}{\left|\vec{w}_{i+1}\right|}\right) \vec{w}_{i+1}.
 \end{equation}
-The value of the spring constants determines the elasticity with respect to elongation of the cell.
-In situations where this aspect is not relevant, they merely serve as a auxiliary parameters to
-maintain the length of the rod.
-In addition to springs between individual vertices $\vec{x}_i$, we assume that each angle at a
-vertex between edges is subject to a force indiced by curvature.
-% We assume that we can model the mechanical properties of the bacterium as an elastic rod.
-Given the angle $\alpha_i = \sphericalangle(\vec{w}_{i-1},\vec{w}_i)$ between adjacent edges,
-the bending force is proportional to the curvature $\kappa_i$ at each vertex
-$\kappa_i = 2\tan(\alpha_i/2)$.
+The spring constants $\gamma$ determines the elasticity with respect to elongation of the cell.
+
+In addition to the forces resulting from the elongation of the bacterial rod, we must also consider
+the bending forces.
+Using principles from discrete differential geometry~\cite{bobenko2008discrete, Amir2014_2} and the
+angle $\alpha_i = \sphericalangle(\vec{w}_{i-1},\vec{w}_i)$ between adjacent edges, the bending
+force is proportional to the curvature $\kappa_i$ at each vertex $\kappa_i = 2\tan(\alpha_i/2)$.
 The resulting force acts along the angle bisector which can be calculated from the edge vectors.
-Figure~\ref{fig:model-bacterium} (A) shows an elongated rod represented by $6$ vertices.
-The force acting on vertex $\vec{x}_i$ is given by
+The bending force acting on vertex $\vec{x}_i$ is given by:
 \begin{equation}
     \vec{F}_{i,\text{curvature}} = \eta\kappa_i
-        \frac{\vec{w}_i - \vec{w}_{i+1}}{|\vec{w}_i-\vec{w}_{i+1}|}
+        \frac{\vec{w}_i - \vec{w}_{i+1}}{|\vec{w}_i-\vec{w}_{i+1}|},
 \end{equation}
 where $\eta_i$ is the rigidity at vertex $\vec{x}_i$ (see Figure~\ref{fig:model-bacterium}).
 The adjoining vertices $\vec{x}_{i-1},\vec{x}_{i+1}$ are subject to half of the same force in the
-opposite direction $\vec{F}_{i\pm 1,\text{curvature}} = -0.5\vec{F}_{i,\text{curvature}}$.
+opposite direction $\vec{F}_{i\pm 1,\text{curvature}} = -0.5\,\vec{F}_{i,\text{curvature}}$.
 We can see that the curvature force does not move the overall center of the rod in space.
-The total force is the sum of interal and external forces.
+The total force is the sum of internal and external forces:
 \begin{equation}
     \vec{F}_{i,\text{total}} = \vec{F}_{i,\text{springs}}+ \vec{F}_{i,\text{curvature}}
         + \vec{F}_{i,\text{external}}
 \end{equation}
-and are integrated via damped newtonian dynamics
+and are integrated via damped newtonian dynamics:
 \begin{equation}
-    \partial_t^2 \vec{x}_i = \vec{F}_{i,\text{total}} - \lambda \partial_t\vec{x}_i
+    \partial_t^2 \vec{x}_i = \vec{F}_{i,\text{total}} - \lambda \partial_t\vec{x}_i,
 \end{equation}
-where $\lambda$ a damping constant.
-The equations have been rescaled by dividing with the mass, thus effectively eliminating this
-parameter and simplifying the model.
-All involved parameters and their units can be viewed in Table~\ref{table:list-of-parameters}.
+where $\lambda$ a damping constant. The equations have been rescaled by the mass, thus effectively
+eliminating this parameter and simplifying the model. All involved parameters and their units can
+be viewed in Table~\ref{table:list-of-parameters}.
 
 % --------------------------------------------------------------------------------------------------
-\subsection{Physical Interactions}
+\subsection{Physical Interactions between bacteria}
 
-The physical interaction between the bacteria plays a crucial role for the overall dynamics of the
+The physical interaction between bacteria plays a crucial role in the overall dynamics of the
 system.
-We follow a phenomenological approach thus aiming to fit our model to given datapoints and determine
-the type of interaction in this way.
-In order to accurately depict the physical size of the rod, our interactions will be repulsive for
-short ranges $r<R_1+R_2$ and attractive at longer ranges.
-The Mie potential~\cite{Mie1903} is capable of describing a wide range of interaction
-types from softer ones that permit some level of overlap to rigid ones with steep ascends for
-distance valuels corresponding to overlaps.
-In contrast, an alternative which has been used by other \acp{abm} is the Morse
-potential~\cite{Morse1929,Kang2014,Breitwieser2021}, which is less
-customizable due to the lower number of parameters and more restrictive mathematical formulation
-but may therefore be advantagous in situations of sparse data.
-These potentials are a good choice for a simple, interpretable interaction potential with
-low number of parameters that can be estimated.
-
-\subsubsection{Mie Potential}
+Simple, interpretable phenomenological potentials with a low number of parameters are the
+Mie~\cite{Mie1903} and Morse~\cite{Morse1929,Kang2014,Breitwieser2021} potentials.
+With four parameters, the Mie potential is more flexible than the Morse potential.
+The latter has only three parameters, which may be advantageous in situations of sparse data.
 
 Calculating the force between cells requires performing a double integral over the two polygonal
-paths of the cells.
-To reduce the computational costs we use an approximative, simplified model.
+paths of the cells. To reduce the computational costs we use an approximative, simplified model.
 Given a vertex $\vec{x}_i$ on one cell, we determine the closest point $\vec{p}$ on the polygonal
 line given by the vertices $\{\vec{y}_j\}$ of the interacting cell.
 Furthermore we determine the value $q\in[0,1]$ such that $\vec{p} = (1-q)\vec{y}_j + q\vec{y}_{j+1}$
-for some specific $j$.
-This approach is especially justified for short-ranged interactions.
-The force is then calculated between the points $\vec{x}_i$ and $\vec{p}$ and acts on
-the vertex $\vec{y}_j,\vec{y}_{j+1}$ with relative strength $(1-q)$ and $q$.
-
+for some specific $j$. This approximation is especially justified for short-ranged interactions.
+The force is then calculated between the points $\vec{x}_i$ and $\vec{p}$ and acts on the vertex
+$\vec{y}_j,\vec{y}_{j+1}$ with relative strength $(1-q)$ and $q$.
 \begin{equation}
     \vec{F}_{i,\text{External}} = \vec{F}(\vec{x}_i,\vec{p})
 \end{equation}
+\subsubsection{Mie Potential}
 
-We utilize the Mie potential~\cite{Mie1903} to describe the attraction between two cells.
-It is the generalization of the well-known Lennard-Jones~\cite{Jones1924} potential and was designed
-to describe the interactions between molecules.
-The Mie potential is given by:
-
+The Mie potential~\cite{Mie1903} is the generalization of the well-known
+Lennard-Jones~\cite{Jones1924} potential and was designed to describe the interactions between
+molecules.
+It is given by:
 \begin{align}
     V(r) &= V_0C\left[ \left(\frac{\sigma}{r}\right)^n -
         \left(\frac{\sigma}{r}\right)^m\right]\\
     C &= \frac{n}{n-m}\left(\frac{n}{m}\right)^{\frac{n}{n-m}}
 \end{align}
+The minimum of the potential is given by $-V_0$ and the thickness of our rods is encoded in
+$\sigma = (m/n)^{1/(n-m)}(R_1+R_2)$ where $R_1,R_2$ are the radii of the two interacting rod-like
+bacteria.
+We introduced the shorthand notation $r=|\vec{x}_i - \vec{p}|$ for the distance between the two
+points in question.
 
-The strength of the potential is given by $V_0$ and the thickness of our rods
-is encoded in $\sigma = (m/n)^{1/(n-m)}(R_1+R_2)$ where $R_1,R_2$ are the thicknesses (radii) of the
-two interacting rod-like bacteria.
-We utilize the shorthand notation $r=|\vec{x}_i - \vec{p}|$ for the distance between the two points
-in question.
 We numerically regularize the potential by imposing an upper bound $\beta$ on the norm of the
-resulting force $\vec{F} = -\vec{\nabla} V$.
-Furthermore, we impose a cutoff parameter $\zeta$ which sets sets the force to zero when the
-distance $r$ between the interacting points exceeds this threshold.
-The resulting force is given by
-
+resulting force $\vec{F} = -\vec{\nabla} V$ and impose a cutoff parameter $\zeta$ which sets the
+force to zero when the distance $r$ between the interacting points exceeds this threshold.
+This results in:
 \begin{equation}
     \vec{F}_{i,\text{external}} = \left\{
     \begin{array}{ll}
@@ -652,47 +623,48 @@ The resulting force is given by
     \end{array}\right.
     % \vec{F} \theta(r-\zeta) \min\left(1, \beta / |\vec{F}|\right)
 \end{equation}
-
 where the first case ensures that the norm is bound and the second case ensures the cutoff.
-A collection of configurations are displayed in figure~\ref{fig:model-bacterium} (B).
+A collection of configurations are displayed in Figure~\ref{fig:model-bacterium} (B).
 
 %###################################################################################################
 \subsubsection{Morse Potential}
 \label{subsec:morse-potential}
+
 The morse potential~\cite{Morse1929} is a common example of numerically inexpensive interaction
 potential.
 It was originally brought up to describe the interaction of diatomic molecules but has since found
 use in other areas~\cite{Breitwieser2021}.
-It contains a repulsive and attractive part and is bound from above which makes it particularly
+It contains a repulsive and attractive part and is bound from above
+{\bf [das stimmt nicht für $r\in\mathbb{R}$]} which makes it particularly
 suitable for numerical simulations since unbound potentials can lead to large numerical deviations
 thus compromising the prediction of the model.
 The potential is of the form
 \begin{equation}
     V(r) = V_0\left(1-e^{-\omega(r-(R_1+R_2))}\right)^2
 \end{equation}
-and has 3 parameters.
-The overall potential strength $V_0$, the radii of the particles $R_1,R_2$ and the potential
+and has 3 parameters. The overall potential strength $V_0$, the radii of the particles $R_1,R_2$ and the potential
 stiffness $\omega$ which controls the rate of change as one travels along the radial axis.
+ {\bf [wäre es nicht besser $V_0$ vom Potential abzuziehen, dann wäre $-V_0$ das Minimum und $\lim_{r\to\infty}V(r)=0$?]}
+
 We also assign a spatial cutoff $\xi$ to the range of the interaction potential.
 Figure~\ref{fig:model-bacterium} (D) shows various configurations of a morse potential.
 
 % --------------------------------------------------------------------------------------------------
 \subsection{Cell-Cycle}
-
-To simulate cellular growth, we introduce an exponential growth term for the spring lengths $l$
-\cite{Takeuchi2005}.
-
+To simulate cellular growth, we introduce an exponential growth term for the spring lengths $l$ \cite{Takeuchi2005}.
 \begin{equation}
     \partial_t l = \mu l
 \end{equation}
 
 This process will increase the length of the cell indefinitely unless we impose a condition for the
 division event.
-The cell divides when the spring length $l$ has reached a fixed length threshold~\cite{Robert2014}
-$l_\text{thresh}$.
-To construct a new cell, we cannot simply copy the existing one twice, but we also need to adjust
-internal parameters in the process.
-The following actions need to be taken for the old and new agent.
+The cell divides when the spring length $l$ has reached a fixed length threshold
+$l_\text{thresh}$~\cite{Robert2014}.
+To construct a new cell, we cannot simply copy the existing one twice,
+{\bf [die Aufteilung der Moleküle nach dem Teilungsprozess ist Binomialverteilt, darauf sollte hier eingegangen werden]}
+but we also need to adjust internal parameters in the process.
+The following actions need to be taken for the old and new agent
+{\bf [wie passiert die Aufteilung genau? Werden zwei neue Agenten erzeugt? Ich dachte das sei so.]}.
 We first calculate the new spring lengths of the two resulting rods via
 
 \begin{equation}
@@ -700,17 +672,14 @@ We first calculate the new spring lengths of the two resulting rods via
 \end{equation}
 
 where $n_v$ is the number of vertices and $R$ the previously introduced thickness of the rod.
-This relation ensures that that the tips of the two new rods are touching right after the division
-event.
+This relation ensures that that the tips of the two new rods are touching right after the division event.
 We subdivide the polygon given by the vertices of the mother cell in $n$ segments of length
 $\tilde{l}$, one segment of length $2R$ and again $n$ segments of length $\tilde{l}$.
 The first and latter groups determine the new vertices of the two daughter cells.
-This approach assumes cells where the total length of the polygon is greater than its diameter
-$n_vl>2R$.
-We set the growth rates of the daughter cells explicitly during the division event.
-This approach allows us to treat the growth rates of the daughter cells as full individual
-parameters within our model.
-Every other intracellular parameter is copied identically to the daughter cells.
+This approach assumes that the total length of the polygon is greater than its diameter,
+i.e., $n_vl>2R$.
+We set the individual growth rates of the daughter cells explicitly during the division event.
+All other intracellular parameters are passed from the mother cell to its daughter cells.
 Table~\ref{table:list-of-parameters} shows a list of all parameters used within our model.
 
 \begin{table}[H]
@@ -727,7 +696,7 @@ Table~\ref{table:list-of-parameters} shows a list of all parameters used within 
         \multicolumn{4}{l}{\textbf{Interaction}}\\
         \midrule
         Thickness & $R$ & $\unit{\micro\metre}$\\
-        Strength & $V_0$ & $\unit{\micro\metre^2\per\minute^2}$\\
+        Strength {\bf [ich würde es nicht Strength nennen, ist ein unklarer Begriff]} & $V_0$ & $\unit{\micro\metre^2\per\minute^2}$\\
         Exponent 1 & $n$ & $1$\\
         Exponent 2 & $m$ & $1$\\
         Potential Stiffness & $\omega$ & $\unit{\per\micro\metre}$\\
@@ -747,65 +716,69 @@ Table~\ref{table:list-of-parameters} shows a list of all parameters used within 
 
 % --------------------------------------------------------------------------------------------------
 \subsection{Numerical Implementation}
+
 We implemented the described model in our recently developed \ac{abm} framework
 \texttt{cellular\_raza}~\cite{Pleyer2025}.
 By design \texttt{cellular\_raza} does not assume any particular cellular representation, which
 makes it flexible and easy to adapt the simulation to particular needs.
-Its design allows us to experiment with different model implementations and facilitates the
-explorative capabilities of researchers.
-It is furthermore able to seamlessly integrate into Python code-bases thus allowing us to utilize
-methods from other popular software libraries such as \texttt{numpy} and \texttt{scipy}.
-Furthermore, it is an \ac{abm} which is able to natively track mother-daughter relations of cells
+Its design allows for experimentation with different model implementations, facilitating the
+exploratory capabilities of researchers.
+\texttt{cellular\_raza} integrates seamlessly into Python code bases, enabling the user to utilise
+methods from other popular software libraries, such as \texttt{NumPy} and \texttt{SciPy}.
+Furthermore, it is able to natively track mother-daughter relations of cells
 over the course of a numerical simulation which is an integral component of our image-space metric
 comparison algorithm (see \nameref{subsec:image-space-metric}).
-Further details can be found in the supplement (see \nameref{section:supplement-performance})
+More details can be found in the supplement (see \nameref{section:supplement-performance})
 
 %###################################################################################################
 \section{Methodology}
 \label{sec:methodology}
-These sections introduce methods which can be combined in order to estimate the parameters of our
-computational model.
-It is split into 3 parts, each covering distinct purposes.
+These sections introduce methods that can be combined in order to estimate the parameters of our
+computational model. It is split into 3 parts, each covering distinct purposes.
+{\bf [unklar worauf sich "it" bezieht. Das Kapitel hat 4 Abschnitte]}
+
 We begin by explaining the visualization process which will later be used within our image-space
 metric (see \nameref{subsec:image-space-metric}) and for testing purposes.
-Afterwards, we introduce a position extraction algorithm which extracts cellular information in the
-form of polygons from segmented microscopic images.
+Next, we introduce a position extraction algorithm which extracts cellular information in the form
+of polygons from segmented microscopic images.
 Finally, we will provide two distinct comparison algorithms which can be used to compare numerically
-obtained results with experimental data.
-We will test and benchmark the constructed algorithms within the respective sections.
+obtained results with experimental data. We will test and benchmark the constructed algorithms
+within the respective sections.
 As highlighted before, the developed methods only depend on the spatial representation described in
-section~\ref{subsec:spatial-representation}.
-Consequently, these methods can be applied to a broader class of mechanical models that can exhibit
-varied cellular behaviors.
+section~\ref{subsec:spatial-representation}. Consequently, these methods can be applied to a broader
+class of mechanical models that can exhibit varied cellular behaviors.
 They are also publicly available as a well-documented open-source python package
 (\href{https://github.com/jonaspleyer/cr_mech_coli}{cr\_mech\_coli}).
+We conclude this section by addressing the issue of cellular heterogeneity in parameter estimation.
 
 % --------------------------------------------------------------------------------------------------
 \subsection{Visualization}
 \label{subsection:visualization}
-Our visualization routine relies on just the spatial representation in the form of vertices and the
-thickness of the rod which is assumed to be uniform along the rod.
+Our visualisation routine relies on a spatial representation in the form of vertices, as well as on
+the assumption that the rod's thickness is uniform.
 To visualize the spatial configuration of the results we employ
-\texttt{pyvista}~\cite{sullivan2019pyvista}, which provides
-high-level wrappers around the popular VTK library~\cite{vtkBook,Sullivan2019}.
-The initial phase of the visualization process entails the generation of three-dimensional meshes
-for each bacterium as an intermediate representation (see
-Figure~\ref{fig:progression-image-generation}).
+\texttt{PyVista}~\cite{sullivan2019pyvista}, which provides high-level wrappers around the popular
+VTK library~\cite{vtkBook,Sullivan2019}.
+
+The first stage of the visualisation process involves generating three-dimensional meshes for each
+bacterium as an intermediate representation (see Figure~\ref{fig:progression-image-generation}).
 We insert spheres matching the thickness of the rod $R$ at each vertex $\vec{x}_i$ and connect
 adjacent vertices $\vec{x}_i,\vec{x}_{i+1}$ with a cylinder, of radius $r$ which is positioned
 such that its core is identical to the connecting line segment between the two vertices.
 Finally, we combine the meshes of all of these objects to obtain a single mesh of one bacterium.
-A render including smoothened meshes and external light sources of this configuration can be seen in
-Figure~\ref{fig:progression-image-generation} (B).
+{\bf [wie soll man sich das mit den überlappenden Netzen vorstellen?]}
+A render including smoothened meshes and external light sources of this configuration can be seen
+in Figure~\ref{fig:progression-image-generation} (B).
 
 Since we use a 3D rendering engine for our visualization, the resulting image can display
 overlaps of bacteria which are placed at higher or lower values along the z-direction.
 To generate masks, we use a pixel-based (in-image) encoding scheme~\cite{JianboShi2000}, thus
-assigning unique colours to every mesh of the respective cellular agent, ensuring no two agents
-will use identical colours and colors are unique across the duration of the simulation.
+assigning unique colors to every mesh of the respective cellular agent, ensuring no two agents
+will use identical colors and colors are unique across the duration of the simulation.
 We then use a parallel projection and remove any existing lighting effects in order to obtain an
 image solely comprised of solid colors.
-The resulting image is shown in Figure~\ref{fig:progression-image-generation} (C).
+The resulting image is shown in Figure~\ref{fig:progression-image-generation} (C)
+{\bf [Das ist leider ziemlich unklar. Du musst erklären, was den das Problem ist mit den "higher and lower values" und den "masks" ist.]}.
 
 \begin{figure}[H]
     \centering
@@ -838,15 +811,12 @@ The resulting image is shown in Figure~\ref{fig:progression-image-generation} (C
 % --------------------------------------------------------------------------------------------------
 \subsection{Position Extraction}
 \label{subsec:position-extraction-algorithm}
-
 This section explains how we can transform a segmented microscopic image such that we obtain a
 collection of vertices (see \nameref{subsection:mechanical-model-mechanics}) that can be used
 to initialize our agents and to perform parameter estimation.
 There exists a plethora of tools to perform segmentation of
-images~\cite{Stringer2020,Cutler2022,Hardo2022}
-Figure~\ref{fig:position-extraction-algorithm} (A) shows a typical microscopic image.
-Our algorithm requires that images are prepared using a pixel-based (in-image) encoding scheme, as
-we explained in section~\ref{subsection:visualization}.
+images~\cite{Stringer2020,Cutler2022,Hardo2022}. Figure~\ref{fig:position-extraction-algorithm} (A) shows a typical microscopic image.
+Our algorithm requires that images are prepared using a pixel-based (in-image) encoding scheme, as we explained in section~\ref{subsection:visualization}.
 
 % Having defined the input type of our algorithm, we proceed with the following 5 steps:
 
@@ -882,9 +852,9 @@ we explained in section~\ref{subsection:visualization}.
     \end{algorithmic}
 \end{algorithm}
 
-Algorithm~\ref{algo:extraction-algorithm} shows the performed steps which allow us to obtain
-vertices for individual bacteria.
-It requires a segmented image and a desired number of vertices to obtain as inputs.
+Algorithm~\ref{algo:extraction-algorithm} shows the steps needed to obtain vertices for individual
+bacteria.
+A segmented image and the desired number $n$ of vertices to obtain are required as inputs.
 In the first step, the image will be split into a collection of subimages that only contain
 information for one single cell.
 From there, we apply a skeletonization algorithm~\cite{Lee1994}
@@ -892,51 +862,52 @@ From there, we apply a skeletonization algorithm~\cite{Lee1994}
 It has to be noted that there are multiple variants of skeletonization and in general, these classes
 of algorithms can produce results which have intersection points and multiple endpoints, which is
 undesirable in our case.
-We have found that for most practical examples, the algorithm devised by~\cite{Lee1994} works well.\\
+We have found that for most practical examples, the algorithm devised by~\cite{Lee1994} works well.
 
-The skeletonization algorithm supplies us with a collection of unordered lattice points $\vec{p}_i$
-(pixel coordinates) where the skeleton lives.
+The skeletonisation algorithm provides us with a set of unordered lattice points $\vec{p}_i$
+(pixel coordinates) that define the location of the skeleton. 
 We identify the endpoints $\vec{q}_0,\vec{q}_1$ by counting the number of neighbors in the von
 Neumann neighborhood for each lattice point.
-Any point with exactly one neighboring point must be and endpoint.
-If we encounter more or less than two points which fit this criterion, the routine cannot commence
-and is aborted.
-Next, we start with one of the endpoints and determine the next neighbor which was not yet picked.
-We list the points in this order, thus forming a sorted polygon of pixel coordinates.\\
+Any point with exactly one neighboring point must be an endpoint.
+If we encounter fewer than two or more than two points that fit this criterion, the routine cannot
+commence and is aborted.
+
+Next, we start with one of the endpoints and determine the next neighbor and continue in this way
+until we reach the second endpoint, thus forming a sorted polygon of pixel coordinates.
 In the last step, we take the sorted, extracted points $\vec{p}_i$ and interpolate $n$ values for
 the desired number of vertices $\vec{x}_i$.
+{\bf [Das ist unklar. Wie viele $p_i$ gibt es?]}
 
 % --------------------------------------------------------------------------------------------------
 \paragraph{Benchmarking the Extraction Algorithm}
 
 To validate the reliability of the extraction algorithm
 (Algorithm~\ref{algo:extraction-algorithm}), we benchmarked it using synthetic data with known
-ground truth.
-This reference data in the form of vertices can be obtained directly from our computational model.
+ground truth. This reference data in the form of vertices can be obtained directly from our
+computational model.
 Furthermore as we have explained in section~\ref{subsection:visualization}, we generate cell masks
 from a given set of vertices and thickness of the rod which will serve as inputs for our extraction
-algorithm.
-By comparing the extracted positions with known ground truth, we will obtain quantitative measures
-of the extraction accuracy.
+algorithm. By comparing the extracted positions with the known ground truth, we will obtain
+quantitative measures of the extraction accuracy.
 
 Figure~\ref{fig:benchmarking-extraction-algorithm} (D-H) shows snapshots of the synthetically
-generated cell masks.
-The initial configuration consists of four bacteria which grow and divide thus expanding the
-occupied area.
-Meanwhile figure~\ref{fig:benchmarking-extraction-algorithm} (I) shows a zoomed-in version of
+generated cell masks. The initial configuration consists of four bacteria, which grow and divide,
+thus expanding the occupied area.
+Meanwhile Figure~\ref{fig:benchmarking-extraction-algorithm} (I) shows a zoomed-in version of
 snapshot (G), highlighting the direct comparison of the exact (white cross) and extracted vertices.
 Visual comparison of this time series indicates strong alignment between exact and extracted
 results.
-Upon closer inspection with figure~\ref{fig:benchmarking-extraction-algorithm} (I), we can see
+Upon closer inspection with Figure~\ref{fig:benchmarking-extraction-algorithm} (I), we can see
 that small differences start to manifest, especially at the tip of the rods in more crowded regions.
 
 In order to quantitatively analyze this disparity we use both data to calculate the average rod
 length of the bacteria (Figure~\ref{fig:benchmarking-extraction-algorithm} (J)) over the course of
-the simulated time interval.
-The results show good agreement with larger discrepancies directly after division events.
-In addition figure~\ref{fig:benchmarking-extraction-algorithm} (K) displays individual displacements
+the simulated time interval. The results show good agreement with larger discrepancies directly
+after division events.
+In addition Figure~\ref{fig:benchmarking-extraction-algorithm} (K) displays individual displacements
 of exact and extracted vertices which have been reoriented with respect to the direction of the rod.
 Values closer to the center represent better agreement.
+
 The distribution of these displacements can be well described by a multivariate normal
 distribution with mean $\mu$ and variances $\sigma_{ij}$.
 These parameters can be obtained by fitting the distribution to the displacements at every time
@@ -1037,12 +1008,11 @@ Further details such as information about the covariances are given in the suppl
 \subsection{Parameter Estimation Methods}
 \label{section:parameter-estimation}
 In order to effectively estimate the parameters of our model, we need to set up a cost function
-which can be minimized.
-In doing so, we hope to identify all parameters, given relevant experimental data.
-As we have explained in the preceding section~\ref{sec:methodology}, parameters may be specified as
-global ones, which are identical across all cells or individual per cell which allows us to capture
-cell-cell variability.
-We utilize the preceding algorithms to extract data from cell-masks, simulate from an initial state
+which can be minimized. As explained in Section~\ref{sec:methodology}, parameters can be specified
+as global, which are identical across all cells, or as individual, which allow us to capture
+cell-to-cell variability.
+We use the preceding algorithms to extract data from cell-masks, simulate from an initial state
+{\bf [wie ist der Anfangszustand gewählt?]}
 and then compare both results.
 The cell-masks are easily obtainable by either using existing segmentation
 tools~\cite{Cutler2022,Stringer2020,Hardo2022} or manually annotating microscopic image series.
@@ -1052,6 +1022,7 @@ tools~\cite{Cutler2022,Stringer2020,Hardo2022} or manually annotating microscopi
 In the scenario where no cells divide during the observed interval, we can use our extraction
 algorithm to obtain the position of the cells and then compare them directly to the cellular
 skeletons obtained from the computational results.
+
 Given $N_c$ cells with $N_v$ vertices in $d$ dimensions at $N_t$ time points, the total information
 can be stored in an array $\nu_{i,j,k,l}$ of shape $(N_c,N_v,d,N_t)$.
 Comparing the results of a simulation $\nu$ with parameters $\theta$ with experimental values
@@ -1063,13 +1034,15 @@ In our approach we utilize a \ac{ls} approach given by
         = \sum\limits_{ijkl}|\nu_{i,j,k,l} - \tilde{\nu}_{ijkl}|^2
 \end{equation}
 which minimizes the distance between the corresponding vertices at each time point.
+{\bf [was sind $x$ und $y$?]}
 One important detail is that the ordering of vertices must be identical in the numerical and
 experimental values.
 
 % This metric can be used to compare the model output to datapoints obtained from microscopic images.
 A common technique to investigate identifiability questions and provide insights into confidence
-levels of the obtained results is the
-\textit{profile-likelihood}~\cite{Murphy2000,Kreutz2013,Tnsing2023}.
+levels of the obtained results is the \textit{profile-likelihood}
+method~\cite{Murphy2000,Kreutz2013,Tnsing2023}.
+
 It is able to provide confidence intervals which are invariant under parameter
 transformations~\cite{Meeker1995}.
 It builds on the so-called \textit{log-likelihood} which propagates uncertainties $\sigma_{ijkl}$ in
@@ -1085,6 +1058,8 @@ the log-likelihood in terms of $L_\text{LS}$ via
 where we absorbed the terms $2\log(\sigma_{ijkl})$ in the sum into the constant term.
 With this simplification, it is important to pick a value for $\sigma$ such that the real
 uncertainty is overestimated.
+{\bf [Das ist verwirrend. Es ist nicht nötig zuerst die LS einzuführen und dann die Likelihood. Starte mit der Likelihood, oder dem Posterior. Die Profile-Likelihood ist dann eine Möglichkeit die Konfidenzen zu bestimmen.]}
+
 Furthermore, the preceding section (\nameref{subsec:position-extraction-algorithm}) has shown that
 the error distribution of the underlying data follows a normal distribution which justifies the core
 assumption of this framework.
@@ -1103,29 +1078,28 @@ where the value $\Delta_\alpha$ is calculated from the $(1-\alpha)$ quantile of 
 distribution with one degree of freedom~\cite{Tnsing2023}.
 This means that every parameter $\theta_i$ which satisfies
 relation~\eqref{eq:profile-likelihood-confidence-interval} has confidence level $(1-\alpha)$.
-In this work we will use confidence intervals $1-\alpha=68\%,90\%,95\%$.
+In this work we will use confidence intervals $1-\alpha=68\,\%, 90\,\%, 95\,\%$.
+{\bf [wir müssen über diesen Abschnitt reden; deine Argumentation scheint mir etwas zu umständlich und "hintenrum"]}
 
 \subsubsection{Lineage-aware Image-Space Metric}
 \label{subsec:image-space-metric}
 \paragraph{Motivation}
 The preceding algorithm is performant and effective but cannot be applied in the case when a
-division event splits apart the bacterium since this would require comparing sets of unequal
-cardinality.
-This situation is displayed in figure~\ref{fig:mask-difference-metric} (E) where two distinct
+division event occurs since this would require comparing sets of unequal cardinality.
+This situation is displayed in Figure~\ref{fig:mask-difference-metric} (E) where two distinct
 bacterial configurations originate from the same initial state but contain varying numbers of
-bacteria at the next time step.
-Such a mismatch can happen, e.g. due to non-matching division times of model and data.
+bacteria at the next time step. Such a mismatch can happen, e.g. due to non-matching division times of model and data.
 Thus a cell which is present in the simulation might not yet have a corresponding cell in the
 experimental data at this time point yet (or vice-versa).
+{\bf [das verstehe ich nicht, man kann doch Simulation und Daten nur an festen, diskreten Zeitpunkten vergleichen und an denen sollte die Anzahl der Zellen doch gleich sein.]}
 
 In addition to these technical challenges come practical ones.
 Within a short time period after the division event, the two resulting daughter cells will cover
 the space that the mother had taken up.
 However, the exact time point for the fission event cannot be determined accurately in practice,
 thus leading to natural uncertainties with respect to the question when the lives of the daughter
-cells begin and the one of the mother ends.
-Such uncertainties which are also common problems for segmentation methods, further highlight the
-importance of a purely imaging-based comparison scheme.
+cells begin and the one of the mother ends.Such uncertainties which are also a common problem for
+segmentation methods, further highlight the importance of a purely imaging-based comparison scheme.
 
 Consequently the direct metric cannot be simply reused on confined intervals which
 do not include division events:
@@ -1135,33 +1109,38 @@ bacteria where division events occur much more frequently.
 Our proposed imaging-based method circumvents this fundamental limitation.
 
 \paragraph{The Metric}
-We develop an approach which can be understood as a metric in image space where we quantify
+We developed a metric in image space where we quantify
 differences in the segmentation masks of two bacterial configurations.
 Within the realm of image segmentation many metrics such as the Jaccard Index~\cite{Murphy1996},
 Dice-Sørensen Coefficient~\cite{Dice1945}, Precision and Recall~\cite{Takaya2015} or F1
 Score~\cite{Taha2015} are actively used to deal with similar questions.
-However, these statistical methods are all based upon the notion of identifying matching and
-non-matching regions.
-It is therefore first necessary to define a criterion for this.
+However, all of these statistical methods are based on the idea of identifying matching and non-matching regions. Therefore, it is first necessary to define a criterion for this.
 
 We can use the previously introduced \nameref{subsection:visualization} methods to obtain cell-masks
 from the numerical results of the \ac{abm} simulation.
+
 Since we utilize an in-image encoding scheme, each pixel has a unique color value which is directly
 related to one particular cell or background (black).
 However, in the strictly 2D case, where cells should not be able to hide behind each other, it is
 also important to determine possible overlaps of segmentation regions for individual cells.
+{\bf [Das ist unklar. Woher kommt denn in 2D ein Überlapp?]}
+
 These overlaps stem from parameter combinations which exhibit a low repulsive interaction force.
-Since such overlaps are unrealistic, we need to assign an additional penalty $p_o\geq0$ in this case.
+Since such overlaps are unrealistic, we need to assign an additional penalty $p_o\geq0$ in this
+case.
 They can by definition not be found in the provided data segmentation masks.
 We can now compare the two masks pixel by pixel.
 Whenever two colors are not matching, a penalty of $p=1$ is assigned for each point in the
 pixel-grid.
+
 With this approach it is important to take into account the parental relationship between the cells,
 by checking if either one of the colors corresponding to the compared cells is a daughter of the
 other cell.
+{\bf [Ich denke nicht, dass jemand versteht worüber du hier redest.]}
+
 Figure~\ref{fig:mask-difference-metric} (A,B) shows two states of a numerical simulation
-with varying numbers of cells.
-We can see that some cells have divided while others have only extended in the same time interval.
+with varying numbers of cells. We can see that some cells have divided while others have only
+extended in the same time interval.
 The resulting penalties without accounting for the parental relationships are displayed in
 Figure~\ref{fig:mask-difference-metric} (C).
 % Black indicates that the pixels are matching and no penalty is assigned while white
@@ -1255,7 +1234,7 @@ e.g. when dealing with division events.
         \end{tikzonimage}%
     \end{minipage}
     \caption{
-        (A,B) Sequential simulatin masks before and after division event.
+        (A,B) Sequential simulation masks before and after division event.
         (C) Naive pixel-wise comparison, not accounting for parental relationships.
         White regions indicate mismatches, black indicates matches.
         (D) Lineage-aware comparison. Parental relationships have been marked in gray, resulting in
@@ -1273,69 +1252,62 @@ e.g. when dealing with division events.
 % --------------------------------------------------------------------------------------------------
 \subsection{The challenge of Cellular Heterogeneity}
 \label{sec:role-of-heterogeneity}
-To capture cell-cell heterogeneity, the parameter estimation framework needs to support both global
-(population-wide) and local (cell-specific) parameters.
-In practice it is often desirable to utilize a mixed approach in which parameters corresponding to
-shared behavior are treated globally and others are specific per cell.
+
+To capture cell-cell heterogeneity, the parameter estimation framework needs to support both
+population-wide and cell-specific parameters.
+In practice, it is often desirable to use a mixed approach in which some parameters are
+population-wide (shared behavior) and others are cell-specific.
 
 Let $N_p$ be the total number of parameters of a single cell.
-We identify a subset $N_g\leq N_p$ of global parameters for shared behavior and $N_l=N_p-N_g$ local
-parameters assigned individually.
-The total dimension of the parameter space is given by
+We subdivide $N_p$ into $N_g$ global parameters for shared behavior and $N_s$ cell-specific
+parameters, i.e., $N_p=N_g+N_s$
+The total dimension of the parameter space is given by:
 \begin{equation}
-    N_\text{tot} = N_g + N_c (N_p - N_g)
+    N_\text{tot} = N_g + N_cN_s
 \end{equation}
 where $N_c$ is the cumulative number of unique cell identifiers existing within the simulated time
 interval.
-This value includes cells which have divided or died during the inspected time interval or may only
-be present for a subset of the total time span.
-
-The volume of the search space scales exponentially with $N_\text{tot}$ and therefore also with the
-number of local parameters $N_l$ or number of cells $N_c$ respectively.
-Keeping the number of individually assigned parameters $N_l=N_p-N_g$ minimal is crucial to retain
-computational tractability.
-The presented approach reflects our current work but can be adapted easily for other approaches,
-i.e. assigning distinct parameters only depending on the species in a multi-species biofilm.
-Our developed methods are independent of these choices, allowing for flexible assignment strategies.
+This can be readily generalized for, e.g., a multi-species biofilm.
+The volume of the search space scales exponentially with $N_\text{tot}$ and therefore keeping the
+number of individually assigned parameters $N_s$ minimal is crucial to retain computational
+tractability.
+However, our developed methods are independent of these choices, allowing for flexible assignment
+strategies.
 
 %###################################################################################################
 \section{Applications}
-
-In this section we apply the previously developed methods and model to three case-studies, each
-increasing in complexity.
-We estimate the parameters for every configuration.
+In this section we apply the above developed methods and models to three case-studies, each
+increasing in complexity. We estimate the parameters for every configuration.
+{\bf [das Wort configuration ist hier unklar]}
 
 First, we fit our model to data of elastically bending bacteria published by Amir et.
 al~\cite{Amir2014,Amir2014_2}.
-This scenario isolates the mechanics of the flexible rod and excludes any complex cell-cell
+This scenario focuses on the mechanics of the flexible rod and excludes any complex cell-cell
 interactions.
 It is therefore well suited as a starting point in assessing the fidelity of our approach.
-
-Subsequently, we extend our scope by incorporating multiple bacteria with cell-cell interactions
+Second, we extend our scope by incorporating multiple bacteria with cell-cell interactions
 (see \nameref{section:application-2}).
-Initially, we consider a time interval that does not contain division events and enabling us to
-employ the direct Position-space metric (Section~\ref{subsec:direct-metric}).
-Finally, we apply the lineage-aware Image-space metric (Section~\ref{subsec:image-space-metric})
-to a time-series containing multiple division events, demonstrating the feasibility of our approach
-in such scenarios.
+We start by considering a short time interval that does not contain division events and enabling us
+to employ the direct Position-space metric (Section~\ref{subsec:direct-metric}).
+Finally, we demonstrate the feasibility of our approach in scenarios involving multiple division
+events by applying the lineage-aware image-space metric (Section~\ref{subsec:image-space-metric})
+to a time series containing such events.
 
 % --------------------------------------------------------------------------------------------------
 \subsection{Application 1: Elastic deformations of \acl{ecoli}}
 \label{sec:application-1-amir}
-
-To assess that our model can be applied to single cells and showcase the usefulness of the
-previously developed comparison techniques,
-will use our previously developed computational model and apply it directly to the data provided
-by the experiments of Amir et. al~\cite{Amir2014,Amir2014_2} (see
+In order to demonstrate that our model can be applied to single cells and to showcase the usefulness
+of the comparison techniques that we have previously developed, we will apply our computational
+model directly to the data provided by Amir et al.'s experiments~\cite{Amir2014,Amir2014_2} (see
 \nameref{sec:supplement-amir-details}).
-The experimental setup is displayed in figure~\ref{fig:amir-bending-simulation} (A).
-They studied how a single \ac{ecoli}, which is partially confined within a narrow tube, reacts
-to a horizontal fluid flow that exerts a force onto the bacterium.
+The experimental setup is displayed in Figure~\ref{fig:amir-bending-simulation} (A).
+The study examined how a single \ac{ecoli} bacterium, partially confined within a narrow tube,
+reacts to horizontal fluid flow exerting a force on the bacterium.
 The experiment is particularly suited as a first attempt since it excludes cell-cell interactions
 and focusses on the behavior of a single cell.
 It therefore reduces the total number of parameters and allows for fast iteration times when
-performing parameter estimations.
-To model this configuration, the lowermost vertex of the rod is fixed at the base of the simulation
+performing parameter estimations. To model this configuration, the lowermost vertex of the rod is
+fixed at the base of the simulation
 domain and vertices which are inside the tubulus are restricted to move only in the y-direction.
 
 The flow profile for this setup is proportional~\cite{Wolschin2021} to $(2y_iy_\text{max}-y_i^2)$
@@ -1361,39 +1333,45 @@ via $(\vec{x}_{i+1})_x=x_0$ and fix the value for the first vertex
 $\vec{x}_0$ such that the bacterium is attached to the bottom.
 
 We extract the positions of the rod from the data images (see
-Figure~\ref{fig:amir-bending-simulation} (A)) and compare the simulated positions with the extracted
-ones using the direct comparison algorithm (see Subsection~\ref{subsec:direct-metric}).
-Our simulation is split into two phases; One with the external flow force that initially bends the
-rod and lasts $\SI{7}{\second}$ and a second phase during which the force is disabled and the cell
-returns to its original shape over a span of $\SI{17}{\second}$.
+Figure~\ref{fig:amir-bending-simulation} (A)) and compare them with the simulated positions using
+the direct comparison algorithm (see Subsection~\ref{subsec:direct-metric}).
+Our simulation comprises two phases.
+The first phase involves an external flow force that initially bends the rod and lasts
+$\SI{7}{\second}$.
+The second phase involves disabling the force, allowing the cell to return to its original shape
+over a span of $\SI{17}{\second}$.
 
 Since this setup is void of any cell-cell interactions or cell division, the dynamics of the cell
 can be described by a combination of growth and physical mechanics (see
 subsection~\ref{subsection:mechanical-model-mechanics}).
-We are thus left with 5 parameters:
-Magnitude of the drag force $C$, growth rate $\alpha$, rigidity of the rod $\eta$, spring tension
-$\gamma$ and damping constant $\lambda$ (see table~\ref{table:list-of-parameters}).
+We are thus left with 5 parameters: magnitude of the drag force $C$, growth rate $\alpha$, rigidity
+of the rod $\eta$, spring tension $\gamma$ and damping constant $\lambda$ (see
+Table~\ref{table:list-of-parameters}).
+
+{\bf [die Zählung der Bilder in Fig. 6 stimmt nicht. Du solltest auch auf B und C verweisen]}
 Figure~\ref{fig:amir-bending-simulation} (B) shows a snapshot of the initial (upright, light blue)
 and intermediate (bent, dark blue) position of the rod using the optimized parameters.
-The likelihood profiles displayed in figure~\ref{fig:amir-bending-simulation} (D-H, bright blue
-curves) show that each parameter sits at minimum of the \texttt{profile-likelihood}.
-However, Figure~\ref{fig:amir-bending-simulation} (E-G) exhibit multimodal minima which can not be
-distinguished.
-Furthermore, the damping constant $\lambda$ can not be distinguished from $\lambda=0$ within the
-lowest confidence interval of $68\%$.
-We can assess if the system could be described by a reduced model by setting $\lambda=0$, thus
-effectively removing any damping.
-The resulting curves (dark blue) still exhibit the multimodal minima but a further reduction of
-fixing the spring tension $\gamma$ produces a (orange curves) fully identifiable system.
-As we have explained earlier (Section~\ref{sec:computational-model}), $\gamma$ can be viewed as an
-auxiliary parameter.
 
-It should be noted that the used images only contain snapshots of a fully-bent or fully-relaxed rod
-without any intermediate steps.
-This effectively limits us to effectively 2 datapoints and is likely the key factor that leads to
-the non-identifiability of the damping constant $\lambda$, since this force takes no effect in the
-two steady states (fully bent or fully relaxed).
-Gathering additional transient information would allow us to better estimate this parameter.
+The corresponding likelihood profiles are displayed in Figure~\ref{fig:amir-bending-simulation}
+(D-H, bright blue curves). It can be seen that the optimised parameters are at the minimum of the
+\texttt{profile-likelihood}. However, \texttt{profile-likelihoods} shown in
+Figure~\ref{fig:amir-bending-simulation} (E-G) are multimodal, e.g., the corresponding parameters
+are not unique.
+Furthermore, the damping constant $\lambda$ is indistinguishable from zero within the $68\,\%$
+lowest confidence interval.
+This can be exploited by removing the damping to reduce the model.
+The resulting curves (dark blue) still exhibit multimodality, but a further reduction of the model
+by fixing the spring tension $\gamma$ produces a fully identifiable system (orange curves).
+As we have explained in Section~\ref{sec:computational-model}, $\gamma$ can be viewed as an
+auxiliary parameter.
+{\bf [ich finde keine Erklärung dazu in 2]}
+
+It should be noted that the images used only contain snapshots of a fully bent or fully relaxed rod,
+with no intermediate steps shown.
+This effectively limits us to two data points and is likely the key factor that leads to the
+non-identifiability of the damping constant, $\lambda$, which could be removed by additional
+transient information.
+{\bf [es bleibt etwas unklar, welches Model du nun wirklich für den Fit verwendest hast. Die Tatsache, dass zwischen zwei Frames das Bakterium relaxiert, muss zu einem Upper Bound für die Dämpfung führen. ]}
 
 \begin{figure}[H]
     \centering
@@ -1443,11 +1421,10 @@ Gathering additional transient information would allow us to better estimate thi
         The sequence shows the rod initially (A), under flow (B) and after relaxation (C).
         (D) Comparison of simulated and experimental rod in bent and relaxed state.
         (D-H) Profile-likelihoods for the estimated parameters.
-        Bands of blue and yellow indicate confidence intervals of $68\%,90\%$ and $95\%$.
+        Bands of blue and yellow indicate confidence intervals of $68\,\%,90\,\%$ and $95\,\%$.
         Brigth blue curves represent the full model, dark blue a reduced model without damping
         $\lambda=0$ and orange curves when fixing the auxiliary spring tension parameter
-        $\gamma=\gamma_\text{opt}$.
-        With these reductions, every parameter is identifiable.
+        $\gamma=\gamma_\text{opt}$. {\bf [woher soll man denn den optimalen Parameter kennen?]} With these reductions, every parameter is identifiable.
     }
     \label{fig:amir-bending-simulation}
 \end{figure}
@@ -1455,11 +1432,11 @@ Gathering additional transient information would allow us to better estimate thi
 %###################################################################################################
 \subsection{Application 2: \acl{ecoli} growing on Agar}
 \label{section:application-2}
-
 In this section we study a collection of growing, dividing and physically interacting
 \ac{ecoli}.
-We consider two scenarios to apply the previously developed metrics within a realistic context and
+We consider two scenarios to apply the above developed metrics within a realistic context and
 validate our approach.
+
 Our dataset~\cite{Trude1982} consists of of a time-series of phase-contrast images (see
 Figure~\ref{fig:application-2-data-overview} (A)).
 We segmented them using the omnipose toolkit~\cite{Cutler2022} (see
@@ -1477,9 +1454,9 @@ dynamics of the system.
 We estimate the parameters of this systems via the direct position-space metric
 (see Section~\ref{subsec:direct-metric}).
 
-In the second case, we extend the previously used interval to 13 images over $\SI{85}{\minute}$
-therefore including division events.
-This change requires us to use the lineage-aware image-space metric (see
+In the second case-study, we extend the interval to $\SI{85}{\minute}$ whith 13 images including
+division events.
+This requires the use of the lineage-aware image-space metric (see
 Section~\ref{subsec:image-space-metric}).
 
 \begin{figure}[H]
@@ -1514,7 +1491,7 @@ Section~\ref{subsec:image-space-metric}).
         A complete list of snapshots is included in the supplementary material (see
         \nameref{sec:supplement-data-details}).
         (D) Analysis of growth for the chosen time interval.
-        (E) Distribution of growth parameters shows cell-cell variability of the analyzed sample.
+        (E) The histogram of the growth parameters exhibit significant cell-cell variability.
         % The obtained results are further discussed in the supplementary material
         % (Section~\ref{sec:supplement-reuse-estimated-parameters}).
     }
@@ -1524,71 +1501,71 @@ Section~\ref{subsec:image-space-metric}).
 
 \paragraph{Cell-Cell Variability within the Dataset}
 \label{paragraph:parameter-estimation-individual-treatment}
-We have already discussed (see Section~\ref{sec:role-of-heterogeneity}) that in order to properly
-estimate the parameters of our system, we need to account for natural cell-variability, thus
-assigning optimmized parameters on a per-cell basis.
-A preliminary analysis of the chosen dataset further highlights this necessity.
-Figure~\ref{fig:application-2-data-overview} (D) shows the length of the rods as calculated via our
-extraction algorithm.
-To quantify this heterogeneity, we fit the individual curves with an exponential function
+
+As discussed in Section~\ref{sec:role-of-heterogeneity}, in order to properly estimate the
+parameters of our system, we need to account for natural cell variability, thus assigning optimized
+parameters on a per-cell basis.
+Figure~\ref{fig:application-2-data-overview} (D) shows the length of the rods as determined via our
+extraction algorithm (solid curves). To quantify this heterogeneity, we fit the individual curves
+with an exponential:
 \begin{equation}
     l(t) = l_0 \exp(\mu t).
     \label{eq:exponential-growth-model}
 \end{equation}
 where $l_0$ is the starting length of the rod and $\mu$ is the growth rate.
-Figure~\ref{fig:application-2-data-overview} (E) shows the distribution of the obtained growth rates.
-We can see, the distinct phenotypic properties of the cells result in large deviations of the
-individual growth rates.
-These results show that in order to accurately estimate the parameters of this system, we need to
-account for this inherent heterogeneity and hence treat the growth parameters of the bacteria
-individually.
+Figure~\ref{fig:application-2-data-overview} (E) shows the histogram of the obtained growth rates.
+The distinct phenotypic properties of the cells result in large deviations of the individual growth
+rates.
+These results show that one needs to account for cell-cell variability by referring to cell-specific
+growth parameters.
 
 % --------------------------------------------------------------------------------------------------
 \subsubsection{Without Division}
-
-We first restrict our analysis to a time interval prior to the first division event which allows us
-to use the computationally more efficient direct position-space metric
+First, we restrict our analysis to an time interval of $\SI{20}{\minute}$ without any cell division
+events, which enables us to use the computationally more efficient direct position-space metric
 (Section~\ref{subsec:image-space-metric}).
-
-Utilizing our full mechanical model (Section~\ref{sec:computational-model}), we optimized a total
-of $11$ parameters: $5$ global parameters governing mechanics and interactions (damping
+Using our complete mechanical model (Section~\ref{sec:computational-model}), we optimized a total
+of $11$ parameters: $5$ global parameters that govern mechanics and interactions (damping
 $\lambda$, radius $R$, and parameters $n,m,V_0$ of the mie potential) together with $6$
 cell-specific growth rates $\mu_i$.
 \ac{ecoli} are short and typically straight, allowing us to fix the rigidity $\eta$ to a high value.
-Furthermore, the spring tension $\gamma$ serves as an auxiliary parameter which is also assumed
-constant.
+Furthermore, the spring tension $\gamma$ serves as an auxiliary parameter which is also assumed to
+be constant.
+{\bf [siehe meinen Kommentar weiter oben.]}
 
-We employed a two-staged optimization strategy.
-The parameter space was first explored using the global Differential Evolution
-algorithm~\cite{Storn1997} which was initially seeded with Latin-Hypercube sampling~\cite{McKay1979}.
-Finally, we performed a local minimization using the L-BFGS-B algorithm~\cite{Liu1989}.
+We employed a two-stage optimization strategy.
+First, the parameter space was explored using a global Differential Evolution
+algorithm~\cite{Storn1997} which was seeded using Latin-Hypercube sampling~\cite{McKay1979}.
+Finally, local minimization was performed using the L-BFGS-B algorithm~\cite{Liu1989}.
 
-Figure~\ref{fig:parameter-estimates-single-step} shows profile-likelihoods for each optimized
-parameter.
-We compare four distinct models, covering Morse and Mie-type interactions with fixed damping
+{\bf [du musst auf Fig. 8 verweisen, bevor du Fig. 9 erwähnst]}
+Figure~\ref{fig:parameter-estimates-single-step} shows the profile-likelihoods for each optimized
+parameter. We compare four distinct models, covering both Morse and Mie-type interactions with a
+fixed damping
 constant $\lambda=\SI{1}{\per\minute}$.
-Subplot (A) displays the profile-likelihood for the damping constant $\lambda$ and exhibits a wide
-range of permissible parameter values which motivates the approach to treat this parameter as a
-constant thus reducing our overall model.
-The parameters which characterize the Morse-type interaction are the potential stiffness (B),
-strength (E) and radius (F).
-While the potential stiffness (B) and radius (F) can be estimated well from the given data, the
-potential strength (E) contains a practical unidentifiability~\cite{Raue2009} which is lifted when
-fixing the damping constant $\lambda=\SI{1}{\per\minute}$.
-In contrast to the Morse potential, the Mie potential uses two parameters $n,m$ (C,D) to determine
-the shape of the interaction potential which allows it to describe a larger class of curves.
-However, as subplots (A,C,D,E) show, neither the full Mie-type interaction nor a reduced model with
+Figure~\ref{fig:parameter-estimates-single-step} (A) displays the profile-likelihood for the damping
+constant $\lambda$ and exhibits a wide range of permissible parameter values which motivates the
+approach to treat this parameter as a constant thus reducing our overall model.
+{\bf [so kannst du nicht argumentieren. Alle Parameter sind am Ende konstant.]}
+The parameters which characterize the Morse-type interaction are the potential stiffness strength
+and radius, Figure~\ref{fig:parameter-estimates-single-step} (B, E, F). While the potential
+stiffness (B) and radius (F) can be accurately estimated from the given data, the potential strength
+(E) is subject to a practical unidentifiability~\cite{Raue2009} which is resolved by fixing the
+damping constant to $\lambda=\SI{1}{\per\minute}$.
+The Mie potential uses two parameters $n,m$ (C,D) to determine the shape of the interaction
+potential which allows it to describe a larger class of curves.
+However, as the profile-likelihoods presented in Figure~\ref{fig:parameter-estimates-single-step}
+(A,C,D,E) show, neither the full Mie-type interaction nor a reduced model with
 $\lambda=\SI{1}{\per\minute}$ allow for the estimation of the exponents $n,m$.
-Although a minimum could be determined and the steepness of the enclosing profile towards the larger
-values of exponents $n,m$ increases for the reduced model, the confidence intervals clearly show a
-practical non-identifiability.
-Since the reduction of the model improves the situation we are hopeful that an increased data set
-could be suitable to estimate these parameters.
-Notably, the two interaction types predict differing radii which are still within the $68\%$
-confidence interval of each other.
-The growth rates (G-L) can all be estimated for any interaction type but the non-reduced Mie-type
-interaction shows wider confidence intervals, thus greater uncertainty in the predicted parameter
-value.
+{\bf [$\lambda$ hat nichts mit dem Potential zu tun. Der Gegensatz full ... reduced ist so nicht zutreffend]}
+It is necessary to enhance the data set with
+{\bf [welchen Datentypus wird hier benötigt?]} to remove this practical non-identifiability.
+Notably, the two interaction types result in different predictions for the radii
+(Figure~\ref{fig:parameter-estimates-single-step} (F)).
+However, the $68\,\%$ confidence intervals overlap.
+Figure~\ref{fig:parameter-estimates-single-step} (G-L) show that the growth rates can be estimated
+for any interaction type but the Mie-type interaction shows wider confidence intervals and thus
+greater uncertainty in the predicted parameter value.
 
 \begin{figure}[H]
     \centering
@@ -1608,6 +1585,7 @@ value.
         (B) Differences between extracted and predicted positions.
         Note that the image-space metric was not used to optimize this system but is
         chosen here as a tool to aid visualization of the prediction difference.
+        {\bf [das versteht man so nicht. Entweder weglassen oder richtig erklären]}
     }
 \end{figure}
 
@@ -1662,10 +1640,10 @@ value.
         \node at (0, 1.1)[anchor=north west, black]{\textbf{L}};
     \end{tikzonimage}%
     \caption{
-        (A-L) Likelihood profiles for 4 scenarios: Full model with Morse/Mie interaction and with a
-        reduced model with Morse/Mie interaction, setting the damping constant
-        $\lambda=\SI{1}{\per\minute}$.
-        Bands of blue and yellow represent confidence intervals of $68\%,90\%$ and $95\%$.
+        (A-L) Likelihood profiles for 4 scenarios: Full and reduced model, by setting the damping
+        constant to $\lambda=\SI{1}{\per\minute}$, with Morse/Mie interaction.
+        Blue and yellow bands represent confidence intervals of $68\,\%,90\,\%$ and $95\,\%$,
+        respectively.
         (A) Damping constant before model reduction.
         (B) Potential Stiffness $\omega$ of the Morse potential.
         (C-D) Exponents $n,m$ of the Mie potential.
@@ -1674,6 +1652,7 @@ value.
         parameter values.
         (F) Radius $R$ (thickness of the rod) of the potential.
         (G-L) Individual growth rates $\mu$ of the 6 bacterial agents.
+        {\bf [die Beschriftung der y-Achse ist nicht richtig. Es muss PL($\mu$) usw. heissen]}
     }
     \label{fig:parameter-estimates-single-step}
 \end{figure}
@@ -1681,27 +1660,29 @@ value.
 % --------------------------------------------------------------------------------------------------
 \subsubsection{With Division}
 \label{sec:application-1-with-division}
-
-In the next step, we extended our previously used time-series with successive images including
-cell division events which requires us to use the Lineage-Aware Image-Space Metric
+In the next step, we extend the analyzed time interval to $\SI{85}{\minute}$, which includes cell
+division events.
+This requires us to use the Lineage-Aware Image-Space Metric
 (section~\ref{section:parameter-estimation}).
 A practical challenge in extending the time series arose during data preparation: the segmentation
 algorithm was not able to properly label the individual bacteria for timepoints close to division
 events which meant that we had to omit a subset of snapshots, leaving us with incomplete temporal
 data.
+{\bf [das ist unverständlich. Konnte man das nicht manuell korrigieren? Und warum musste eine Untermenge an Snapshots entfernt werden?]}
 This problem is common for existing segmentation algorithms and may also be encountered in future
 studies.
 We therefore explicitly include this gap to assess the fidelity of our approach under these
 practical challenges.
 
-In order to compare the experimentally obtained data with simulation results, there are 4 main steps
-which are executed within any single optimization iteration.
+In order to compare the experimentally obtained data with simulation results, there are four main
+steps which are executed within any single optimization iteration.
+{\bf [du hast doch bis jetzt mehrmals über den Vergleich von Simulation und Daten geredet. Warum erwähnst du das erst hier?]}
 Firstly, results need to be generated by performing the simulation.
 Afterwards, the corresponding masks is generated and then adjusted in such as way that it can be
 compared directly with experimental cell masks.
 This requires us to map the cell-lineage forest (collection of trees) of the numerical result to the
-experimental data.
-Finally, we use the previously established lineage-aware image-based metric for the comparison.
+experimental data. Finally, we use the previously established lineage-aware image-based metric for
+the comparison.
 
 % Since we have already optimized said system, we can reduce the computational demand by choosing the
 % parameters which were obtained by our previous attempts and extend them with the parameters that the
@@ -1720,6 +1701,7 @@ generated via Latin-Hypercube~\cite{McKay1979}, then applying the differential e
 algorithm~\cite{Storn1997} and finally a local minimization with Nelder-Mead~\cite{Gao2010}.
 We used the value $p=0.5$ for the parent penalty, which aims to provide a smooth transition between
 not accounting for them and assigning full weighting to this difference.
+{\bf [der Satz ist unvollständig]}
 Figure~\ref{fig:celldiffs-progression-with-division} shows the difference between the cell mask as
 given by the data and the cell mask predicted by the best fit of our model.
 As expected, the fully-optimized system does not produce differences where the parental penalty is
@@ -1769,7 +1751,7 @@ lengths and growth rates of cells (0-4) accurately.
 In particular, it exhibits not plateaus due to missing data points.
 This phenomon can be attributed to our mechanistic understanding of the problem and would not have
 been possible by other approaches such as purely statistical models.
-
+{\bf [diesen Abschnitt muss ich nochmals genau lesen, wenn wir über den Rest diskutiert haben]}
 \begin{figure}[H]
     \centering
     \begin{tikzonimage}[width=0.32\textwidth]
@@ -1871,21 +1853,22 @@ been possible by other approaches such as purely statistical models.
         (N-P) Growth rates of daughter cells.
         For brevity, we display the remaining growth rates of the daughter cells in the
         supplementary material Figure~\ref{fig:supplement-profiles-with-division}.
+        {\bf [es bleibt unklar, warum hier keine PL. Die Bilder sehen schlecht aus.]}
     }
     \label{fig:likelihood-profiles-comparison-with-division}
 \end{figure}
 
 \subsubsection{Comparison of Estimated Parameters}
-We finally aim to compare the obtained parameter values of the various approaches that we have used.
-It is important to keep in mind that the ground truth differs from the first part to the second one
-which involves division events and therefore a longer time interval.
-Furthermore, both methods involve additional steps when determining the overall growth of the
-bacteria.
+In this section, we compare the estimated parameter values of the various approaches that we have used.
+It is important to keep in mind that the ground truth differs from the first part (without cell
+division) to the second part (with cell division).
+Furthermore, both methods {\bf [welche Methoden?]} involve additional steps when determining the
+overall growth of the bacteria.
 The direct approach utilizes the positions of the cells which involves their extraction via our
 developed algorithm.
-Meanwhile, the Lineage-Aware Image-Space metric utilizes only the masks of the data and thus
-involves one step less in the preprocessing steps.
-These distinct choices may influence the obtained values at hand.
+The Lineage-Aware Image-Space metric utilizes only the masks of the data and thus involves one step
+less in the preprocessing steps.
+These distinct choices {\bf [welche distinct choices?]} may influence the obtained values at hand.
 
 Table~\ref{tab:comparison-growth-rates} shows the obtained values for the growth rates via the
 different techniques.
@@ -1896,7 +1879,7 @@ extracted position or by counting the number of pixels associated with each cell
 the given time interval.
 In both cases, the same exponential model as presented in equation~\ref{eq:exponential-growth-model}
 is fitted to the data.
-We can already see that this coice greatly influences the obtained results, leading to significant
+We can already see that this choice greatly influences the obtained results, leading to significant
 differences between the numerical values.
 
 Going further, the estimated growth rates pick up on similar trends.
@@ -1936,28 +1919,28 @@ metric.
                                             & 2.1080 & 2.2957 & 2.0803 & 1.9870\\
         \bottomrule
     \end{tabular}
-    \caption{
+    \caption{{\bf [die Namen Position und Pixel Fit benutzt du hier zum ersten Mal]}
         Growth Rates and division lengths calculated by the previously discussed approaches
         including growth rates of the daughter cells.
         The division lengths have been multiplied by the number of polygonal sections
         $n_\text{vertices}-1$ to obtain a measure for the overall length of the bacterial rod.
+        {\bf [Was bedeuten die verschiedenen Division Length?]}
     }
     \label{tab:comparison-growth-rates}
 \end{table}
 
-While growth rates can be directly compared between the various approaches, the same can not be done
-as easily with the remaining kinetic parameters which are listed in
+While growth rates can be directly compared between the various approaches, the same cannot easily
+be done with the remaining kinetic parameters which are listed in
 Table~\ref{tab:comparison-kinetic-parameters}.
-This results from the fact that the type of interaction potential greatly determines the values of
-these parameters and parameters such as the exponents $n,m$ or the potential stiffness $\omega$ have
-influences on the overall magnitude of the potential thus also influencing the strength $V_0$.
-As we have discussed earlier, the damping constant is frequently set to a fixed value to allow for
-proper parameter estimation of the system.
+This is because the type of interaction potential greatly determines the values of these parameters.
+Parameters such as the exponents $n,m$, or the potential stiffness $\omega$, influence the overall
+magnitude of the potential, thus also influencing the strength $V_0$.
 However, one clear effect can be seen when comparing the potential stiffness $\omega$ of the direct
 approaches with the Imaging results.
 Due to the fact that the Image-Space metric penalizes overlapping regions of cells, the potential
-stiffness is much larger thus diminishing said effects.
-This can also explain the lower value for the radius compared to the other results.
+stiffness is much larger thus diminishing said effects
+{\bf [es bleibt unklar, welche Effekt du genau meinst.]}.
+This could also explain the lower radius value compared to the other results.
 
 \begin{table}[H]
     \centering
@@ -2001,7 +1984,6 @@ This can also explain the lower value for the radius compared to the other resul
 
 %###################################################################################################
 \section{Summary}
-
 With this work we have layed out how to estimate the parameters of \acp{abm} using
 microscopic image time series.
 Our approach is modularized such that its structure can be applied to a variety of problems.
@@ -2015,22 +1997,21 @@ We further implemented a pipeline that can produce 3D visualizations of simulati
 generate cell masks from simulation data by our computational model.
 These imaging techniques were also utilized to design a cost function that can compare snapshots
 of cellular states across cellular division events thus allowing us to estimate parameters in such
-scenarios.
-Finally, the combination of these preceding advancements were applied to 2 case studies, which showed
-that the profile-likelihood method can be used to effectively evaluate the ability of our system to
-properly identify the involved parameters.
+scenarios.  Finally, these preceding advancements were combined and applied to two case studies.
+The results showed that the profile-likelihood method can effectively evaluate our system's ability
+to correctly identify the involved parameters.
 In the first example, we fit a simplified model of a singular bent rod to microscopic images.
 These results highlighted that a reduction of the systems parameters is necessary in order to
 properly identify them.
-In our next step, the same system was fitted to a series of microscopic images in two secarios,
+In our next step, the same system was fitted to a series of microscopic images in two scenarios,
 excluding and incorporating division events.
 Both results showed the ability of our model to effectively estimate individual parameters of the
 cells.
+{\bf [sind hier wirklich drei Abschnitte nötig? Ist etwas wortreich. Habe gerade mal in 3 PLoS Comp Bio Paper geschaut; die haben nur eine Diskussion am Ende. Ich schlage vor die Summary zu streichen und Teil davon in die Conclusion zu übernehmen.]}
 
 %###################################################################################################
 \section{Discussion}
-
-Our work shows that it is possible to estimate the parameters of \acp{abm} on a single-cell level.
+We demonstrated that it is possible to estimate the parameters of \acp{abm} on a single-cell level.
 It also highlighted that unidentifiabilities can be caught and effectively reduced by classical
 model reduction techniques.
 Together with the flexible nature of \texttt{cellular\_raza} \cite{Pleyer2025}, this opens up the
@@ -2123,14 +2104,13 @@ retaining our mechanistic understanding of the problem at hand.
 
 This work has introduced a novel methodological framework which allows us to estimate the parameters
 of models describing rod-shaped bacteria on the single-cell level by using data obtained from
-microscopic images.
-The approach is agnostic with respect to details of the underlying model and instead only makes use
+microscopic images. The approach is agnostic with respect to details of the underlying model and
+instead only makes use
 of the fundamental spatial representation of our bacteria as a collection of vertices.
 The developed functionalities are modular and can directly be reused by researchers to asses a wide
-range of rod-shaped bacterial models.
-Combining these methods, our workflow links experimental data to the parameter estimation of a
-mechanistic, computational model and allows us to estimate the individual parameters of the
-cell-agents.
+range of rod-shaped bacterial models. Combining these methods, our workflow links experimental data
+to the parameter estimation of a mechanistic, computational model and allows us to estimate the 
+individual parameters of the cell-agents.
 
 Our framework allows researchers to employ well-known methods such as profile-likelihood and
 sensitivity-analysis.
@@ -2148,7 +2128,7 @@ This combination of data allows will us to train segmentation and more important
 built on machine-learning frameworks which thus require large amounts of data.
 
 On the biological side, a plethora of cellular properties waits to be investigated using this novel
-tecnhique.
+technique.
 Another open question is how to efficiently scale up this operation in order to treat large numbers
 of cells such that distributions of parameters themselves can be estimated.
 Put together, this work establishes a promising platform which is able to directly combine
@@ -2182,24 +2162,23 @@ opportunities for future quantitative studies in cellular biology.
 
 \paragraph*{Further Details of the Extraction Algorithm}
 \label{sec:supplement-extraction-algorithm}
-
-The main text stated that the distribution of displacements which has been split up into parallel
-and orthogonal components along the rod can be represented by a multivariate normal distribution.
+The main text stated that the distribution of displacements, split up into parallel and orthogonal
+components along the rod, can be represented by a multivariate normal distribution.
 We first describe in more detail how these distributions are obtained.
 Consider the case where we have a set of exactly known vertices $\nu_{j,k}$ and a set of extracted
 vertices $\nu_{j,k}'$.
-We now calculate the displacements simply via
+The displacements are given by:
 \begin{equation}
     \Delta \nu_{j,k} = \nu_{j,k} - \nu_{j,k}'.
 \end{equation}
 In order to calculate their positions with respect to the direction of the rod, we assign a
 direction $d_{j,k}$ at each vertex of the known exact values.
 At the tips of the rod this is done by assigning the direction of the closest edge while vertices in
-the middle are calculated using a central difference approach.
+the middle are calculated using a central difference approach:
 \begin{align}
     d_{0,k} &= \frac{(\nu_{1,k}-\nu_{0,k})}{||\nu_1 - \nu_0||}\\
     d_{N_v,k} &= \frac{(\nu_{N_v,k}-\nu_{N_v-1,k})}{||\nu_{N_v} - \nu_{N_v-1}||}\\
-    d_{j,k} &= \frac{(\nu_{j+1,k}-\nu_{j-1,k})}{||\nu_{j+1} - \nu_{j-1}||}
+    d_{j,k} &= \frac{(\nu_{j+1,k}-\nu_{j-1,k})}{||\nu_{j+1} - \nu_{j-1}||}.
 \end{align}
 We can use these directions at each vertex to assign rotation matrices
 \begin{equation}
@@ -2214,7 +2193,7 @@ at each vertex and apply them to the displacements via
 \end{equation}
 The resulting points are displayed in Figure~\ref{fig:supplement-extraction-algorithm} (A) which is
 identical to the one in the main text.
-
+{\bf [du musst deine Notation erklären. Was sind $\nu_{i,j}$? Kann es sein, dass die Nenner nicht korrekt sind?]}
 The main text claims that this distribution is well described by a multivariate normal distribution
 with diagonal covariance matrix.
 Figure~\ref{fig:supplement-extraction-algorithm} (C,D) show slices of the full distribution along
@@ -2272,12 +2251,13 @@ In general, we do not anticipate that these scenarios are common for most practi
 
 %###################################################################################################
 \newpage
-\paragraph*{Application 1 (Amir et. al)}
+\paragraph*{Application 1}
 \label{sec:supplement-amir-details}
 
 The studies performed by Amir et. al~\cite{Amir2014,Amir2014_2} provided movies of microscopic
 images which showcased 3 states in total:
 An initial state, a bent state and the final relaxed state.
+{\bf [kann es sein, dass du die Zeitinformation, die in den Movies enthalten ist, in deinem Parameterfit nicht genutzt hast?]}
 To effectively estimate the positions of the bacterium at these time points, we manually modified
 the provided images by amplifying light shadings of the green cellular envelope.
 This is displayed in Figure~\ref{fig:supplement-amir-progression} (A-C) as the bright green cellular
@@ -2294,8 +2274,8 @@ the rod can be properly captured.
 Values which are too small will inadvertently lead to undesired interactions with the confinement
 condition imposed by the narrow tube.\\
 To fully model this system, a force exerted by the flowing fluid is taken into account.
-The utilized flow profile was derived from a standard laminar flow along a tube with Neumann
-boundary conditions~\cite{Wolschin2021}.
+The flow profile was derived from a standard laminar flow along a tube with Neumann boundary
+conditions~\cite{Wolschin2021}.
 This profile was experimentally measured and confirmed~\cite{Amir2014}.
 Furthermore, the publication explicitly stated values for the size of the flow domain north of the
 confined tube $L_{y,\text{domain}}$ which leaves us only with the strength of the flow force as the
@@ -2371,37 +2351,36 @@ remaining estimated parameter.
 \newpage
 \paragraph*{Application 2}
 \label{sec:supplement-data-details}
-
-The movies taken by Trude~\cite{Trude1982} are microscopic movies of growing bacteria.
-They contain various scenes covering cases between only a few individual bacteria and large
-collections.
+The microscopic movies of growing bacteria by Trude et al.~\cite{Trude1982} contain various scenes
+covering cases between only a few individual bacteria and large collections.
 For our purpose, we extracted individual frames as images.
 Afterwards, we used the omnipose~\cite{Cutler2022} segmentation tool to obtain cell masks of the
-individual images.
-Since we chose an in-image color-based encoding scheme, it is of utmost importance that color values
-for the same cell match between individual time points.
-The total size of the domain and the duration of the movie were estimated from the provided citation
-information and context clues such as size of the bacteria itself.
-To this end, bacterial diameters were estimated with $\approx\SI{0.5}{\micro\metre}$ and the time
+images. Since we chose an in-image color-based encoding scheme, it is of utmost importance that
+color values for the same cell match between individual time points.
+The total size of the domain and the duration of the movie were estimated using the provided citation
+information and contextual clues, such as size of the bacteria themselves.
+{\bf [wird die Grösse der Bakterien angegeben? Oder entnimmst du das der Literatur?]}
+
+The bacterial diameters were estimated with $\approx\SI{0.5}{\micro\metre}$ and the time
 interval spanning $8$ frames was estimated as $\SI{20}{\minute}$.
 This results in a conversion value of $h=\SI{30}{\pixel\per\micro\metre}$.
-Their particular numerical values are not relevant to the methods proposed in this work but would
-require closer inspection and clarification for studies targeting to extract precise numerical
-values of these systems.
-Alternatively, the same parameter estimations can also be achieved by utilizing pixel-based
-units.
-This can be achieved by rescaling all length which will provide identical results with respect to
-the profile-likelihood.
-However, values of the raw cost function will change since this involves a comparison of position in
-the respective space (i.e. pixel or position) and is not normalized by the corresponding
+Their particular numerical values are not relevant to the methods proposed in this work.
+For studies targeting to extract precise numerical
+values a closer inspection and clarification would be required.
+The same parameter estimations can also be achieved by using pixel-based units.
+This can be done by rescaling all lengths, which will produce the same results with respect to the
+profile likelihood.
+However, values of the raw cost function will change since this involves a comparison of position
+in the respective space (i.e. pixel or position) and is not normalized by the corresponding
 displacement uncertainty.
+{\bf [hierzu sollten wir nochmals reden]}
 
 The obtained constants are listed in Table~\ref{tab:supplement-application-1-constants}.
 As we have explained in the main text, the time series is split into an interval $T_1$ containing no
 division events and an interval $T_2$ which includes a single division event.
-We provide scripts which can be used to reconstruct our approach of obtaining this dataset.
-They can be found within the Github repository \url{https://github.com/jonaspleyer/cr_mech_coli/}
-under the \texttt{data} folder.
+We provide scripts that can be used to replicate our method of obtaining this dataset.
+These can be found in the \texttt{data} folder of the GitHub repository:
+\url{https://github.com/jonaspleyer/cr_mech_coli/}.
 
 \begin{table}[H]
     \begin{tabularx}{\textwidth}{l r@{} @{\hspace{0.3em}}l X}
@@ -2460,15 +2439,19 @@ Figure~\ref{fig:supplement-optimization-progression} shows the progression of th
 Figure~\ref{fig:supplement-cost-evolution-time} shows the missing profiles of growth rates of the
 daughter cells left out in Figure~\ref{fig:likelihood-profiles-comparison-with-division}.
 Some of these parameter values such as (Q,S) and (U) could be compatible with a vanishing growth
-rate.
+rate. {\bf [es ist unüblich die Zählung nicht bei 1 oder A anfangen zulassen.]}
 However these statements can only be justified with a proper uncertainty analysis involving
 realistic displacement uncertainties.
+{\bf [sind deine Annahmen unrealistisch?]}
 Furthermore, results from section~\ref{section:application-2} have shown that growth rates and
 division lengths can be estimated much more accurately when a division event is involved, thus
 providing effectively a lower and upper bound on both values.
-These small values of growth rates can be a result of not including enough datapoints after the
-initial division event such that the overall length of the bacteria seems constant in the short time
-interval after the division.
+Furthermore, the results from Section~\ref{section:application-2} show that growth rates and
+division lengths can be estimated much more accurately when a division event is involved.
+This effectively provides a lower and upper bound on both values.
+Small growth rates can result from insufficient data points being included after the initial
+division event, such that the overall length of the bacteria appears constant in the short time
+interval after division.
 
 \begin{figure}[H]
     \begin{tikzonimage}[width=0.25\textwidth]
@@ -2505,8 +2488,8 @@ interval after the division.
     \label{fig:supplement-profiles-with-division}
 \end{figure}
 
-To assess the fidelity of the estimated parameters with our model, we can investigate contributions
-to the cost function at the individual time points of the simulation.
+In order to assess the accuracy of the estimated parameters in relation to our model, we can examine
+the contributions to the cost function at each time point in the simulation.
 We expect that the differences indicated by the cost function are minimal at the start point and
 grow as time progresses.
 Our system ins inherently non-linear, containing exponential growth and complex interaction forces.
@@ -2516,7 +2499,7 @@ For a Lipschitz-continous system, this deviation can be bound by an exponential 
 differences surrounding the true values, which results in an exponential temporal progression of the
 cost function itself.
 However in our case, Figure~\ref{fig:supplement-cost-evolution-time} (A) clearly shows a linear
-trend, indicating that model the prediction utilizing the estimated parameters provides a good
+trend, indicating that the model prediction using the estimated parameters yields a good
 approximation to the provided data points.
 
 \begin{figure}[H]
@@ -2526,6 +2509,7 @@ approximation to the provided data points.
         Contributions to the overall cost function at evaluated time points of the simulation.
         The fully optimized system does not contain any configurations in which a parent penalty $p$
         is utilized.
+        {\bf [dieser Plot wirkt komisch mit der Legende]}
     }
     \label{fig:supplement-cost-evolution-time}
 \end{figure}
@@ -2644,9 +2628,9 @@ approximation to the provided data points.
 \newpage
 \section*{Acknowledgements}
 \paragraph{Author Contributions}
-\textbf{Conceptualization:} Jonas Pleyer\\
+\textbf{Conceptualization:} Jonas Pleyer \& Christian Fleck\\
 \textbf{Investigation:} Jonas Pleyer\\
-\textbf{Methodology} Jonas Pleyer\\
+\textbf{Methodology:} Jonas Pleyer\\
 \textbf{Software:} Jonas Pleyer\\
 \textbf{Supervision:} Christian Fleck\\
 \textbf{Writing – original draft:} Jonas Pleyer\\
