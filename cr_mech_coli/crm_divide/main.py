@@ -212,44 +212,69 @@ def plot_time_evolution(
     iterations_data,
     settings,
     output_dir,
+    final_parameters,
+    args,
 ):
     fig, ax = plt.subplots(figsize=(8, 8))
     crm.plotting.configure_ax(ax)
 
-    for color, parent_penalty in [
-        (crm.plotting.COLOR1, 0),
-        (crm.plotting.COLOR2, 0.5),
-        (crm.plotting.COLOR3, 1.0),
-    ]:
-        penalties = [
-            crm.penalty_area_diff_account_parents(
-                new_mask,
-                masks_predicted[iter][0],
-                color_to_cell,
-                parent_map,
-                parent_penalty,
+    def plot_result(
+        masks_predicted,
+        color_to_cell,
+        parent_map,
+        configs=[
+            (0, crm.plotting.COLOR1, "0.0"),
+            (0.5, crm.plotting.COLOR2, "0.5"),
+            (1.0, crm.plotting.COLOR3, "1.0"),
+        ],
+    ):
+        for parent_penalty, color, name in configs:
+            penalties = [
+                crm.penalty_area_diff_account_parents(
+                    new_mask,
+                    masks_predicted[iter][0],
+                    color_to_cell,
+                    parent_map,
+                    parent_penalty,
+                )
+                for iter, new_mask in zip(iterations_data, new_masks)
+            ]
+            ax.plot(
+                np.array([iterations_simulation[i] for i in iterations_data])
+                * settings.constants.dt,
+                penalties,
+                marker="x",
+                color=color,
+                label=f"p={name}",
             )
-            for iter, new_mask in tqdm(
-                zip(iterations_data, new_masks),
-                total=len(new_masks),
-                desc="Calculating penalties",
-            )
-        ]
-        ax.plot(
-            np.array([iterations_simulation[i] for i in iterations_data])
-            * settings.constants.dt,
-            penalties,
-            marker="x",
-            color=color,
-            label=f"p={parent_penalty}",
-        )
+
+    ax.axvline(x=40.0, color="gray", linestyle="--", alpha=0.8)
+    ax.ticklabel_format(axis="both", style="sci", scilimits=(-3, -3))
+
+    plot_result(
+        masks_predicted,
+        color_to_cell,
+        parent_map,
+        configs=[(1.0, crm.plotting.COLOR5, "1.0 Optimized")],
+    )
+
+    # Generate new results with increased growth rate to showcase difference
+    # Modify growth rates such that they are 10% too large
+    params_mod = np.array(final_parameters)
+    params_mod[3:8] *= 1.2
+    params_mod[12:] *= 1.2
+    (_, masks_predicted_2, color_to_cell_2, parent_map_2, _) = (
+        objective_function_return_all(params_mod, *args, show_progressbar=True)
+    )
+    plot_result(masks_predicted_2, color_to_cell_2, parent_map_2)
 
     ax.legend(
         loc="upper center",
-        bbox_to_anchor=(0.5, 1.1),
-        ncol=3,
+        bbox_to_anchor=(0.5, 1.17),
+        ncol=2,
         frameon=False,
     )
+
     ax.set_ylabel("Cost Function")
     ax.set_xlabel("Time [h]")
     fig.savefig(output_dir / "time-evolution.pdf")
@@ -799,6 +824,8 @@ def crm_divide_main():
                 iterations_data,
                 settings,
                 output_dir,
+                final_parameters,
+                args,
             )
 
     if not pyargs.skip_profiles:
