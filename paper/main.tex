@@ -423,8 +423,8 @@ Many bacteria organize into biofilms~\cite{Dunne2002,Ong1999} which play a key r
 of the collective.
 Their formation is only possible due to the attractive nature of bacterial interactions between
 each other~\cite{Berne2018}.
-This interaction is characterized by a long-range attraction and short-ranged
-adherance~\cite{Verwey1947,Trejo2013} {\bf [what about repulsion?]}.
+This interaction is characterized by a long-range attraction, short-ranged
+adherance~\cite{Verwey1947,Trejo2013} and steric repulsion.
 We therefore need account for this phenomenon as well.
 
 \begin{table}[H]
@@ -439,15 +439,15 @@ We therefore need account for this phenomenon as well.
             Rod-shaped bacteria are flexible rods that can move around freely (off-lattice
             approach)~\cite{Takeuchi2005,Ursell2014,Amir2014_2}.\\
         (2) & Growth &
-            Cells grow exponentially by inserting new material either along the cylindrical part of the
-            rod or at the tip {\bf [das führt doch zu linearem Wachstum?]}~\cite{Robert2014,Takeuchi2005}.\\
+            Cells grow exponentially by inserting new material along the cylindrical part of the
+            rod~\cite{Robert2014,Takeuchi2005}.\\
         (3) & Division &
             Rod-Shaped bacteria divide in the middle of the rod into two new agents.\\
         &\multicolumn{2}{l}{\textbf{(CC) Cell-Cell Interactions}}\\
         \midrule
         (4) & Adhesion &
-            Bacteria attract at longer distances and adhere to each other at shorter
-            distances {\bf [keine Repulsion nötig?]}~\cite{Verwey1947,Trejo2013}.\\
+            Bacteria attract at longer distances~\cite{Verwey1947,Trejo2013}.
+            Steric repulsion acts at shorter distances.\\
         \bottomrule
     \end{tabularx}
     \caption{
@@ -523,12 +523,20 @@ our established theoretical methods and computational functionalities.
 
 In rod-shaped bacteria, the MreB protein plays a key role for the maintenance of the cellular shape.
 It forms an actin-like cytoskeleton~\cite{Erickson2001,Dersch2020} and localizes specifically at
-regions of negative curvature thus introducing heterogeneous cell growth~\cite{Ursell2014}
-{\bf [das "thus" legt nahe, dass die Verbindung zwischen "negative curvature"
-und "heterogeneous growth" klar ist. Mir ist das überhaupt nicht deutlich]} which
-results in a bending force during growth.
-This feedback mechanism will result in straight rod-shaped bacteria if not interfered from the
-external environment~\cite{Wang2010} {\bf [Unklar]}. We model the bacterium as a bending beam and
+regions of negative curvature.
+Cells which are under tension over longer time scales will therefore exhibit asymmtric,
+heterogeneous intracellular growth of the cell wall which results in plastic
+deformations~\cite{Ursell2014}.
+Without any external interferrence, the bacteria will grow into straight rod-like
+shapes~\cite{Wang2010}.
+Our work focusses on smaller time scales where no plastic deformations are involved.
+
+On longer time scales, this leads to an asymmetric, heterogeneous intracellular growth of the cell
+which can result in plastic deformations~\cite{Ursell2014} for cells under constant tension.
+Without any external interferrence, this type of growth will result in straight rod-shaped
+bacteria~\cite{Wang2010}.
+
+We model the bacterium as a bending beam and
 % In principle, this stress will be dependent on the position inside the cell~\cite{Chatterjee1988},
 % but for sake of simplicity we chose to model the bacterium as a bending beam.
 discretize the bacteria into vertices $\vec{x}_i$, connected by elastic springs of length $l$.
