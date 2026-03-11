@@ -41,25 +41,24 @@ header-includes:
 Constructing numerical simulations of biological systems is a challenging problem commonly addressed
 using Agent-Based Models (ABMs) [@Pleyer2023;@Ghaffarizadeh2018].
 We present `cr_mech_coli`, a Python package providing a mechanistic Agent-Based Model for elongated,
-flexible rod-shaped bacteria, such as _E.Coli_ or _B.subtilis_.
-It bridges the gap between numerical Agent-based simulations and microscopic image data by providing
+flexible rod-shaped bacteria, such as _E. coli_ or _B. subtilis_.
+It bridges the gap between numerical agent-based simulations and microscopic image data by providing
 parameter estimation functionalities and data generation capabilities.
 Our software builds upon `cellular_raza` [@Pleyer2025] and comprises a computational model, data
 extraction techniques, predefined cost functions, and visualization via realistic synthetic
 microscopic rendering, as well as other modular components for the parameter estimation workflow.
 In particular, `cr_mech_coli` is able to generate synthetic labeled microscopic images from any
 simulation output, which can be used to train machine learning models targeting cell segmentation
-and tracking.
-This package closes the gap between agent-based modeling, model validation & calibration and data
-synthesis.
+and tracking. This package closes the gap between agent-based modeling, model validation &
+calibration, and data synthesis.
 
 # Statement of Need
 Agent-Based Models (ABMs) provide a natural lens to map biological systems to numerical simulations
 [@Pleyer2023;@Ghaffarizadeh2018;@Cooper2020;@Karolak2021;@DeRybel2014].
-They express cellular behaviour in functions of individual agents.
+They express cellular behaviour as functions of individual agents.
 Although existing tools study various cell types, including spherical, hexagonal, and cylindrical
-[@Young2006;@Young2007], they mostly lack the ability to model flexible, elongated bacteria, such
-as _B.subtilis_.
+ones [@Young2006;@Young2007], they mostly lack the ability to model flexible, elongated bacteria,
+such as _B. subtilis_.
 Moreover, to validate the computational model against experimental data, parameter estimation
 techniques to calibrate the model [@Kreutz2013;@Raue2014] are required, which have not yet been
 applied in these scenarios.
@@ -71,9 +70,9 @@ level within an agent-based modeling framework.
 Existing calibration attempts [@An2016;@Lima2021;@Dancik2010;@Thiele2014] often rely on population
 data by aligning the distributions of readouts obtained from the chosen target system instead of
 estimating parameters on the cellular level.
-They also fail to properly capture the individual nature of these systems, including effects such 
+They also fail to properly capture the individual nature of these systems, including effects such
 as cellular heterogeneity.
-This leaves gaps regarding the interpretability of which parameters drive the observed phenomena.
+This leaves gaps in the interpretability of which parameters drive the observed phenomena.
 
 Another challenge lies in generating synthetic, realistic-looking data that extends beyond visual
 appearance to include accurate cellular dynamics.
@@ -101,7 +100,7 @@ that provides a more detailed description of the mathematical model and applies 
 collection of case studies.
 
 # Software design
-Our framework comprises 4 interleaved components:
+Our framework comprises four interleaved components:
 
 1. A computational model that simulates bacterial behaviour
 2. Methods to generate instance-level cell masks
@@ -158,11 +157,11 @@ applicable to a wide range of bacterial systems.
         This table lists aspects of cellular behavior which we consider in our computational model.
         It is split into cellular aspects (C) which concern only an individual bacterium and
         interactions between cells (CC).
-        These aspects are generalized in order to fit to as many types of rod-shaped bacteria as
+        These aspects are generalized in order to fit as many types of rod-shaped bacteria as
         possible.
-        These are the assumptions for the basic model that we are presenting here.
-        In order for our methods to work, we are really only required to satisfy the assumption of
-        our spatial representation and thus, these assumptions can also be loosened if required.
+        These are the assumptions of the basic model presented here.
+        Our methods require only that the spatial representation assumption be satisfied;
+        the remaining assumptions can therefore be relaxed if needed.
     }
     \label{table:simulation-aspects}
 \end{table}
@@ -196,7 +195,7 @@ To estimate the parameters of the computational model, we require methods that e
 experimental data with numerical outputs.
 Furthermore, we need to be able to initialize our model with experimental data by specifying values
 of the discretization vertices $\{\textbf{x}_i\}$.
-And finally, numerically obtained results need to be compared with experimental data to facilitate
+Finally, numerically obtained results need to be compared with experimental data to facilitate
 parameter estimation techniques.
 
 ### Data Extraction & Direct Comparison
@@ -204,7 +203,7 @@ We utilize the discretization in vertices $\{\textbf{x}_i\}$.
 We assume that the given microscopic image (such as in \autoref{fig:parameter-estimation} (A))
 has already been segmented by a fitting segmentation tool [@Cutler2022;@Stringer2020;@Hardo2022].
 Using the `scikit-image` package [@vanderWalt2014], we perform a skeletonization for each individual
-cell-submask @Lee1994 (see \autoref{fig:parameter-estimation} (B)).
+cell-submask [@Lee1994] (see \autoref{fig:parameter-estimation} (B)).
 Afterwards, we extract the individual vertices from the skeleton (\autoref{fig:parameter-estimation}
 (C)).
 These positions can now be used to initialize the agents correctly in space as well as for comparing
@@ -213,9 +212,9 @@ numerical outputs to data.
 ### Using Instance-Level Masks for Imaging-Based Comparison
 The extraction algorithm enables comparison of cellular states across intervals without division
 events.
-However, this technique can not be applied when division events change the number of present
+However, this technique cannot be applied when division events change the number of present
 vertices, since this would require comparing arrays of unequal dimensions.
-We can, therefore, realize another approach in which we render cell masks of the numerically
+We therefore adopt another approach in which we render cell masks of the numerically
 obtained results and compare the resulting image to the experimental cell masks.
 This technique does not require any assumptions about the agents' underlying spatial representation.
 To properly compare cellular states, the cell lineage of the data needs to be mapped to the
@@ -283,10 +282,10 @@ the cells are indicated in gray.
         \vspace*{\textwidth}
     \end{minipage}
     \caption{
-        (A) Microscopic image of 6 \textit{E.Coli} used as an initial datapoint
+        (A) Microscopic image of 6 \textit{E. coli} used as an initial datapoint
         (\protect\hyperlink{ref-Trude1982}{Trude et al., 1982}).
         (B) Segmentation mask of (A) with the extracted skeleton overlaid.
-        (C) Extrapolated vertices from the skeleton of the bacterium from (B).
+        (C) Extracted vertices from the skeleton of the bacterium in (B).
         (D-E) Snapshots of two synthetic masks that are being compared.
         (F-G) Difference of (D) to (E). Matching colors are black, differences are white.
         (G) additionally includes parental relationships, indicating that one cell is the daughter of the other, shown in gray.
@@ -306,7 +305,7 @@ can be used in particular settings, the former containing a model of a flexible 
 the latter including division events.
 Our methods are designed in such a way that standardized tools can be used in tandem with
 `cr_mech_coli`.
-We encourage readers to explore the code of the `crm_amir` script as an initial starting point for
+We encourage readers to explore the code of the `crm_amir` script as a starting point for
 parameter estimation.
 
 \begin{figure}[!h]
@@ -352,7 +351,7 @@ constructed by merging a series of spheres and cylinders into a continuous, smoo
 Afterwards, these 3D models are projected along the z-axis, producing raw intensity images
 (\autoref{fig:pipeline} (B)) and corresponding ground-truth segmentation masks
 (\autoref{fig:pipeline} (D)).
-However, the resulting raw-intensity images do not resemble realistic microscopic data, missing
+However, the resulting raw-intensity images do not resemble realistic microscopic data, as they lack
 optical effects and distortions such as sensor noise, halo effects, and cellular texture.
 Thus, to minimize the domain gap between synthetic and empirical data, the raw projection is
 processed through a physics-inspired imaging pipeline, simulating the specific distortions and
@@ -453,9 +452,9 @@ applications, where manually annotated ground-truth data are scarce and expensiv
 # AI usage disclosure
 We used Claude Opus [@claude_opus2025] as a coding assistant during the implementation of the data
 generation functionality encapsulated within the `crm_gen` module and script.
-All other code-related implementations were done without the assistance of AI systems.
+All other code was implemented without AI assistance.
 Further, we used Grammarly [@grammarly] to polish the writing, while all core contributions and the
-initial draft were done by the authors.
+initial draft are the authors' own work.
 
 # Acknowledgements
 JB acknowledges support from the German Research Foundation (DFG) under grant 499552394
