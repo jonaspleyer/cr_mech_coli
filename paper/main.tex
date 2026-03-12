@@ -1018,9 +1018,8 @@ which can be minimized.
 As explained in Section~\ref{sec:methodology}, parameters can be specified
 as global, which are identical across all cells, or as individual, which allow us to capture
 cell-to-cell variability.
-We use the preceding algorithms to extract data from cell-masks, simulate from an initial state
-{\bf [wie ist der Anfangszustand gewählt?]}
-and then compare both results.
+We use the preceding algorithms to extract data from cell-masks, initialize the system with the
+obtained information, simulate its progression and then compare both results.
 The cell-masks are easily obtainable by either using existing segmentation
 tools~\cite{Cutler2022,Stringer2020,Hardo2022} or manually annotating microscopic image series.
 
