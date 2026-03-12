@@ -1028,7 +1028,7 @@ basis.
 
 \subsubsection{Direct Position-Space Metric}
 \label{subsec:direct-metric}
-The previous section has layed out how the positional information of cells can be obtained from
+The previous sections have layed out how the positional information of cells can be obtained from
 provided segmentation masks.
 Given $N_c$ cells with $N_v$ vertices in $d$ dimensions at $N_t$ time points, the total information
 can be stored in an array $\nu_{i,j,k,l}$ of shape $(N_c,N_v,d,N_t)$.
@@ -1091,14 +1091,18 @@ In this work we will use confidence intervals $1-\alpha=68\,\%, 90\,\%, 95\,\%$.
 \subsubsection{Lineage-aware Image-Space Metric}
 \label{subsec:image-space-metric}
 \paragraph{Motivation}
-The preceding algorithm is performant and effective but cannot be applied in the case when a
-division event occurs since this would require comparing sets of unequal cardinality.
+The preceding algorithm cannot be applied in the case when a division event occurs since this would
+require comparing sets of unequal cardinality.
 This situation is displayed in Figure~\ref{fig:mask-difference-metric} (E) where two distinct
 bacterial configurations originate from the same initial state but contain varying numbers of
-bacteria at the next time step. Such a mismatch can happen, e.g. due to non-matching division times of model and data.
+bacteria at the next time step.
+Such a mismatch can happen, e.g. due to non-matching division times of model and data.
 Thus a cell which is present in the simulation might not yet have a corresponding cell in the
 experimental data at this time point yet (or vice-versa).
-{\bf [das verstehe ich nicht, man kann doch Simulation und Daten nur an festen, diskreten Zeitpunkten vergleichen und an denen sollte die Anzahl der Zellen doch gleich sein.]}
+A model with fully optimized parameters should strive to reduce such mismatches and ideally not
+contain any time intervals of non-matching bacterial configurations.
+However, especially during optimization and possibly even in the final optimized result these
+scenarios can manifest.
 
 In addition to these technical challenges come practical ones.
 Within a short time period after the division event, the two resulting daughter cells will cover
@@ -1121,64 +1125,75 @@ differences in the segmentation masks of two bacterial configurations.
 Within the realm of image segmentation many metrics such as the Jaccard Index~\cite{Murphy1996},
 Dice-Sørensen Coefficient~\cite{Dice1945}, Precision and Recall~\cite{Takaya2015} or F1
 Score~\cite{Taha2015} are actively used to deal with similar questions.
-However, all of these statistical methods are based on the idea of identifying matching and non-matching regions. Therefore, it is first necessary to define a criterion for this.
+However, all of these statistical methods are based on the idea of identifying matching and
+non-matching regions.
+Therefore, it is first necessary to define a criterion for this.
 
-We can use the previously introduced \nameref{subsection:visualization} methods to obtain cell-masks
-from the numerical results of the \ac{abm} simulation.
-
+We can use the previously introduced visualization methods (section \ref{subsection:visualization})
+methods to obtain cell-masks from the numerical results of the \ac{abm} simulation.
 Since we utilize an in-image encoding scheme, each pixel has a unique color value which is directly
 related to one particular cell or background (black).
-However, in the strictly 2D case, where cells should not be able to hide behind each other, it is
-also important to determine possible overlaps of segmentation regions for individual cells.
-{\bf [Das ist unklar. Woher kommt denn in 2D ein Überlapp?]}
+This enables us to compare an experimental with numerically simulated cell masks pixel by pixel and
+assign penalty values depending on the two pixel values in question.
+If the colors for both pixels match, no penalty is assigned ($p=0$).
+Otherwise if no special cases do apply, we choose the default penalty $p=1$.
 
-These overlaps stem from parameter combinations which exhibit a low repulsive interaction force.
-Since such overlaps are unrealistic, we need to assign an additional penalty $p_o\geq0$ in this
-case.
-They can by definition not be found in the provided data segmentation masks.
-We can now compare the two masks pixel by pixel.
-Whenever two colors are not matching, a penalty of $p=1$ is assigned for each point in the
-pixel-grid.
+However, in the strictly 2D case, an additional phenomenon comes into play.
+The cell envelope of numerically simulated agents may overlap with each other thus creating regions
+of the image which can not be characterized by a single color value.
+This phenomenon strongly depends on the model parameters and spatial cellular configuration and can
+by definition not be found in the experimental segmentation masks.
+It can ocurr, e.g., in dense areas, containing multiple cellular agents with low repulsive
+interaction strength.
+We therefore assign a separate penalty value $p_o\geq0$ for every pixel contained in such an
+overlap.
 
-With this approach it is important to take into account the parental relationship between the cells,
-by checking if either one of the colors corresponding to the compared cells is a daughter of the
-other cell.
-{\bf [Ich denke nicht, dass jemand versteht worüber du hier redest.]}
+Another aspect to consider is the parental relationship between cells.
+At the instant right after a division event has commenced, the two daughter cells will fill the
+space previously occupied by their mother.
+When comparing two pixel values, we check if either one of the corresponding cells is a daughter of
+the other cell and assign a modified penalty value $p_p\geq0$ if this is the case.
+This value should be chosen smaller than the default penalty $p=1$ utilized for non-matching color
+values in order to weaken the assigned penalty due to parental relationship.
+
+The total cost between two images $I$ and $\tilde{I}$ is the sum of all individual penalties
+\begin{align}
+    L_I(\theta|I,\tilde{I}) &= \sum\limits_{i,j} p(I_{ij}, \tilde{I}_{ij})\\
+    p(I_{ij},\tilde{I}_{ij}) &= \begin{cases*}
+        p_o & \text{if $I_{ij}$ or $\tilde{I}_{ij}$ is in overlap}\\
+        p_p & \text{if $I_{ij}$ is daughter/mother of $\tilde{I}_{ij}$}\\
+        1 & \text{if } $I_{ij}\neq \tilde{I}_{ij}$\\
+        0 & \text{else}
+    \end{cases*}
+\end{align}
+where the sum is over all grid points $i,j$ of the two compared images and a penalty of $p=1$ is
+assigned for non-matching pixel values whose corresponding cells are not related by a parental
+relationship.
+Similar to the preceding section we assume $I=I(\theta)$ to be the model output which therefore
+informs $L(\theta,I,\tilde{I})$.
 
 Figure~\ref{fig:mask-difference-metric} (A,B) shows two states of a numerical simulation
-with varying numbers of cells. We can see that some cells have divided while others have only
-extended in the same time interval.
-The resulting penalties without accounting for the parental relationships are displayed in
+with varying numbers of cells.
+We can see that some cells have divided while others have only extended in the same time interval.
+The differing pixels without accounting for parental relationships are displayed in
 Figure~\ref{fig:mask-difference-metric} (C).
 % Black indicates that the pixels are matching and no penalty is assigned while white
 % indicates that the original pixels are not matching, thus adding to the overall cost.
 In contrast, Figure~\ref{fig:mask-difference-metric} (D) takes the parental relationship into
 account and highlights regions where compared pixels belong to mother-daughter cells in gray.
-We assign a specific parent penalty $0\leq p_p\leq 1$ value for these points which should be seen as
-an additional hyperparameter for this optimization algorithm.
+
+% We assign a specific parent penalty $0\leq p_p\leq 1$ value for these points which should be seen as
+% an additional hyperparameter for this optimization algorithm.
 % It is possible to assign a custom value for the parental cost value.
-Setting its value to $0$ results in a continuous cost function in time.
+% Setting its value to $0$ results in a continuous cost function in time.
 % In the future, more complex choices for this parent penalty might be feasible such as
 % time-dependence $p(t-t_\text{division})$.
-The total cost between two images $I^1$ and $I^2$ is the sum of all individual penalties
-\begin{align*}
-    L_I(I^1,I^2) &= \sum\limits_{i,j} p(I^1_{ij}, I^2_{ij})\\
-    p(i^1,i^2) &= \begin{cases*}
-        p_o & \text{if $i^1$ or $i^2$ is in overlap}\\
-        p_p & \text{if $i^1$ is daughter/mother of $i^2$}\\
-        1 & \text{if } $i^1\neq i^2$\\
-        0 & \text{else}
-    \end{cases*}
-\end{align*}
-where the sum is over all grid points $i,j$ of the two compared images and a penalty of $p=1$ is
-assigned for non-matching pixel values whose corresponding cells are not related by a parental
-relationship.
 
 While our primary concern is to compare numerically obtained results with experimental data,
 this approach allows us to compare all spatial configurations which can be represented
 by segmented microscopic images irrespective of how these are obtained.
-On a higher level, this means that our method is agnostic to the underlying cellular representation.
-This means that other models who potentially utilize very distinct cellular representations but are
+On a higher level, this means that our method is agnostic to the underlying cellular representation
+and thus other models who potentially utilize very distinct cellular representations but are
 able to render segmented images can reuse our method.
 
 \subsubsection{Benchmarking the Image-Space Metric under Division Events}
