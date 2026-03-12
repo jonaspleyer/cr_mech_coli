@@ -456,9 +456,9 @@ We therefore need account for this phenomenon as well.
         It is divided into two categories: cellular aspects (C), which only concern an individual
         bacterium, and interactions between cells (CC).
         These aspects are generalized to fit as many types of rod-shaped bacteria as possible.
-        In order for our methods to work, we are really only required to satisfy the assumption of
-        our spatial representation (see \nameref{subsec:spatial-representation}) and thus, these
-        assumptions can also be loosened if required {\bf [unverständlich, klingt wie ein Widerspruch]}.
+        Our methods solely build on the spatial representation (see
+        \nameref{subsec:spatial-representation}) making them independent of the analyzed cellular
+        properties.
     }
     \label{table:simulation-aspects}
 \end{table}
@@ -472,14 +472,12 @@ cells. To model the spatial mechanics of elongated bacteria \cite{Billaudeau2017
 collection of auxiliary vertices $\{\vec{x}_i\}$.
 We treat this collection of vertices as a discretization of the rod where the individual segments
 between the vertices carry no explicit physical or biological meaning.
-This assumption {\bf [wo ist die Assumption?]} alone is enough to be able to build visualization
+This representation alone is enough to be able to build visualization the presented
 and data-extraction pipelines (see \ref{fig:flowchart-project-structure}).
 
 Our computational model builds on top of this assumption and utilizes this representation to
 define the dynamics of the vertices $\{\vec{x}_i\}$.
 For this study, we will choose a particular type of model incorporating a chosen set effects.
-But researchers are in general free to adapt the model for the specific problem at hand
-{\bf [natürlich, in einer freien Wissenschaft sollte es so sein. Was meinst du hier genau?]}.
 By building on our discretization scheme, future modeling approaches will be able to directly reuse
 our established theoretical methods and computational functionalities.
 
@@ -669,22 +667,22 @@ This process will increase the length of the cell indefinitely unless we impose 
 division event.
 The cell divides when the spring length $l$ has reached a fixed length threshold
 $l_\text{thresh}$~\cite{Robert2014}.
-To construct a new cell, we cannot simply copy the existing one twice,
-{\bf [die Aufteilung der Moleküle nach dem Teilungsprozess ist Binomialverteilt, darauf sollte hier eingegangen werden]}
-but we also need to adjust internal parameters in the process.
-The following actions need to be taken for the old and new agent
-{\bf [wie passiert die Aufteilung genau? Werden zwei neue Agenten erzeugt? Ich dachte das sei so.]}.
-We first calculate the new spring lengths of the two resulting rods via
+At this point, two new cells are constructed in place of the mother cell.
+Utilizing the properties of the mother cell, we first calculate the new spring lengths of the two
+resulting rods via
 
 \begin{equation}
     \tilde{l} = l\left(\frac{1}{2} - \frac{R}{n_v l}\right)
 \end{equation}
 
 where $n_v$ is the number of vertices and $R$ the previously introduced thickness of the rod.
-This relation ensures that that the tips of the two new rods are touching right after the division event.
-We subdivide the polygon given by the vertices of the mother cell in $n$ segments of length
-$\tilde{l}$, one segment of length $2R$ and again $n$ segments of length $\tilde{l}$.
-The first and latter groups determine the new vertices of the two daughter cells.
+This relation ensures that that the tips of the two new rods are touching right after the division
+event.
+We subdivide the polygon given by the vertices of the mother cell in $2n+1$ segments consiting of
+$n$ segments of length $\tilde{l}$, one segment of length $2R$ and again $n$ segments of length
+$\tilde{l}$.
+The first and latter groups determine the new vertices of the two daughter cells while the segment
+between them acts as spacing.
 This approach assumes that the total length of the polygon is greater than its diameter,
 i.e., $n_vl>2R$.
 We set the individual growth rates of the daughter cells explicitly during the division event.
