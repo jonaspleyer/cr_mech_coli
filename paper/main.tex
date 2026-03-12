@@ -767,23 +767,23 @@ To visualize the spatial configuration of the results we employ
 \texttt{PyVista}~\cite{sullivan2019pyvista}, which provides high-level wrappers around the popular
 VTK library~\cite{vtkBook,Sullivan2019}.
 
-The first stage of the visualisation process involves generating three-dimensional meshes for each
-bacterium as an intermediate representation (see Figure~\ref{fig:progression-image-generation} (A)).
+The first stage of the visualization process involves generating three-dimensional surface meshes
+for each bacterium (see Figure~\ref{fig:progression-image-generation} (A)).
 We insert spheres matching the thickness of the rod $R$ at each vertex $\vec{x}_i$ and connect
 adjacent vertices $\vec{x}_i,\vec{x}_{i+1}$ with a cylinder, of radius $r$ which is positioned
 such that its core is identical to the connecting line segment between the two vertices.
-Finally, we combine the meshes of all of these objects to obtain a single mesh of one bacterium.
-A render including smoothened meshes and external light sources of this configuration can be seen
-in Figure~\ref{fig:progression-image-generation} (B).
+Finally, we combine the meshes of all of these objects and extract their combined surface which will
+be used for visualization of a single bacterium.
+Figure~\ref{fig:progression-image-generation} (B) shows an artistic render of multiple bacterial
+agents which includes visual effects such as external light sources.
 
-Since we use a 3D rendering engine for our visualization, the resulting image can display
-overlaps of bacteria which are placed at higher or lower values along the z-direction.
 To generate masks, we use a pixel-based (in-image) encoding scheme~\cite{JianboShi2000}, thus
 assigning unique colors to every mesh of the respective cellular agent, ensuring no two agents
-will use identical colors and colors are unique across the duration of the simulation.
-We then use a parallel projection and remove any existing lighting effects in order to obtain an
-image solely comprised of solid colors.
-The resulting image is shown in Figure~\ref{fig:progression-image-generation} (C)
+will use identical colors.
+We further enforce their uniqueness throughout the duration of the simulation.
+Finally, we apply a parallel projection along the z-axis in order to obtain an image solely comprised
+of solid colors.
+The resulting image is shown in Figure~\ref{fig:progression-image-generation} (C).
 
 \begin{figure}[H]
     \centering
