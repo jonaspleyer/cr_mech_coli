@@ -351,12 +351,13 @@ def plot_morse_potential(
     fig_ax,
     ls,
     label=None,
+    yoffset=0,
 ):
     def morse_potential(x, r, potential_stiffness, cutoff):
         t = 1 - np.exp(-potential_stiffness * (x - r))
         c = x <= cutoff
         n_last = np.argmax(1 - c)
-        y = strength * t**2
+        y = strength * t**2 + yoffset
         return y * c + (1 - c) * y[n_last], n_last
 
     if fig_ax is None:
