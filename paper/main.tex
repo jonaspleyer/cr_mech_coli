@@ -310,7 +310,8 @@ division, elastic deformations of the rod and mechanical interactions between ce
 Second, we develop computational methods which utilize segmented microscopic images to
 quantitatively compare numerical results with biological data on the single-cell level.
 With these methods we can estimate the parameters of our model in three scenarios, each probing
-different aspects of our model with increasing levels of complexity. A key feature of this framework is its modularity.
+different aspects of our model with increasing levels of complexity.
+A key feature of this framework is its modularity.
 While most subcomponents (see Figure~\ref{fig:flowchart-project-structure}) rely on the spatial
 representation of bacteria as discretized vertices, others, i.e., the
 \nameref{subsec:image-space-metric} operate purely on segmentation masks, making them fully
@@ -529,14 +530,11 @@ heterogeneous intracellular growth of the cell wall which results in plastic
 deformations~\cite{Ursell2014}.
 Without any external interferrence, the bacteria will grow into straight rod-like
 shapes~\cite{Wang2010}.
-Our work focusses on smaller time scales where no plastic deformations are involved.
-
-On longer time scales, this leads to an asymmetric, heterogeneous intracellular growth of the cell
-which can result in plastic deformations~\cite{Ursell2014} for cells under constant tension.
-Without any external interferrence, this type of growth will result in straight rod-shaped
-bacteria~\cite{Wang2010}.
+Our work focusses on smaller time scales where no plastic deformations are involved but short-term
+elastic forces dominate.
 
 We model the bacterium as a bending beam and
+% TODO thesis talk about this
 % In principle, this stress will be dependent on the position inside the cell~\cite{Chatterjee1988},
 % but for sake of simplicity we chose to model the bacterium as a bending beam.
 discretize the bacteria into vertices $\vec{x}_i$, connected by elastic springs of length $l$.
@@ -544,7 +542,8 @@ Figure~\ref{fig:model-bacterium} (A) shows an bacterial rod represented by $6$ v
 % which can be represented by a collection of vertices $\vec{x}_i$ which are connected by a
 % springs of lengths $l$.
 
-With the notation $\vec{w}_i:=\vec{x}_i-\vec{x}_{i-1}$ the resulting force acting between two vertices is given by:
+With the notation $\vec{w}_i:=\vec{x}_i-\vec{x}_{i-1}$ the resulting force acting between two
+vertices is given by:
 \begin{equation}
     \vec{F}_{i,\text{springs}} =
         -\gamma\left(1 - \frac{l}{\left|\vec{w}_i\right|}\right) \vec{w}_i
@@ -643,23 +642,22 @@ potential.
 It was originally brought up to describe the interaction of diatomic molecules but has since found
 use in other areas~\cite{Breitwieser2021}.
 It contains a repulsive and attractive part and is bound from above
-{\bf [das stimmt nicht für $r\in\mathbb{R}$]} which makes it particularly
 suitable for numerical simulations since unbound potentials can lead to large numerical deviations
 thus compromising the prediction of the model.
 The potential is of the form
 \begin{equation}
-    V(r) = V_0\left(1-e^{-\omega(r-(R_1+R_2))}\right)^2
+    V(r) = V_0\left(e^{-2\omega(r-(R_1+R_2))} - 2e^{-\omega(r-(R_1+R_2))}\right)
 \end{equation}
-and has 3 parameters. The overall potential strength $V_0$, the radii of the particles $R_1,R_2$ and the potential
+and has 3 parameters.
+The overall potential strength $V_0$, the radii of the particles $R_1,R_2$ and the potential
 stiffness $\omega$ which controls the rate of change as one travels along the radial axis.
- {\bf [wäre es nicht besser $V_0$ vom Potential abzuziehen, dann wäre $-V_0$ das Minimum und $\lim_{r\to\infty}V(r)=0$?]}
-
 We also assign a spatial cutoff $\xi$ to the range of the interaction potential.
 Figure~\ref{fig:model-bacterium} (D) shows various configurations of a morse potential.
 
 % --------------------------------------------------------------------------------------------------
 \subsection{Cell-Cycle}
-To simulate cellular growth, we introduce an exponential growth term for the spring lengths $l$ \cite{Takeuchi2005}.
+To simulate cellular growth, we introduce an exponential growth term for the spring lengths
+$l$ \cite{Takeuchi2005}.
 \begin{equation}
     \partial_t l = \mu l
 \end{equation}
@@ -1016,7 +1014,8 @@ Further details such as information about the covariances are given in the suppl
 \subsection{Parameter Estimation Methods}
 \label{section:parameter-estimation}
 In order to effectively estimate the parameters of our model, we need to set up a cost function
-which can be minimized. As explained in Section~\ref{sec:methodology}, parameters can be specified
+which can be minimized.
+As explained in Section~\ref{sec:methodology}, parameters can be specified
 as global, which are identical across all cells, or as individual, which allow us to capture
 cell-to-cell variability.
 We use the preceding algorithms to extract data from cell-masks, simulate from an initial state
