@@ -508,8 +508,8 @@ our established theoretical methods and computational functionalities.
         A bacterial agent which is not interacting with any external objects will tend to the
         equilibrium state of a straight rod with no curvature.
         (B) Schematic of calculating the physical interaction between two bacteria.
-        Vertices on the upper agent are interacting with nearest points on the polygon of the lower
-        agent.
+        Vertices on the upper agent are interacting with nearest points on each segment of the
+        polygon of the lower agent.
         (C) Potential curves of the Mie potential for various combinations of exponents $n,m$ with
         upper bound $\beta=2.5\,U_0$ and cutoff $\zeta=3.5\,(R_1+R_2)$ (red line).
         (D) Potential curves of the Morse potential with various stiffnesses $\omega$ and cutoff
@@ -590,13 +590,15 @@ With four parameters, the Mie potential is more flexible than the Morse potentia
 The latter has only three parameters, which may be advantageous in situations of sparse data.
 
 Calculating the force between cells requires performing a double integral over the two polygonal
-paths of the cells. To reduce the computational costs we use an approximative, simplified model.
-Given a vertex $\vec{x}_i$ on one cell, we determine the closest point $\vec{p}$ on the polygonal
-line given by the vertices $\{\vec{y}_j\}$ of the interacting cell.
+paths of the cells.
+To reduce the computational costs we use an approximative, simplified model.
+Given a vertex $\vec{x}_i$ on one cell, we determine the closest point $\vec{p}$ on each segment of
+the polygonal line given by the vertices $\{\vec{y}_j\}$ of the interacting cell.
 Furthermore we determine the value $q\in[0,1]$ such that $\vec{p} = (1-q)\vec{y}_j + q\vec{y}_{j+1}$
-for some specific $j$. This approximation is especially justified for short-ranged interactions.
+for some specific $j$.
 The force is then calculated between the points $\vec{x}_i$ and $\vec{p}$ and acts on the vertex
 $\vec{y}_j,\vec{y}_{j+1}$ with relative strength $(1-q)$ and $q$.
+This approximation is especially justified for short-ranged interactions.
 \begin{equation}
     \vec{F}_{i,\text{External}} = \vec{F}(\vec{x}_i,\vec{p})
 \end{equation}
