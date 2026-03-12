@@ -820,8 +820,10 @@ This section explains how we can transform a segmented microscopic image such th
 collection of vertices (see \nameref{subsection:mechanical-model-mechanics}) that can be used
 to initialize our agents and to perform parameter estimation.
 There exists a plethora of tools to perform segmentation of
-images~\cite{Stringer2020,Cutler2022,Hardo2022}. Figure~\ref{fig:position-extraction-algorithm} (A) shows a typical microscopic image.
-Our algorithm requires that images are prepared using a pixel-based (in-image) encoding scheme, as we explained in section~\ref{subsection:visualization}.
+images~\cite{Stringer2020,Cutler2022,Hardo2022}. Figure~\ref{fig:position-extraction-algorithm} (A)
+shows a typical microscopic image.
+Our algorithm requires that images are prepared using a pixel-based (in-image) encoding scheme, as
+we explained in section~\ref{subsection:visualization}.
 
 % Having defined the input type of our algorithm, we proceed with the following 5 steps:
 
@@ -870,7 +872,7 @@ undesirable in our case.
 We have found that for most practical examples, the algorithm devised by~\cite{Lee1994} works well.
 
 The skeletonisation algorithm provides us with a set of unordered lattice points $\vec{p}_i$
-(pixel coordinates) that define the location of the skeleton. 
+(pixel coordinates) that define the location of the skeleton.
 We identify the endpoints $\vec{q}_0,\vec{q}_1$ by counting the number of neighbors in the von
 Neumann neighborhood for each lattice point.
 Any point with exactly one neighboring point must be an endpoint.
