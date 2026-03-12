@@ -1025,56 +1025,55 @@ tools~\cite{Cutler2022,Stringer2020,Hardo2022} or manually annotating microscopi
 
 \subsubsection{Direct Position-Space Metric}
 \label{subsec:direct-metric}
-In the scenario where no cells divide during the observed interval, we can use our extraction
-algorithm to obtain the position of the cells and then compare them directly to the cellular
-skeletons obtained from the computational results.
-
+The previous section has layed out how the positional information of cells can be obtained from
+provided segmentation masks.
 Given $N_c$ cells with $N_v$ vertices in $d$ dimensions at $N_t$ time points, the total information
 can be stored in an array $\nu_{i,j,k,l}$ of shape $(N_c,N_v,d,N_t)$.
 Comparing the results of a simulation $\nu$ with parameters $\theta$ with experimental values
 $\tilde{\nu}$ is thus only a matter of comparing two of these arrays via a suitable cost
-function~\cite{Wang2020}.
-In our approach we utilize a \ac{ls} approach given by
-\begin{equation}
-    L_{\text{LS}}(\theta|\vec{x}, \vec{y})
-        = \sum\limits_{ijkl}|\nu_{i,j,k,l} - \tilde{\nu}_{ijkl}|^2
-\end{equation}
-which minimizes the distance between the corresponding vertices at each time point.
-{\bf [was sind $x$ und $y$?]}
-One important detail is that the ordering of vertices must be identical in the numerical and
-experimental values.
+function~\cite{Wang2020} under a given error model.
+However, these arrays will only retain their shape if no cells divide during the observed interval
+therefore limiting the applicability of this approach.
+We denote $\nu=\nu(\theta)$ to be the model output and $\tilde{\nu}$ the experimental data.
+Another important practical detail is that the ordering of vertices of experimental data and
+simulation output needs to match.
 
-% This metric can be used to compare the model output to datapoints obtained from microscopic images.
 A common technique to investigate identifiability questions and provide insights into confidence
 levels of the obtained results is the \textit{profile-likelihood}
 method~\cite{Murphy2000,Kreutz2013,Tnsing2023}.
+It provides confidence intervals which are invariant under parameter
+transformations~\cite{Meeker1995} and  builds on the so-called \textit{log-likelihood} which
+propagates uncertainties $\sigma_{ijkl}$ in the datapoints.
 
-It is able to provide confidence intervals which are invariant under parameter
-transformations~\cite{Meeker1995}.
-It builds on the so-called \textit{log-likelihood} which propagates uncertainties $\sigma_{ijkl}$ in
-the datapoints.
-Under the assumption of a constant, known uncertainty, i.e. $\sigma_{ijkl}=\sigma$, we can rewrite
-the log-likelihood in terms of $L_\text{LS}$ via
-\begin{align}
-    L(\theta) &= \sum\limits_{ijkl}\left(\left(\frac{\nu_{ijkl}-\tilde{\nu}_{ijkl}}{\sigma_{ijkl}}\right)^2
+The preceding section (\nameref{subsec:position-extraction-algorithm}) has shown that
+the error distribution of the underlying data follows a normal distribution.
+In this special case, the \textit{log-likelihood} of model output $\nu$ and datapoint $\tilde{\nu}$
+is given by
+\begin{equation}
+    L(\theta|\nu,\tilde{\nu}) = \sum\limits_{ijkl}\left(\left(\frac{\nu_{ijkl}(\theta)-\tilde{\nu}_{ijkl}}{\sigma_{ijkl}}\right)^2
     + 2 \log(\sigma_{ijkl})
-    +\text{const}\right)\\
-    &= \frac{L_\text{LS}(\theta)}{\sigma^2} + \text{const}
-\end{align}
+    +\text{const}\right)
+\end{equation}
+which is commonly referred to as a weighted \ac{ls} approach.
+If we additionally assume that the uncertainty $\sigma_{ijkl}=\sigma$ is constant, we can write
+\begin{equation}
+    L(\theta|\nu,\tilde{\nu}) = \frac{L_\text{LS}(\theta)}{\sigma^2} + \text{const}
+\end{equation}
 where we absorbed the terms $2\log(\sigma_{ijkl})$ in the sum into the constant term.
-With this simplification, it is important to pick a value for $\sigma$ such that the real
-uncertainty is overestimated.
-{\bf [Das ist verwirrend. Es ist nicht nötig zuerst die LS einzuführen und dann die Likelihood. Starte mit der Likelihood, oder dem Posterior. Die Profile-Likelihood ist dann eine Möglichkeit die Konfidenzen zu bestimmen.]}
+With this simplification, it is important to pick a value for $\sigma$ which presents an upper bound
+of the real uncertainty.
+Therefore, minimizing the \ac{ls} value
+\begin{equation}
+    L_{\text{LS}}(\theta|\nu,\tilde{\nu})
+        = \sum\limits_{ijkl}|\nu_{i,j,k,l} - \tilde{\nu}_{ijkl}|^2
+\end{equation}
+under constant $\sigma$ is equivalent to minimizing the \textit{log-likelihood} $L$ which is again
+equivalent to maximizing the likelihood that the chosen parameters represent our model.
 
-Furthermore, the preceding section (\nameref{subsec:position-extraction-algorithm}) has shown that
-the error distribution of the underlying data follows a normal distribution which justifies the core
-assumption of this framework.
-We conclude that minimizing, the least squares value $L_\text{LS}$ under constant $\sigma$ is
-equivalent to minimizing the \textit{log-likelihood} $L$ which is again equivalent to maximizing the
-likelihood that the chosen parameters represent our model.
-
-The \textit{profile likelihood} $PL(\theta_i)$ makes use of these formalisms and scans a single
-parameter $\theta_i$ along its axis while reoptimizing the remaining ones.
+In order to obtain estimates of the confidence interval of the optpimized parameters, we can employ
+the \textit{profile likelihood} $PL(\theta_i)$ method.
+It makes use of the introduced formalisms and scans a single parameter $\theta_i$ along its axis
+while reoptimizing the remaining ones.
 We can obtain confidence intervals via
 \begin{equation}
     PL(\theta_i) - L(\theta) \leq \Delta_\alpha
@@ -1085,7 +1084,6 @@ distribution with one degree of freedom~\cite{Tnsing2023}.
 This means that every parameter $\theta_i$ which satisfies
 relation~\eqref{eq:profile-likelihood-confidence-interval} has confidence level $(1-\alpha)$.
 In this work we will use confidence intervals $1-\alpha=68\,\%, 90\,\%, 95\,\%$.
-{\bf [wir müssen über diesen Abschnitt reden; deine Argumentation scheint mir etwas zu umständlich und "hintenrum"]}
 
 \subsubsection{Lineage-aware Image-Space Metric}
 \label{subsec:image-space-metric}
