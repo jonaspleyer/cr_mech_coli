@@ -45,9 +45,9 @@ def plot_polygon_with_arrows(points, radius, angle_circle_size=0.8):
     __plot_cell_envelope(ax, points, radius)
 
     ax.scatter(points[:, 0], points[:, 1], s=80, marker="+", color="k")
-    ax.text(*(points[0] + np.array([-0.2, 0.2])), "$\\vec x_{}$".format(0))
+    ax.text(*(points[0] + np.array([-0.2, 0.2])), "$\\mathbf x_{}$".format(0))
     ax.text(
-        *(points[-1] + np.array([-0.2, 0.2])), "$\\vec x_{}$".format(len(points) - 1)
+        *(points[-1] + np.array([-0.2, 0.2])), "$\\mathbf x_{}$".format(len(points) - 1)
     )
 
     __plot_cell_springs(ax, points)
@@ -81,7 +81,7 @@ def plot_polygon_with_arrows(points, radius, angle_circle_size=0.8):
         )
         ax.text(
             *(p2 + text_pos),
-            "$\\vec x_{}$".format(i),
+            "$\\mathbf x_{}$".format(i),
             verticalalignment="center",
             horizontalalignment="center",
         )
