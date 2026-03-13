@@ -93,25 +93,12 @@ dependencies = [
 
 [[package]]
 name = "approx"
-version = "0.6.0-rc1"
+version = "0.6.0-rc2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b3578fdace1111371dd1f9151320d6e379e9000b2cfb7ec18c1e52600803e6b8"
+checksum = "94fbdd65cc59dcc820bfb0fd01315963d4f9898bf3399a47134c9836698c47df"
 dependencies = [
- "approx-derive",
  "num-traits",
  "paste",
-]
-
-[[package]]
-name = "approx-derive"
-version = "0.6.0-rc1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fccf82d436b57c74b8831aa05dd15748a1953ae1714579637b9cb5f088b89f57"
-dependencies = [
- "proc-macro-crate",
- "proc-macro2",
- "quote",
- "syn",
 ]
 
 [[package]]
@@ -222,7 +209,7 @@ name = "cellular_raza-building-blocks"
 version = "0.5.0"
 source = "git+https://github.com/jonaspleyer/cellular_raza/#dbb0896bdedc0324fa1dea9a4739703a9bb8b512"
 dependencies = [
- "approx 0.6.0-rc1",
+ "approx 0.6.0-rc2",
  "cellular_raza-concepts",
  "itertools 0.14.0",
  "nalgebra",
@@ -408,7 +395,7 @@ checksum = "773648b94d0e5d620f64f280777445740e61fe701025087ec8b57f45c791888b"
 name = "cr_mech_coli"
 version = "0.9.1"
 dependencies = [
- "approx 0.6.0-rc1",
+ "approx 0.6.0-rc2",
  "cellular_raza",
  "clap",
  "cmake",
@@ -1600,15 +1587,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "proc-macro-crate"
-version = "3.4.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "219cb19e96be00ab2e37d6e299658a0cfa83e52429179969b0f0121b4ac46983"
-dependencies = [
- "toml_edit",
-]
-
-[[package]]
 name = "proc-macro2"
 version = "1.0.106"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2381,18 +2359,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "toml_edit"
-version = "0.23.10+spec-1.0.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "84c8b9f757e028cee9fa244aea147aab2a9ec09d5325a9b01e0a49730c2b5269"
-dependencies = [
- "indexmap 2.13.0",
- "toml_datetime",
- "toml_parser",
- "winnow",
-]
-
-[[package]]
 name = "toml_parser"
 version = "1.0.6+spec-1.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2725,9 +2691,6 @@ name = "winnow"
 version = "0.7.14"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "5a5364e9d77fcdeeaa6062ced926ee3381faa2ee02d3eb83a5c27a8825540829"
-dependencies = [
- "memchr",
-]
 
 [[package]]
 name = "wit-bindgen"
