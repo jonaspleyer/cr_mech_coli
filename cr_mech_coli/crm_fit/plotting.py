@@ -116,7 +116,7 @@ def plot_profile_from_data(
     y = y[sorter]
 
     ax.set_title(name)
-    ax.set_ylabel("PL(θ) - L(θ)")
+    ax.set_ylabel(f"PL({short}) - L(θ)")
     ax.set_xlabel(f"{short} [{units}]")
     ax.scatter(
         p_fixed,
