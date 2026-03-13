@@ -717,7 +717,7 @@ impl Settings {
         append_infos_bounds!(rigidity, "Rigidity", "µm/min", "κ");
         append_infos_bounds!(spring_tension, "Spring Tension", "1/min²", "γ");
         append_infos_bounds!(damping, "Damping", "1/min", "λ");
-        append_infos_bounds!(strength, "Strength", "µm^2/min^2", "C");
+        append_infos_bounds!(strength, "Strength", "µm^2/min^2", "V₀");
         append_infos_bounds!(growth_rate, "Growth Rate", "1/min", "µ");
         match potential_type {
             PotentialType::Mie(mie) => {
