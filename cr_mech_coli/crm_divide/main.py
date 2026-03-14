@@ -249,7 +249,7 @@ def plot_time_evolution(
             )
 
     ax.axvline(x=40.0, color="gray", linestyle="--", alpha=0.8)
-    ax.ticklabel_format(axis="both", style="sci", scilimits=(-3, -3))
+    ax.ticklabel_format(axis="y", style="sci", scilimits=(-3, -3))
 
     plot_result(
         masks_predicted,
