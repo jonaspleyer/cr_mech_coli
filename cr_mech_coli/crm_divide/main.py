@@ -84,11 +84,11 @@ def plot_mask_adjustment(
     numerically generated results can be compared directly.
     To do this, the tree of the numerical simulation needs to be matched to the tree of the data.
     """
-    radius = 0.2050713645353225423
-    strength = 0.0025
+    radius = 0.4782565
+    strength = 0.01
     # en = 6.0
     # em = 0.5
-    potential_stiffness = 2.0
+    potential_stiffness = 1.0
     # damping = 2.0
     growth_rates = [
         0.005995107,
@@ -98,7 +98,7 @@ def plot_mask_adjustment(
         0.007861354,
         0.008311217,
     ]
-    spring_length_thresholds = [0.4, 0.4, 0.45, 0.45]
+    spring_length_thresholds = [0.8, 0.8, 0.9, 0.9]
     new_growth_rates = [0.001] * 8
     x0 = [
         radius,
@@ -551,36 +551,13 @@ def default_parameters() -> tuple[list[float], list[tuple[float, float]]]:
         1.853940041329739385e-02,
         5.169072925677239971e-04,
     ]
-    x0 = [
-        2.050713645353225423e-01,
-        3.798458391278167201e-03,
-        1.095223170912896293e01,
-        7.340484653494815104e-03,
-        5.983537936575702987e-03,
-        9.199234242500513303e-03,
-        1.258385848317429903e-02,
-        9.111606891670301356e-03,
-        9.419760459145443132e-03,
-        3.011383565349040614e-01,
-        3.279595378600909106e-01,
-        2.971916703593225351e-01,
-        2.838587848180676443e-01,
-        3.230658553125494159e-03,
-        1.258922850097723284e-02,
-        1.794461648761763728e-02,
-        4.761491437329616605e-03,
-        5.241558679868058013e-03,
-        1.161985425461459394e-03,
-        1.853940041329739385e-02,
-        5.169072925677239971e-04,
-    ]
     bounds = [
         # Radius
-        (0.0015, 0.5),
+        (0.003, 1.0),
         # Strength
-        (0.0, 0.02),
+        (0.0, 0.6),
         # Potential Stiffness
-        (0.2, 40.0),
+        (0.0, 15.0),
         # Growth rates
         (0.0000, 0.1),
         (0.0000, 0.1),
@@ -589,10 +566,10 @@ def default_parameters() -> tuple[list[float], list[tuple[float, float]]]:
         (0.0000, 0.1),
         (0.0000, 0.1),
         # Spring length thresholds
-        (0.1, 1.0),
-        (0.1, 1.0),
-        (0.1, 1.0),
-        (0.1, 1.0),
+        (0.2, 2.0),
+        (0.2, 2.0),
+        (0.2, 2.0),
+        (0.2, 2.0),
         # new growth rates
         (0.0000, 0.1),
         (0.0000, 0.1),
