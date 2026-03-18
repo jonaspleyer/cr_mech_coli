@@ -305,6 +305,27 @@ impl PotentialType {
     }
 }
 
+/// Polishing options for the :class:`DifferentialEvolution` method
+#[pyclass(get_all, set_all, module = "cr_mech_coli.crm_fit")]
+#[derive(Clone, Debug, Serialize, Deserialize, AbsDiffEq, PartialEq)]
+#[approx(epsilon_type = f32)]
+pub struct Polish {
+    #[serde(default = "default_polish_method")]
+    #[approx(equal)]
+    method: String,
+    #[serde(default = "default_polish_max_iter")]
+    #[approx(equal)]
+    max_iter: usize,
+}
+
+fn default_polish_method() -> String {
+    "COBYQA".to_string()
+}
+
+fn default_polish_max_iter() -> usize {
+    100
+}
+
 /// Parameters to control optimization scheme via the `differential_evolution` algorithm.
 #[pyclass(get_all, set_all, module = "cr_mech_coli.crm_fit")]
 #[derive(Clone, Debug, Serialize, Deserialize, AbsDiffEq, PartialEq)]
@@ -333,9 +354,12 @@ pub struct DifferentialEvolution {
     #[serde(default = "default_mutation")]
     pub mutation: (f32, f32),
     /// Determines if the final result should be polished
+    // #[approx(equal)]
+    // #[serde(default = "default_polish")]
+    // pub polish: bool,
     #[approx(equal)]
-    #[serde(default = "default_polish")]
-    pub polish: bool,
+    #[serde(default)]
+    pub polish: Option<Polish>,
 }
 
 /// Parameters to control optimization scheme via an incremental lowering with the Latin-Hypercube algorithm.
@@ -403,10 +427,6 @@ pub(crate) const fn default_recombination() -> f32 {
 
 pub(crate) const fn default_mutation() -> (f32, f32) {
     (0.5, 1.5)
-}
-
-pub(crate) const fn default_polish() -> bool {
-    false
 }
 
 /// Contains all constants of the numerical simulation

@@ -244,12 +244,26 @@ res = sp.optimize.differential_evolution(
     tol=optimization.tol,
     recombination=optimization.recombination,
     popsize=optimization.pop_size,
-    polish=optimization.polish,
+    polish=False,
     rng=optimization.seed,
     callback=callback,
     mutation=optimization.mutation,
     constraints=c,
 )
+
+if optimization.polish is not None:
+    res = sp.optimize.minimize(
+        predict_calculate_cost,
+        bounds=bounds,
+        x0=res.x,
+        args=args,
+        method=optimization.polish.method,
+        options={
+            "disp": True,
+            "maxiter": optimization.polish.max_iter,
+        },
+        constraints=c,
+    )
 "#
                 ),
                 Some(&globals),
