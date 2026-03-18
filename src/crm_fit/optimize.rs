@@ -204,6 +204,10 @@ pub fn run_optimizer(
             locals.set_item("positions_all", positions_all.to_pyarray(py))?;
             locals.set_item("iterations_images", iterations_images)?;
             locals.set_item("settings", settings.clone().into_pyobject(py)?)?;
+            locals.set_item(
+                "constraints",
+                settings.get_constraints(py, n_agents).into_pyobject(py)?,
+            )?;
 
             // Optional
             locals.set_item("optimization", de.clone().into_pyobject(py)?)?;
@@ -213,6 +217,7 @@ pub fn run_optimizer(
                 pyo3::ffi::c_str!(
                     r#"
 import scipy as sp
+import numpy as np
 from cr_mech_coli.crm_fit import predict_calculate_cost
 
 args = (positions_all, iterations_images, settings)
@@ -223,6 +228,9 @@ def callback(intermediate_result):
     fun = intermediate_result.fun
     global evals
     evals.append(float(fun))
+
+A = np.array(constraints)
+c = sp.optimize.LinearConstraint(A, lb=0)
 
 res = sp.optimize.differential_evolution(
     predict_calculate_cost,
@@ -240,6 +248,7 @@ res = sp.optimize.differential_evolution(
     rng=optimization.seed,
     callback=callback,
     mutation=optimization.mutation,
+    constraints=c,
 )
 "#
                 ),
