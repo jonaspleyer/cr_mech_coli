@@ -1029,7 +1029,10 @@ mod test {
                         pop_size: default_pop_size(),
                         recombination: default_recombination(),
                         mutation: default_mutation(),
-                        polish: default_polish(),
+                        polish: Some(Polish {
+                            method: "HansWurst".to_string(),
+                            max_iter: 122,
+                        }),
                     }),
                 )?,
                 others: Some(Py::new(py, Others { progressbar: None })?),
@@ -1061,6 +1064,10 @@ bound = 8.0
 [optimization.differential_evolution]
 seed = 0
 tol = 1e-3
+
+[optimization.differential_evolution.polish]
+method = 'HansWurst'
+max_iter = 122
 
 [others]
 # progressbar = false
