@@ -55,7 +55,10 @@ def optimize_around_single_param(opt_args):
     constraints = sp.optimize.LinearConstraint(constr, lb=0)
     bounds = [(b_low[i], b_upp[i]) for i in range(len(b_low))]
 
+    fun = np.nan
+    success = False
     x0 = params_opt
+
     if pyargs.profiles_pre_global:
         res = sp.optimize.differential_evolution(
             prediction_optimize_helper,
@@ -71,20 +74,26 @@ def optimize_around_single_param(opt_args):
             constraints=constraints,
         )
         x0 = res.x
+        fun = res.fun
+        success = res.success
 
-    res = sp.optimize.minimize(
-        prediction_optimize_helper,
-        x0=x0,
-        args=(param_single, n, *args),
-        bounds=bounds,
-        method=pyargs.profiles_method,
-        options={
-            "disp": False,
-            "maxiter": pyargs.profiles_maxiter,
-        },
-        constraints=constraints,
-    )
-    return res.fun, res.success
+    if not pyargs.profiles_post_local_skip:
+        res = sp.optimize.minimize(
+            prediction_optimize_helper,
+            x0=x0,
+            args=(param_single, n, *args),
+            bounds=bounds,
+            method=pyargs.profiles_method,
+            options={
+                "disp": False,
+                "maxiter": pyargs.profiles_maxiter,
+            },
+            constraints=constraints,
+        )
+        fun = res.fun
+        success = res.success
+
+    return fun, success
 
 
 def fill_confidence_levels(x, y, ax, fill=True, thresholds=[0.68, 0.90, 0.95]):
