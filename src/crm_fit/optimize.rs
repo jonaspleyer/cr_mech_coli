@@ -175,9 +175,7 @@ pub fn run_optimizer(
         bounds_lower,
         bounds_upper,
         initial_values,
-        parameter_infos: _,
-        constants: _,
-        constant_infos: _,
+        ..
     } = oinfs;
     let n_workers = if n_workers <= 0 {
         rayon::max_num_threads()
