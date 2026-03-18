@@ -40,5 +40,8 @@ seed = 0
 max_iter = 400
 pop_size = 40
 recombination = 0.7
-polish = true
 mutation = [0.5, 1.5]
+
+[optimization.differential_evolution.polish]
+method = "COBYQA"
+max_iter = 100
