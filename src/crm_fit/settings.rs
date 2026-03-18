@@ -591,6 +591,44 @@ impl Settings {
         ))
     }
 
+    /// Get constraints for the optimization problem
+    pub fn get_constraints(&self, py: Python, n_agents: usize) -> Vec<f32> {
+        let mut constraints = Vec::new();
+        let parameters = self.parameters.borrow(py);
+        macro_rules! push_if_individual(
+            ($param:ident) => {
+                if let Parameter::SampledFloat(s) = &parameters.$param {
+                    if s.individual.is_some_and(|x| x) {
+                        constraints.extend(vec![0.0; n_agents]);
+                    } else {
+                        constraints.push(0.0);
+                    }
+                }
+            };
+        );
+        push_if_individual!(radius);
+        push_if_individual!(rigidity);
+        push_if_individual!(spring_tension);
+        push_if_individual!(damping);
+        push_if_individual!(strength);
+        push_if_individual!(growth_rate);
+        if let PotentialType::Mie(Mie {
+            en: Parameter::SampledFloat(s1),
+            em: Parameter::SampledFloat(s2),
+            ..
+        }) = &parameters.potential_type
+        {
+            if s1.individual.is_some_and(|x| x) && s2.individual.is_some_and(|x| x) {
+                todo!()
+            } else {
+                constraints.push(1.0);
+                constraints.push(-1.0);
+            }
+        }
+
+        constraints
+    }
+
     /// Converts the settings provided to a :class:`Configuration` object required to run the
     /// simulation
     pub fn to_config(&self, py: Python) -> PyResult<crate::Configuration> {
