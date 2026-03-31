@@ -210,7 +210,7 @@ dependencies = [
 [[package]]
 name = "cellular_raza"
 version = "0.5.0"
-source = "git+https://github.com/jonaspleyer/cellular_raza/#dbb0896bdedc0324fa1dea9a4739703a9bb8b512"
+source = "git+https://github.com/jonaspleyer/cellular_raza/#9bacd5767bb1d772adcbbdeb4321343abc4bb399"
 dependencies = [
  "cellular_raza-building-blocks",
  "cellular_raza-concepts",
@@ -220,7 +220,7 @@ dependencies = [
 [[package]]
 name = "cellular_raza-building-blocks"
 version = "0.5.0"
-source = "git+https://github.com/jonaspleyer/cellular_raza/#dbb0896bdedc0324fa1dea9a4739703a9bb8b512"
+source = "git+https://github.com/jonaspleyer/cellular_raza/#9bacd5767bb1d772adcbbdeb4321343abc4bb399"
 dependencies = [
  "approx 0.6.0-rc1",
  "cellular_raza-concepts",
@@ -240,7 +240,7 @@ dependencies = [
 [[package]]
 name = "cellular_raza-concepts"
 version = "0.5.0"
-source = "git+https://github.com/jonaspleyer/cellular_raza/#dbb0896bdedc0324fa1dea9a4739703a9bb8b512"
+source = "git+https://github.com/jonaspleyer/cellular_raza/#9bacd5767bb1d772adcbbdeb4321343abc4bb399"
 dependencies = [
  "cellular_raza-concepts-derive",
  "num",
@@ -253,7 +253,7 @@ dependencies = [
 [[package]]
 name = "cellular_raza-concepts-derive"
 version = "0.5.0"
-source = "git+https://github.com/jonaspleyer/cellular_raza/#dbb0896bdedc0324fa1dea9a4739703a9bb8b512"
+source = "git+https://github.com/jonaspleyer/cellular_raza/#9bacd5767bb1d772adcbbdeb4321343abc4bb399"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -263,7 +263,7 @@ dependencies = [
 [[package]]
 name = "cellular_raza-core"
 version = "0.5.0"
-source = "git+https://github.com/jonaspleyer/cellular_raza/#dbb0896bdedc0324fa1dea9a4739703a9bb8b512"
+source = "git+https://github.com/jonaspleyer/cellular_raza/#9bacd5767bb1d772adcbbdeb4321343abc4bb399"
 dependencies = [
  "bincode",
  "cellular_raza-concepts",
@@ -291,7 +291,7 @@ dependencies = [
 [[package]]
 name = "cellular_raza-core-proc-macro"
 version = "0.5.0"
-source = "git+https://github.com/jonaspleyer/cellular_raza/#dbb0896bdedc0324fa1dea9a4739703a9bb8b512"
+source = "git+https://github.com/jonaspleyer/cellular_raza/#9bacd5767bb1d772adcbbdeb4321343abc4bb399"
 dependencies = [
  "itertools 0.14.0",
  "proc-macro2",
