@@ -6,9 +6,6 @@ import pyvista as pv
 import cr_mech_coli as crm
 
 # rcParams['path.sketch'] = (3, 10, 1)
-rc("font", **{"family": "serif", "serif": ["Computer Modern"]})
-rc("text", usetex=True)
-rc("font", size="20")
 
 
 def __plot_cell_envelope(ax, points, radius, cell_color=[0.9, 0.9, 0.9]):
@@ -38,10 +35,7 @@ def __plot_cell_springs(ax, points, color=[0.5, 0.5, 0.5]):
         ax.plot(points[:, 0], points[:, 1], color=color, linewidth=1)
 
 
-def plot_polygon_with_arrows(points, radius, angle_circle_size=0.8):
-    fig, ax = plt.subplots(figsize=(8, 8))
-    ax.axis("off")
-
+def plot_polygon_with_arrows(ax, points, radius, angle_circle_size=0.8):
     __plot_cell_envelope(ax, points, radius)
 
     ax.scatter(points[:, 0], points[:, 1], s=80, marker="+", color="k")
@@ -84,12 +78,16 @@ def plot_polygon_with_arrows(points, radius, angle_circle_size=0.8):
             "$\\mathbf x_{}$".format(i),
             verticalalignment="center",
             horizontalalignment="center",
+            fontfamily="Computer Modern",
+            size=20,
         )
         ax.text(
             *(p2 - text_pos),
             "$\\alpha_{}$".format(i),
             verticalalignment="center",
             horizontalalignment="center",
+            fontfamily="Computer Modern",
+            size=20,
         )
 
         arc = Arc(p2, angle_circle_size, angle_circle_size, angle=alpha, theta2=theta2)
@@ -129,11 +127,8 @@ def _closest_point_on_polygon(p, polygon):
     return points[n]
 
 
-def plot_cells_interacting(points1, points2, radius):
+def plot_cells_interacting(ax, points1, points2, radius):
     points = np.vstack([points1, points2])
-
-    fig, ax = plt.subplots(figsize=(8, 8))
-    ax.axis("off")
 
     __plot_cell_envelope(ax, points1, radius)
     __plot_cell_envelope(ax, points2, radius)
@@ -171,6 +166,28 @@ def plot_cells_interacting(points1, points2, radius):
 
 
 if __name__ == "__main__":
+    crm.set_mpl_rc_params()
+    fig, axs = plt.subplots(1, 2, figsize=(16, 8))
+    axs[0].axis("off")
+    axs[1].axis("off")
+
+    for ax, label in zip(axs, ("A", "B")):
+        ax.text(
+            0.117,
+            0.97,
+            label,
+            fontsize=40,
+            fontweight="semibold",
+            fontfamily="serif",
+            va="top",
+            horizontalalignment="left",
+            transform=ax.transAxes,
+        )
+
+    # rc("font", **{"family": "serif", "serif": ["Computer Modern"]})
+    rc("text", usetex=True)
+    # rc("font", size="20")
+
     points = np.array(
         [
             [0, 0],
@@ -183,18 +200,15 @@ if __name__ == "__main__":
     )
 
     radius = 0.8
-    fig, ax = plot_polygon_with_arrows(points, radius)
-    fig.savefig("docs/source/_static/mechanics.png", transparent=True)
-    fig.savefig("docs/source/_static/mechanics.pdf", transparent=True)
-    fig.savefig("docs/source/_static/mechanics.svg", transparent=True)
-    plt.close(fig)
+    plot_polygon_with_arrows(axs[0], points, radius)
 
     points2 = np.array(points)
     points2 += np.array([3, -2])
     points2[0] += np.array([0.1, -0.2])
     points2[2] += np.array([0.3, -0.2])
     points2[4] += np.array([0.1, -0.1])
-    fig, ax = plot_cells_interacting(points, points2, radius)
-    fig.savefig("docs/source/_static/interaction.png", transparent=True)
-    fig.savefig("docs/source/_static/interaction.pdf", transparent=True)
-    fig.savefig("docs/source/_static/interaction.svg", transparent=True)
+    plot_cells_interacting(axs[1], points, points2, radius)
+
+    fig.savefig("docs/source/_static/mechanics-interaction.png", transparent=True)
+    fig.savefig("docs/source/_static/mechanics-interaction.pdf", transparent=True)
+    fig.savefig("docs/source/_static/mechanics-interaction.svg", transparent=True)
