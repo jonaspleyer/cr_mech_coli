@@ -167,7 +167,7 @@ def plot_cells_interacting(ax, points1, points2, radius):
 
 if __name__ == "__main__":
     crm.set_mpl_rc_params()
-    fig, axs = plt.subplots(1, 2, figsize=(16, 8))
+    fig, axs = plt.subplots(1, 2, figsize=(24, 12))
     axs[0].axis("off")
     axs[1].axis("off")
 
@@ -209,6 +209,4 @@ if __name__ == "__main__":
     points2[4] += np.array([0.1, -0.1])
     plot_cells_interacting(axs[1], points, points2, radius)
 
-    fig.savefig("docs/source/_static/mechanics-interaction.png", transparent=True)
     fig.savefig("docs/source/_static/mechanics-interaction.pdf", transparent=True)
-    fig.savefig("docs/source/_static/mechanics-interaction.svg", transparent=True)

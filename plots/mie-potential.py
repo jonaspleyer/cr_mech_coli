@@ -17,7 +17,7 @@ if __name__ == "__main__":
     ]
 
     crm.set_mpl_rc_params()
-    fig, axs = plt.subplots(1, 2, figsize=(16, 8))
+    fig, axs = plt.subplots(1, 2, figsize=(24, 12))
     crm.configure_ax(axs[0])
     crm.configure_ax(axs[1])
 
@@ -70,5 +70,4 @@ if __name__ == "__main__":
     axs[1].set_ylabel("Interaction Strength [V$_0$]")
 
     fig.tight_layout()
-    fig.savefig("docs/source/_static/interaction-potentials.png")
     fig.savefig("docs/source/_static/interaction-potentials.pdf")
