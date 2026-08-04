@@ -6,6 +6,8 @@ import multiprocessing as mp
 import scipy as sp
 import numpy as np
 import argparse
+import matplotlib as mpl
+from PIL import Image
 
 from fitting_extract_positions import create_simulation_result
 
@@ -76,7 +78,61 @@ if __name__ == "__main__":
     )
 
     crm.plotting.set_mpl_rc_params()
-    fig, ax1 = plt.subplots(figsize=(8, 8))
+    fig = plt.figure(layout="constrained", figsize=(24, 18))
+    gs = mpl.gridspec.GridSpec(
+        2,
+        4,
+        wspace=0.01,
+        hspace=0.01,
+        height_ratios=(1, 2),
+        left=0,
+        right=1,
+        bottom=0,
+        top=1,
+        figure=fig,
+    )
+    subfigs = []
+    for i in range(4):
+        subfigs.append(fig.add_subfigure(gs[0, i]))
+    subfigs.append(fig.add_subfigure(gs[1, :2]))
+    subfigs.append(fig.add_subfigure(gs[1, 2:]))
+
+    axs = []
+
+    def write_text(ax, label):
+        ax.text(
+            0.03,
+            0.97,
+            label,
+            fontsize=40,
+            fontweight="semibold",
+            fontfamily="serif",
+            va="top",
+            horizontalalignment="left",
+            transform=ax.transAxes,
+            color="white" if k <= 4 else "k",
+        )
+
+    labels = ["A", "B", "C", "D", "E", "F"]
+    for k, (label, sf) in enumerate(zip(labels, subfigs[:5]), 1):
+        ax = sf.subplots(gridspec_kw={"bottom": 0, "top": 1, "left": 0, "right": 1})
+        axs.append(ax)
+        write_text(ax, label)
+        ax.set_axis_off()
+        if k <= 4:
+            img = Image.open(
+                f"docs/source/_static/fitting-methods/progressions-{k}.png"
+            )
+            ax.imshow(img, cmap=None if k <= 2 else "Grays_r")
+        elif k == 5:
+            img = Image.open(
+                "docs/source/_static/fitting-methods/extract_positionsdivision-comparison.png"
+            )
+            ax.imshow(img)
+
+    sf1 = subfigs[-1]
+    ax1 = sf1.subplots()
+    write_text(ax1, labels[-1])
     crm.plotting.configure_ax(ax1)
     ax1.plot(
         x[1:],
@@ -121,13 +177,12 @@ if __name__ == "__main__":
         handles,
         labels,
         loc="upper center",
-        bbox_to_anchor=(0.5, 1.18),
+        bbox_to_anchor=(0.5, 1.1),
         ncol=2,
         frameon=False,
     )
 
     path = Path("docs/source/_static/fitting-methods/")
     path.mkdir(parents=True, exist_ok=True)
-    fig.savefig(str(path / "penalty-time-flow.png"))
-    fig.savefig(str(path / "penalty-time-flow.pdf"))
+    fig.savefig(str(path / "progression-penalty-fitting.pdf"))
     print(f"{time.time() - interval:8.4} Plotted Results")
