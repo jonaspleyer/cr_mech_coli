@@ -1,10 +1,8 @@
 import matplotlib.pyplot as plt
 import numpy as np
-from matplotlib.patches import Arc, Circle, Rectangle
-from matplotlib import rc, rc_context
 import pyvista as pv
 import cr_mech_coli as crm
-from copy import deepcopy
+from PIL import Image
 
 from cr_mech_coli.plotting import COLOR1
 
@@ -33,7 +31,6 @@ def plot_3d_rod(points, radius):
     pv.Plotter.enable_parallel_projection(plotter)
     plotter.camera.tight(padding=0)
     plotter.camera.position = (*plotter.camera.position[:2], 100 * domain_size)
-    camera = plotter.camera.copy()
     plotter.clear_actors()
 
     # Prepare perlin noise
@@ -41,11 +38,6 @@ def plot_3d_rod(points, radius):
     freq2 = [4.97, 5.2, 5.18]
     noise1 = pv.perlin_noise(0.80, freq1, (0, 0, 0))
     noise2 = pv.perlin_noise(0.40, freq2, (0, 0, 0))
-
-    def noise(p):
-        n1 = noise1.EvaluateFunction(p)
-        n2 = noise2.EvaluateFunction(p)
-        return n1 + n2
 
     z_resolution = 50
     theta_resolution = 100
@@ -165,8 +157,8 @@ def plot_3d_grid(points, radius):
         )
         add_mesh(cylinder)
 
-    plotter.screenshot(filename="docs/source/_static/imaging-mesh.png")
-    plotter.save_graphic(filename="docs/source/_static/imaging-mesh.pdf")
+    img = plotter.screenshot()  # filename="docs/source/_static/imaging-mesh.png")
+    return img
 
 
 if __name__ == "__main__":
@@ -183,7 +175,30 @@ if __name__ == "__main__":
     points = np.array([points[:, 0], points[:, 1], np.zeros(len(points))]).T
     radius = 0.8
 
-    # plot_3d_rod(points, radius)
-    # plot_3d_rod(points, radius)
+    img = plot_3d_grid(points, radius)
 
-    plot_3d_grid(points, radius)
+    fig, axs = plt.subplots(1, 3, figsize=(24, 8))
+    for label, ax in zip(["A", "B", "C"], axs):
+        ax.set_axis_off()
+        ax.text(
+            0.05,
+            0.95,
+            label,
+            fontsize=40,
+            fontweight="semibold",
+            fontfamily="serif",
+            va="top",
+            horizontalalignment="left",
+            transform=ax.transAxes,
+            color="k" if label == "A" else "white",
+        )
+
+    raw_pv = Image.open("docs/source/_static/11571737453049821261/raw_pv/000000400.png")
+    mask = Image.open("docs/source/_static/11571737453049821261/masks/000000400.png")
+
+    axs[0].imshow(img)
+    axs[1].imshow(raw_pv)
+    axs[2].imshow(mask)
+
+    fig.tight_layout()
+    fig.savefig("docs/source/_static/imaging.pdf", bbox_inches="tight", pad_inches=0)
