@@ -810,8 +810,7 @@ def crm_amir_main():
     ax_mappings = [(2, 0), (1, 1), (2, 2), (1, 2), (2, 1)]
     for n, name in enumerate(list(params1.keys())):
         ax = axs[ax_mappings[n]]
-        crm.configure_ax(ax)
-        ax.grid(False, which="minor")
+        crm.configure_ax(ax, minor=False)
         plot_profile(
             n,
             samples1[:, n],
@@ -896,5 +895,6 @@ def crm_amir_main():
             ncol=3,
             frameon=False,
         )
+        ax.xaxis.set_major_locator(mpl.ticker.MaxNLocator(nbins=5))
 
     fig.savefig("out/crm_amir/profiles.pdf")
