@@ -10,6 +10,11 @@ import time
 from PIL import Image
 import scipy as sp
 import multiprocessing as mp
+from position_extraction_algorithm import (
+    prepare_mask_and_cell,
+    plot_only_zoom,
+    plot_interpolation_with_zoom,
+)
 
 OPATH = Path("docs/source/_static/fitting-methods")
 
@@ -19,9 +24,9 @@ def calculate_lengths_distances(
 ) -> tuple[list, list, list, list]:
     cell_container = crm.CellContainer.deserialize(ccs)
     cells_at_iteration = cell_container.get_cells()[n]
-    colors = cell_container.cell_to_color
+    cell_to_color = cell_container.cell_to_color
 
-    mask = crm.render_mask(cells_at_iteration, colors, domain_size)
+    mask = crm.render_mask(cells_at_iteration, cell_to_color, domain_size)
     positions = np.array(
         crm.extract_positions(
             mask,
@@ -39,7 +44,7 @@ def calculate_lengths_distances(
         ident = cell_container.get_cell_from_color((color[0], color[1], color[2]))
         cell = cells_at_iteration[ident][0]
         q = cell.pos[:, :2]
-        p = crm.convert_pixel_to_position(p, config.domain_size, mask.shape[:2])
+        p = crm.convert_pixel_to_position(p, domain_size, mask.shape[:2])
 
         # Determine if we need to use the reverse order
         d1t = np.sum((p - q) ** 2, axis=1) ** 0.5
@@ -107,10 +112,279 @@ def create_simulation_result(n_vertices: int, rng_seed: int = 3):
     agents = [crm.RodAgent(pos=p, vel=p * 0.0, **rod_args) for p in positions]
     rng = np.random.default_rng(rng_seed)
     for a in agents:
-        a.growth_rate += 0.002 * rng.random(1)
+        a.growth_rate += 0.002 * rng.random()
     res = crm.run_simulation_with_agents(config, agents)
     print(f"{time.time() - interval:8.4} Created Simulation Result:")
     return config, res
+
+
+def save_masks(colors, all_cells):
+    gkw = {"wspace": 0.01, "hspace": 0.00, "top": 1, "bottom": 0, "left": 0, "right": 1}
+    fig = plt.figure(layout="none", figsize=(24, 10.75))
+    fig1, fig2 = fig.subfigures(2, 1, height_ratios=(1.75, 1), hspace=0, wspace=0.01)
+    axs1 = fig1.subplots(1, 3, width_ratios=(0.36, 0.36, 0.255), gridspec_kw=gkw)
+    axs2 = fig2.subplots(1, 6, gridspec_kw=gkw)
+
+    for ax in axs1:
+        ax.set_axis_off()
+
+    # Plot 1-3 Plots
+    img = Image.open("data/crm_fit/0001/images/001042.png")
+    mask, color = prepare_mask_and_cell()
+    axs1[0].imshow(img)
+    res = plot_interpolation_with_zoom(axs1[1], mask, color)
+    plot_only_zoom(axs1[2], mask, *res)
+
+    # Pick one iteration to plot results
+    indices = [9, 19, 29, 39, 49]
+    iter_masks = [
+        (
+            iterations[ind],
+            crm.render_mask(all_cells[iterations[ind]], colors, config.domain_size),
+        )
+        for ind in indices
+    ]
+
+    labels = ["A", "B", "C", "D", "E", "F", "G", "H", "I"]
+    for label, ax in zip(labels, [*axs1, *axs2]):
+        ax.set_axis_off()
+        ax.text(
+            0.05,
+            0.95,
+            label,
+            fontsize=40,
+            fontweight="semibold",
+            fontfamily="serif",
+            va="top",
+            horizontalalignment="left",
+            transform=ax.transAxes,
+            color="white",
+        )
+
+    for n, (iteration, mask) in tqdm(
+        zip(range(len(iter_masks)), iter_masks), total=len(iter_masks)
+    ):
+        # This generates extracted positions in pixel units
+        positions = crm.extract_positions(
+            mask,
+            n_vertices=pyargs.n_vertices,
+            skel_method=pyargs.skel_method,
+            # domain_size=config.domain_size,
+        )[0]
+        positions = np.array(np.round(positions), dtype=int)
+
+        # Calculate differences in positions
+        for p0 in positions:
+            # Get color
+            color = mask[p0[0][0], p0[0][1]]
+            ident = cell_container.get_cell_from_color((color[0], color[1], color[2]))
+            cell = all_cells[iteration][ident][0]
+            p1 = crm.convert_cell_pos_to_pixels(
+                cell.pos[:, :2], config.domain_size, mask.shape[:2]
+            )
+            for pi in p1[:, ::-1]:
+                mask = cv.drawMarker(
+                    mask,
+                    pi,
+                    (250, 250, 250),
+                    cv.MARKER_CROSS,
+                    14,
+                    2,
+                )
+            mask = cv.polylines(
+                mask,
+                [p0[:, ::-1]],
+                isClosed=False,
+                color=(250, 250, 250),
+                thickness=1,
+            )
+            for qi in p0[:, ::-1]:
+                mask = cv.drawMarker(
+                    mask,
+                    qi,
+                    (42, 112, 232),
+                    cv.MARKER_TILTED_CROSS,
+                    9,
+                    2,
+                )
+
+        axs2[n].imshow(mask)
+        if n == len(iter_masks) - 1:
+            # WARNING: MAGIC NUMBERS!!!
+            _dk = 494
+            _k = 490
+            _l = 1386
+            axs2[n + 1].imshow(mask[_l : _l + _dk, _k : _k + _dk])
+
+    # fig.tight_layout()
+    fig.savefig(
+        OPATH / "extract_positions.pdf",
+        bbox_inches="tight",
+        pad_inches=0,
+    )
+    exit()
+
+
+def plot_vertex_displacement(ax, directed_diffs):
+    crm.plotting.configure_ax(ax)
+
+    all_points = np.vstack(directed_diffs).reshape((-1, 2))
+    c = sp.stats.gaussian_kde(all_points.T)(all_points.T)
+    ax.scatter(
+        all_points[:, 0],
+        all_points[:, 1],
+        c=c,
+        cmap=crm.plotting.cmap,
+        marker=".",
+    )
+    ax.set_title("Vertex Displacement (3σ)")
+    ax.set_xlabel("Parallel to Segment [R]")
+    ax.set_ylabel("Orthogonal to Segment [R]")
+
+    dx = float(np.percentile(np.abs(all_points), 99.73))
+    # dx = np.max(np.abs(all_points))
+    ax.set_xlim(-1.2 * dx, 1.2 * dx)
+    ax.set_ylim(-1.2 * dx, 1.2 * dx)
+
+    c1 = np.array(mpl.colors.to_rgba(crm.plotting.COLOR3))
+    c2 = np.array(mpl.colors.to_rgba(crm.plotting.COLOR1))
+    q = len(directed_diffs)
+    colors = [c2 * i / q + (1 - i / q) * c1 for i in range(q)]
+    return colors, dx
+
+
+def plot_x_y_distrs(ax, directed_diffs, name):
+    crm.plotting.configure_ax(ax)
+
+    ax.hist(
+        [np.array(di)[:, :, i].reshape(-1) for di in directed_diffs],
+        bins=100,
+        stacked=True,
+        color=colors,
+        label="Data",
+    )
+
+    ax.legend(loc="upper center", bbox_to_anchor=(0.5, 1.05), frameon=False)
+    ax.set_yscale("log")
+    ax.set_xlim(-1.1 * dx, 1.1 * dx)
+
+    ax.set_ylabel("Count")
+    ax.set_xlabel(f"{name}-Displacement [R]")
+
+
+def plot_displacement_comparison(ax, directed_diffs):
+    means = []
+    covs = []
+    for data in directed_diffs:
+        data = np.array(data).reshape((-1, 2))
+        filt = np.all(np.abs(data) <= dx, axis=1)
+        data = data[filt]
+        mean, cov = sp.stats.multivariate_normal.fit(data)
+        means.append(mean)
+        covs.append(cov)
+
+    means = np.array(means)
+    covs = np.array(covs)
+
+    crm.plotting.configure_ax(ax)
+
+    t = np.arange(len(directed_diffs)) * config.t_max / (config.n_saves + 1)
+    ax.plot(
+        t,
+        means[:, 0],
+        color=crm.plotting.COLOR5,
+        label="parallel",
+        linestyle="-",
+    )
+    ax.fill_between(
+        t,
+        means[:, 0] - covs[:, 0, 0] ** 0.5,
+        means[:, 0] + covs[:, 0, 0] ** 0.5,
+        color=crm.plotting.COLOR5,
+        alpha=0.5,
+    )
+    ax.plot(
+        t,
+        means[:, 1],
+        color=crm.plotting.COLOR3,
+        label="orthogonal",
+        linestyle="--",
+    )
+    ax.fill_between(
+        t,
+        means[:, 1] - covs[:, 1, 1] ** 0.5,
+        means[:, 1] + covs[:, 1, 1] ** 0.5,
+        color=crm.plotting.COLOR3,
+        alpha=0.5,
+    )
+    dmean = np.max(np.abs(means))
+    dcovs = np.max([np.abs(covs[:, 0, 0]) ** 0.5, np.abs(covs[:, 1, 1]) ** 0.5])
+    dlim = np.max([1.2 * dmean, dmean + dcovs])
+    ax.set_ylim(-dlim, dlim)
+    ax.set_ylabel("Length [R]")
+    ax.set_xlabel("Time [min]")
+    ax.legend(
+        loc="upper center",
+        bbox_to_anchor=(0.5, 1.10),
+        ncol=2,
+        frameon=False,
+    )
+    return t, covs
+
+
+def plot_covariance_ratios(ax, t, covs):
+    crm.plotting.configure_ax(ax)
+    ax.plot(
+        t,
+        covs[:, 0, 1] / covs[:, 0, 0],
+        color=crm.plotting.COLOR3,
+        label="$\\sigma_{01}/\\sigma_{00}$",
+    )
+    ax.set_xlabel("Time [min]")
+    ax.set_ylim(-1, 1)
+    ax.legend(loc="upper center", bbox_to_anchor=(0.5, 1.05), frameon=False)
+
+
+def plot_rod_length_comparison(ax):
+    crm.plotting.configure_ax(ax)
+    x = np.arange(len(distances)) * config.t_max / (config.n_saves + 1)
+    ax.plot(
+        x,
+        [np.mean(li) for li in lengths_exact],
+        # yerr=[np.std(li) for li in lengths2],
+        linestyle="-",
+        color=crm.plotting.COLOR5,
+        label="Exact",
+    )
+    ax.plot(
+        x,
+        [np.mean(li) for li in lengths_extracted],
+        # yerr=[np.std(li) for li in lengths1],
+        linestyle=":",
+        color=crm.plotting.COLOR3,
+        label="Extracted",
+    )
+    ax.fill_between(
+        x,
+        y1=[
+            np.mean(lengths_extracted[i]) - np.mean(distances[i])
+            for i in range(len(lengths_extracted))
+        ],
+        y2=[
+            np.mean(lengths_extracted[i]) + np.mean(distances[i])
+            for i in range(len(lengths_extracted))
+        ],
+        alpha=0.3,
+        color=crm.plotting.COLOR1,
+    )
+    ax.legend(
+        loc="upper center",
+        bbox_to_anchor=(0.5, 1.10),
+        ncol=3,
+        frameon=False,
+    )
+    ax.set_ylabel("Rod Length [R]")
+    ax.set_xlabel("Time [min]")
 
 
 if __name__ == "__main__":
@@ -130,82 +404,15 @@ if __name__ == "__main__":
     )
     parser.add_argument("-w", "--workers", type=int, default=-1)
     parser.add_argument("--skip-masks", action="store_true", default=False)
-    parser.add_argument("--skip-graph", action="store_true", default=False)
-    parser.add_argument("--skip-distribution", action="store_true", default=False)
     pyargs = parser.parse_args()
 
     config, cell_container = create_simulation_result(pyargs.n_vertices)
     all_cells = cell_container.get_cells()
     iterations = cell_container.get_all_iterations()
-    colors = cell_container.cell_to_color
+    cell_to_color = cell_container.cell_to_color
 
     if not pyargs.skip_masks:
-        # Pick one iteration to plot results
-        indices = [9, 19, 29, 39, 49]
-        iter_masks = [
-            (
-                iterations[ind],
-                crm.render_mask(all_cells[iterations[ind]], colors, config.domain_size),
-            )
-            for ind in indices
-        ]
-
-        for iteration, mask in tqdm(iter_masks):
-            # This generates extracted positions in pixel units
-            positions = crm.extract_positions(
-                mask,
-                n_vertices=pyargs.n_vertices,
-                skel_method=pyargs.skel_method,
-                # domain_size=config.domain_size,
-            )[0]
-            positions = np.array(np.round(positions), dtype=int)
-
-            # Calculate differences in positions
-            pos_exact = []
-            for n, p0 in enumerate(positions):
-                # Get color
-                color = mask[p0[0][0], p0[0][1]]
-                ident = cell_container.get_cell_from_color(
-                    (color[0], color[1], color[2])
-                )
-                cell = all_cells[iteration][ident][0]
-                p1 = crm.convert_cell_pos_to_pixels(
-                    cell.pos[:, :2], config.domain_size, mask.shape[:2]
-                )
-                p2 = crm.convert_pixel_to_position(
-                    p0, config.domain_size, mask.shape[:2]
-                )
-                for pi in p1[:, ::-1]:
-                    mask = cv.drawMarker(
-                        mask,
-                        pi,
-                        (250, 250, 250),
-                        cv.MARKER_CROSS,
-                        14,
-                        2,
-                    )
-                mask = cv.polylines(
-                    mask,
-                    [p0[:, ::-1]],
-                    isClosed=False,
-                    color=(250, 250, 250),
-                    thickness=1,
-                )
-                for qi in p0[:, ::-1]:
-                    mask = cv.drawMarker(
-                        mask,
-                        qi,
-                        (42, 112, 232),
-                        cv.MARKER_TILTED_CROSS,
-                        9,
-                        2,
-                    )
-
-            fname = str(OPATH / f"extract_positions-{iteration:06}.png")
-            cv.imwrite(filename=fname, img=mask)
-            image_rgb = cv.cvtColor(mask, cv.COLOR_BGR2RGB)
-            pil_img = Image.fromarray(image_rgb)
-            pil_img.save(str(OPATH / f"extract_positions-{iteration:06}.pdf"))
+        save_masks(cell_to_color, all_cells)
 
     ccs = cell_container.serialize()
     arglist = [
@@ -213,248 +420,103 @@ if __name__ == "__main__":
         for n in iterations
     ]
 
-    if not pyargs.skip_graph or not pyargs.skip_distribution:
-        crm.plotting.set_mpl_rc_params()
-        try:
-            r = config.agent_settings.interaction.radius
-            directed_diffs = (
-                np.load(OPATH / "directed_diffs.npy", allow_pickle=True) / r
-            )
-            distances = np.load(OPATH / "distances.npy", allow_pickle=True) / r
-            distances_vertices = (
-                np.load(OPATH / "distances_vertices.npy", allow_pickle=True) / r
-            )
-            lengths_extracted = (
-                np.load(OPATH / "lengths_extracted.npy", allow_pickle=True) / r
-            )
-            lengths_exact = np.load(OPATH / "lengths_exact.npy", allow_pickle=True) / r
-        except:
-            if pyargs.workers < 0:
-                import multiprocessing as mp
+    try:
+        r = list(all_cells[0].values())[0][0].radius
+        directed_diffs = np.load(OPATH / "directed_diffs.npy", allow_pickle=True)
+        distances = np.load(OPATH / "distances.npy", allow_pickle=True)
+        distances_vertices = np.load(
+            OPATH / "distances_vertices.npy", allow_pickle=True
+        )
+        lengths_extracted = np.load(OPATH / "lengths_extracted.npy", allow_pickle=True)
+        lengths_exact = np.load(OPATH / "lengths_exact.npy", allow_pickle=True)
+        for x in [distances, distances_vertices, lengths_extracted, lengths_exact]:
+            x = [np.array(xi, dtype=np.float32) / r for xi in x]
+    except:
+        if pyargs.workers < 0:
+            import multiprocessing as mp
 
-                pool = mp.Pool()
-                results = list(
-                    tqdm(
-                        pool.imap(calculate_lengths_distances_wrapper, arglist),
-                        total=len(arglist),
-                    ),
+            pool = mp.Pool()
+            results = list(
+                tqdm(
+                    pool.imap(calculate_lengths_distances_wrapper, arglist),
+                    total=len(arglist),
+                ),
+            )
+        elif pyargs.workers == 1:
+            results = [
+                calculate_lengths_distances(*a)
+                for a in tqdm(arglist, total=len(arglist))
+            ]
+        else:
+            pool = mp.Pool(pyargs.workers)
+            results = list(
+                tqdm(
+                    pool.imap(calculate_lengths_distances_wrapper, arglist),
+                    total=len(iterations),
                 )
-            elif pyargs.workers == 1:
-                results = [
-                    calculate_lengths_distances(*a)
-                    for a in tqdm(arglist, total=len(arglist))
-                ]
-            else:
-                pool = mp.Pool(pyargs.workers)
-                results = list(
-                    tqdm(
-                        pool.imap(calculate_lengths_distances_wrapper, arglist),
-                        total=len(iterations),
-                    )
-                )
-            directed_diffs = [r[0] for r in results]
-            distances = [np.sum(r[1]) / pyargs.n_vertices for r in results]
-            distances_vertices = [np.array(r[1]).reshape(-1) for r in results]
-            lengths_extracted = [r[2] for r in results]
-            lengths_exact = [r[3] for r in results]
-
-            # Store results in files
-            def store_list_of_arrays(name, li):
-                OPATH.mkdir(parents=True, exist_ok=True)
-                np.save(OPATH / name, np.array(li, dtype=object))
-
-            store_list_of_arrays("directed_diffs", directed_diffs)
-            store_list_of_arrays("distances", distances)
-            store_list_of_arrays("distances_vertices", distances_vertices)
-            store_list_of_arrays("lengths_extracted", lengths_extracted)
-            store_list_of_arrays("lengths_exact", lengths_exact)
-    else:
-        exit()
-
-    if not pyargs.skip_distribution:
-        fig, ax = plt.subplots(figsize=(8, 8))
-        crm.plotting.configure_ax(ax)
-
-        all_points = np.vstack(directed_diffs).reshape((-1, 2))
-        c = sp.stats.gaussian_kde(all_points.T)(all_points.T)
-        ax.scatter(
-            all_points[:, 0],
-            all_points[:, 1],
-            c=c,
-            cmap=crm.plotting.cmap,
-            marker=".",
-        )
-        ax.set_title("Vertex Displacement (3σ)")
-        ax.set_xlabel("Parallel to Segment [R]")
-        ax.set_ylabel("Orthogonal to Segment [R]")
-
-        dx = float(np.percentile(np.abs(all_points), 99.73))
-        # dx = np.max(np.abs(all_points))
-        ax.set_xlim(-1.2 * dx, 1.2 * dx)
-        ax.set_ylim(-1.2 * dx, 1.2 * dx)
-
-        fig.savefig(OPATH / "displacement-distribution.png")
-        fig.savefig(OPATH / "displacement-distribution.pdf")
-        plt.close(fig)
-
-        c1 = np.array(mpl.colors.to_rgba(crm.plotting.COLOR3))
-        c2 = np.array(mpl.colors.to_rgba(crm.plotting.COLOR1))
-        q = len(directed_diffs)
-        colors = [c2 * i / q + (1 - i / q) * c1 for i in range(q)]
-
-        for i, name in enumerate(["x", "y"]):
-            fig, ax = plt.subplots(figsize=(8, 8))
-            crm.plotting.configure_ax(ax)
-
-            ax.hist(
-                [np.array(di)[:, :, i].reshape(-1) for di in directed_diffs],
-                bins=100,
-                stacked=True,
-                color=colors,
-                label="Data",
             )
+        directed_diffs = [r[0] for r in results]
+        distances = [np.sum(r[1]) / pyargs.n_vertices for r in results]
+        distances_vertices = [np.array(r[1]).reshape(-1) for r in results]
+        lengths_extracted = [r[2] for r in results]
+        lengths_exact = [r[3] for r in results]
 
-            ax.legend(
-                loc="upper center",
-                bbox_to_anchor=(0.5, 1.10),
-                ncol=1,
-                frameon=False,
-            )
-            ax.set_yscale("log")
-            ax.set_xlim(-1.1 * dx, 1.1 * dx)
+        # Store results in files
+        def store_list_of_arrays(name, li):
+            OPATH.mkdir(parents=True, exist_ok=True)
+            np.save(OPATH / name, np.array(li, dtype=object))
 
-            ax.set_ylabel("Count")
-            ax.set_xlabel("Displacement [R]")
+        store_list_of_arrays("directed_diffs", directed_diffs)
+        store_list_of_arrays("distances", distances)
+        store_list_of_arrays("distances_vertices", distances_vertices)
+        store_list_of_arrays("lengths_extracted", lengths_extracted)
+        store_list_of_arrays("lengths_exact", lengths_exact)
 
-            fig.savefig(OPATH / f"displacement-distr-{name}.png")
-            fig.savefig(OPATH / f"displacement-distr-{name}.pdf")
-            plt.close(fig)
-
-        # Now do plot over time
-        def gauss2d(x, y, mux, muy, sigmax, sigmay, prefactor):
-            gx = sp.stats.norm.pdf(x, mux, sigmax)
-            gy = sp.stats.norm.pdf(y, muy, sigmay)
-            return prefactor * gx * gy
-
-        means = []
-        covs = []
-        for data in directed_diffs:
-            data = np.array(data).reshape((-1, 2))
-            filt = np.all(np.abs(data) <= dx, axis=1)
-            data = data[filt]
-            mean, cov = sp.stats.multivariate_normal.fit(data)
-            means.append(mean)
-            covs.append(cov)
-
-        means = np.array(means)
-        covs = np.array(covs)
-
-        fig, ax = plt.subplots(figsize=(8, 8))
-        crm.plotting.configure_ax(ax)
-
-        t = np.arange(len(directed_diffs)) * config.t_max / (config.n_saves + 1)
-        ax.plot(
-            t,
-            means[:, 0],
-            color=crm.plotting.COLOR5,
-            label="parallel",
-            linestyle="-",
+    # Create 2 Figures
+    crm.plotting.set_mpl_rc_params()
+    fig1, axs1 = plt.subplots(1, 3, figsize=(24, 8))
+    for label, ax in zip(["J", "K", "L"], axs1):
+        ax.text(
+            0.03,
+            0.97,
+            label,
+            fontsize=40,
+            fontweight="semibold",
+            fontfamily="serif",
+            va="top",
+            horizontalalignment="left",
+            transform=ax.transAxes,
         )
-        ax.fill_between(
-            t,
-            means[:, 0] - covs[:, 0, 0] ** 0.5,
-            means[:, 0] + covs[:, 0, 0] ** 0.5,
-            color=crm.plotting.COLOR5,
-            alpha=0.5,
+    fig2, axs2 = plt.subplots(2, 2, figsize=(24, 24))
+    for label, ax in zip(["A", "B", "C", "D"], axs2.flatten()):
+        ax.text(
+            0.03,
+            0.97,
+            label,
+            fontsize=40,
+            fontweight="semibold",
+            fontfamily="serif",
+            va="top",
+            horizontalalignment="left",
+            transform=ax.transAxes,
         )
-        ax.plot(
-            t,
-            means[:, 1],
-            color=crm.plotting.COLOR3,
-            label="orthogonal",
-            linestyle="--",
-        )
-        ax.fill_between(
-            t,
-            means[:, 1] - covs[:, 1, 1] ** 0.5,
-            means[:, 1] + covs[:, 1, 1] ** 0.5,
-            color=crm.plotting.COLOR3,
-            alpha=0.5,
-        )
-        dmean = np.max(np.abs(means))
-        dcovs = np.max([np.abs(covs[:, 0, 0]) ** 0.5, np.abs(covs[:, 1, 1]) ** 0.5])
-        dlim = np.max([1.2 * dmean, dmean + dcovs])
-        ax.set_ylim(-dlim, dlim)
-        ax.set_ylabel("Length [R]")
-        ax.set_xlabel("Time [min]")
-        ax.legend(
-            loc="upper center",
-            bbox_to_anchor=(0.5, 1.10),
-            ncol=2,
-            frameon=False,
-        )
-        fig.savefig(OPATH / "displacement-fit-over-time.png")
-        fig.savefig(OPATH / "displacement-fit-over-time.pdf")
 
-        ax.cla()
-        crm.plotting.configure_ax(ax)
-        ax.plot(
-            t,
-            covs[:, 0, 1] / covs[:, 0, 0],
-            color=crm.plotting.COLOR3,
-            label="$\\sigma_{01}/\\sigma_{00}$",
-        )
-        ax.set_xlabel("Time [min]")
-        dy = np.max(np.abs(covs[:, 0, 1] / covs[:, 0, 0]))
-        ax.set_ylim(-1, 1)
-        ax.legend(loc="upper center", bbox_to_anchor=(0.5, 1.1), ncol=1, frameon=False)
-        fig.savefig(OPATH / "displacement-fit-over-time-covariance.png")
-        fig.savefig(OPATH / "displacement-fit-over-time-covariance.pdf")
-        plt.close(fig)
+    colors = []
+    dx = 1.0
+    for ax in (axs2[0, 0], axs1[1]):
+        colors, dx = plot_vertex_displacement(ax, directed_diffs)
 
-    if not pyargs.skip_graph:
-        fig, ax = plt.subplots(figsize=(8, 8))
-        crm.plotting.configure_ax(ax)
+    for i, name in enumerate(["x", "y"]):
+        plot_x_y_distrs(axs2[1, i], directed_diffs, name)
 
-        x = np.arange(len(distances)) * config.t_max / (config.n_saves + 1)
-        ax.plot(
-            x,
-            [np.mean(li) for li in lengths_exact],
-            # yerr=[np.std(li) for li in lengths2],
-            linestyle="-",
-            color=crm.plotting.COLOR5,
-            label="Exact",
-        )
-        ax.plot(
-            x,
-            [np.mean(li) for li in lengths_extracted],
-            # yerr=[np.std(li) for li in lengths1],
-            linestyle=":",
-            color=crm.plotting.COLOR3,
-            label="Extracted",
-        )
-        ax.fill_between(
-            x,
-            y1=[
-                np.mean(lengths_extracted[i]) - np.mean(distances[i])
-                for i in range(len(lengths_extracted))
-            ],
-            y2=[
-                np.mean(lengths_extracted[i]) + np.mean(distances[i])
-                for i in range(len(lengths_extracted))
-            ],
-            alpha=0.3,
-            color=crm.plotting.COLOR1,
-        )
-        ax.legend(
-            loc="upper center",
-            bbox_to_anchor=(0.5, 1.10),
-            ncol=3,
-            frameon=False,
-        )
-        ax.set_ylabel("Rod Length [R]")
-        ax.set_xlabel("Time [min]")
-        # ax.set_title("Evaluation of Position Extraction Algorithm")
-        fig.savefig(OPATH / "displacement-calculations.png")
-        fig.savefig(OPATH / "displacement-calculations.pdf")
-        plt.close(fig)
+    t, covs = plot_displacement_comparison(axs1[2], directed_diffs)
+    plot_covariance_ratios(axs2[0, 1], t, covs)
+    plot_rod_length_comparison(axs1[0])
+
+    fig1.tight_layout()
+    fig1.savefig(OPATH / "displacement-calculations-1.pdf")
+    plt.close(fig1)
+
+    fig2.tight_layout()
+    fig2.savefig(OPATH / "displacement-calculations-2.pdf")
+    plt.close(fig2)

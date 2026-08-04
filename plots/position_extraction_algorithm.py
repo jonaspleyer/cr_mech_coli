@@ -9,25 +9,16 @@ def get_skeleton(submask, color):
     return sk.morphology.skeletonize(np.all(submask == color, axis=2), method="lee")
 
 
-if __name__ == "__main__":
-    mask = np.loadtxt("data/crm_fit/0001/masks/001042-markers.csv", delimiter=",")
-
-    # Create new colors for mask
-    new_colors = {int(i): crm.counter_to_color(int(i)) for i in np.unique(mask)}
-    new_mask = np.zeros((*mask.shape, 3), int)
-    for c in np.unique(mask):
-        new_mask[mask == c] = new_colors[int(c)]
-    mask = new_mask
+def plot_interpolation_with_zoom(ax, mask, color):
 
     # Define limits of plot
-    fig, ax = plt.subplots()
     ax.set_xlim((0, mask.shape[1]))
     ax.set_ylim((mask.shape[0], 0))
     ax.set_axis_off()
     ax.imshow(mask)
 
     # Pick one cell
-    color = np.array(new_colors[2])
+    color = np.array(color)
     x, y = np.where(np.all(mask == color, axis=2))
     xmin = np.min(x)
     xmax = np.max(x)
@@ -81,6 +72,43 @@ if __name__ == "__main__":
         zorder=20,
     )
 
+    return xmin, xmax, ymin, ymax, dx, dy
+
+
+def plot_only_zoom(ax, mask, xmin, xmax, ymin, ymax, dx, dy):
+    pos = crm.extract_positions(mask)[0]
+    submask = np.copy(mask[xmin:xmax, ymin:ymax, :])
+
+    ax.set_xlim((0, submask.shape[1]))
+    ax.set_ylim((submask.shape[0], 0))
+    ax.set_axis_off()
+    ax.imshow(submask)
+
+    for p in pos:
+        p1 = p[:, 0] - xmin - dx / 2
+        p2 = p[:, 1] - ymin - dy / 2
+        q1 = -(-p1 + p2) * (-1) + p1
+        q2 = -(-p1 + p2) * (+1) + p2
+        ax.plot(q1 + dx / 2, q2 + dy / 2, color="white", marker="+", markersize=15)
+
+
+def prepare_mask_and_cell():
+    mask = np.loadtxt("data/crm_fit/0001/masks/001042-markers.csv", delimiter=",")
+
+    # Create new colors for mask
+    new_colors = {int(i): crm.counter_to_color(int(i)) for i in np.unique(mask)}
+    new_mask = np.zeros((*mask.shape, 3), int)
+    for c in np.unique(mask):
+        new_mask[mask == c] = new_colors[int(c)]
+
+    return new_mask, new_colors[2]
+
+
+if __name__ == "__main__":
+    mask, color = prepare_mask_and_cell()
+
+    fig, ax = plt.subplots()
+    res = plot_interpolation_with_zoom(ax, mask, color)
     fig.tight_layout()
     fig.savefig(
         "docs/source/_static/fitting-methods/algorithm/mask-zoom.pdf",
@@ -94,32 +122,12 @@ if __name__ == "__main__":
     )
     plt.close(fig)
 
-    pos = crm.extract_positions(mask)[0]
-    submask = np.copy(mask[xmin:xmax, ymin:ymax, :])
-
     fig, ax = plt.subplots()
-    ax.set_xlim((0, submask.shape[1]))
-    ax.set_ylim((submask.shape[0], 0))
-    ax.set_axis_off()
-    ax.imshow(submask)
-
-    colors = list(
-        filter(
-            lambda x: np.all(x != [0, 0, 0]),
-            np.unique(submask.reshape((-1, 3)), axis=0),
-        )
+    plot_only_zoom(
+        ax,
+        mask,
+        *res,
     )
-    c1 = colors[0]
-    c2 = colors[1]
-    skeleton1 = get_skeleton(mask, c1)
-    skeleton2 = get_skeleton(mask, c2)
-    for p in pos:
-        p1 = p[:, 0] - xmin - dx / 2
-        p2 = p[:, 1] - ymin - dy / 2
-        q1 = -(-p1 + p2) * (-1) + p1
-        q2 = -(-p1 + p2) * (+1) + p2
-        ax.plot(q1 + dx / 2, q2 + dy / 2, color="white", marker="+", markersize=15)
-
     fig.tight_layout()
     fig.savefig(
         "docs/source/_static/fitting-methods/algorithm/interpolate-positions.pdf",
@@ -131,3 +139,4 @@ if __name__ == "__main__":
         bbox_inches="tight",
         pad_inches=0,
     )
+    plt.close(fig)
