@@ -11,6 +11,8 @@ from pathlib import Path
 import multiprocessing as mp
 import argparse
 import itertools
+from PIL import Image
+from matplotlib.gridspec import GridSpec
 
 from cr_mech_coli.plotting import COLOR2, COLOR3, COLOR5
 
@@ -259,13 +261,13 @@ def objective_function(
     return cost
 
 
-def plot_results(
+def plot_fit_comparison(
+    ax,
     popt,
     positions_data: np.ndarray,
     iterations_data,
     x0_bounds: dict,
     set_params,
-    output_dir,
 ):
     p_rods, positions_data, parameters = objective_function(
         popt, set_params, positions_data, iterations_data, x0_bounds, return_all=True
@@ -273,27 +275,6 @@ def plot_results(
     p0 = p_rods[0]
     p1 = p_rods[1]
 
-    #
-    fig, ax = plt.subplots(figsize=(8, 8))
-    diffs = np.linalg.norm(positions_data[1:] - p_rods[1:], axis=(1, 2))
-    labels = ["Bending", "Relaxation"]
-    b = ax.bar(labels, diffs, color=crm.plotting.COLOR3)
-    ax.bar_label(
-        b,
-        [f"{100 * p:.2f}%%" for p in diffs / np.sum(diffs)],
-        label_type="edge",
-        color=crm.plotting.COLOR5,
-        weight="bold",
-    )
-    ax.set_ylim(0, np.max(diffs) * 1.1)
-    ax.set_title("Cost Contributions")
-    ax.set_ylabel("Cost")
-    fig.savefig(output_dir / "cost-contributions.png")
-    fig.savefig(output_dir / "cost-contributions.pdf")
-    plt.close(fig)
-
-    # Plot Comparison of fit with positional data
-    fig, ax = plt.subplots(figsize=(8, 8))
     crm.configure_ax(ax, minor=False)
     ax.plot(p0[:, 1], p0[:, 0], color=crm.plotting.COLOR2, linestyle=":")
     ax.plot(p1[:, 1], p1[:, 0], color=crm.plotting.COLOR3, linestyle=":")
@@ -327,8 +308,46 @@ def plot_results(
     ax.set_xlabel("[µm]")
     ax.set_ylabel("[µm]")
     ax.set_title("Fit Comparison")
+
+
+def plot_results(
+    popt,
+    positions_data: np.ndarray,
+    iterations_data,
+    x0_bounds: dict,
+    set_params,
+    output_dir,
+):
+    p_rods, positions_data, parameters = objective_function(
+        popt, set_params, positions_data, iterations_data, x0_bounds, return_all=True
+    )
+
+    # Plot Comparison of fit with positional data
+    fig, ax = plt.subplots(figsize=(8, 8))
+    plot_fit_comparison(
+        ax, popt, positions_data, iterations_data, x0_bounds, set_params
+    )
     fig.savefig(output_dir / "fit-comparison.png")
     fig.savefig(output_dir / "fit-comparison.pdf")
+    plt.close(fig)
+
+    #
+    fig, ax = plt.subplots(figsize=(8, 8))
+    diffs = np.linalg.norm(positions_data[1:] - p_rods[1:], axis=(1, 2))
+    labels = ["Bending", "Relaxation"]
+    b = ax.bar(labels, diffs, color=crm.plotting.COLOR3)
+    ax.bar_label(
+        b,
+        [f"{100 * p:.2f}%%" for p in diffs / np.sum(diffs)],
+        label_type="edge",
+        color=crm.plotting.COLOR5,
+        weight="bold",
+    )
+    ax.set_ylim(0, np.max(diffs) * 1.1)
+    ax.set_title("Cost Contributions")
+    ax.set_ylabel("Cost")
+    fig.savefig(output_dir / "cost-contributions.png")
+    fig.savefig(output_dir / "cost-contributions.pdf")
     plt.close(fig)
 
     t_relax = iterations_data[2] - iterations_data[1]
@@ -743,12 +762,54 @@ def crm_amir_main():
     # plot_angles_and_endpoints()
     displacement_error = 0.8
 
-    output_dir = Path("out/crm_amir/profiles/")
-    output_dir.mkdir(parents=True, exist_ok=True)
+    fig = plt.figure(layout="constrained", figsize=(24, 24))
+    (fig1, fig2) = fig.subfigures(2, 1, height_ratios=[1.1, 2])
+    axs1 = fig1.subplots(1, 3, gridspec_kw={"wspace": 0.0})
+    axs2 = fig2.subplots(2, 3)
+    axs = np.array([axs1, *axs2])
 
-    fig, ax = plt.subplots(figsize=(8, 8))
+    labels = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"]
+    imgs = [
+        "out/crm_amir/progressions/step4-000010.png",
+        "out/crm_amir/progressions/step4-000017.png",
+        "out/crm_amir/progressions/step4-000034.png",
+    ]
+    for n, ax in enumerate(axs.flatten()):
+        if n < 3:
+            ax.set_axis_off()
+            ax.imshow(np.asarray(Image.open(imgs[n])))
 
+        label = labels[n]
+        ax.text(
+            0.03,
+            0.97 if n >= 3 else 0.03,
+            label,
+            fontsize=40,
+            fontweight="semibold",
+            fontfamily="serif",
+            va="top" if n >= 3 else "bottom",
+            horizontalalignment="left",
+            transform=ax.transAxes,
+            color="k" if n >= 3 else "white",
+        )
+
+    pdata = np.array(positions_data)
+    for n, p in enumerate(positions_data):
+        ind = np.argsort(p[:, 0])
+        pdata[n] = p[ind] / PIXELS_PER_MICRON
+
+    plot_fit_comparison(
+        axs[1, 0],
+        popt2,
+        pdata,
+        iterations_data,
+        x0_bounds_reduced,
+        set_params,
+    )
+
+    ax_mappings = [(2, 0), (1, 1), (2, 2), (1, 2), (2, 1)]
     for n, name in enumerate(list(params1.keys())):
+        ax = axs[ax_mappings[n]]
         crm.configure_ax(ax)
         ax.grid(False, which="minor")
         plot_profile(
@@ -836,8 +897,4 @@ def crm_amir_main():
             frameon=False,
         )
 
-        fig.savefig(output_dir / f"{name}.png")
-        fig.savefig(output_dir / f"{name}.pdf")
-        ax.cla()
-
-    crm.configure_ax(ax, minor=False)
+    fig.savefig("out/crm_amir/profiles.pdf")
