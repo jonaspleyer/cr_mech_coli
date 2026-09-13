@@ -771,8 +771,8 @@ impl Settings {
                 }
             }
         );
-        append_infos_bounds!(radius, "Radius", "µm", "r");
-        append_infos_bounds!(rigidity, "Rigidity", "µm/min", "κ");
+        append_infos_bounds!(radius, "Radius", "µm", "R");
+        append_infos_bounds!(rigidity, "Rigidity", "µm/min", "η");
         append_infos_bounds!(spring_tension, "Spring Tension", "1/min²", "γ");
         append_infos_bounds!(damping, "Damping", "1/min", "λ");
         append_infos_bounds!(strength, "Strength", "µm^2/min^2", "V$_0$");
@@ -785,7 +785,12 @@ impl Settings {
                 append_infos_bounds!(em, "Exponent m", "1", "m");
             }
             PotentialType::Morse(morse) => {
-                append_infos_bounds!(&morse.potential_stiffness, "Potential Stiffness", "µm", "λ")
+                append_infos_bounds!(
+                    &morse.potential_stiffness,
+                    "Potential Stiffness",
+                    "1/µm",
+                    "ω"
+                )
             }
         }
 
