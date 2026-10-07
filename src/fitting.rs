@@ -159,7 +159,7 @@ pub fn render_mask_2d<'py>(
         let overlap_mask = create_root!(buffer2);
 
         let mut polygons = Vec::with_capacity(cells.len());
-        for (_, (cell, _)) in cells.iter() {
+        for (cell, _) in cells.values() {
             let pos = &cell.mechanics.pos;
             let radius = cell.interaction.0.radius();
             let pos = ndarray::Array2::<f32>::from_shape_fn(pos.shape(), |x| pos[x]);
@@ -579,7 +579,7 @@ fn calculate_polygon_hull(
         } else {
             // Same as in the other condition but reversed sides
             coordinates_bw.push(c2);
-            coordinates_bw.extend(coordinates.into_iter());
+            coordinates_bw.extend(coordinates);
             coordinates_bw.push(d3);
             let line1 = geo::Line { start: c0, end: c1 };
             let line2 = geo::Line { start: d0, end: d1 };
