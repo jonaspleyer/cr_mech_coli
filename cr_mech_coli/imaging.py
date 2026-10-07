@@ -38,6 +38,7 @@ from .cr_mech_coli import (
     RodAgent,
     counter_to_color,
     color_to_counter,
+    render_approximate_mask,
     CellContainer,
 )
 from .simulation import Configuration, sort_cellular_identifiers, CellIdentifier

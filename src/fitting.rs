@@ -511,7 +511,7 @@ fn get_coordinates_at_tip(
 /// \                                           /
 ///  \                                         /
 ///    ------------- coordinates_bw --------> x
-fn calculate_polygon_hull(
+pub(crate) fn calculate_polygon_hull(
     p: &ndarray::ArrayView2<f32>,
     r: f32,
     delta_angle: f32,

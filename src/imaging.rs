@@ -91,3 +91,87 @@ mod test {
         }
     }
 }
+
+/// Function to plot approximate mask (may contain overlaps)
+#[pyfunction]
+#[pyo3(signature = (
+    cells,
+    cell_to_color,
+    domain_size,
+    resolution,
+    delta_angle = core::f32::consts::FRAC_PI_8 / 2.0,
+    epsilon = 0.01,
+))]
+pub fn render_approximate_mask<'py>(
+    py: Python<'py>,
+    cells: std::collections::BTreeMap<
+        cellular_raza::prelude::CellIdentifier,
+        (
+            crate::RodAgent,
+            Option<cellular_raza::prelude::CellIdentifier>,
+        ),
+    >,
+    cell_to_color: std::collections::BTreeMap<cellular_raza::prelude::CellIdentifier, (u8, u8, u8)>,
+    domain_size: (f32, f32),
+    resolution: (usize, usize),
+    delta_angle: f32,
+    epsilon: f32,
+) -> PyResult<Bound<'py, numpy::PyArray3<u8>>> {
+    use plotters::coord::types::RangedCoordf32;
+    use plotters::prelude::*;
+    macro_rules! map_err(
+        ($interior:expr) => {($interior)
+            .map_err(|e| pyo3::exceptions::PyValueError::new_err(format!("{e}")))
+        }
+    );
+
+    let mut buffer = vec![0u8; resolution.0 * resolution.1 * 3];
+    {
+        let mask =
+            BitMapBackend::with_buffer(&mut buffer, (resolution.0 as u32, resolution.1 as u32))
+                .anti_aliasing(false)
+                .into_drawing_area()
+                .margin(0, 0, 0, 0)
+                .apply_coord_spec(Cartesian2d::<RangedCoordf32, RangedCoordf32>::new(
+                    0f32..domain_size.0,
+                    0f32..domain_size.1,
+                    (0..(resolution.0 as i32), 0..(resolution.1 as i32)),
+                ));
+
+        let mut polygons = Vec::with_capacity(cells.len());
+        for (cell, _) in cells.values() {
+            let pos = &cell.mechanics.pos;
+            let radius = cell.interaction.0.radius();
+            let pos = ndarray::Array2::<f32>::from_shape_fn(pos.shape(), |x| pos[x]);
+            let polygon =
+                crate::fitting::calculate_polygon_hull(&pos.view(), radius, delta_angle, epsilon)?;
+            polygons.push(polygon);
+        }
+
+        for (ident, (agent, _)) in cells.iter() {
+            let pos = &agent.mechanics.pos;
+            let radius = agent.interaction.0.radius();
+            let color: (u8, u8, u8) = cell_to_color[ident];
+            let style = ShapeStyle::from(&RGBAColor(color.0, color.1, color.2, 1.0))
+                .filled()
+                .stroke_width(0);
+
+            let pos = ndarray::Array2::<f32>::from_shape_fn(pos.shape(), |x| pos[x]);
+            let polygon =
+                crate::fitting::calculate_polygon_hull(&pos.view(), radius, delta_angle, epsilon)?;
+            let points: Vec<_> = polygon.exterior().coords().map(|p| (p.x, p.y)).collect();
+            let polygon = Polygon::new(points, style);
+            map_err!(mask.draw(&polygon))?;
+        }
+
+        map_err!(mask.present())?;
+    }
+
+    let mut arr = map_err!(ndarray::Array3::<u8>::from_shape_vec(
+        (resolution.1, resolution.0, 3),
+        buffer
+    ))?;
+    arr.invert_axis(ndarray::Axis(0));
+
+    Ok(numpy::PyArray3::from_array(py, &arr))
+}
