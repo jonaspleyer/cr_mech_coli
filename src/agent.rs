@@ -89,6 +89,34 @@ impl SpringLengthThresholdSetter {
     }
 }
 
+#[pymethods]
+impl SpringLengthThresholdSetter {
+    #[new]
+    #[pyo3(signature=(kwds))]
+    fn new(kwds: Bound<PyDict>) -> PyResult<Self> {
+        Self::from_pydict(&kwds)
+    }
+
+    /// Get attributes of the class
+    pub fn __getattr__(&self, name: &str) -> pyo3::PyResult<f32> {
+        let e = Err(pyo3::exceptions::PyValueError::new_err(format!(
+            "SpringLengthThresholdSetter does not have attribute '{name}'"
+        )));
+        match self {
+            SpringLengthThresholdSetter::NormalDistr { mean, std } => match name {
+                "mean" => Ok(*mean),
+                "std" => Ok(*std),
+                _ => e,
+            },
+            SpringLengthThresholdSetter::Explicit { l1, l2 } => match name {
+                "g1" => Ok(*l1),
+                "g2" => Ok(*l2),
+                _ => e,
+            },
+        }
+    }
+}
+
 /// Defines how the growth rates of the daughter cells will be set
 #[pyclass]
 #[derive(Clone, Debug, Deserialize, Serialize, AbsDiffEq, PartialEq)]
