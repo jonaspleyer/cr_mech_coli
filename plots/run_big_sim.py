@@ -5,34 +5,42 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 import string
 
+MINUTE = 1
+HOUR = 60 * MINUTE
+DAY = 24 * HOUR
+MICRON = 1
 
 if __name__ == "__main__":
-    grs = crm.GrowthRateSetter({"mean": 0.01, "std": 0.0015})
-    slts = crm.SpringLengthThresholdSetter({"mean": 8.0, "std": 1.5})
+    grs = crm.GrowthRateSetter({"mean": 0.8 / HOUR, "std": 0.1 / HOUR})
+    slts = crm.SpringLengthThresholdSetter({"mean": 0.9 * MICRON, "std": 0.2 * MICRON})
     agent_settings = crm.AgentSettings(
         growth_rate=grs.mean,
+        spring_length=0.4 * MICRON,
         spring_length_threshold=slts.mean,
-        damping=0.025,
+        damping=0.1 / MINUTE,
+        spring_tension=10 / MINUTE,
+        rigidity=1.1 / MINUTE,
     )
     agent_settings.growth_rate_setter = grs
     agent_settings.spring_length_threshold_setter = slts
 
-    agent_settings.interaction.potential_stiffness = 0.8
-    agent_settings.interaction.strength = 0.3
+    agent_settings.interaction.radius = 0.4 * MICRON
+    agent_settings.interaction.potential_stiffness = 2.0 / MICRON
+    agent_settings.interaction.strength = 1.0 * MICRON**2 / MINUTE**2
     agent_settings.interaction.cutoff = 2.0 * agent_settings.interaction.radius
 
     config = crm.Configuration()
     config.t0 = 0.0
-    config.dt = 0.1
-    config.t_max = 750.0
+    config.dt = 0.02 * MINUTE
+    config.t_max = 9 * HOUR
     config.n_saves = 6
-    config.domain_size = (700, 700)
+    config.domain_size = (70 * MICRON, 70 * MICRON)
     config.n_threads = 14
     config.n_voxels = (14, 14)
 
     config.surface_friction = 0
     config.gel_pressure = 0
-    config.domain_height = 1e-1
+    config.domain_height = 1e-1 * MICRON
 
     def render_img(seed):
         config.progressbar = f"Big Sim seed={seed}"
@@ -75,6 +83,7 @@ if __name__ == "__main__":
             cmap = mpl.colormaps["twilight"]
 
             # Assign color depending on alignment
+            print("N Cells: ", len(sim_result.cells[it]))
             for c in sim_result.cells[it]:
                 cell = sim_result.cells[it][c][0]
                 pos = cell.pos
@@ -93,10 +102,10 @@ if __name__ == "__main__":
                 cell_to_color,
                 (config.domain_size[0], config.domain_size[1]),
                 resolution=(
-                    int(config.domain_size[0] * 4),
-                    int(config.domain_size[1] * 4),
+                    int(config.domain_size[0] * 40),
+                    int(config.domain_size[1] * 40),
                 ),
-                epsilon=0.1,
+                epsilon=1.0,
             )
 
             ax.imshow(img, aspect="equal")
@@ -119,4 +128,4 @@ if __name__ == "__main__":
 
         fig.savefig("docs/source/_static/big-sim-series.png")
 
-    render_img(3)
+    render_img(7)
