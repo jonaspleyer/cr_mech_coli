@@ -19,7 +19,7 @@ if __name__ == "__main__":
         spring_length_threshold=slts.mean,
         damping=0.1 / MINUTE,
         spring_tension=10 / MINUTE,
-        rigidity=1.1 / MINUTE,
+        rigidity=1.1 * MICRON / MINUTE**2,
     )
     agent_settings.growth_rate_setter = grs
     agent_settings.spring_length_threshold_setter = slts
@@ -33,7 +33,7 @@ if __name__ == "__main__":
     config.t0 = 0.0
     config.dt = 0.02 * MINUTE
     config.t_max = 9 * HOUR
-    config.n_saves = 6
+    config.n_saves = 2
     config.domain_size = (70 * MICRON, 70 * MICRON)
     config.n_threads = 14
     config.n_voxels = (14, 14)
@@ -65,8 +65,8 @@ if __name__ == "__main__":
         s = 0.01
         iterations = sim_result.get_all_iterations()
         fig, axs = plt.subplots(
-            2,
-            int(len(iterations) / 2),
+            1,
+            4,
             gridspec_kw={
                 "left": 0,
                 "right": 1,
@@ -75,7 +75,7 @@ if __name__ == "__main__":
                 "wspace": s,
                 "hspace": s,
             },
-            figsize=(24, 12 - s / 2),
+            figsize=(24, 6 - 3 * s),
         )
         for ax, it, label in zip(axs.flatten(), iterations, string.ascii_uppercase):
             cell_to_color = sim_result.cell_to_color
