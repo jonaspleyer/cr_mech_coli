@@ -1,6 +1,6 @@
 use std::collections::{btree_map::Entry, BTreeMap, HashMap};
 
-use cellular_raza::prelude::CellIdentifier;
+use cellular_raza::{concepts::VoxelPlainIndex, prelude::CellIdentifier};
 use itertools::Itertools;
 use pyo3::prelude::*;
 
@@ -60,7 +60,10 @@ fn unique_ident_get_daughters(unique_ident: u8) -> Option<(u8, u8)> {
 
 fn match_parents(unique_ident: u8) -> PyResult<CellIdentifier> {
     if 0 < unique_ident && unique_ident < 7 {
-        Ok(CellIdentifier::Initial(unique_ident as usize - 1))
+        Ok(CellIdentifier::Initial(
+            VoxelPlainIndex(0),
+            unique_ident as usize - 1,
+        ))
     } else {
         Err(pyo3::exceptions::PyKeyError::new_err(format!(
             "Could not find parent ident for unique color {unique_ident}"

@@ -264,7 +264,7 @@ pub fn predict_calculate_cost_rs(
             .get_cells_at_iteration(it)
             .into_iter()
             .try_for_each(|(ident, (c, _))| {
-                if let CellIdentifier::Initial(n_agent) = ident {
+                if let CellIdentifier::Initial(_, n_agent) = ident {
                     let p1 =
                         ndarray::Array2::from_shape_fn((c.mechanics.pos.nrows(), 2), |(i, j)| {
                             c.mechanics.pos[(i, j)]

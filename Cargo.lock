@@ -93,9 +93,9 @@ dependencies = [
 
 [[package]]
 name = "approx"
-version = "0.6.0-rc1"
+version = "0.6.0-rc2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b3578fdace1111371dd1f9151320d6e379e9000b2cfb7ec18c1e52600803e6b8"
+checksum = "94fbdd65cc59dcc820bfb0fd01315963d4f9898bf3399a47134c9836698c47df"
 dependencies = [
  "approx-derive",
  "num-traits",
@@ -104,9 +104,9 @@ dependencies = [
 
 [[package]]
 name = "approx-derive"
-version = "0.6.0-rc1"
+version = "0.6.0-rc2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fccf82d436b57c74b8831aa05dd15748a1953ae1714579637b9cb5f088b89f57"
+checksum = "1cd3b2c059ab6844ce55767dcf05f9103354b8bb96e783d34e350c2f58161de3"
 dependencies = [
  "proc-macro-crate",
  "proc-macro2",
@@ -210,7 +210,7 @@ dependencies = [
 [[package]]
 name = "cellular_raza"
 version = "0.5.0"
-source = "git+https://github.com/jonaspleyer/cellular_raza/#dbb0896bdedc0324fa1dea9a4739703a9bb8b512"
+source = "git+https://github.com/jonaspleyer/cellular_raza/#9bc05f88f4ab292c9e0f68b33cec2164e58c1342"
 dependencies = [
  "cellular_raza-building-blocks",
  "cellular_raza-concepts",
@@ -220,9 +220,9 @@ dependencies = [
 [[package]]
 name = "cellular_raza-building-blocks"
 version = "0.5.0"
-source = "git+https://github.com/jonaspleyer/cellular_raza/#dbb0896bdedc0324fa1dea9a4739703a9bb8b512"
+source = "git+https://github.com/jonaspleyer/cellular_raza/#9bc05f88f4ab292c9e0f68b33cec2164e58c1342"
 dependencies = [
- "approx 0.6.0-rc1",
+ "approx 0.6.0-rc2",
  "cellular_raza-concepts",
  "itertools 0.14.0",
  "nalgebra",
@@ -240,7 +240,7 @@ dependencies = [
 [[package]]
 name = "cellular_raza-concepts"
 version = "0.5.0"
-source = "git+https://github.com/jonaspleyer/cellular_raza/#dbb0896bdedc0324fa1dea9a4739703a9bb8b512"
+source = "git+https://github.com/jonaspleyer/cellular_raza/#9bc05f88f4ab292c9e0f68b33cec2164e58c1342"
 dependencies = [
  "cellular_raza-concepts-derive",
  "num",
@@ -253,7 +253,7 @@ dependencies = [
 [[package]]
 name = "cellular_raza-concepts-derive"
 version = "0.5.0"
-source = "git+https://github.com/jonaspleyer/cellular_raza/#dbb0896bdedc0324fa1dea9a4739703a9bb8b512"
+source = "git+https://github.com/jonaspleyer/cellular_raza/#9bc05f88f4ab292c9e0f68b33cec2164e58c1342"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -263,7 +263,7 @@ dependencies = [
 [[package]]
 name = "cellular_raza-core"
 version = "0.5.0"
-source = "git+https://github.com/jonaspleyer/cellular_raza/#dbb0896bdedc0324fa1dea9a4739703a9bb8b512"
+source = "git+https://github.com/jonaspleyer/cellular_raza/#9bc05f88f4ab292c9e0f68b33cec2164e58c1342"
 dependencies = [
  "bincode",
  "cellular_raza-concepts",
@@ -291,7 +291,7 @@ dependencies = [
 [[package]]
 name = "cellular_raza-core-proc-macro"
 version = "0.5.0"
-source = "git+https://github.com/jonaspleyer/cellular_raza/#dbb0896bdedc0324fa1dea9a4739703a9bb8b512"
+source = "git+https://github.com/jonaspleyer/cellular_raza/#9bc05f88f4ab292c9e0f68b33cec2164e58c1342"
 dependencies = [
  "itertools 0.14.0",
  "proc-macro2",
@@ -408,7 +408,7 @@ checksum = "773648b94d0e5d620f64f280777445740e61fe701025087ec8b57f45c791888b"
 name = "cr_mech_coli"
 version = "0.10.0"
 dependencies = [
- "approx 0.6.0-rc1",
+ "approx 0.6.0-rc2",
  "cellular_raza",
  "clap",
  "cmake",
