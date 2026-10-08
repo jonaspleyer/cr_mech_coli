@@ -2,6 +2,8 @@ import cr_mech_coli as crm
 import PIL
 import numpy as np
 import matplotlib as mpl
+import matplotlib.pyplot as plt
+import string
 
 
 if __name__ == "__main__":
@@ -23,7 +25,7 @@ if __name__ == "__main__":
     config.t0 = 0.0
     config.dt = 0.1
     config.t_max = 750.0
-    config.n_saves = 1
+    config.n_saves = 6
     config.domain_size = (700, 700)
     config.n_threads = 14
     config.n_voxels = (14, 14)
@@ -52,30 +54,69 @@ if __name__ == "__main__":
         render_settings = crm.RenderSettings()
         render_settings.pixel_per_micron = 1
 
-        last_iter = sim_result.get_all_iterations()[-1]
-
-        cell_to_color = sim_result.cell_to_color
-
-        cmap = mpl.colormaps["twilight"]
-
-        # Assign color depending on alignment
-        for c in sim_result.cells[last_iter]:
-            cell = sim_result.cells[last_iter][c][0]
-            pos = cell.pos
-            q = pos[1:] - pos[:-1]
-            angle = np.mean([np.arctan2(x[1], x[0]) for x in q])
-            angle = angle % np.pi
-            new_color = np.array(cmap(angle / np.pi))[:3] * 255
-            cell_to_color[c] = (int(new_color[0]), int(new_color[1]), int(new_color[2]))
-
-        img = crm.render_approximate_mask(
-            sim_result.cells[last_iter],
-            cell_to_color,
-            (config.domain_size[0], config.domain_size[1]),
-            resolution=(int(config.domain_size[0] * 4), int(config.domain_size[1] * 4)),
-            epsilon=0.1,
+        s = 0.01
+        iterations = sim_result.get_all_iterations()
+        fig, axs = plt.subplots(
+            2,
+            int(len(iterations) / 2),
+            gridspec_kw={
+                "left": 0,
+                "right": 1,
+                "bottom": 0,
+                "top": 1,
+                "wspace": s,
+                "hspace": s,
+            },
+            figsize=(24, 12 - s / 2),
         )
-        img = PIL.Image.fromarray(img)
-        img.save("docs/source/_static/big-sim.png")
+        for ax, it, label in zip(axs.flatten(), iterations, string.ascii_uppercase):
+            cell_to_color = sim_result.cell_to_color
+
+            cmap = mpl.colormaps["twilight"]
+
+            # Assign color depending on alignment
+            for c in sim_result.cells[it]:
+                cell = sim_result.cells[it][c][0]
+                pos = cell.pos
+                q = pos[1:] - pos[:-1]
+                angle = np.mean([np.arctan2(x[1], x[0]) for x in q])
+                angle = angle % np.pi
+                new_color = np.array(cmap(angle / np.pi))[:3] * 255
+                cell_to_color[c] = (
+                    int(new_color[0]),
+                    int(new_color[1]),
+                    int(new_color[2]),
+                )
+
+            img = crm.render_approximate_mask(
+                sim_result.cells[it],
+                cell_to_color,
+                (config.domain_size[0], config.domain_size[1]),
+                resolution=(
+                    int(config.domain_size[0] * 4),
+                    int(config.domain_size[1] * 4),
+                ),
+                epsilon=0.1,
+            )
+
+            ax.imshow(img, aspect="equal")
+            ax.set_axis_off()
+            ax.text(
+                0.05,
+                0.95,
+                label,
+                fontsize=40,
+                fontweight="semibold",
+                fontfamily="serif",
+                va="top",
+                horizontalalignment="left",
+                transform=ax.transAxes,
+                color="white",
+            )
+
+            img = PIL.Image.fromarray(img)
+            img.save(f"docs/source/_static/big-sim-{it:08}.png")
+
+        fig.savefig("docs/source/_static/big-sim-series.png")
 
     render_img(3)
