@@ -1,6 +1,13 @@
 Changelog
 #########
 
+cr_mech_coli 0.11.0 `(.08.2026) <_static/changelog/0.11.0.diff>`_
+- Combine `mechanics.pdf` and `interaction.pdf` into one plot
+- Combine `mie-potential.pdf` and `morse-potential.pdf` into one plot
+- Add more python methods to existing structs
+- Add plotting functionality
+- Simplify and update many plots
+
 cr_mech_coli 0.10.0 `(13.03.2026) <_static/changelog/0.10.0.diff>`_
 -----------------------------------------------------------------
 
